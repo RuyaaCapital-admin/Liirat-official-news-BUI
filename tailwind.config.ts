@@ -57,6 +57,11 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        liirat: {
+          green: "hsl(var(--liirat-green))",
+          "dark-green": "hsl(var(--liirat-dark-green))",
+          "light-green": "hsl(var(--liirat-light-green))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
