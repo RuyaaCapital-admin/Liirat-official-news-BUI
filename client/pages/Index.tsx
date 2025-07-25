@@ -413,7 +413,7 @@ export default function Index() {
 
                   {/* Country/Currency Selector */}
                   <div className="space-y-2">
-                    <Label className="text-right block">العملة/��لبلد</Label>
+                    <Label className="text-right block">العملة/البلد</Label>
                     <Select
                       value={selectedCountry}
                       onValueChange={setSelectedCountry}
@@ -507,9 +507,9 @@ export default function Index() {
                         <TableHead className="text-right">الأهمية</TableHead>
                         <TableHead className="text-right">الحدث</TableHead>
                         <TableHead className="text-right">
-                          القيمة ا��فعلية
+                          القيمة الفعلية
                         </TableHead>
-                        <TableHead className="text-right">التو��ع</TableHead>
+                        <TableHead className="text-right">التوقع</TableHead>
                         <TableHead className="text-right">السابق</TableHead>
                         <TableHead className="text-right">
                           تحليل الذكاء الاصطناعي
@@ -652,7 +652,7 @@ export default function Index() {
                     </Button>
 
                     <p className="text-sm text-muted-foreground text-center">
-                      سيتم إرسال التنبيهات عبر البريد الإلكتروني والواتساب
+                      س��تم إرسال التنبيهات عبر البريد الإلكتروني والواتساب
                     </p>
                   </div>
 
@@ -663,7 +663,7 @@ export default function Index() {
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-primary rounded-full"></div>
-                        بيانات اقتصادية ��الية التأثير
+                        بيانات اقتصادية عالية التأثير
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
@@ -727,7 +727,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تحليلات متقدمة</h3>
               <p className="text-muted-foreground">
-                تحليلات عميقة للأحداث الاقتصاد��ة
+                تحليلات عميقة للأحداث الاقتصادية
               </p>
             </div>
 
