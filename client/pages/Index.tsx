@@ -1,6 +1,5 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { PriceTicker } from "@/components/PriceTicker";
 import {
   Card,
   CardContent,
@@ -258,7 +257,7 @@ export default function Index() {
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
               منصة ليرات للأخبار المالية - تقويم اقتصادي مباشر، تنبيهات فورية،
-              وتحليلات متقدمة لجميع الأسواق العالمي��
+              وتحليلات متقدمة لجميع الأسواق العالمية
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -321,7 +320,7 @@ export default function Index() {
                       onValueChange={setSelectedDate}
                     >
                       <SelectTrigger className="text-right">
-                        <SelectValue placeholder="��ختر التاريخ" />
+                        <SelectValue placeholder="اختر التاريخ" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="today">اليوم</SelectItem>
@@ -770,7 +769,7 @@ export default function Index() {
                 شروط الاستخدام
               </a>
               <a href="#" className="hover:text-primary transition-colors">
-                تواصل معنا
+                تو��صل معنا
               </a>
             </div>
             <p className="text-xs text-muted-foreground mt-4">
