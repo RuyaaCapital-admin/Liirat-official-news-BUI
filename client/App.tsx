@@ -12,11 +12,6 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => {
-  // Set dark mode by default for Liirat theme
-  if (typeof document !== 'undefined') {
-    document.documentElement.classList.add('dark');
-  }
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
