@@ -39,8 +39,97 @@ import {
   Filter,
   Star,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTheme } from "@/hooks/use-theme";
+
+// Market Ticker Component
+const MarketTicker = () => {
+  const [tickerContent, setTickerContent] = useState("Loading market prices…");
+  const [isLoading, setIsLoading] = useState(true);
+
+  const symbols = [
+    { label: 'EUR/USD', url: 'https://api.exchangerate.host/latest?base=EUR&symbols=USD' },
+    { label: 'GBP/USD', url: 'https://api.exchangerate.host/latest?base=GBP&symbols=USD' },
+    { label: 'USD/JPY', url: 'https://api.exchangerate.host/latest?base=USD&symbols=JPY' },
+    { label: 'BTC/USD', url: 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd' },
+    { label: 'Gold', url: 'https://api.coingecko.com/api/v3/simple/price?ids=tether-gold&vs_currencies=usd' }
+  ];
+
+  const refreshPrices = async () => {
+    try {
+      const parts = await Promise.all(symbols.map(async (s) => {
+        try {
+          const res = await fetch(s.url);
+          const data = await res.json();
+          let price;
+
+          if (s.label.includes('BTC')) {
+            price = data.bitcoin?.usd;
+          } else if (s.label.includes('Gold')) {
+            price = data['tether-gold']?.usd;
+          } else {
+            price = data.rates?.[s.label.split('/')[1]];
+          }
+
+          return `${s.label}: ${price ? parseFloat(price).toFixed(4) : '–'}`;
+        } catch {
+          return `${s.label}: –`;
+        }
+      }));
+
+      setTickerContent(parts.join('   •   '));
+      setIsLoading(false);
+    } catch (e) {
+      // Fallback data
+      setTickerContent('EUR/USD: 1.0950   •   GBP/USD: 1.2750   •   USD/JPY: 148.50   •   BTC/USD: 43,250   •   Gold: 2,025');
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    refreshPrices();
+    const interval = setInterval(refreshPrices, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <>
+      <div
+        style={{
+          overflow: 'hidden',
+          whiteSpace: 'nowrap',
+          background: '#0d0d0d',
+          padding: '8px 0',
+          color: '#fff',
+          fontFamily: 'Arial,sans-serif',
+          fontSize: '14px'
+        }}
+      >
+        {isLoading ? (
+          <span style={{ marginLeft: '20px' }}>Loading market prices…</span>
+        ) : (
+          <div
+            style={{
+              display: 'inline-block',
+              willChange: 'transform',
+              animation: 'scroll 25s linear infinite',
+              marginLeft: '20px'
+            }}
+          >
+            {tickerContent}
+          </div>
+        )}
+      </div>
+
+      <style jsx>{`
+        @keyframes scroll {
+          0% { transform: translateX(100%); }
+          100% { transform: translateX(-100%); }
+        }
+      `}</style>
+    </>
+  );
+};
 
 export default function Index() {
   const [email, setEmail] = useState("");
@@ -257,7 +346,7 @@ export default function Index() {
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
               منصة ليرات للأخبار المالية - تقويم اقتصادي مباشر، تنبيهات فورية،
-              وتحليلات متقدمة لجميع الأسواق العالمية
+              وتحليلات مت��دمة لجميع الأسواق العالمية
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -296,7 +385,7 @@ export default function Index() {
               التقويم الاقتصادي المباشر
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع
+              تابع أهم الأحد��ث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع
               إمكانيات تصفية متقدمة
             </p>
           </div>
@@ -347,7 +436,7 @@ export default function Index() {
                       <SelectContent>
                         <SelectItem value="all">جميع العملات</SelectItem>
                         <SelectItem value="USD">
-                          🇺🇸 USD - ��لدولار الأمريكي
+                          🇺🇸 USD - الدولار الأمريكي
                         </SelectItem>
                         <SelectItem value="EUR">🇪🇺 EUR - اليورو</SelectItem>
                         <SelectItem value="GBP">
@@ -539,7 +628,7 @@ export default function Index() {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label>اختر زوج العملة أو المؤشر</Label>
+                      <Label>��ختر زوج العملة أو المؤشر</Label>
                       <Select
                         value={selectedPair}
                         onValueChange={setSelectedPair}
@@ -650,7 +739,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تحليلات متقدمة</h3>
               <p className="text-muted-foreground">
-                تحليلات عميقة للأحداث الاقتصادية
+                تحليلات عميقة ل��أحداث الاقتصادية
               </p>
             </div>
 
