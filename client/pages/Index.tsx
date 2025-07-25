@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { Calendar, Bell, Clock, TrendingUp, Shield, Globe, Zap, BellRing } from "lucide-react";
+import { Calendar, Bell, Clock, TrendingUp, Shield, Globe, Zap, BellRing, Search, Filter, Star } from "lucide-react";
 import { useState } from "react";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -16,6 +16,10 @@ export default function Index() {
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [selectedPair, setSelectedPair] = useState("");
+  const [selectedDate, setSelectedDate] = useState("today");
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedImportance, setSelectedImportance] = useState("");
+  const [searchEvent, setSearchEvent] = useState("");
   const { theme } = useTheme();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -29,49 +33,116 @@ export default function Index() {
     console.log("Alert setup for:", selectedPair);
   };
 
-  // Sample economic calendar data - TODO: Replace with live API data
+  // Enhanced economic calendar data with mixed language support
   const economicEvents = [
     {
       date: "2024-01-15",
       time: "14:30",
-      event: "بيانات التضخم الأمريكي (CPI)",
-      country: "🇺🇸",
+      event: "Consumer Price Index (CPI)",
+      country: "USD",
+      countryFlag: "🇺🇸",
       forecast: "3.2%",
       previous: "3.1%",
-      actual: "-",
-      impact: "عالي"
+      actual: "3.4%",
+      importance: 3
     },
     {
       date: "2024-01-15",
       time: "16:00",
-      event: "قرار الفائدة الأوروبية",
-      country: "🇪🇺",
+      event: "ECB Interest Rate Decision",
+      country: "EUR",
+      countryFlag: "🇪🇺",
       forecast: "4.25%",
       previous: "4.25%",
       actual: "-",
-      impact: "متوسط"
+      importance: 3
     },
     {
       date: "2024-01-16",
       time: "12:00",
-      event: "بيانات الناتج المحلي البريطاني",
-      country: "🇬🇧",
+      event: "GDP Growth Rate (QoQ)",
+      country: "GBP",
+      countryFlag: "🇬🇧",
       forecast: "0.3%",
       previous: "0.2%",
       actual: "-",
-      impact: "عالي"
+      importance: 2
     },
     {
       date: "2024-01-16",
       time: "13:15",
-      event: "مؤشر الثقة الألماني",
-      country: "🇩🇪",
+      event: "ZEW Economic Sentiment",
+      country: "EUR",
+      countryFlag: "🇩🇪",
       forecast: "95.2",
       previous: "94.8",
       actual: "-",
-      impact: "منخفض"
+      importance: 1
+    },
+    {
+      date: "2024-01-17",
+      time: "08:30",
+      event: "Employment Change",
+      country: "AUD",
+      countryFlag: "🇦🇺",
+      forecast: "15.2K",
+      previous: "12.8K",
+      actual: "-",
+      importance: 2
+    },
+    {
+      date: "2024-01-17",
+      time: "15:00",
+      event: "Federal Reserve Speech",
+      country: "USD",
+      countryFlag: "🇺🇸",
+      forecast: "-",
+      previous: "-",
+      actual: "-",
+      importance: 2
     }
   ];
+
+  const renderImportance = (level: number) => {
+    const stars = [];
+    for (let i = 1; i <= 3; i++) {
+      stars.push(
+        <Star
+          key={i}
+          className={`w-4 h-4 ${
+            i <= level
+              ? level === 3
+                ? "fill-red-500 text-red-500"
+                : level === 2
+                ? "fill-orange-500 text-orange-500"
+                : "fill-yellow-500 text-yellow-500"
+              : "text-muted-foreground"
+          }`}
+        />
+      );
+    }
+    return <div className="flex gap-1">{stars}</div>;
+  };
+
+  const getImportanceColor = (level: number) => {
+    switch (level) {
+      case 3:
+        return "destructive";
+      case 2:
+        return "default";
+      case 1:
+        return "secondary";
+      default:
+        return "secondary";
+    }
+  };
+
+  const filteredEvents = economicEvents.filter(event => {
+    if (selectedCountry && event.country !== selectedCountry) return false;
+    if (selectedImportance && event.importance.toString() !== selectedImportance) return false;
+    if (searchEvent && !event.event.toLowerCase().includes(searchEvent.toLowerCase())) return false;
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-background arabic">
@@ -82,7 +153,7 @@ export default function Index() {
             <img 
               src="https://cdn.builder.io/api/v1/assets/8d6e2ebe2191474fb5a6de98317d4278/liirat-official-logo-bf14db?format=webp&width=800" 
               alt="Liirat News" 
-              className="h-10 w-auto"
+              className="h-14 w-auto"
             />
           </div>
           
@@ -117,7 +188,7 @@ export default function Index() {
               <span className="text-primary block">دقيقة ومحدثة</span>
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-              منصة ليرات للأخبار المالية - تقويم اقتصادي مباشر، تنبيهات فورية، وتحليلات متقدمة لجميع الأسواق الع��لمية
+              منصة ليرات للأخبار المالية - تقويم اقتصادي مباشر، تنبيهات فورية، وتحليلات متقدمة لجميع الأسواق العالمية
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
@@ -140,70 +211,161 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Economic Calendar Section */}
+      {/* Enhanced Economic Calendar Section */}
       <section id="calendar" className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">التقويم الاقتصادي المباشر</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              تابع أهم الأحداث ا��اقتصادية والمؤشرات المالية في الوقت الفعلي
+              تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع إمكانيات تصفي�� متقدمة
             </p>
           </div>
 
           <div className="max-w-7xl mx-auto">
-            <Card>
+            <Card className="mb-8">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-primary" />
-                  الأحداث الاقتصادية - هذا الأسبوع
+                  <Filter className="w-5 h-5 text-primary" />
+                  فلاتر التقويم الاقتصادي
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Economic Events Table - API Integration Point */}
+                {/* Filters Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                  {/* Date Picker */}
+                  <div className="space-y-2">
+                    <Label className="text-right block">التاريخ</Label>
+                    <Select value={selectedDate} onValueChange={setSelectedDate}>
+                      <SelectTrigger className="text-right">
+                        <SelectValue placeholder="اختر التاريخ" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="today">اليوم</SelectItem>
+                        <SelectItem value="tomorrow">غداً</SelectItem>
+                        <SelectItem value="this-week">هذا الأسبوع</SelectItem>
+                        <SelectItem value="next-week">الأسبوع القادم</SelectItem>
+                        <SelectItem value="custom">تاريخ مخصص</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Country/Currency Selector */}
+                  <div className="space-y-2">
+                    <Label className="text-right block">العملة/البلد</Label>
+                    <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                      <SelectTrigger className="text-right">
+                        <SelectValue placeholder="جميع العملات" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">جميع العملات</SelectItem>
+                        <SelectItem value="USD">🇺🇸 USD - الدولار الأمريكي</SelectItem>
+                        <SelectItem value="EUR">🇪🇺 EUR - اليورو</SelectItem>
+                        <SelectItem value="GBP">🇬🇧 GBP - الجنيه الإسترليني</SelectItem>
+                        <SelectItem value="JPY">🇯🇵 JPY - الين الياباني</SelectItem>
+                        <SelectItem value="AUD">🇦🇺 AUD - الدولار الأسترالي</SelectItem>
+                        <SelectItem value="CAD">🇨🇦 CAD - الدولار الكندي</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Importance Filter */}
+                  <div className="space-y-2">
+                    <Label className="text-right block">مستوى الأهمية</Label>
+                    <Select value={selectedImportance} onValueChange={setSelectedImportance}>
+                      <SelectTrigger className="text-right">
+                        <SelectValue placeholder="جميع المستويات" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">جميع المستويات</SelectItem>
+                        <SelectItem value="3">⭐⭐⭐ عالي التأثير</SelectItem>
+                        <SelectItem value="2">⭐⭐ متوسط التأثير</SelectItem>
+                        <SelectItem value="1">⭐ منخفض التأثير</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Search by Event Name */}
+                  <div className="space-y-2">
+                    <Label className="text-right block">البحث في الأحداث</Label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <Input
+                        type="text"
+                        value={searchEvent}
+                        onChange={(e) => setSearchEvent(e.target.value)}
+                        className="text-right pl-10"
+                        placeholder="ابحث عن حدث..."
+                      />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Economic Events Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 justify-between">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-primary" />
+                    الأحداث الاقتصادية ({filteredEvents.length})
+                  </div>
+                  <Badge variant="outline" className="text-xs">
+                    تحديث مباشر
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow className="text-right">
-                        <TableHead className="text-right">التاري��</TableHead>
+                        <TableHead className="text-right">التاريخ والوقت</TableHead>
+                        <TableHead className="text-right">العملة/البلد</TableHead>
+                        <TableHead className="text-right">الأهمية</TableHead>
                         <TableHead className="text-right">الحدث</TableHead>
-                        <TableHead className="text-right">البلد</TableHead>
+                        <TableHead className="text-right">القيمة الفعلية</TableHead>
                         <TableHead className="text-right">التوقع</TableHead>
                         <TableHead className="text-right">السابق</TableHead>
-                        <TableHead className="text-right">القيمة الفعلية</TableHead>
-                        <TableHead className="text-right">التحليل</TableHead>
+                        <TableHead className="text-right">تحليل الذكاء الاصطناعي</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {economicEvents.map((event, index) => (
-                        <TableRow key={index}>
+                      {filteredEvents.map((event, index) => (
+                        <TableRow key={index} className="hover:bg-muted/50">
                           <TableCell className="text-right">
                             <div className="font-medium">{event.date}</div>
                             <div className="text-sm text-muted-foreground">{event.time} GMT</div>
                           </TableCell>
-                          <TableCell className="text-right">
-                            <div className="font-medium">{event.event}</div>
-                            <Badge 
-                              variant={event.impact === "عالي" ? "destructive" : event.impact === "متوسط" ? "default" : "secondary"}
-                              className="mt-1"
-                            >
-                              {event.impact} التأثير
-                            </Badge>
+                          <TableCell className="text-center">
+                            <div className="flex items-center justify-center gap-2">
+                              <span className="text-2xl">{event.countryFlag}</span>
+                              <span className="font-mono font-bold">{event.country}</span>
+                            </div>
                           </TableCell>
-                          <TableCell className="text-center text-2xl">{event.country}</TableCell>
-                          <TableCell className="text-right font-mono">{event.forecast}</TableCell>
-                          <TableCell className="text-right font-mono">{event.previous}</TableCell>
+                          <TableCell className="text-center">
+                            {renderImportance(event.importance)}
+                          </TableCell>
+                          <TableCell className="text-right english">
+                            <div className="font-medium">{event.event}</div>
+                          </TableCell>
                           <TableCell className="text-right font-mono font-bold">
                             {event.actual === "-" ? (
                               <span className="text-muted-foreground">قريباً</span>
                             ) : (
-                              event.actual
+                              <span className={event.actual === event.forecast ? "text-green-600" : "text-red-600"}>
+                                {event.actual}
+                              </span>
                             )}
                           </TableCell>
+                          <TableCell className="text-right font-mono">{event.forecast}</TableCell>
+                          <TableCell className="text-right font-mono">{event.previous}</TableCell>
                           <TableCell className="text-right">
                             <Button 
                               variant="outline" 
                               size="sm"
-                              className="text-xs"
+                              className="text-xs whitespace-nowrap"
+                              disabled={event.actual === "-"}
                             >
                               تحليل الذكاء الاصطناعي
                             </Button>
@@ -216,7 +378,7 @@ export default function Index() {
                 
                 <div className="mt-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    البيانات محدثة كل دقيقة من مصادر موثوقة
+                    البيانات محدثة كل دقيقة من مصادر موثوقة • {filteredEvents.length} من أصل {economicEvents.length} حدث
                   </p>
                 </div>
               </CardContent>
@@ -350,7 +512,7 @@ export default function Index() {
                 <Shield className="w-8 h-8 text-primary" />
               </div>
               <h3 className="font-bold text-lg mb-2">مصادر موثوقة</h3>
-              <p className="text-muted-foreground">من البنوك المركزية والمؤسسات المالي�� الرسمية</p>
+              <p className="text-muted-foreground">من البنوك المركزية والم��سسات المالية الرسمية</p>
             </div>
 
             <div className="text-center">
@@ -368,7 +530,7 @@ export default function Index() {
       <section id="contact" className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">تواصل ��ع فريق ليرات</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">تواصل مع فريق ليرات</h2>
             <p className="text-xl text-muted-foreground mb-8">
               للاستفسارات والدعم الفني
             </p>
