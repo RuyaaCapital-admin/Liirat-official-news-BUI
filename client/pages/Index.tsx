@@ -42,114 +42,128 @@ import {
 import { useState, useEffect } from "react";
 import { useTheme } from "@/hooks/use-theme";
 
-// Market Ticker Component
+// Updated MarketTicker – replace the old function with this
 const MarketTicker = () => {
-  const [tickerContent, setTickerContent] = useState("Loading market prices…");
-  const [isLoading, setIsLoading] = useState(true);
-
-  const symbols = [
-    {
-      label: "EUR/USD",
-      url: "https://api.exchangerate.host/latest?base=EUR&symbols=USD",
-    },
-    {
-      label: "GBP/USD",
-      url: "https://api.exchangerate.host/latest?base=GBP&symbols=USD",
-    },
-    {
-      label: "USD/JPY",
-      url: "https://api.exchangerate.host/latest?base=USD&symbols=JPY",
-    },
-    {
-      label: "BTC/USD",
-      url: "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
-    },
-    {
-      label: "Gold",
-      url: "https://api.coingecko.com/api/v3/simple/price?ids=tether-gold&vs_currencies=usd",
-    },
+  // Instruments to fetch (BTC, Dow via DIA, Nasdaq via QQQ, gold, silver, oil)
+  const instruments = [
+    { label: "BTC/USD", type: "crypto", id: "bitcoin" },
+    { label: "DOW", type: "stock", symbol: "DIA" },
+    { label: "NASDAQ", type: "stock", symbol: "QQQ" },
+    { label: "Gold", type: "stock", symbol: "XAUUSD" },
+    { label: "Silver", type: "stock", symbol: "XAGUSD" },
+    { label: "Oil", type: "stock", symbol: "WTI" },
   ];
 
-  const refreshPrices = async () => {
+  // State for fetched quotes and loading status
+  const [tickerData, setTickerData] = useState<
+    { label: string; price: number | null; change: number | null }[]
+  >([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Read Alpha Vantage API key from env (defaults to 'demo')
+  const API_KEY =
+    (import.meta as any).env?.VITE_ALPHA_VANTAGE_API_KEY ||
+    (import.meta as any).env?.VITE_ALPHAVANTAGE_API_KEY ||
+    "demo";
+
+  // Fetch price and change data for each instrument
+  async function fetchPrices() {
     try {
-      const parts = await Promise.all(
-        symbols.map(async (s) => {
+      const results = await Promise.all(
+        instruments.map(async (inst) => {
           try {
-            const res = await fetch(s.url);
-            const data = await res.json();
-            let price;
-
-            if (s.label.includes("BTC")) {
-              price = data.bitcoin?.usd;
-            } else if (s.label.includes("Gold")) {
-              price = data["tether-gold"]?.usd;
+            if (inst.type === "crypto") {
+              const res = await fetch(
+                `https://api.coingecko.com/api/v3/simple/price?ids=${inst.id}&vs_currencies=usd&include_24hr_change=true`,
+              );
+              const data = await res.json();
+              const price: number | null = data?.[inst.id]?.usd ?? null;
+              const change: number | null =
+                data?.[inst.id]?.usd_24h_change ?? null;
+              return { label: inst.label, price, change };
             } else {
-              price = data.rates?.[s.label.split("/")[1]];
+              const res = await fetch(
+                `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${inst.symbol}&apikey=${API_KEY}`,
+              );
+              const data = await res.json();
+              const quote = data?.["Global Quote"] ?? {};
+              const price = quote["05. price"]
+                ? parseFloat(quote["05. price"])
+                : null;
+              let change: number | null = null;
+              if (quote && quote["10. change percent"]) {
+                const raw = (quote["10. change percent"] as string).replace(
+                  "%",
+                  "",
+                );
+                change = parseFloat(raw);
+              }
+              return { label: inst.label, price, change };
             }
-
-            return `${s.label}: ${price ? parseFloat(price).toFixed(4) : "–"}`;
           } catch {
-            return `${s.label}: –`;
+            return { label: inst.label, price: null, change: null };
           }
         }),
       );
-
-      setTickerContent(parts.join("   •   "));
+      setTickerData(results);
       setIsLoading(false);
-    } catch (e) {
-      // Fallback data
-      setTickerContent(
-        "EUR/USD: 1.0950   •   GBP/USD: 1.2750   •   USD/JPY: 148.50   •   BTC/USD: 43,250   •   Gold: 2,025",
-      );
+    } catch {
+      setTickerData([]);
       setIsLoading(false);
     }
-  };
+  }
 
+  // Initial fetch and 30‑second refresh
   useEffect(() => {
-    refreshPrices();
-    const interval = setInterval(refreshPrices, 30000);
-    return () => clearInterval(interval);
+    fetchPrices();
+    const intervalId = setInterval(fetchPrices, 30_000);
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
     <>
-      <div
-        style={{
-          overflow: "hidden",
-          whiteSpace: "nowrap",
-          background: "#0d0d0d",
-          padding: "8px 0",
-          color: "#fff",
-          fontFamily: "Arial,sans-serif",
-          fontSize: "14px",
-        }}
-      >
-        {isLoading ? (
-          <span style={{ marginLeft: "20px" }}>Loading market prices…</span>
-        ) : (
-          <div
-            style={{
-              display: "inline-block",
-              willChange: "transform",
-              animation: "scroll 25s linear infinite",
-              marginLeft: "20px",
-            }}
-          >
-            {tickerContent}
-          </div>
-        )}
-      </div>
-
-      <style jsx>{`
-        @keyframes scroll {
-          0% {
-            transform: translateX(100%);
-          }
-          100% {
-            transform: translateX(-100%);
-          }
-        }
-      `}</style>
+      {isLoading ? (
+        <span>Loading market prices…</span>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            gap: "1.5rem",
+            whiteSpace: "nowrap",
+            animation: "scroll 30s linear infinite",
+          }}
+        >
+          {tickerData.map((item) => (
+            <span
+              key={item.label}
+              style={{
+                fontWeight: 500,
+                color:
+                  item.change == null
+                    ? "inherit"
+                    : item.change >= 0
+                    ? "#16a34a"
+                    : "#dc2626",
+              }}
+            >
+              {item.label}: {item.price != null ? item.price.toFixed(2) : "–"}
+              {item.change != null ? (
+                <>
+                  {" "}
+                  ({item.change >= 0 ? "+" : ""}
+                  {item.change.toFixed(2)}%)
+                </>
+              ) : null}
+            </span>
+          ))}
+        </div>
+      )}
+      <style>
+        {`@keyframes scroll {
+          0% { transform: translateX(100%); }
+          100% { transform: translateX(-100%); }
+        }`}
+      </style>
     </>
   );
 };
