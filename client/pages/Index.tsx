@@ -48,40 +48,59 @@ const MarketTicker = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const symbols = [
-    { label: 'EUR/USD', url: 'https://api.exchangerate.host/latest?base=EUR&symbols=USD' },
-    { label: 'GBP/USD', url: 'https://api.exchangerate.host/latest?base=GBP&symbols=USD' },
-    { label: 'USD/JPY', url: 'https://api.exchangerate.host/latest?base=USD&symbols=JPY' },
-    { label: 'BTC/USD', url: 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd' },
-    { label: 'Gold', url: 'https://api.coingecko.com/api/v3/simple/price?ids=tether-gold&vs_currencies=usd' }
+    {
+      label: "EUR/USD",
+      url: "https://api.exchangerate.host/latest?base=EUR&symbols=USD",
+    },
+    {
+      label: "GBP/USD",
+      url: "https://api.exchangerate.host/latest?base=GBP&symbols=USD",
+    },
+    {
+      label: "USD/JPY",
+      url: "https://api.exchangerate.host/latest?base=USD&symbols=JPY",
+    },
+    {
+      label: "BTC/USD",
+      url: "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
+    },
+    {
+      label: "Gold",
+      url: "https://api.coingecko.com/api/v3/simple/price?ids=tether-gold&vs_currencies=usd",
+    },
   ];
 
   const refreshPrices = async () => {
     try {
-      const parts = await Promise.all(symbols.map(async (s) => {
-        try {
-          const res = await fetch(s.url);
-          const data = await res.json();
-          let price;
+      const parts = await Promise.all(
+        symbols.map(async (s) => {
+          try {
+            const res = await fetch(s.url);
+            const data = await res.json();
+            let price;
 
-          if (s.label.includes('BTC')) {
-            price = data.bitcoin?.usd;
-          } else if (s.label.includes('Gold')) {
-            price = data['tether-gold']?.usd;
-          } else {
-            price = data.rates?.[s.label.split('/')[1]];
+            if (s.label.includes("BTC")) {
+              price = data.bitcoin?.usd;
+            } else if (s.label.includes("Gold")) {
+              price = data["tether-gold"]?.usd;
+            } else {
+              price = data.rates?.[s.label.split("/")[1]];
+            }
+
+            return `${s.label}: ${price ? parseFloat(price).toFixed(4) : "–"}`;
+          } catch {
+            return `${s.label}: –`;
           }
+        }),
+      );
 
-          return `${s.label}: ${price ? parseFloat(price).toFixed(4) : '–'}`;
-        } catch {
-          return `${s.label}: –`;
-        }
-      }));
-
-      setTickerContent(parts.join('   •   '));
+      setTickerContent(parts.join("   •   "));
       setIsLoading(false);
     } catch (e) {
       // Fallback data
-      setTickerContent('EUR/USD: 1.0950   •   GBP/USD: 1.2750   •   USD/JPY: 148.50   •   BTC/USD: 43,250   •   Gold: 2,025');
+      setTickerContent(
+        "EUR/USD: 1.0950   •   GBP/USD: 1.2750   •   USD/JPY: 148.50   •   BTC/USD: 43,250   •   Gold: 2,025",
+      );
       setIsLoading(false);
     }
   };
@@ -96,24 +115,24 @@ const MarketTicker = () => {
     <>
       <div
         style={{
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
-          background: '#0d0d0d',
-          padding: '8px 0',
-          color: '#fff',
-          fontFamily: 'Arial,sans-serif',
-          fontSize: '14px'
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+          background: "#0d0d0d",
+          padding: "8px 0",
+          color: "#fff",
+          fontFamily: "Arial,sans-serif",
+          fontSize: "14px",
         }}
       >
         {isLoading ? (
-          <span style={{ marginLeft: '20px' }}>Loading market prices…</span>
+          <span style={{ marginLeft: "20px" }}>Loading market prices…</span>
         ) : (
           <div
             style={{
-              display: 'inline-block',
-              willChange: 'transform',
-              animation: 'scroll 25s linear infinite',
-              marginLeft: '20px'
+              display: "inline-block",
+              willChange: "transform",
+              animation: "scroll 25s linear infinite",
+              marginLeft: "20px",
             }}
           >
             {tickerContent}
@@ -123,8 +142,12 @@ const MarketTicker = () => {
 
       <style jsx>{`
         @keyframes scroll {
-          0% { transform: translateX(100%); }
-          100% { transform: translateX(-100%); }
+          0% {
+            transform: translateX(100%);
+          }
+          100% {
+            transform: translateX(-100%);
+          }
         }
       `}</style>
     </>
