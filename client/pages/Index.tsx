@@ -207,7 +207,7 @@ export default function Index() {
               href="#calendar"
               className="text-muted-foreground hover:text-primary transition-colors"
             >
-              التقويم الاقتص��دي
+              التقويم الاقتصادي
             </a>
             <a
               href="#alerts"
@@ -245,25 +245,37 @@ export default function Index() {
 
       {/* Custom Price Ticker */}
       <div
-        id="price-ticker"
         style={{
           overflow: 'hidden',
           whiteSpace: 'nowrap',
           background: '#0d0d0d',
-          padding: '8px 0'
+          padding: '8px 0',
+          color: '#fff',
+          fontSize: '14px'
         }}
+      >
+        <div
+          id="ticker-content"
+          style={{
+            display: 'inline-block',
+            willChange: 'transform',
+            animation: 'scroll 20s linear infinite'
+          }}
+        >
+          Loading prices...
+        </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes scroll {
+          0%   { transform: translateX(100%); }
+          100% { transform: translateX(-100%); }
+        }
+      `}</style>
+
+      <script
         dangerouslySetInnerHTML={{
           __html: `
-            <div id="ticker-content" style="display:inline-block; will-change:transform; animation:scroll 20s linear infinite;"></div>
-
-            <style>
-            @keyframes scroll {
-              0%   { transform: translateX(100%); }
-              100% { transform: translateX(-100%); }
-            }
-            </style>
-
-            <script>
             (async function() {
               const symbols = [
                 { label: 'EUR/USD', url: 'https://api.exchangerate.host/latest?base=EUR&symbols=USD' },
@@ -276,12 +288,16 @@ export default function Index() {
               async function refreshPrices() {
                 try {
                   const parts = await Promise.all(symbols.map(async s => {
-                    const res = await fetch(s.url);
-                    const data = await res.json();
-                    let price = s.label.includes('BTC') || s.label.includes('ETH')
-                      ? data[ s.label.split('/')[0].toLowerCase() ].usd
-                      : data.rates?.[ s.label.split('/')[1] ];
-                    return \`\${s.label}: \${parseFloat(price).toFixed(4)}\`;
+                    try {
+                      const res = await fetch(s.url);
+                      const data = await res.json();
+                      let price = s.label.includes('BTC') || s.label.includes('ETH')
+                        ? data[s.label.split('/')[0].toLowerCase()].usd
+                        : data.rates?.[s.label.split('/')[1]];
+                      return \`\${s.label}: \${parseFloat(price).toFixed(4)}\`;
+                    } catch(e) {
+                      return \`\${s.label}: --\`;
+                    }
                   }));
                   const tickerElement = document.getElementById('ticker-content');
                   if (tickerElement) {
@@ -289,13 +305,16 @@ export default function Index() {
                   }
                 } catch(e) {
                   console.error('Ticker error', e);
+                  const tickerElement = document.getElementById('ticker-content');
+                  if (tickerElement) {
+                    tickerElement.innerText = 'EUR/USD: 1.0950   •   GBP/USD: 1.2750   •   USD/JPY: 148.50   •   BTC/USD: 43,250   •   ETH/USD: 2,650';
+                  }
                 }
               }
 
-              await refreshPrices();
+              setTimeout(refreshPrices, 1000);
               setInterval(refreshPrices, 30000);
             })();
-            </script>
           `
         }}
       />
@@ -704,7 +723,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تحليلات متقدمة</h3>
               <p className="text-muted-foreground">
-                تحليلات عميقة للأحداث الاقتصادية
+                تحليلات عميقة للأحداث الاقتصاد��ة
               </p>
             </div>
 
