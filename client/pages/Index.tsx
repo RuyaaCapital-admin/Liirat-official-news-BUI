@@ -217,7 +217,7 @@ export default function Index() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">التقويم الاقتصادي المباشر</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع إمكانيات تصفي�� متقدمة
+              تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع إمكانيات تصفية متقدمة
             </p>
           </div>
 
@@ -257,7 +257,7 @@ export default function Index() {
                         <SelectValue placeholder="جميع العملات" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">جميع العملات</SelectItem>
+                        <SelectItem value="all">جميع العملات</SelectItem>
                         <SelectItem value="USD">🇺🇸 USD - الدولار الأمريكي</SelectItem>
                         <SelectItem value="EUR">🇪🇺 EUR - اليورو</SelectItem>
                         <SelectItem value="GBP">🇬🇧 GBP - الجنيه الإسترليني</SelectItem>
@@ -276,7 +276,7 @@ export default function Index() {
                         <SelectValue placeholder="جميع المستويات" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">جميع المستويات</SelectItem>
+                        <SelectItem value="all">جميع المستويات</SelectItem>
                         <SelectItem value="3">⭐⭐⭐ عالي التأثير</SelectItem>
                         <SelectItem value="2">⭐⭐ متوسط التأثير</SelectItem>
                         <SelectItem value="1">⭐ منخفض التأثير</SelectItem>
@@ -325,7 +325,7 @@ export default function Index() {
                         <TableHead className="text-right">الأهمية</TableHead>
                         <TableHead className="text-right">الحدث</TableHead>
                         <TableHead className="text-right">القيمة الفعلية</TableHead>
-                        <TableHead className="text-right">التوقع</TableHead>
+                        <TableHead className="text-right">التو��ع</TableHead>
                         <TableHead className="text-right">السابق</TableHead>
                         <TableHead className="text-right">تحليل الذكاء الاصطناعي</TableHead>
                       </TableRow>
@@ -445,7 +445,7 @@ export default function Index() {
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-primary rounded-full"></div>
-                        بيانات اقتصادية عالية التأثير
+                        بيانات اقتصادية ��الية التأثير
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
@@ -512,7 +512,7 @@ export default function Index() {
                 <Shield className="w-8 h-8 text-primary" />
               </div>
               <h3 className="font-bold text-lg mb-2">مصادر موثوقة</h3>
-              <p className="text-muted-foreground">من البنوك المركزية والم��سسات المالية الرسمية</p>
+              <p className="text-muted-foreground">من البنوك المركزية والمؤسسات المالية الرسمية</p>
             </div>
 
             <div className="text-center">
