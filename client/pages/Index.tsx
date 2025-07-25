@@ -138,8 +138,8 @@ export default function Index() {
   };
 
   const filteredEvents = economicEvents.filter(event => {
-    if (selectedCountry && event.country !== selectedCountry) return false;
-    if (selectedImportance && event.importance.toString() !== selectedImportance) return false;
+    if (selectedCountry && selectedCountry !== "all" && event.country !== selectedCountry) return false;
+    if (selectedImportance && selectedImportance !== "all" && event.importance.toString() !== selectedImportance) return false;
     if (searchEvent && !event.event.toLowerCase().includes(searchEvent.toLowerCase())) return false;
     return true;
   });
@@ -217,7 +217,7 @@ export default function Index() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">التقويم الاقتصادي المباشر</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع إمكانيات تصفية متقدمة
+              تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع إمكان��ات تصفية متقدمة
             </p>
           </div>
 
@@ -262,7 +262,7 @@ export default function Index() {
                         <SelectItem value="EUR">🇪🇺 EUR - اليورو</SelectItem>
                         <SelectItem value="GBP">🇬🇧 GBP - الجنيه الإسترليني</SelectItem>
                         <SelectItem value="JPY">🇯🇵 JPY - الين الياباني</SelectItem>
-                        <SelectItem value="AUD">🇦🇺 AUD - الدولار الأسترالي</SelectItem>
+                        <SelectItem value="AUD">🇦🇺 AUD - ا��دولار الأسترالي</SelectItem>
                         <SelectItem value="CAD">🇨🇦 CAD - الدولار الكندي</SelectItem>
                       </SelectContent>
                     </Select>
@@ -436,7 +436,7 @@ export default function Index() {
                     </Button>
                     
                     <p className="text-sm text-muted-foreground text-center">
-                      سيتم إرسال التنبيهات عبر البريد الإلكتروني والواتساب
+                      سيتم إرسال التنبيهات عبر البريد الإلكتر��ني والواتساب
                     </p>
                   </div>
                   
