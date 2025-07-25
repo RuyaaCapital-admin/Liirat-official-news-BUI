@@ -17,8 +17,8 @@ export default function Index() {
   const [whatsapp, setWhatsapp] = useState("");
   const [selectedPair, setSelectedPair] = useState("");
   const [selectedDate, setSelectedDate] = useState("today");
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedImportance, setSelectedImportance] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("all");
+  const [selectedImportance, setSelectedImportance] = useState("all");
   const [searchEvent, setSearchEvent] = useState("");
   const { theme } = useTheme();
 
@@ -217,7 +217,7 @@ export default function Index() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">التقويم الاقتصادي المباشر</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع إمكان��ات تصفية متقدمة
+              تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع إمكانيات تصفية متقدمة
             </p>
           </div>
 
@@ -251,7 +251,7 @@ export default function Index() {
 
                   {/* Country/Currency Selector */}
                   <div className="space-y-2">
-                    <Label className="text-right block">العملة/البلد</Label>
+                    <Label className="text-right block">العملة/��لبلد</Label>
                     <Select value={selectedCountry} onValueChange={setSelectedCountry}>
                       <SelectTrigger className="text-right">
                         <SelectValue placeholder="جميع العملات" />
@@ -262,7 +262,7 @@ export default function Index() {
                         <SelectItem value="EUR">🇪🇺 EUR - اليورو</SelectItem>
                         <SelectItem value="GBP">🇬🇧 GBP - الجنيه الإسترليني</SelectItem>
                         <SelectItem value="JPY">🇯🇵 JPY - الين الياباني</SelectItem>
-                        <SelectItem value="AUD">🇦🇺 AUD - ا��دولار الأسترالي</SelectItem>
+                        <SelectItem value="AUD">🇦🇺 AUD - الدولار الأسترالي</SelectItem>
                         <SelectItem value="CAD">🇨🇦 CAD - الدولار الكندي</SelectItem>
                       </SelectContent>
                     </Select>
@@ -324,7 +324,7 @@ export default function Index() {
                         <TableHead className="text-right">العملة/البلد</TableHead>
                         <TableHead className="text-right">الأهمية</TableHead>
                         <TableHead className="text-right">الحدث</TableHead>
-                        <TableHead className="text-right">القيمة الفعلية</TableHead>
+                        <TableHead className="text-right">القيمة ا��فعلية</TableHead>
                         <TableHead className="text-right">التو��ع</TableHead>
                         <TableHead className="text-right">السابق</TableHead>
                         <TableHead className="text-right">تحليل الذكاء الاصطناعي</TableHead>
@@ -436,7 +436,7 @@ export default function Index() {
                     </Button>
                     
                     <p className="text-sm text-muted-foreground text-center">
-                      سيتم إرسال التنبيهات عبر البريد الإلكتر��ني والواتساب
+                      سيتم إرسال التنبيهات عبر البريد الإلكتروني والواتساب
                     </p>
                   </div>
                   
