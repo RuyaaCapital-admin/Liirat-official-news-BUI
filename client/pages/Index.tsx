@@ -1,13 +1,44 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { Calendar, Bell, Clock, TrendingUp, Shield, Globe, Zap, BellRing, Search, Filter, Star } from "lucide-react";
+import {
+  Calendar,
+  Bell,
+  Clock,
+  TrendingUp,
+  Shield,
+  Globe,
+  Zap,
+  BellRing,
+  Search,
+  Filter,
+  Star,
+} from "lucide-react";
 import { useState } from "react";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -44,7 +75,7 @@ export default function Index() {
       forecast: "3.2%",
       previous: "3.1%",
       actual: "3.4%",
-      importance: 3
+      importance: 3,
     },
     {
       date: "2024-01-15",
@@ -55,7 +86,7 @@ export default function Index() {
       forecast: "4.25%",
       previous: "4.25%",
       actual: "-",
-      importance: 3
+      importance: 3,
     },
     {
       date: "2024-01-16",
@@ -66,7 +97,7 @@ export default function Index() {
       forecast: "0.3%",
       previous: "0.2%",
       actual: "-",
-      importance: 2
+      importance: 2,
     },
     {
       date: "2024-01-16",
@@ -77,7 +108,7 @@ export default function Index() {
       forecast: "95.2",
       previous: "94.8",
       actual: "-",
-      importance: 1
+      importance: 1,
     },
     {
       date: "2024-01-17",
@@ -88,7 +119,7 @@ export default function Index() {
       forecast: "15.2K",
       previous: "12.8K",
       actual: "-",
-      importance: 2
+      importance: 2,
     },
     {
       date: "2024-01-17",
@@ -99,8 +130,8 @@ export default function Index() {
       forecast: "-",
       previous: "-",
       actual: "-",
-      importance: 2
-    }
+      importance: 2,
+    },
   ];
 
   const renderImportance = (level: number) => {
@@ -114,11 +145,11 @@ export default function Index() {
               ? level === 3
                 ? "fill-red-500 text-red-500"
                 : level === 2
-                ? "fill-orange-500 text-orange-500"
-                : "fill-yellow-500 text-yellow-500"
+                  ? "fill-orange-500 text-orange-500"
+                  : "fill-yellow-500 text-yellow-500"
               : "text-muted-foreground"
           }`}
-        />
+        />,
       );
     }
     return <div className="flex gap-1">{stars}</div>;
@@ -137,10 +168,24 @@ export default function Index() {
     }
   };
 
-  const filteredEvents = economicEvents.filter(event => {
-    if (selectedCountry && selectedCountry !== "all" && event.country !== selectedCountry) return false;
-    if (selectedImportance && selectedImportance !== "all" && event.importance.toString() !== selectedImportance) return false;
-    if (searchEvent && !event.event.toLowerCase().includes(searchEvent.toLowerCase())) return false;
+  const filteredEvents = economicEvents.filter((event) => {
+    if (
+      selectedCountry &&
+      selectedCountry !== "all" &&
+      event.country !== selectedCountry
+    )
+      return false;
+    if (
+      selectedImportance &&
+      selectedImportance !== "all" &&
+      event.importance.toString() !== selectedImportance
+    )
+      return false;
+    if (
+      searchEvent &&
+      !event.event.toLowerCase().includes(searchEvent.toLowerCase())
+    )
+      return false;
     return true;
   });
 
@@ -150,18 +195,38 @@ export default function Index() {
       <header className="border-b border-border/40 backdrop-blur-md bg-background/95 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4 space-x-reverse">
-            <img 
-              src="https://cdn.builder.io/api/v1/assets/8d6e2ebe2191474fb5a6de98317d4278/liirat-official-logo-bf14db?format=webp&width=800" 
-              alt="Liirat News" 
+            <img
+              src="https://cdn.builder.io/api/v1/assets/8d6e2ebe2191474fb5a6de98317d4278/liirat-official-logo-bf14db?format=webp&width=800"
+              alt="Liirat News"
               className="h-14 w-auto"
             />
           </div>
-          
+
           <nav className="hidden md:flex items-center space-x-6 space-x-reverse">
-            <a href="#calendar" className="text-muted-foreground hover:text-primary transition-colors">التقويم الاقتصادي</a>
-            <a href="#alerts" className="text-muted-foreground hover:text-primary transition-colors">التنبيهات</a>
-            <a href="#about" className="text-muted-foreground hover:text-primary transition-colors">حول ليرات</a>
-            <a href="#contact" className="text-muted-foreground hover:text-primary transition-colors">تواصل معنا</a>
+            <a
+              href="#calendar"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              التقويم الاقتصادي
+            </a>
+            <a
+              href="#alerts"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              التنبيهات
+            </a>
+            <a
+              href="#about"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              حول ليرات
+            </a>
+            <a
+              href="#contact"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              تواصل معنا
+            </a>
           </nav>
 
           <div className="flex items-center space-x-2 space-x-reverse">
@@ -188,21 +253,30 @@ export default function Index() {
               <span className="text-primary block">دقيقة ومحدثة</span>
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-              منصة ليرات للأخبار المالية - تقويم اقتصادي مباشر، تنبيهات فورية، وتحليلات متقدمة لجميع الأسواق العالمية
+              منصة ليرات للأخبار المالية - تقويم اقتصادي مباشر، تنبيهات فورية،
+              وتحليلات متقدمة لجميع الأسواق العالمية
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg font-semibold"
-                onClick={() => document.getElementById('calendar')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document
+                    .getElementById("calendar")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
               >
                 اطلع على التقويم
               </Button>
-              <Button 
-                variant="outline" 
-                size="lg" 
+              <Button
+                variant="outline"
+                size="lg"
                 className="px-8 py-4 text-lg"
-                onClick={() => document.getElementById('alerts')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document
+                    .getElementById("alerts")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
               >
                 إعداد التنبيهات
               </Button>
@@ -215,9 +289,12 @@ export default function Index() {
       <section id="calendar" className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">التقويم الاقتصادي المباشر</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              التقويم الاقتصادي المباشر
+            </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع إمكانيات تصفية متقدمة
+              تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع
+              إمكانيات تصفية متقدمة
             </p>
           </div>
 
@@ -235,7 +312,10 @@ export default function Index() {
                   {/* Date Picker */}
                   <div className="space-y-2">
                     <Label className="text-right block">التاريخ</Label>
-                    <Select value={selectedDate} onValueChange={setSelectedDate}>
+                    <Select
+                      value={selectedDate}
+                      onValueChange={setSelectedDate}
+                    >
                       <SelectTrigger className="text-right">
                         <SelectValue placeholder="اختر التاريخ" />
                       </SelectTrigger>
@@ -243,7 +323,9 @@ export default function Index() {
                         <SelectItem value="today">اليوم</SelectItem>
                         <SelectItem value="tomorrow">غداً</SelectItem>
                         <SelectItem value="this-week">هذا الأسبوع</SelectItem>
-                        <SelectItem value="next-week">الأسبوع القادم</SelectItem>
+                        <SelectItem value="next-week">
+                          الأسبوع القادم
+                        </SelectItem>
                         <SelectItem value="custom">تاريخ مخصص</SelectItem>
                       </SelectContent>
                     </Select>
@@ -252,18 +334,31 @@ export default function Index() {
                   {/* Country/Currency Selector */}
                   <div className="space-y-2">
                     <Label className="text-right block">العملة/��لبلد</Label>
-                    <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                    <Select
+                      value={selectedCountry}
+                      onValueChange={setSelectedCountry}
+                    >
                       <SelectTrigger className="text-right">
                         <SelectValue placeholder="جميع العملات" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">جميع العملات</SelectItem>
-                        <SelectItem value="USD">🇺🇸 USD - الدولار الأمريكي</SelectItem>
+                        <SelectItem value="USD">
+                          🇺🇸 USD - الدولار الأمريكي
+                        </SelectItem>
                         <SelectItem value="EUR">🇪🇺 EUR - اليورو</SelectItem>
-                        <SelectItem value="GBP">🇬🇧 GBP - الجنيه الإسترليني</SelectItem>
-                        <SelectItem value="JPY">🇯🇵 JPY - الين الياباني</SelectItem>
-                        <SelectItem value="AUD">🇦🇺 AUD - الدولار الأسترالي</SelectItem>
-                        <SelectItem value="CAD">🇨🇦 CAD - الدولار الكندي</SelectItem>
+                        <SelectItem value="GBP">
+                          🇬🇧 GBP - الجنيه الإسترليني
+                        </SelectItem>
+                        <SelectItem value="JPY">
+                          🇯🇵 JPY - الين الياباني
+                        </SelectItem>
+                        <SelectItem value="AUD">
+                          🇦🇺 AUD - الدولار الأسترالي
+                        </SelectItem>
+                        <SelectItem value="CAD">
+                          🇨🇦 CAD - الدولار الكندي
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -271,7 +366,10 @@ export default function Index() {
                   {/* Importance Filter */}
                   <div className="space-y-2">
                     <Label className="text-right block">مستوى الأهمية</Label>
-                    <Select value={selectedImportance} onValueChange={setSelectedImportance}>
+                    <Select
+                      value={selectedImportance}
+                      onValueChange={setSelectedImportance}
+                    >
                       <SelectTrigger className="text-right">
                         <SelectValue placeholder="جميع المستويات" />
                       </SelectTrigger>
@@ -320,14 +418,22 @@ export default function Index() {
                   <Table>
                     <TableHeader>
                       <TableRow className="text-right">
-                        <TableHead className="text-right">التاريخ والوقت</TableHead>
-                        <TableHead className="text-right">العملة/البلد</TableHead>
+                        <TableHead className="text-right">
+                          التاريخ والوقت
+                        </TableHead>
+                        <TableHead className="text-right">
+                          العملة/البلد
+                        </TableHead>
                         <TableHead className="text-right">الأهمية</TableHead>
                         <TableHead className="text-right">الحدث</TableHead>
-                        <TableHead className="text-right">القيمة ا��فعلية</TableHead>
+                        <TableHead className="text-right">
+                          القيمة ا��فعلية
+                        </TableHead>
                         <TableHead className="text-right">التو��ع</TableHead>
                         <TableHead className="text-right">السابق</TableHead>
-                        <TableHead className="text-right">تحليل الذكاء الاصطناعي</TableHead>
+                        <TableHead className="text-right">
+                          تحليل الذكاء الاصطناعي
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -335,12 +441,18 @@ export default function Index() {
                         <TableRow key={index} className="hover:bg-muted/50">
                           <TableCell className="text-right">
                             <div className="font-medium">{event.date}</div>
-                            <div className="text-sm text-muted-foreground">{event.time} GMT</div>
+                            <div className="text-sm text-muted-foreground">
+                              {event.time} GMT
+                            </div>
                           </TableCell>
                           <TableCell className="text-center">
                             <div className="flex items-center justify-center gap-2">
-                              <span className="text-2xl">{event.countryFlag}</span>
-                              <span className="font-mono font-bold">{event.country}</span>
+                              <span className="text-2xl">
+                                {event.countryFlag}
+                              </span>
+                              <span className="font-mono font-bold">
+                                {event.country}
+                              </span>
                             </div>
                           </TableCell>
                           <TableCell className="text-center">
@@ -351,18 +463,30 @@ export default function Index() {
                           </TableCell>
                           <TableCell className="text-right font-mono font-bold">
                             {event.actual === "-" ? (
-                              <span className="text-muted-foreground">قريباً</span>
+                              <span className="text-muted-foreground">
+                                قريباً
+                              </span>
                             ) : (
-                              <span className={event.actual === event.forecast ? "text-green-600" : "text-red-600"}>
+                              <span
+                                className={
+                                  event.actual === event.forecast
+                                    ? "text-green-600"
+                                    : "text-red-600"
+                                }
+                              >
                                 {event.actual}
                               </span>
                             )}
                           </TableCell>
-                          <TableCell className="text-right font-mono">{event.forecast}</TableCell>
-                          <TableCell className="text-right font-mono">{event.previous}</TableCell>
+                          <TableCell className="text-right font-mono">
+                            {event.forecast}
+                          </TableCell>
+                          <TableCell className="text-right font-mono">
+                            {event.previous}
+                          </TableCell>
                           <TableCell className="text-right">
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               size="sm"
                               className="text-xs whitespace-nowrap"
                               disabled={event.actual === "-"}
@@ -375,10 +499,11 @@ export default function Index() {
                     </TableBody>
                   </Table>
                 </div>
-                
+
                 <div className="mt-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    البيانات محدثة كل دقيقة من مصادر موثوقة • {filteredEvents.length} من أصل {economicEvents.length} حدث
+                    البيانات محدثة كل دقيقة من مصادر موثوقة •{" "}
+                    {filteredEvents.length} من أصل {economicEvents.length} حدث
                   </p>
                 </div>
               </CardContent>
@@ -392,7 +517,9 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">نظام التنبيهات الذكي</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                نظام التنبيهات الذكي
+              </h2>
               <p className="text-xl text-muted-foreground">
                 احصل على تنبيهات فورية عند صدور البيانات الاقتصادية المهمة
               </p>
@@ -410,7 +537,10 @@ export default function Index() {
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label>اختر زوج العملة أو المؤشر</Label>
-                      <Select value={selectedPair} onValueChange={setSelectedPair}>
+                      <Select
+                        value={selectedPair}
+                        onValueChange={setSelectedPair}
+                      >
                         <SelectTrigger className="text-right">
                           <SelectValue placeholder="اختر من القائمة" />
                         </SelectTrigger>
@@ -420,28 +550,36 @@ export default function Index() {
                           <SelectItem value="usdjpy">USD/JPY</SelectItem>
                           <SelectItem value="usdcad">USD/CAD</SelectItem>
                           <SelectItem value="audusd">AUD/USD</SelectItem>
-                          <SelectItem value="nfp">رواتب غير الزراعية الأمريكية</SelectItem>
-                          <SelectItem value="cpi">مؤشر أسعار المستهلك</SelectItem>
-                          <SelectItem value="gdp">الناتج المحلي الإجمالي</SelectItem>
+                          <SelectItem value="nfp">
+                            رواتب غير الزراعية الأمريكية
+                          </SelectItem>
+                          <SelectItem value="cpi">
+                            مؤشر أسعار المستهلك
+                          </SelectItem>
+                          <SelectItem value="gdp">
+                            الناتج المحلي الإجمالي
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    
-                    <Button 
+
+                    <Button
                       onClick={handleAlertSubmit}
                       className="w-full"
                       disabled={!selectedPair}
                     >
                       أرسل لي تنبيهات
                     </Button>
-                    
+
                     <p className="text-sm text-muted-foreground text-center">
                       سيتم إرسال التنبيهات عبر البريد الإلكتروني والواتساب
                     </p>
                   </div>
-                  
+
                   <div className="bg-muted/50 rounded-lg p-4">
-                    <h4 className="font-semibold mb-3">أنواع التنبيهات المتاحة:</h4>
+                    <h4 className="font-semibold mb-3">
+                      أنواع التنبيهات المتاحة:
+                    </h4>
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-primary rounded-full"></div>
@@ -484,7 +622,9 @@ export default function Index() {
       <section id="about" className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">لماذا ليرات نيوز؟</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              لماذا ليرات نيوز؟
+            </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               منصتك الموثوقة للأخبار المالية والتحليلات الاقتصادية
             </p>
@@ -496,7 +636,9 @@ export default function Index() {
                 <Clock className="w-8 h-8 text-primary" />
               </div>
               <h3 className="font-bold text-lg mb-2">تحديثات فورية</h3>
-              <p className="text-muted-foreground">بيانات محدثة كل دقيقة من الأسواق العالمية</p>
+              <p className="text-muted-foreground">
+                بيانات محدثة كل دقيقة من الأسواق العالمية
+              </p>
             </div>
 
             <div className="text-center">
@@ -504,7 +646,9 @@ export default function Index() {
                 <TrendingUp className="w-8 h-8 text-primary" />
               </div>
               <h3 className="font-bold text-lg mb-2">تحليلات متقدمة</h3>
-              <p className="text-muted-foreground">تحليلات عميقة للأحداث الاقتصادية</p>
+              <p className="text-muted-foreground">
+                تحليلات عميقة للأحداث الاقتصادية
+              </p>
             </div>
 
             <div className="text-center">
@@ -512,7 +656,9 @@ export default function Index() {
                 <Shield className="w-8 h-8 text-primary" />
               </div>
               <h3 className="font-bold text-lg mb-2">مصادر موثوقة</h3>
-              <p className="text-muted-foreground">من البنوك المركزية والمؤسسات المالية الرسمية</p>
+              <p className="text-muted-foreground">
+                من البنوك المركزية والمؤسسات المالية الرسمية
+              </p>
             </div>
 
             <div className="text-center">
@@ -520,7 +666,9 @@ export default function Index() {
                 <Globe className="w-8 h-8 text-primary" />
               </div>
               <h3 className="font-bold text-lg mb-2">تغطية عالمية</h3>
-              <p className="text-muted-foreground">جميع الأسواق والعملات الرئيسية</p>
+              <p className="text-muted-foreground">
+                جميع الأسواق والعملات الرئيسية
+              </p>
             </div>
           </div>
         </div>
@@ -530,7 +678,9 @@ export default function Index() {
       <section id="contact" className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">تواصل مع فريق ليرات</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              تواصل مع فريق ليرات
+            </h2>
             <p className="text-xl text-muted-foreground mb-8">
               للاستفسارات والدعم الفني
             </p>
@@ -539,7 +689,9 @@ export default function Index() {
               <CardContent className="p-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="name" className="text-right block">الاسم الكامل</Label>
+                    <Label htmlFor="name" className="text-right block">
+                      الاسم الكامل
+                    </Label>
                     <Input
                       id="name"
                       type="text"
@@ -552,7 +704,9 @@ export default function Index() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-right block">البريد الإلكتروني</Label>
+                    <Label htmlFor="email" className="text-right block">
+                      البريد الإلكتروني
+                    </Label>
                     <Input
                       id="email"
                       type="email"
@@ -565,7 +719,9 @@ export default function Index() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="whatsapp" className="text-right block">رقم الواتساب</Label>
+                    <Label htmlFor="whatsapp" className="text-right block">
+                      رقم الواتساب
+                    </Label>
                     <Input
                       id="whatsapp"
                       type="tel"
@@ -576,8 +732,8 @@ export default function Index() {
                     />
                   </div>
 
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     size="lg"
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 text-lg font-semibold"
                   >
@@ -594,18 +750,24 @@ export default function Index() {
       <footer className="bg-muted/50 border-t border-border py-12">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <img 
-              src="https://cdn.builder.io/api/v1/assets/8d6e2ebe2191474fb5a6de98317d4278/liirat-official-logo-bf14db?format=webp&width=800" 
-              alt="Liirat News" 
+            <img
+              src="https://cdn.builder.io/api/v1/assets/8d6e2ebe2191474fb5a6de98317d4278/liirat-official-logo-bf14db?format=webp&width=800"
+              alt="Liirat News"
               className="h-8 w-auto mx-auto mb-4"
             />
             <p className="text-muted-foreground mb-4">
               منصة ليرات للأخبار المالية والاقتصادية
             </p>
             <div className="flex justify-center space-x-6 space-x-reverse text-sm text-muted-foreground">
-              <a href="#" className="hover:text-primary transition-colors">سياسة الخصوصية</a>
-              <a href="#" className="hover:text-primary transition-colors">شروط الاستخدام</a>
-              <a href="#" className="hover:text-primary transition-colors">تواصل معنا</a>
+              <a href="#" className="hover:text-primary transition-colors">
+                سياسة الخصوصية
+              </a>
+              <a href="#" className="hover:text-primary transition-colors">
+                شروط الاستخدام
+              </a>
+              <a href="#" className="hover:text-primary transition-colors">
+                تواصل معنا
+              </a>
             </div>
             <p className="text-xs text-muted-foreground mt-4">
               © 2024 Liirat News. جميع الحقوق محفوظة.
