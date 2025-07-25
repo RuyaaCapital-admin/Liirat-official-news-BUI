@@ -246,20 +246,20 @@ export default function Index() {
       {/* Custom Price Ticker */}
       <div
         style={{
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
-          background: '#0d0d0d',
-          padding: '8px 0',
-          color: '#fff',
-          fontSize: '14px'
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+          background: "#0d0d0d",
+          padding: "8px 0",
+          color: "#fff",
+          fontSize: "14px",
         }}
       >
         <div
           id="ticker-content"
           style={{
-            display: 'inline-block',
-            willChange: 'transform',
-            animation: 'scroll 20s linear infinite'
+            display: "inline-block",
+            willChange: "transform",
+            animation: "scroll 20s linear infinite",
           }}
         >
           Loading prices...
@@ -268,8 +268,12 @@ export default function Index() {
 
       <style jsx>{`
         @keyframes scroll {
-          0%   { transform: translateX(100%); }
-          100% { transform: translateX(-100%); }
+          0% {
+            transform: translateX(100%);
+          }
+          100% {
+            transform: translateX(-100%);
+          }
         }
       `}</style>
 
@@ -315,7 +319,7 @@ export default function Index() {
               setTimeout(refreshPrices, 1000);
               setInterval(refreshPrices, 30000);
             })();
-          `
+          `,
         }}
       />
 
