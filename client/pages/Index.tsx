@@ -158,12 +158,12 @@ export default function Index() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Economic Events Table - TODO: Connect to live API */}
+                {/* Economic Events Table - API Integration Point */}
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow className="text-right">
-                        <TableHead className="text-right">التاريخ</TableHead>
+                        <TableHead className="text-right">التاري��</TableHead>
                         <TableHead className="text-right">الحدث</TableHead>
                         <TableHead className="text-right">البلد</TableHead>
                         <TableHead className="text-right">التوقع</TableHead>
@@ -215,8 +215,7 @@ export default function Index() {
                 
                 <div className="mt-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    <!-- API_INTEGRATION_POINT: Economic Calendar Data -->
-                    البيانات مح��ثة كل دقيقة من مصادر موثوقة
+                    البيانات محدثة كل دقيقة من مصادر موثوقة
                   </p>
                 </div>
               </CardContent>
@@ -274,7 +273,6 @@ export default function Index() {
                     </Button>
                     
                     <p className="text-sm text-muted-foreground text-center">
-                      <!-- SUPABASE_INTEGRATION_POINT: Alert System -->
                       سيتم إرسال التنبيهات عبر البريد الإلكتروني والواتساب
                     </p>
                   </div>
@@ -325,7 +323,7 @@ export default function Index() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">لماذا ليرات نيوز؟</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              منصتك الموثوقة للأخبار المالية والتحلي��ات الاقتصادية
+              منصتك الموثوقة للأخبار المالية والتحليلات الاقتصادية
             </p>
           </div>
 
@@ -369,7 +367,7 @@ export default function Index() {
       <section id="contact" className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">تواصل مع فريق ليرات</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">تواصل ��ع فريق ليرات</h2>
             <p className="text-xl text-muted-foreground mb-8">
               للاستفسارات والدعم الفني
             </p>
