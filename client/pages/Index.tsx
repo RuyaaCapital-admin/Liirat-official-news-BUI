@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -116,7 +117,7 @@ export default function Index() {
               <span className="text-primary block">دقيقة ومحدثة</span>
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-              منصة ليرات للأخبار المالية - تقويم اقتصادي مباشر، تنبيهات فورية، وتحليلات متقدمة لجميع الأسواق العالمية
+              منصة ليرات للأخبار المالية - تقويم اقتصادي مباشر، تنبيهات فورية، وتحليلات متقدمة لجميع الأسواق الع��لمية
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
@@ -145,7 +146,7 @@ export default function Index() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">التقويم الاقتصادي المباشر</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي
+              تابع أهم الأحداث ا��اقتصادية والمؤشرات المالية في الوقت الفعلي
             </p>
           </div>
 
@@ -349,7 +350,7 @@ export default function Index() {
                 <Shield className="w-8 h-8 text-primary" />
               </div>
               <h3 className="font-bold text-lg mb-2">مصادر موثوقة</h3>
-              <p className="text-muted-foreground">من البنوك المركزية والمؤسسات المالية الرسمية</p>
+              <p className="text-muted-foreground">من البنوك المركزية والمؤسسات المالي�� الرسمية</p>
             </div>
 
             <div className="text-center">
