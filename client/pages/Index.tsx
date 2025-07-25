@@ -243,8 +243,58 @@ export default function Index() {
         </div>
       </header>
 
-      {/* Live Price Ticker */}
-      <PriceTicker />
+      {/* Real-Time Market Ticker */}
+      <div
+        dangerouslySetInnerHTML={{
+          __html: `
+            <!-- Real‑Time Market Ticker -->
+            <div id="market‑ticker" style="overflow:hidden; white-space:nowrap; background:#0d0d0d; padding:8px 0; color:#fff; font-family:Arial,sans-serif;">
+              <span id="ticker‑loading">Loading market prices…</span>
+              <div id="ticker‑content" style="display:inline-block; will-change:transform; animation:scroll 25s linear infinite; margin-left:20px;"></div>
+            </div>
+
+            <style>
+            @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+            </style>
+
+            <script>
+            (async function() {
+              const symbols = [
+                { label: 'Gold (XAU/USD)', url: 'https://api.exchangerate.host/latest?base=XAU&symbols=USD' },
+                { label: 'Silver (XAG/USD)', url: 'https://api.exchangerate.host/latest?base=XAG&symbols=USD' },
+                { label: 'S&P 500', url: 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=^GSPC&apikey=YOUR_ALPHA_VANTAGE_KEY' },
+                { label: 'EUR/USD', url: 'https://api.exchangerate.host/latest?base=EUR&symbols=USD' },
+                { label: 'BTC/USD', url: 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd' }
+              ];
+
+              async function refreshPrices() {
+                const parts = await Promise.all(symbols.map(async s => {
+                  try {
+                    const res = await fetch(s.url);
+                    const data = await res.json();
+                    let price = s.label.includes('S&P')
+                      ? parseFloat(data['Global Quote']['05. price'])
+                      : s.label.includes('BTC')
+                        ? data.bitcoin.usd
+                        : data.rates
+                          ? data.rates[ s.label.match(/USD/)[0] ]
+                          : null;
+                    return \`\${s.label}: \${price ? price.toFixed(2) : '–'}\`;
+                  } catch {
+                    return \`\${s.label}: –\`;
+                  }
+                }));
+                document.getElementById('ticker‑content').innerText = parts.join('   •   ');
+                document.getElementById('ticker‑loading').style.display = 'none';
+              }
+
+              await refreshPrices();
+              setInterval(refreshPrices, 30000);
+            })();
+            </script>
+          `
+        }}
+      />
 
       {/* Hero Section */}
       <section className="py-20 lg:py-32 relative overflow-hidden">
@@ -575,7 +625,7 @@ export default function Index() {
                     </Button>
 
                     <p className="text-sm text-muted-foreground text-center">
-                      سيتم إرسال التنبيهات عبر البريد الإلكتروني والواتساب
+                      سيتم إرسال التنبيهات عبر البريد الإلكتروني ��الواتساب
                     </p>
                   </div>
 
@@ -693,7 +743,7 @@ export default function Index() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="name" className="text-right block">
-                      الاسم الكامل
+                      الاسم ��لكامل
                     </Label>
                     <Input
                       id="name"
@@ -769,7 +819,7 @@ export default function Index() {
                 شروط الاستخدام
               </a>
               <a href="#" className="hover:text-primary transition-colors">
-                تو��صل معنا
+                تواصل معنا
               </a>
             </div>
             <p className="text-xs text-muted-foreground mt-4">
