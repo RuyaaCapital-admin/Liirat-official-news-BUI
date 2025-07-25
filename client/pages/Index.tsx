@@ -244,85 +244,8 @@ export default function Index() {
         </div>
       </header>
 
-      {/* Custom Price Ticker */}
-      <div
-        style={{
-          overflow: "hidden",
-          whiteSpace: "nowrap",
-          background: "#0d0d0d",
-          padding: "8px 0",
-          color: "#fff",
-          fontSize: "14px",
-        }}
-      >
-        <div
-          id="ticker-content"
-          style={{
-            display: "inline-block",
-            willChange: "transform",
-            animation: "scroll 20s linear infinite",
-          }}
-        >
-          Loading prices...
-        </div>
-      </div>
-
-      <style jsx>{`
-        @keyframes scroll {
-          0% {
-            transform: translateX(100%);
-          }
-          100% {
-            transform: translateX(-100%);
-          }
-        }
-      `}</style>
-
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            (async function() {
-              const symbols = [
-                { label: 'EUR/USD', url: 'https://api.exchangerate.host/latest?base=EUR&symbols=USD' },
-                { label: 'GBP/USD', url: 'https://api.exchangerate.host/latest?base=GBP&symbols=USD' },
-                { label: 'USD/JPY', url: 'https://api.exchangerate.host/latest?base=USD&symbols=JPY' },
-                { label: 'BTC/USD', url: 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd' },
-                { label: 'ETH/USD', url: 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd' }
-              ];
-
-              async function refreshPrices() {
-                try {
-                  const parts = await Promise.all(symbols.map(async s => {
-                    try {
-                      const res = await fetch(s.url);
-                      const data = await res.json();
-                      let price = s.label.includes('BTC') || s.label.includes('ETH')
-                        ? data[s.label.split('/')[0].toLowerCase()].usd
-                        : data.rates?.[s.label.split('/')[1]];
-                      return \`\${s.label}: \${parseFloat(price).toFixed(4)}\`;
-                    } catch(e) {
-                      return \`\${s.label}: --\`;
-                    }
-                  }));
-                  const tickerElement = document.getElementById('ticker-content');
-                  if (tickerElement) {
-                    tickerElement.innerText = parts.join('   •   ');
-                  }
-                } catch(e) {
-                  console.error('Ticker error', e);
-                  const tickerElement = document.getElementById('ticker-content');
-                  if (tickerElement) {
-                    tickerElement.innerText = 'EUR/USD: 1.0950   •   GBP/USD: 1.2750   •   USD/JPY: 148.50   •   BTC/USD: 43,250   •   ETH/USD: 2,650';
-                  }
-                }
-              }
-
-              setTimeout(refreshPrices, 1000);
-              setInterval(refreshPrices, 30000);
-            })();
-          `,
-        }}
-      />
+      {/* Live Price Ticker */}
+      <PriceTicker />
 
       {/* Hero Section */}
       <section className="py-20 lg:py-32 relative overflow-hidden">
@@ -335,7 +258,7 @@ export default function Index() {
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
               منصة ليرات للأخبار المالية - تقويم اقتصادي مباشر، تنبيهات فورية،
-              وتحليلات متقدمة لجميع الأسواق العالمية
+              وتحليلات متقدمة لجميع الأسواق العالمي��
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -398,7 +321,7 @@ export default function Index() {
                       onValueChange={setSelectedDate}
                     >
                       <SelectTrigger className="text-right">
-                        <SelectValue placeholder="اختر التاريخ" />
+                        <SelectValue placeholder="��ختر التاريخ" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="today">اليوم</SelectItem>
@@ -473,7 +396,7 @@ export default function Index() {
                         value={searchEvent}
                         onChange={(e) => setSearchEvent(e.target.value)}
                         className="text-right pl-10"
-                        placeholder="ابح�� عن حدث..."
+                        placeholder="ابحث عن حدث..."
                       />
                     </div>
                   </div>
