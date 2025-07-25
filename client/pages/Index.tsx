@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { PriceTicker } from "@/components/PriceTicker";
 import {
   Card,
   CardContent,
@@ -472,7 +473,7 @@ export default function Index() {
                         value={searchEvent}
                         onChange={(e) => setSearchEvent(e.target.value)}
                         className="text-right pl-10"
-                        placeholder="ابحث عن حدث..."
+                        placeholder="ابح�� عن حدث..."
                       />
                     </div>
                   </div>
@@ -652,7 +653,7 @@ export default function Index() {
                     </Button>
 
                     <p className="text-sm text-muted-foreground text-center">
-                      س��تم إرسال التنبيهات عبر البريد الإلكتروني والواتساب
+                      سيتم إرسال التنبيهات عبر البريد الإلكتروني والواتساب
                     </p>
                   </div>
 
