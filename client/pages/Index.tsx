@@ -207,7 +207,7 @@ export default function Index() {
               href="#calendar"
               className="text-muted-foreground hover:text-primary transition-colors"
             >
-              التقويم الاقتصادي
+              التقويم الاقتص��دي
             </a>
             <a
               href="#alerts"
@@ -242,6 +242,63 @@ export default function Index() {
           </div>
         </div>
       </header>
+
+      {/* Custom Price Ticker */}
+      <div
+        id="price-ticker"
+        style={{
+          overflow: 'hidden',
+          whiteSpace: 'nowrap',
+          background: '#0d0d0d',
+          padding: '8px 0'
+        }}
+        dangerouslySetInnerHTML={{
+          __html: `
+            <div id="ticker-content" style="display:inline-block; will-change:transform; animation:scroll 20s linear infinite;"></div>
+
+            <style>
+            @keyframes scroll {
+              0%   { transform: translateX(100%); }
+              100% { transform: translateX(-100%); }
+            }
+            </style>
+
+            <script>
+            (async function() {
+              const symbols = [
+                { label: 'EUR/USD', url: 'https://api.exchangerate.host/latest?base=EUR&symbols=USD' },
+                { label: 'GBP/USD', url: 'https://api.exchangerate.host/latest?base=GBP&symbols=USD' },
+                { label: 'USD/JPY', url: 'https://api.exchangerate.host/latest?base=USD&symbols=JPY' },
+                { label: 'BTC/USD', url: 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd' },
+                { label: 'ETH/USD', url: 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd' }
+              ];
+
+              async function refreshPrices() {
+                try {
+                  const parts = await Promise.all(symbols.map(async s => {
+                    const res = await fetch(s.url);
+                    const data = await res.json();
+                    let price = s.label.includes('BTC') || s.label.includes('ETH')
+                      ? data[ s.label.split('/')[0].toLowerCase() ].usd
+                      : data.rates?.[ s.label.split('/')[1] ];
+                    return \`\${s.label}: \${parseFloat(price).toFixed(4)}\`;
+                  }));
+                  const tickerElement = document.getElementById('ticker-content');
+                  if (tickerElement) {
+                    tickerElement.innerText = parts.join('   •   ');
+                  }
+                } catch(e) {
+                  console.error('Ticker error', e);
+                }
+              }
+
+              await refreshPrices();
+              setInterval(refreshPrices, 30000);
+            })();
+            </script>
+          `
+        }}
+      />
 
       {/* Hero Section */}
       <section className="py-20 lg:py-32 relative overflow-hidden">
