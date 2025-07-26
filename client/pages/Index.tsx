@@ -383,7 +383,7 @@ export default function Index() {
                           {t('currency.aud')}
                         </SelectItem>
                         <SelectItem value="CAD">
-                          🇨🇦 CAD - الدولار الكندي
+                          {t('currency.cad')}
                         </SelectItem>
                       </SelectContent>
                     </Select>
