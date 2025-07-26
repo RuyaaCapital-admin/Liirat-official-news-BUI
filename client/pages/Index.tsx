@@ -531,7 +531,7 @@ export default function Index() {
                           <TableCell className="text-right">
                             <AIEventInsight
                               event={event}
-                              currentLanguage={currentLanguage}
+                              currentLanguage={language}
                             />
                           </TableCell>
                         </TableRow>
@@ -542,7 +542,7 @@ export default function Index() {
 
                 <div className="mt-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    ��لبيانات محدثة كل دقيقة من مصادر موثوقة •{" "}
+                    البيانات محدثة كل دقيقة من مصادر موثوقة •{" "}
                     {filteredEvents.length} من أصل {economicEvents.length} حدث
                   </p>
                 </div>
@@ -707,7 +707,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تغطية عالمية</h3>
               <p className="text-muted-foreground">
-                ��م��ع الأسواق والعملات الرئيسية
+                جم��ع الأسواق والعملات الرئيسية
               </p>
             </div>
           </div>
@@ -745,7 +745,7 @@ export default function Index() {
 
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-right block">
-                      البريد الإلكتروني
+                      ال��ريد الإلكتروني
                     </Label>
                     <Input
                       id="email"
