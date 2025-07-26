@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import Joyride, { 
-  CallBackProps, 
-  STATUS, 
-  EVENTS, 
+import Joyride, {
+  CallBackProps,
+  STATUS,
+  EVENTS,
   ACTIONS,
   Step,
-  Styles,
-  Theme
+  Styles
 } from "react-joyride";
 import { useLanguage } from "@/contexts/language-context";
 
@@ -181,7 +180,7 @@ export function SiteTour({
                 📅 التقويم الاقتصادي التفاعلي
               </h3>
               <p style={{ fontSize: '13px', lineHeight: '1.6', margin: 0, color: 'hsl(var(--muted-foreground))' }}>
-                اطلع على أهم الأحداث ا��اقتصادية والبيانات المالية القادمة مع مؤشرات الأهمية ومواعيد النشر الدقيقة.
+                اطلع على أهم الأحداث الاقتصادية والبيانات المالية القادمة مع مؤشرات الأهمية ومواعيد النشر الدقيقة.
               </p>
             </div>
           ),
@@ -197,7 +196,7 @@ export function SiteTour({
           content: (
             <div>
               <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '8px', color: 'inherit' }}>
-                🔔 نظام التنبيهات الذكي
+                🔔 نظام التن��يهات الذكي
               </h3>
               <p style={{ fontSize: '13px', lineHeight: '1.6', margin: 0, color: 'hsl(var(--muted-foreground))' }}>
                 احصل على تنبيهات فورية ومخصصة عند صدور البيانات الاقتصادية المهمة أو تحركات الأسواق الكبيرة.
@@ -238,7 +237,7 @@ export function SiteTour({
                 💬 الدعم والمساعدة
               </h3>
               <p style={{ fontSize: '13px', lineHeight: '1.6', margin: 0, color: 'hsl(var(--muted-foreground))' }}>
-                فريقنا متاح دائماً لمساعدتك. ��واصل معنا للدعم الفني أو الاستفسارات حول المنصة وميزاتها.
+                فريقنا متاح دائماً لمساعدتك. تواصل معنا للدعم الفني أو الاستفسارات حول المنصة وميزاتها.
               </p>
             </div>
           ),
