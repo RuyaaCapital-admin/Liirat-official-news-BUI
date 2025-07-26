@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/table";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { PriceTicker } from "@/components/ui/price-ticker";
+import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import {
   Calendar,
   Bell,
@@ -567,7 +568,7 @@ export default function Index() {
                         onValueChange={setSelectedPair}
                       >
                         <SelectTrigger className="text-right">
-                          <SelectValue placeholder="اختر من القائمة" />
+                          <SelectValue placeholder="اخت�� من القائمة" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="eurusd">EUR/USD</SelectItem>
