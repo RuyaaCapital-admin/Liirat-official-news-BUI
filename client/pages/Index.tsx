@@ -400,7 +400,7 @@ export default function Index() {
                       onValueChange={setSelectedImportance}
                     >
                       <SelectTrigger className="text-right">
-                        <SelectValue placeholder="ج��يع المستويات" />
+                        <SelectValue placeholder="جميع المستويات" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">جميع المستويات</SelectItem>
@@ -514,14 +514,10 @@ export default function Index() {
                             {event.previous}
                           </TableCell>
                           <TableCell className="text-right">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-xs whitespace-nowrap"
-                              disabled={event.actual === "-"}
-                            >
-                              تحليل الذكاء الاصطناعي
-                            </Button>
+                            <AIEventInsight
+                              event={event}
+                              currentLanguage={currentLanguage}
+                            />
                           </TableCell>
                         </TableRow>
                       ))}
@@ -531,7 +527,7 @@ export default function Index() {
 
                 <div className="mt-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    البيانات محدثة كل دقيقة من مصادر موثوقة •{" "}
+                    البيا��ات محدثة كل دقيقة من مصادر موثوقة •{" "}
                     {filteredEvents.length} من أصل {economicEvents.length} حدث
                   </p>
                 </div>
@@ -586,7 +582,7 @@ export default function Index() {
                             مؤشر أسعار المستهلك
                           </SelectItem>
                           <SelectItem value="gdp">
-                            الناتج المحلي الإجمال��
+                            الناتج المحلي الإجمالي
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -696,7 +692,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تغطية عالمية</h3>
               <p className="text-muted-foreground">
-                جميع الأسواق والعملات الرئيسية
+                جميع الأسواق والعملا�� الرئيسية
               </p>
             </div>
           </div>
@@ -799,7 +795,7 @@ export default function Index() {
               </a>
             </div>
             <p className="text-xs text-muted-foreground mt-4">
-              © 2024 Liirat News. جميع الحقو�� م��فوظة.
+              © 2024 Liirat News. جميع الحقوق م��فوظة.
             </p>
           </div>
         </div>
