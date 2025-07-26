@@ -32,15 +32,7 @@ export function SiteTour({ autoStart = true, onComplete, className }: SiteTourPr
   const [showWelcome, setShowWelcome] = useState(false);
   const { language, t } = useLanguage();
 
-  // Detect language from page content
-  const detectLanguage = (): 'ar' | 'en' => {
-    const htmlDir = document.documentElement.getAttribute('dir');
-    if (htmlDir === 'rtl') return 'ar';
-    
-    const hasArabicText = document.body.textContent?.includes('التقويم') || 
-                         document.body.textContent?.includes('ليرات');
-    return hasArabicText ? 'ar' : 'en';
-  };
+
 
   // Tour steps configuration (bilingual)
   const getTourSteps = (lang: 'ar' | 'en'): TourStep[] => {
@@ -82,7 +74,7 @@ export function SiteTour({ autoStart = true, onComplete, className }: SiteTourPr
           id: 'contact',
           target: '[href="#contact"], #contact',
           title: '💬 الدعم والمساعدة',
-          description: '��واصل معنا للحصول على الدعم الفني والاستفسارات',
+          description: 'تواصل معنا للحصول على الدعم الفني والاستفسارات',
           emoji: '💬',
           position: 'top'
         },
