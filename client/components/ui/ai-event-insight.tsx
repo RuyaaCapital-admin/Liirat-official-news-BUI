@@ -43,13 +43,16 @@ interface AIEventInsightProps {
 const AI_API_CONFIG = {
   // 🔧 REPLACE WITH YOUR OPENAI API ENDPOINT
   apiUrl: process.env.VITE_OPENAI_API_URL || 'https://api.openai.com/v1/chat/completions',
-  
+
   // 🔧 REPLACE WITH YOUR OPENAI API KEY
   apiKey: process.env.VITE_OPENAI_API_KEY || 'your-api-key-here',
-  
+
   // Model configuration
   model: 'gpt-3.5-turbo',
   maxTokens: 500,
+
+  // Demo mode - set to true to show demo analysis without API calls
+  demoMode: !process.env.VITE_OPENAI_API_KEY || process.env.VITE_OPENAI_API_KEY === 'your-api-key-here',
 };
 
 export function AIEventInsight({ event, currentLanguage = 'ar', className }: AIEventInsightProps) {
@@ -134,7 +137,7 @@ Keep the analysis concise but informative, suitable for traders and investors. F
             {
               role: 'system',
               content: language === 'ar' 
-                ? 'أنت محلل اقتصادي ومالي خبير. قدم تحليلات دقيقة وم��يدة باللغة العربية.'
+                ? 'أنت محلل اقتصادي ومالي خبير. قدم تحليلات دقيقة ومفيدة باللغة العربية.'
                 : 'You are an expert economic and financial analyst. Provide accurate and helpful analysis in English.'
             },
             {
