@@ -264,7 +264,7 @@ export default function Index() {
               <div className="absolute -top-1 -right-1 h-3 w-3 bg-primary rounded-full text-xs flex items-center justify-center text-primary-foreground">
                 3
               </div>
-              <span className="sr-only">التنبيهات</span>
+              <span className="sr-only">{t('nav.notifications')}</span>
             </Button>
             <TourTrigger variant="icon" />
             <LanguageSwitcher variant="icon" />
