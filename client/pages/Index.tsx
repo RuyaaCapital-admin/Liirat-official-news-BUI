@@ -667,7 +667,7 @@ export default function Index() {
                 <CardContent className="py-8">
                   <BellRing className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">
-                    سيتم تفعيل التنبيهات لاحقاً
+                    سيتم تفعيل التنبيهات لاحقا��
                   </p>
                 </CardContent>
               </Card>
@@ -814,7 +814,7 @@ export default function Index() {
               className="h-8 w-auto mx-auto mb-4"
             />
             <p className="text-muted-foreground mb-4">
-              منصة ليرات للأخبار المالية والاق��صادية
+              منصة ليرات للأخبار المالية والاقتصادية
             </p>
             <div className="flex justify-center space-x-6 space-x-reverse text-sm text-muted-foreground">
               <a href="#" className="hover:text-primary transition-colors">
@@ -826,6 +826,7 @@ export default function Index() {
               <a href="#" className="hover:text-primary transition-colors">
                 تواصل معنا
               </a>
+              <TourFooterLink />
             </div>
             <p className="text-xs text-muted-foreground mt-4">
               © 2024 Liirat News. جميع الحقوق م��فوظة.
