@@ -403,7 +403,7 @@ export default function Index() {
                         <SelectItem value="all">{t('importance.all')}</SelectItem>
                         <SelectItem value="3">{t('importance.high')}</SelectItem>
                         <SelectItem value="2">⭐⭐ م��وسط التأثير</SelectItem>
-                        <SelectItem value="1">⭐ منخفض التأثي��</SelectItem>
+                        <SelectItem value="1">⭐ منخفض التأثير</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -675,9 +675,9 @@ export default function Index() {
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Shield className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="font-bold text-lg mb-2">مصادر موثوقة</h3>
+              <h3 className="font-bold text-lg mb-2">{t('about.sources.title')}</h3>
               <p className="text-muted-foreground">
-                من البنوك المركزية والمؤسسات المالية الرسمية
+                {t('about.sources.desc')}
               </p>
             </div>
 
