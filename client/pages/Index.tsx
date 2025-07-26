@@ -30,7 +30,7 @@ import { PriceTicker } from "@/components/ui/price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { SiteTour } from "@/components/ui/site-tour";
 import { TourTrigger, TourFooterLink } from "@/components/ui/tour-trigger";
-import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 import { useLanguage } from "@/contexts/language-context";
 import {
   Calendar,
