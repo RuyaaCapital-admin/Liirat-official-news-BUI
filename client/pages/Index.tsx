@@ -201,7 +201,7 @@ export default function Index() {
   });
 
   return (
-    <div className="min-h-screen bg-background arabic relative">
+    <div className={`min-h-screen bg-background relative ${language === 'ar' ? 'arabic' : 'english'}`}>
       {/* Global Background Image */}
       <div className="fixed inset-0 z-0">
         <img
@@ -467,7 +467,7 @@ export default function Index() {
                           التاريخ والوقت
                         </TableHead>
                         <TableHead className="text-right">
-                          العملة/البلد
+                          العملة/ا��بلد
                         </TableHead>
                         <TableHead className="text-right">الأهمية</TableHead>
                         <TableHead className="text-right">الحدث</TableHead>
@@ -698,7 +698,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">مصادر موثوقة</h3>
               <p className="text-muted-foreground">
-                من البنوك المركزية وا��مؤسسات المالية الرسمية
+                من البنوك المركزية والمؤسسات المالية الرسمية
               </p>
             </div>
 
