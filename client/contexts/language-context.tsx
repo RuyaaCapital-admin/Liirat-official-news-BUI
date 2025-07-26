@@ -29,7 +29,6 @@ const translations = {
     "nav.contact": "تواصل معنا",
     "nav.notifications": "التنبيهات",
     "nav.theme": "تبديل المظهر",
-    "nav.tour": "بدء جولة الموقع",
 
     // Hero Section
     "hero.title": "أخبار مالية واقتصادية",
@@ -50,7 +49,7 @@ const translations = {
     "calendar.filters.search": "البحث في الأحداث",
     "calendar.filters.search.placeholder": "ابحث عن حدث...",
     "calendar.table.datetime": "التاريخ والوقت",
-    "calendar.table.country": "العملة/البلد",
+    "calendar.table.country": "العملة/ا��بلد",
     "calendar.table.importance": "الأهمية",
     "calendar.table.event": "الحدث",
     "calendar.table.actual": "القيمة الفعلية",
@@ -106,7 +105,7 @@ const translations = {
     "footer.privacy": "سياسة الخصوصية",
     "footer.terms": "شروط الاستخدام",
     "footer.contact": "تواصل معنا",
-    "footer.tour": "جولة الموقع",
+
     "footer.copyright": "© 2024 Liirat News. جميع الحقوق محفوظة.",
 
     // AI Analysis
@@ -194,7 +193,6 @@ const translations = {
     "nav.contact": "Contact Us",
     "nav.notifications": "Notifications",
     "nav.theme": "Toggle Theme",
-    "nav.tour": "Start Site Tour",
 
     // Hero Section
     "hero.title": "Financial & Economic News",
@@ -273,7 +271,7 @@ const translations = {
     "footer.privacy": "Privacy Policy",
     "footer.terms": "Terms of Use",
     "footer.contact": "Contact Us",
-    "footer.tour": "Site Tour",
+
     "footer.copyright": "© 2024 Liirat News. All rights reserved.",
 
     // AI Analysis
