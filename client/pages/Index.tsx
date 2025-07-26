@@ -381,7 +381,7 @@ export default function Index() {
                         <SelectItem value="next-week">
                           الأسبوع القادم
                         </SelectItem>
-                        <SelectItem value="custom">تاريخ مخص��</SelectItem>
+                        <SelectItem value="custom">تاريخ مخصص</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -564,7 +564,7 @@ export default function Index() {
       </section>
 
       {/* Alert System Section */}
-      <section id="alerts" className="py-20">
+      <section id="alerts" className="py-20" data-tour-target="alerts">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
@@ -602,7 +602,7 @@ export default function Index() {
                           <SelectItem value="usdcad">USD/CAD</SelectItem>
                           <SelectItem value="audusd">AUD/USD</SelectItem>
                           <SelectItem value="nfp">
-                            رواتب غير الزراعية الأمريكية
+                            رواتب غي�� الزراعية الأمريكية
                           </SelectItem>
                           <SelectItem value="cpi">
                             مؤشر أسعار المستهلك
@@ -629,7 +629,7 @@ export default function Index() {
 
                   <div className="bg-muted/50 rounded-lg p-4">
                     <h4 className="font-semibold mb-3">
-                      أنواع التنبيهات ا��متاحة:
+                      أنواع التنبيهات المتاحة:
                     </h4>
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-center gap-2">
