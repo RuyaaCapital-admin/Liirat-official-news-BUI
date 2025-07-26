@@ -283,7 +283,12 @@ export default function Index() {
       </header>
 
       {/* Real-Time Market Ticker */}
-      <PriceTicker className="sticky top-[72px] z-40" pauseOnHover={true} speed={60} />
+      <PriceTicker
+        className="sticky top-[72px] z-40"
+        pauseOnHover={true}
+        speed={60}
+        data-tour-target="ticker"
+      />
 
       {/* Hero Section */}
       <section className="py-20 lg:py-32 relative overflow-hidden">
@@ -459,7 +464,7 @@ export default function Index() {
                     الأحداث الاقتصادية ({filteredEvents.length})
                   </div>
                   <Badge variant="outline" className="text-xs">
-                    تحديث ��باشر
+                    تحديث مباشر
                   </Badge>
                 </CardTitle>
               </CardHeader>
@@ -567,7 +572,7 @@ export default function Index() {
                 نظام التنبيهات الذكي
               </h2>
               <p className="text-xl text-muted-foreground">
-                احصل على تنبيهات فورية عند صدور البيانات الاقتصا��ية المهمة
+                احصل على تنبيهات فورية عند صدور البيانات الاقتصادية المهمة
               </p>
             </div>
 
