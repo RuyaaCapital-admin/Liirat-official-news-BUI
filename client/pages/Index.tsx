@@ -827,6 +827,9 @@ export default function Index() {
         </div>
       </footer>
       </div>
+
+      {/* Site Tour Component */}
+      <SiteTour />
     </div>
   );
 }
