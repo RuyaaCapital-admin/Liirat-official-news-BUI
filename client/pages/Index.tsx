@@ -235,7 +235,8 @@ export default function Index() {
             <img
               src="https://cdn.builder.io/api/v1/assets/8d6e2ebe2191474fb5a6de98317d4278/liirat-official-logo-bf14db?format=webp&width=800"
               alt="Liirat News"
-              className="h-14 w-auto"
+              className="h-14 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             />
           </div>
 
@@ -475,7 +476,7 @@ export default function Index() {
                         <TableHead className="text-right">الأهمية</TableHead>
                         <TableHead className="text-right">الحدث</TableHead>
                         <TableHead className="text-right">
-                          القيمة الفعلية
+                          القيمة الفعل��ة
                         </TableHead>
                         <TableHead className="text-right">التوقع</TableHead>
                         <TableHead className="text-right">السابق</TableHead>
@@ -612,7 +613,7 @@ export default function Index() {
                       className="w-full"
                       disabled={!selectedPair}
                     >
-                      أرسل لي تنبيهات
+                      أ��سل لي تنبيهات
                     </Button>
 
                     <p className="text-sm text-muted-foreground text-center">
@@ -723,7 +724,7 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              تواصل مع فريق ليرات
+              تواصل مع فري�� ليرات
             </h2>
             <p className="text-xl text-muted-foreground mb-8">
               للاستفسارات والدعم الفني
