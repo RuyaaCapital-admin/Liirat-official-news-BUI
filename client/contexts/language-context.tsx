@@ -26,7 +26,7 @@ const translations = {
     // Hero Section
     'hero.title': 'أخبار مالية واقتصادية',
     'hero.subtitle': 'دقيقة ومحدثة',
-    'hero.description': 'منصة ليرات للأخبار المالية - تقويم اقتصادي مباشر، تنبيهات فورية، وتحليلات متقدمة لجميع الأسواق العالمية',
+    'hero.description': 'منصة ليرات للأخبار ا��مالية - تقويم اقتصادي مباشر، تنبيهات فورية، وتحليلات متقدمة لجميع الأسواق العالمية',
     'hero.btn.calendar': 'اطلع على التقويم',
     'hero.btn.alerts': 'إعداد التنبيهات',
     
@@ -112,6 +112,7 @@ const translations = {
     'ai.actual': 'الفعلي',
     'ai.forecast': 'المتوقع',
     'ai.previous': 'السابق',
+    'ai.supported': 'مدعوم بالذكاء الاصطناعي',
     
     // Date/Time Options
     'date.today': 'اليوم',
@@ -272,6 +273,7 @@ const translations = {
     'ai.actual': 'Actual',
     'ai.forecast': 'Forecast',
     'ai.previous': 'Previous',
+    'ai.supported': 'Supported with AI',
     
     // Date/Time Options
     'date.today': 'Today',
