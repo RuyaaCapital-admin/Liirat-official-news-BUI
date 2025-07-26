@@ -60,9 +60,7 @@ export default function Index() {
   const [selectedImportance, setSelectedImportance] = useState("all");
   const [searchEvent, setSearchEvent] = useState("");
   const { theme } = useTheme();
-
-  // Language detection - can be extended for user preference
-  const [currentLanguage, setCurrentLanguage] = useState<'ar' | 'en'>('ar');
+  const { language, t, dir } = useLanguage();
 
   // Auto-detect language from page content on mount
   useEffect(() => {
@@ -381,7 +379,7 @@ export default function Index() {
                       onValueChange={setSelectedDate}
                     >
                       <SelectTrigger className="text-right">
-                        <SelectValue placeholder="اخت�� التاريخ" />
+                        <SelectValue placeholder="اختر التاريخ" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="today">اليوم</SelectItem>
@@ -440,7 +438,7 @@ export default function Index() {
                       <SelectContent>
                         <SelectItem value="all">جميع المستويات</SelectItem>
                         <SelectItem value="3">⭐⭐⭐ عالي التأثير</SelectItem>
-                        <SelectItem value="2">⭐⭐ متوسط التأثير</SelectItem>
+                        <SelectItem value="2">��⭐ متوسط التأثير</SelectItem>
                         <SelectItem value="1">⭐ منخفض التأثير</SelectItem>
                       </SelectContent>
                     </Select>
@@ -632,7 +630,7 @@ export default function Index() {
                     </Button>
 
                     <p className="text-sm text-muted-foreground text-center">
-                      سيتم إرسال التنبيهات عبر البريد الإلكتروني والواتساب
+                      سيتم إرسا�� التنبيهات عبر البريد الإلكتروني والواتساب
                     </p>
                   </div>
 
@@ -707,7 +705,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تحليلات متقدمة</h3>
               <p className="text-muted-foreground">
-                تحليلات عميقة للأحداث ا��اقتصادية
+                تحليلات عميقة للأحداث الاقتصادية
               </p>
             </div>
 
@@ -831,7 +829,7 @@ export default function Index() {
               <TourFooterLink />
             </div>
             <p className="text-xs text-muted-foreground mt-4">
-              © 2024 Liirat News. جميع ا��حقوق م��فوظة.
+              © 2024 Liirat News. جميع الحقوق م��فوظة.
             </p>
           </div>
         </div>
