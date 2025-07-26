@@ -263,7 +263,7 @@ export default function Index() {
               <NotificationDropdown
                 onSettingsClick={() => setShowAlertSettings(true)}
               />
-              <TourTrigger variant="icon" />
+
               <SimpleLanguageToggle />
               <ThemeToggle />
             </div>
@@ -908,7 +908,7 @@ export default function Index() {
                 <a href="#" className="hover:text-primary transition-colors">
                   {t("footer.contact")}
                 </a>
-                <TourFooterLink />
+
               </div>
               <p className="text-xs text-muted-foreground mt-4">
                 {t("footer.copyright")}
@@ -918,8 +918,7 @@ export default function Index() {
         </footer>
       </div>
 
-      {/* Site Tour Component */}
-      <SiteTour />
+
 
       {/* Alert Settings Modal */}
       <AlertSettingsModal
