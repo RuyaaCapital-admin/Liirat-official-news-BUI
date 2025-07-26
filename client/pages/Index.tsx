@@ -341,7 +341,7 @@ export default function Index() {
       </section>
 
       {/* Enhanced Economic Calendar Section */}
-      <section id="calendar" className="py-20 bg-muted/30">
+      <section id="calendar" className="py-20 bg-muted/30" data-tour-target="calendar">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -381,7 +381,7 @@ export default function Index() {
                         <SelectItem value="next-week">
                           الأسبوع القادم
                         </SelectItem>
-                        <SelectItem value="custom">تاريخ مخصص</SelectItem>
+                        <SelectItem value="custom">تاريخ مخص��</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -629,7 +629,7 @@ export default function Index() {
 
                   <div className="bg-muted/50 rounded-lg p-4">
                     <h4 className="font-semibold mb-3">
-                      أنواع التنبيهات المتاحة:
+                      أنواع التنبيهات ا��متاحة:
                     </h4>
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-center gap-2">
