@@ -55,11 +55,12 @@ const AI_API_CONFIG = {
   demoMode: !import.meta.env.VITE_OPENAI_API_KEY || import.meta.env.VITE_OPENAI_API_KEY === 'your-api-key-here',
 };
 
-export function AIEventInsight({ event, currentLanguage = 'ar', className }: AIEventInsightProps) {
+export function AIEventInsight({ event, className }: AIEventInsightProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [insight, setInsight] = useState<AIInsightResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const { language } = useLanguage();
 
   // Detect language from website content or user preference
   const detectLanguage = (): 'ar' | 'en' => {
@@ -93,7 +94,7 @@ export function AIEventInsight({ event, currentLanguage = 'ar', className }: AIE
         : `${eventData.event} أقل من المتوقع، ضغط محتمل على ${eventData.country}.`;
 
       return {
-        summary: `${analysis}\n\n⚠️ هذا تحليل تجريبي. للحصول على تحليل حقيقي من الذكاء الاصطناعي، يرجى إعداد مفتاح OpenAI API في متغيرات البيئة.`,
+        summary: `${analysis}\n\n⚠️ ��ذا تحليل تجريبي. للحصول على تحليل حقيقي من الذكاء الاصطناعي، يرجى إعداد مفتاح OpenAI API في متغيرات البيئة.`,
         whatHappened: analysis,
         whyImportant: analysis,
         marketImpact: analysis,
