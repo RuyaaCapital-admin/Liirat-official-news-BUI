@@ -230,7 +230,7 @@ export default function Index() {
 
             <nav
               className={`hidden md:flex items-center space-x-6 ${dir === "rtl" ? "space-x-reverse" : ""}`}
-              data-tour-target="navigation"
+
             >
               <a
                 href="#calendar"
@@ -275,7 +275,7 @@ export default function Index() {
           className="sticky top-[72px] z-40"
           pauseOnHover={true}
           speed={60}
-          data-tour-target="ticker"
+
         />
 
         {/* Hero Section */}
@@ -331,7 +331,7 @@ export default function Index() {
         <section
           id="calendar"
           className="py-20 bg-muted/30"
-          data-tour-target="calendar"
+
         >
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
@@ -620,7 +620,7 @@ export default function Index() {
         </section>
 
         {/* Alert System Section */}
-        <section id="alerts" className="py-20" data-tour-target="alerts">
+        <section id="alerts" className="py-20">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
@@ -806,7 +806,7 @@ export default function Index() {
         </section>
 
         {/* Contact Section */}
-        <section id="contact" className="py-20" data-tour-target="contact">
+        <section id="contact" className="py-20">
           <div className="container mx-auto px-4">
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
