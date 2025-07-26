@@ -531,7 +531,6 @@ export default function Index() {
                           <TableCell className="text-right">
                             <AIEventInsight
                               event={event}
-                              currentLanguage={language}
                             />
                           </TableCell>
                         </TableRow>
