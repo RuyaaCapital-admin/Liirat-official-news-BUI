@@ -18,7 +18,7 @@ interface SiteTourProps {
 const TOUR_STORAGE_KEY = "liirat-tour-completed";
 
 // Custom tour styles that match our theme
-const getTourStyles = (isDark: boolean): Styles => ({
+const getTourStyles = (isDark: boolean): Partial<Styles> => ({
   options: {
     primaryColor: 'hsl(85 85% 55%)', // Liirat green
     backgroundColor: isDark ? 'hsl(0 0% 8%)' : 'hsl(0 0% 100%)',
@@ -196,7 +196,7 @@ export function SiteTour({
           content: (
             <div>
               <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '8px', color: 'inherit' }}>
-                🔔 نظام التن��يهات الذكي
+                🔔 نظام التنبيهات الذكي
               </h3>
               <p style={{ fontSize: '13px', lineHeight: '1.6', margin: 0, color: 'hsl(var(--muted-foreground))' }}>
                 احصل على تنبيهات فورية ومخصصة عند صدور البيانات الاقتصادية المهمة أو تحركات الأسواق الكبيرة.
