@@ -25,10 +25,10 @@ export function TourTrigger({ variant = 'button', className }: TourTriggerProps)
           size="sm"
           className={`h-9 w-9 px-0 ${className}`}
           onClick={handleStartTour}
-          title="بدء جولة الموقع"
+          title={t('nav.tour')}
         >
           <HelpCircle className="h-4 w-4" />
-          <span className="sr-only">بدء جولة الموقع</span>
+          <span className="sr-only">{t('nav.tour')}</span>
         </Button>
         {tourComponent}
       </>
@@ -42,7 +42,7 @@ export function TourTrigger({ variant = 'button', className }: TourTriggerProps)
           onClick={handleStartTour}
           className={`text-sm text-muted-foreground hover:text-primary transition-colors underline ${className}`}
         >
-          جولة المو��ع
+          جولة الموقع
         </button>
         {tourComponent}
       </>
