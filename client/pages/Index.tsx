@@ -63,8 +63,10 @@ export default function Index() {
   const [selectedCountry, setSelectedCountry] = useState("all");
   const [selectedImportance, setSelectedImportance] = useState("all");
   const [searchEvent, setSearchEvent] = useState("");
+  const [showAlertSettings, setShowAlertSettings] = useState(false);
   const { theme } = useTheme();
   const { language, t, dir } = useLanguage();
+  const { checkEventAlerts } = useAlerts();
 
 
 
@@ -621,7 +623,7 @@ export default function Index() {
 
                   <div className="bg-muted/50 rounded-lg p-4">
                     <h4 className="font-semibold mb-3">
-                      أنواع التنبيهات المتاح��:
+                      أنواع التنبيهات المتاحة:
                     </h4>
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-center gap-2">
@@ -680,7 +682,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تحديثات فورية</h3>
               <p className="text-muted-foreground">
-                بيانات محدثة كل دقيقة من الأسواق العالمية
+                بيانات محدثة كل دقيقة من الأسواق العا��مية
               </p>
             </div>
 
