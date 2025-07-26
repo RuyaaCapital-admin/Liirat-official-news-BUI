@@ -62,24 +62,7 @@ export default function Index() {
   const { theme } = useTheme();
   const { language, t, dir } = useLanguage();
 
-  // Auto-detect language from page content on mount
-  useEffect(() => {
-    const detectPageLanguage = () => {
-      const htmlDir = document.documentElement.getAttribute('dir');
-      if (htmlDir === 'rtl') {
-        setCurrentLanguage('ar');
-      } else if (htmlDir === 'ltr') {
-        setCurrentLanguage('en');
-      } else {
-        // Fallback: check for Arabic content
-        const hasArabicText = document.body.textContent?.includes('العملة') ||
-                             document.body.textContent?.includes('الاقتصادي');
-        setCurrentLanguage(hasArabicText ? 'ar' : 'en');
-      }
-    };
 
-    detectPageLanguage();
-  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -438,7 +421,7 @@ export default function Index() {
                       <SelectContent>
                         <SelectItem value="all">جميع المستويات</SelectItem>
                         <SelectItem value="3">⭐⭐⭐ عالي التأثير</SelectItem>
-                        <SelectItem value="2">��⭐ متوسط التأثير</SelectItem>
+                        <SelectItem value="2">⭐⭐ متوسط التأثير</SelectItem>
                         <SelectItem value="1">⭐ منخفض التأثير</SelectItem>
                       </SelectContent>
                     </Select>
@@ -630,7 +613,7 @@ export default function Index() {
                     </Button>
 
                     <p className="text-sm text-muted-foreground text-center">
-                      سيتم إرسا�� التنبيهات عبر البريد الإلكتروني والواتساب
+                      سيتم إرسال التنبيهات عبر البريد الإلكتروني والواتساب
                     </p>
                   </div>
 
@@ -715,7 +698,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">مصادر موثوقة</h3>
               <p className="text-muted-foreground">
-                من البنوك المركزية والمؤسسات المالية الرسمية
+                من البنوك المركزية وا��مؤسسات المالية الرسمية
               </p>
             </div>
 
