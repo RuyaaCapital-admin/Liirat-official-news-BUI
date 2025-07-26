@@ -247,7 +247,7 @@ export default function Index() {
       </header>
 
       {/* Real-Time Market Ticker */}
-      <MarketTicker />
+      <PriceTicker className="sticky top-[72px] z-40" pauseOnHover={true} speed={60} />
 
       {/* Hero Section */}
       <section className="py-20 lg:py-32 relative overflow-hidden">
