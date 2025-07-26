@@ -523,8 +523,7 @@ export default function Index() {
 
                 <div className="mt-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    البيانات محدثة كل دقيقة من مصادر موثوقة •{" "}
-                    {filteredEvents.length} من أصل {economicEvents.length} حدث
+                    {t('ai.supported')}
                   </p>
                 </div>
               </CardContent>
