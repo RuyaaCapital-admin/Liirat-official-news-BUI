@@ -82,7 +82,7 @@ export function SiteTour({ autoStart = true, onComplete, className }: SiteTourPr
           id: 'contact',
           target: '[href="#contact"], #contact',
           title: '💬 الدعم والمساعدة',
-          description: 'تواصل معنا للحصول على الدعم الفني والاستفسارات',
+          description: '��واصل معنا للحصول على الدعم الفني والاستفسارات',
           emoji: '💬',
           position: 'top'
         },
@@ -154,15 +154,13 @@ export function SiteTour({ autoStart = true, onComplete, className }: SiteTourPr
   // Check if tour was already completed
   useEffect(() => {
     const completed = localStorage.getItem(TOUR_STORAGE_KEY);
-    const detectedLang = detectLanguage();
-    setLanguage(detectedLang);
-    setTourSteps(getTourSteps(detectedLang));
-    
+    setTourSteps(getTourSteps(language));
+
     if (!completed && autoStart) {
       // Show welcome screen first
       setTimeout(() => setShowWelcome(true), 1000);
     }
-  }, [autoStart]);
+  }, [autoStart, language]);
 
   // Find target element for current step
   useEffect(() => {
