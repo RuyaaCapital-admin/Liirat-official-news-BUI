@@ -402,7 +402,7 @@ export default function Index() {
                       <SelectContent>
                         <SelectItem value="all">جميع المستويات</SelectItem>
                         <SelectItem value="3">⭐⭐⭐ عالي التأثير</SelectItem>
-                        <SelectItem value="2">⭐⭐ متوسط التأثير</SelectItem>
+                        <SelectItem value="2">⭐��� متوسط التأثير</SelectItem>
                         <SelectItem value="1">⭐ منخفض التأثير</SelectItem>
                       </SelectContent>
                     </Select>
@@ -432,10 +432,10 @@ export default function Index() {
                 <CardTitle className="flex items-center gap-2 justify-between">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-primary" />
-                    الأحداث الاقتصادية ({filteredEvents.length})
+{language === 'ar' ? 'الأحداث الاقتصادية' : 'Economic Events'} ({filteredEvents.length})
                   </div>
                   <Badge variant="outline" className="text-xs">
-                    تحديث مباشر
+                    {t('calendar.live.badge')}
                   </Badge>
                 </CardTitle>
               </CardHeader>
@@ -741,7 +741,7 @@ export default function Index() {
 
                   <div className="space-y-2">
                     <Label htmlFor="whatsapp" className="text-right block">
-                      رقم الواتساب
+                      رقم الوا��ساب
                     </Label>
                     <Input
                       id="whatsapp"
