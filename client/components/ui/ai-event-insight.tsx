@@ -235,7 +235,7 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
           )}
           disabled={event.actual === "-"}
           onClick={handleAnalysisClick}
-          data-tour-target="ai-analysis"
+
         >
           <Brain className="w-3 h-3 mr-1" />
           تحليل الذكاء الاصطناعي

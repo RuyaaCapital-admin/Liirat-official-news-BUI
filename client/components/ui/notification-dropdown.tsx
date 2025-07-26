@@ -74,7 +74,7 @@ export function NotificationDropdown({
           variant="ghost"
           size="sm"
           className={cn("h-9 w-9 px-0 relative", className)}
-          data-tour-target="alerts"
+
         >
           {unreadCount > 0 ? (
             <BellRing className="h-4 w-4" />
