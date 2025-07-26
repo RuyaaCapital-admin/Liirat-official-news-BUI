@@ -391,7 +391,7 @@ export default function Index() {
 
                   {/* Importance Filter */}
                   <div className="space-y-2">
-                    <Label className="text-right block">مستوى الأهمية</Label>
+                    <Label className={`block ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>{t('calendar.filters.importance')}</Label>
                     <Select
                       value={selectedImportance}
                       onValueChange={setSelectedImportance}
