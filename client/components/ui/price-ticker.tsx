@@ -118,7 +118,7 @@ export function PriceTicker({
     return volatilities[symbol] || 1.0;
   };
 
-  // Fetch data on mount and set up interval
+  // Initialize data on mount and set up interval for updates
   useEffect(() => {
     fetchAssetData();
     const interval = setInterval(fetchAssetData, 30000); // Update every 30 seconds
