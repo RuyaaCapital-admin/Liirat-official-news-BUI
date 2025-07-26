@@ -26,6 +26,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { PriceTicker } from "@/components/ui/price-ticker";
+import { AIEventInsight } from "@/components/ui/ai-event-insight";
+import { SiteTour } from "@/components/ui/site-tour";
+import { TourTrigger, TourFooterLink } from "@/components/ui/tour-trigger";
+import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
+import { NotificationDropdown } from "@/components/ui/notification-dropdown";
+import { AlertSettingsModal } from "@/components/ui/alert-settings-modal";
+import { CustomDatePicker } from "@/components/ui/custom-date-picker";
+import { useLanguage } from "@/contexts/language-context";
+import { useAlerts } from "@/contexts/alert-context";
 import {
   Calendar,
   Bell,
@@ -42,132 +52,6 @@ import {
 import { useState, useEffect } from "react";
 import { useTheme } from "@/hooks/use-theme";
 
-// Updated MarketTicker – replace the old function with this
-const MarketTicker = () => {
-  // Instruments to fetch (BTC, Dow via DIA, Nasdaq via QQQ, gold, silver, oil)
-  const instruments = [
-    { label: "BTC/USD", type: "crypto", id: "bitcoin" },
-    { label: "DOW", type: "stock", symbol: "DIA" },
-    { label: "NASDAQ", type: "stock", symbol: "QQQ" },
-    { label: "Gold", type: "stock", symbol: "XAUUSD" },
-    { label: "Silver", type: "stock", symbol: "XAGUSD" },
-    { label: "Oil", type: "stock", symbol: "WTI" },
-  ];
-
-  // State for fetched quotes and loading status
-  const [tickerData, setTickerData] = useState<
-    { label: string; price: number | null; change: number | null }[]
-  >([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Read Alpha Vantage API key from env (defaults to 'demo')
-  const API_KEY =
-    (import.meta as any).env?.VITE_ALPHA_VANTAGE_API_KEY ||
-    (import.meta as any).env?.VITE_ALPHAVANTAGE_API_KEY ||
-    "demo";
-
-  // Fetch price and change data for each instrument
-  async function fetchPrices() {
-    try {
-      const results = await Promise.all(
-        instruments.map(async (inst) => {
-          try {
-            if (inst.type === "crypto") {
-              const res = await fetch(
-                `https://api.coingecko.com/api/v3/simple/price?ids=${inst.id}&vs_currencies=usd&include_24hr_change=true`,
-              );
-              const data = await res.json();
-              const price: number | null = data?.[inst.id]?.usd ?? null;
-              const change: number | null =
-                data?.[inst.id]?.usd_24h_change ?? null;
-              return { label: inst.label, price, change };
-            } else {
-              const res = await fetch(
-                `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${inst.symbol}&apikey=${API_KEY}`,
-              );
-              const data = await res.json();
-              const quote = data?.["Global Quote"] ?? {};
-              const price = quote["05. price"]
-                ? parseFloat(quote["05. price"])
-                : null;
-              let change: number | null = null;
-              if (quote && quote["10. change percent"]) {
-                const raw = (quote["10. change percent"] as string).replace(
-                  "%",
-                  "",
-                );
-                change = parseFloat(raw);
-              }
-              return { label: inst.label, price, change };
-            }
-          } catch {
-            return { label: inst.label, price: null, change: null };
-          }
-        }),
-      );
-      setTickerData(results);
-      setIsLoading(false);
-    } catch {
-      setTickerData([]);
-      setIsLoading(false);
-    }
-  }
-
-  // Initial fetch and 30‑second refresh
-  useEffect(() => {
-    fetchPrices();
-    const intervalId = setInterval(fetchPrices, 30_000);
-    return () => clearInterval(intervalId);
-  }, []);
-
-  return (
-    <>
-      {isLoading ? (
-        <span>Loading market prices…</span>
-      ) : (
-        <div
-          style={{
-            display: "flex",
-            gap: "1.5rem",
-            whiteSpace: "nowrap",
-            animation: "scroll 30s linear infinite",
-          }}
-        >
-          {tickerData.map((item) => (
-            <span
-              key={item.label}
-              style={{
-                fontWeight: 500,
-                color:
-                  item.change == null
-                    ? "inherit"
-                    : item.change >= 0
-                    ? "#16a34a"
-                    : "#dc2626",
-              }}
-            >
-              {item.label}: {item.price != null ? item.price.toFixed(2) : "–"}
-              {item.change != null ? (
-                <>
-                  {" "}
-                  ({item.change >= 0 ? "+" : ""}
-                  {item.change.toFixed(2)}%)
-                </>
-              ) : null}
-            </span>
-          ))}
-        </div>
-      )}
-      <style>
-        {`@keyframes scroll {
-          0% { transform: translateX(100%); }
-          100% { transform: translateX(-100%); }
-        }`}
-      </style>
-    </>
-  );
-};
-
 export default function Index() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -177,7 +61,10 @@ export default function Index() {
   const [selectedCountry, setSelectedCountry] = useState("all");
   const [selectedImportance, setSelectedImportance] = useState("all");
   const [searchEvent, setSearchEvent] = useState("");
+  const [showAlertSettings, setShowAlertSettings] = useState(false);
   const { theme } = useTheme();
+  const { language, t, dir } = useLanguage();
+  const { checkEventAlerts } = useAlerts();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -316,594 +203,730 @@ export default function Index() {
   });
 
   return (
-    <div className="min-h-screen bg-background arabic">
-      {/* Navigation Header */}
-      <header className="border-b border-border/40 backdrop-blur-md bg-background/95 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4 space-x-reverse">
-            <img
-              src="https://cdn.builder.io/api/v1/assets/8d6e2ebe2191474fb5a6de98317d4278/liirat-official-logo-bf14db?format=webp&width=800"
-              alt="Liirat News"
-              className="h-14 w-auto"
-            />
-          </div>
+    <div
+      className={`min-h-screen bg-background relative ${language === "ar" ? "arabic" : "english"}`}
+    >
+      {/* Global Background Image */}
+      <div className="fixed inset-0 z-0">
+        <img
+          src="https://cdn.builder.io/api/v1/image/assets%2F165a7c0d273f4448b5890b3ec14b12af%2F87665f5fec764be4b49626e43b10972a?format=webp&width=800"
+          alt="Liirat Global Background"
+          className="w-full h-full object-cover opacity-[0.02]"
+        />
+      </div>
 
-          <nav className="hidden md:flex items-center space-x-6 space-x-reverse">
-            <a
-              href="#calendar"
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              التقويم الاقتصادي
-            </a>
-            <a
-              href="#alerts"
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              التنبيهات
-            </a>
-            <a
-              href="#about"
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              حول ليرات
-            </a>
-            <a
-              href="#contact"
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              تواصل معنا
-            </a>
-          </nav>
+      {/* All content with relative positioning */}
+      <div className="relative z-10">
+        {/* Navigation Header */}
+        <header className="border-b border-border/40 backdrop-blur-md bg-background/95 sticky top-0 z-50">
+          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="flex items-center space-x-4 space-x-reverse">
+              <img
+                src="https://cdn.builder.io/api/v1/assets/8d6e2ebe2191474fb5a6de98317d4278/liirat-official-logo-bf14db?format=webp&width=800"
+                alt="Liirat News"
+                className="h-14 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              />
+            </div>
 
-          <div className="flex items-center space-x-2 space-x-reverse">
-            {/* Notification Bell */}
-            <Button variant="ghost" size="sm" className="h-9 w-9 px-0 relative">
-              <BellRing className="h-4 w-4" />
-              <div className="absolute -top-1 -right-1 h-3 w-3 bg-primary rounded-full text-xs flex items-center justify-center text-primary-foreground">
-                3
-              </div>
-              <span className="sr-only">التنبيهات</span>
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
-
-      {/* Real-Time Market Ticker */}
-      <MarketTicker />
-
-      {/* Hero Section */}
-      <section className="py-20 lg:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/20"></div>
-        <div className="container mx-auto px-4 relative">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              أخبار مالية واقتصادية
-              <span className="text-primary block">دقيقة ومحدثة</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-              منصة ليرات للأخبار المالية - تقويم اقتصادي مباشر، تنبيهات فورية،
-              وتحليلات مت��دمة لجميع الأسواق العالمية
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg font-semibold"
-                onClick={() =>
-                  document
-                    .getElementById("calendar")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
+            <nav
+              className={`hidden md:flex items-center space-x-6 ${dir === "rtl" ? "space-x-reverse" : ""}`}
+              data-tour-target="navigation"
+            >
+              <a
+                href="#calendar"
+                className="text-muted-foreground hover:text-primary transition-colors"
               >
-                اطلع على التقويم
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="px-8 py-4 text-lg"
-                onClick={() =>
-                  document
-                    .getElementById("alerts")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
+                {t("nav.calendar")}
+              </a>
+              <a
+                href="#alerts"
+                className="text-muted-foreground hover:text-primary transition-colors"
               >
-                إعداد التنبيهات
-              </Button>
+                {t("nav.alerts")}
+              </a>
+              <a
+                href="#about"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                {t("nav.about")}
+              </a>
+              <a
+                href="#contact"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                {t("nav.contact")}
+              </a>
+            </nav>
+
+            <div className="flex items-center space-x-2 space-x-reverse">
+              {/* Notification Dropdown */}
+              <NotificationDropdown
+                onSettingsClick={() => setShowAlertSettings(true)}
+              />
+              <TourTrigger variant="icon" />
+              <SimpleLanguageToggle />
+              <ThemeToggle />
             </div>
           </div>
-        </div>
-      </section>
+        </header>
 
-      {/* Enhanced Economic Calendar Section */}
-      <section id="calendar" className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              التقويم الاقتصادي المباشر
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              تابع أهم الأحد��ث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع
-              إمكانيات تصفية متقدمة
-            </p>
+        {/* Real-Time Market Ticker */}
+        <PriceTicker
+          className="sticky top-[72px] z-40"
+          pauseOnHover={true}
+          speed={60}
+          data-tour-target="ticker"
+        />
+
+        {/* Hero Section */}
+        <section className="py-20 lg:py-32 relative overflow-hidden">
+          {/* Background Image */}
+          <div className="absolute inset-0">
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets%2F165a7c0d273f4448b5890b3ec14b12af%2F87665f5fec764be4b49626e43b10972a?format=webp&width=800"
+              alt="Liirat Background"
+              className="w-full h-full object-cover opacity-5"
+            />
           </div>
-
-          <div className="max-w-7xl mx-auto">
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Filter className="w-5 h-5 text-primary" />
-                  فلاتر التقويم الاقتصادي
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {/* Filters Row */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                  {/* Date Picker */}
-                  <div className="space-y-2">
-                    <Label className="text-right block">التاريخ</Label>
-                    <Select
-                      value={selectedDate}
-                      onValueChange={setSelectedDate}
-                    >
-                      <SelectTrigger className="text-right">
-                        <SelectValue placeholder="اختر التاريخ" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="today">اليوم</SelectItem>
-                        <SelectItem value="tomorrow">غداً</SelectItem>
-                        <SelectItem value="this-week">هذا الأسبوع</SelectItem>
-                        <SelectItem value="next-week">
-                          الأسبوع القادم
-                        </SelectItem>
-                        <SelectItem value="custom">تاريخ مخصص</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Country/Currency Selector */}
-                  <div className="space-y-2">
-                    <Label className="text-right block">العملة/البلد</Label>
-                    <Select
-                      value={selectedCountry}
-                      onValueChange={setSelectedCountry}
-                    >
-                      <SelectTrigger className="text-right">
-                        <SelectValue placeholder="جميع العملات" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">جميع العملات</SelectItem>
-                        <SelectItem value="USD">
-                          🇺🇸 USD - الدولار الأمريكي
-                        </SelectItem>
-                        <SelectItem value="EUR">🇪🇺 EUR - اليورو</SelectItem>
-                        <SelectItem value="GBP">
-                          🇬🇧 GBP - الجنيه الإسترليني
-                        </SelectItem>
-                        <SelectItem value="JPY">
-                          🇯🇵 JPY - الين الياباني
-                        </SelectItem>
-                        <SelectItem value="AUD">
-                          🇦🇺 AUD - الدولار الأسترالي
-                        </SelectItem>
-                        <SelectItem value="CAD">
-                          🇨🇦 CAD - الدولار الكندي
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Importance Filter */}
-                  <div className="space-y-2">
-                    <Label className="text-right block">مستوى الأهمية</Label>
-                    <Select
-                      value={selectedImportance}
-                      onValueChange={setSelectedImportance}
-                    >
-                      <SelectTrigger className="text-right">
-                        <SelectValue placeholder="جميع المستويات" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">جميع المستويات</SelectItem>
-                        <SelectItem value="3">⭐⭐⭐ عالي التأثير</SelectItem>
-                        <SelectItem value="2">⭐⭐ متوسط التأثير</SelectItem>
-                        <SelectItem value="1">⭐ منخفض التأثير</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Search by Event Name */}
-                  <div className="space-y-2">
-                    <Label className="text-right block">البحث في الأحداث</Label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                      <Input
-                        type="text"
-                        value={searchEvent}
-                        onChange={(e) => setSearchEvent(e.target.value)}
-                        className="text-right pl-10"
-                        placeholder="ابحث عن حدث..."
-                      />
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Economic Events Table */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 justify-between">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-primary" />
-                    الأحداث الاقتصادية ({filteredEvents.length})
-                  </div>
-                  <Badge variant="outline" className="text-xs">
-                    تحديث مباشر
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="text-right">
-                        <TableHead className="text-right">
-                          التاريخ والوقت
-                        </TableHead>
-                        <TableHead className="text-right">
-                          العملة/البلد
-                        </TableHead>
-                        <TableHead className="text-right">الأهمية</TableHead>
-                        <TableHead className="text-right">الحدث</TableHead>
-                        <TableHead className="text-right">
-                          القيمة الفعلية
-                        </TableHead>
-                        <TableHead className="text-right">التوقع</TableHead>
-                        <TableHead className="text-right">السابق</TableHead>
-                        <TableHead className="text-right">
-                          تحليل الذكاء الاصطناعي
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredEvents.map((event, index) => (
-                        <TableRow key={index} className="hover:bg-muted/50">
-                          <TableCell className="text-right">
-                            <div className="font-medium">{event.date}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {event.time} GMT
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <div className="flex items-center justify-center gap-2">
-                              <span className="text-2xl">
-                                {event.countryFlag}
-                              </span>
-                              <span className="font-mono font-bold">
-                                {event.country}
-                              </span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-center">
-                            {renderImportance(event.importance)}
-                          </TableCell>
-                          <TableCell className="text-right english">
-                            <div className="font-medium">{event.event}</div>
-                          </TableCell>
-                          <TableCell className="text-right font-mono font-bold">
-                            {event.actual === "-" ? (
-                              <span className="text-muted-foreground">
-                                قريباً
-                              </span>
-                            ) : (
-                              <span
-                                className={
-                                  event.actual === event.forecast
-                                    ? "text-green-600"
-                                    : "text-red-600"
-                                }
-                              >
-                                {event.actual}
-                              </span>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-right font-mono">
-                            {event.forecast}
-                          </TableCell>
-                          <TableCell className="text-right font-mono">
-                            {event.previous}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-xs whitespace-nowrap"
-                              disabled={event.actual === "-"}
-                            >
-                              تحليل الذكاء الاصطناعي
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-
-                <div className="mt-4 text-center">
-                  <p className="text-sm text-muted-foreground">
-                    البيانات محدثة كل دقيقة من مصادر موثوقة •{" "}
-                    {filteredEvents.length} من أصل {economicEvents.length} حدث
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+          <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/95 to-muted/40"></div>
+          <div className="container mx-auto px-4 relative">
+            <div className="text-center max-w-4xl mx-auto">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                {t("hero.title")}
+                <span className="text-primary block">{t("hero.subtitle")}</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
+                {t("hero.description")}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg font-semibold"
+                  onClick={() =>
+                    document
+                      .getElementById("calendar")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  {t("hero.btn.calendar")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="px-8 py-4 text-lg"
+                  onClick={() =>
+                    document
+                      .getElementById("alerts")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  {t("hero.btn.alerts")}
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Alert System Section */}
-      <section id="alerts" className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
+        {/* Enhanced Economic Calendar Section */}
+        <section
+          id="calendar"
+          className="py-20 bg-muted/30"
+          data-tour-target="calendar"
+        >
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                نظام التنبيهات الذكي
+                {t("calendar.title")}
               </h2>
-              <p className="text-xl text-muted-foreground">
-                احصل على تنبيهات فورية عند صدور البيانات الاقتصادية المهمة
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                {t("calendar.description")}
               </p>
             </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Bell className="w-5 h-5 text-primary" />
-                  إعداد التنبيهات
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
+            <div className="max-w-7xl mx-auto">
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Filter className="w-5 h-5 text-primary" />
+                    {t("calendar.filters.title")}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {/* Filters Row */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    {/* Date Picker */}
                     <div className="space-y-2">
-                      <Label>��ختر زوج العملة أو المؤشر</Label>
-                      <Select
-                        value={selectedPair}
-                        onValueChange={setSelectedPair}
+                      <Label
+                        className={`block ${dir === "rtl" ? "text-right" : "text-left"}`}
                       >
-                        <SelectTrigger className="text-right">
-                          <SelectValue placeholder="اختر من القائمة" />
+                        {t("calendar.filters.date")}
+                      </Label>
+                      <CustomDatePicker
+                        value={selectedDate}
+                        onValueChange={setSelectedDate}
+                      />
+                    </div>
+
+                    {/* Country/Currency Selector */}
+                    <div className="space-y-2">
+                      <Label
+                        className={`block ${dir === "rtl" ? "text-right" : "text-left"}`}
+                      >
+                        {t("calendar.filters.currency")}
+                      </Label>
+                      <Select
+                        value={selectedCountry}
+                        onValueChange={setSelectedCountry}
+                      >
+                        <SelectTrigger
+                          className={dir === "rtl" ? "text-right" : "text-left"}
+                        >
+                          <SelectValue
+                            placeholder={t("calendar.select.currency")}
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="eurusd">EUR/USD</SelectItem>
-                          <SelectItem value="gbpusd">GBP/USD</SelectItem>
-                          <SelectItem value="usdjpy">USD/JPY</SelectItem>
-                          <SelectItem value="usdcad">USD/CAD</SelectItem>
-                          <SelectItem value="audusd">AUD/USD</SelectItem>
-                          <SelectItem value="nfp">
-                            رواتب غير الزراعية الأمريكية
+                          <SelectItem value="all">
+                            {t("currency.all")}
                           </SelectItem>
-                          <SelectItem value="cpi">
-                            مؤشر أسعار المستهلك
+                          <SelectItem value="USD">
+                            {t("currency.usd")}
                           </SelectItem>
-                          <SelectItem value="gdp">
-                            الناتج المحلي الإجمالي
+                          <SelectItem value="EUR">
+                            {t("currency.eur")}
+                          </SelectItem>
+                          <SelectItem value="GBP">
+                            {t("currency.gbp")}
+                          </SelectItem>
+                          <SelectItem value="JPY">
+                            {t("currency.jpy")}
+                          </SelectItem>
+                          <SelectItem value="AUD">
+                            {t("currency.aud")}
+                          </SelectItem>
+                          <SelectItem value="CAD">
+                            {t("currency.cad")}
                           </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
-                    <Button
-                      onClick={handleAlertSubmit}
-                      className="w-full"
-                      disabled={!selectedPair}
-                    >
-                      أرسل لي تنبيهات
-                    </Button>
+                    {/* Importance Filter */}
+                    <div className="space-y-2">
+                      <Label
+                        className={`block ${dir === "rtl" ? "text-right" : "text-left"}`}
+                      >
+                        {t("calendar.filters.importance")}
+                      </Label>
+                      <Select
+                        value={selectedImportance}
+                        onValueChange={setSelectedImportance}
+                      >
+                        <SelectTrigger
+                          className={dir === "rtl" ? "text-right" : "text-left"}
+                        >
+                          <SelectValue
+                            placeholder={t("calendar.select.importance")}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">
+                            {t("importance.all")}
+                          </SelectItem>
+                          <SelectItem value="3">
+                            {t("importance.high")}
+                          </SelectItem>
+                          <SelectItem value="2">
+                            {t("importance.medium")}
+                          </SelectItem>
+                          <SelectItem value="1">
+                            {t("importance.low")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                    <p className="text-sm text-muted-foreground text-center">
-                      سيتم إرسال التنبيهات عبر البريد الإلكتروني والواتساب
+                    {/* Search by Event Name */}
+                    <div className="space-y-2">
+                      <Label
+                        className={`block ${dir === "rtl" ? "text-right" : "text-left"}`}
+                      >
+                        {t("calendar.filters.search")}
+                      </Label>
+                      <div className="relative">
+                        <Search
+                          className={`absolute ${dir === "rtl" ? "right-3" : "left-3"} top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4`}
+                        />
+                        <Input
+                          type="text"
+                          value={searchEvent}
+                          onChange={(e) => setSearchEvent(e.target.value)}
+                          className={`${dir === "rtl" ? "text-right pr-10" : "text-left pl-10"}`}
+                          placeholder={t("calendar.filters.search.placeholder")}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Economic Events Table */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 justify-between">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-5 h-5 text-primary" />
+                      {language === "ar"
+                        ? "الأحداث الاقتصادية"
+                        : "Economic Events"}{" "}
+                      ({filteredEvents.length})
+                    </div>
+                    <Badge variant="outline" className="text-xs">
+                      {t("calendar.live.badge")}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow
+                          className={dir === "rtl" ? "text-right" : "text-left"}
+                        >
+                          <TableHead
+                            className={
+                              dir === "rtl" ? "text-right" : "text-left"
+                            }
+                          >
+                            {t("calendar.table.datetime")}
+                          </TableHead>
+                          <TableHead
+                            className={
+                              dir === "rtl" ? "text-right" : "text-left"
+                            }
+                          >
+                            {t("calendar.table.country")}
+                          </TableHead>
+                          <TableHead
+                            className={
+                              dir === "rtl" ? "text-right" : "text-left"
+                            }
+                          >
+                            {t("calendar.table.importance")}
+                          </TableHead>
+                          <TableHead
+                            className={
+                              dir === "rtl" ? "text-right" : "text-left"
+                            }
+                          >
+                            {t("calendar.table.event")}
+                          </TableHead>
+                          <TableHead
+                            className={
+                              dir === "rtl" ? "text-right" : "text-left"
+                            }
+                          >
+                            {t("calendar.table.actual")}
+                          </TableHead>
+                          <TableHead
+                            className={
+                              dir === "rtl" ? "text-right" : "text-left"
+                            }
+                          >
+                            {t("calendar.table.forecast")}
+                          </TableHead>
+                          <TableHead
+                            className={
+                              dir === "rtl" ? "text-right" : "text-left"
+                            }
+                          >
+                            {t("calendar.table.previous")}
+                          </TableHead>
+                          <TableHead
+                            className={
+                              dir === "rtl" ? "text-right" : "text-left"
+                            }
+                          >
+                            {t("calendar.table.analysis")}
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredEvents.map((event, index) => (
+                          <TableRow key={index} className="hover:bg-muted/50">
+                            <TableCell className="text-right">
+                              <div className="font-medium">{event.date}</div>
+                              <div className="text-sm text-muted-foreground">
+                                {event.time} GMT
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <div className="flex items-center justify-center gap-2">
+                                <span className="text-2xl">
+                                  {event.countryFlag}
+                                </span>
+                                <span className="font-mono font-bold">
+                                  {event.country}
+                                </span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {renderImportance(event.importance)}
+                            </TableCell>
+                            <TableCell className="text-right english">
+                              <div className="font-medium">{event.event}</div>
+                            </TableCell>
+                            <TableCell className="text-right font-mono font-bold">
+                              {event.actual === "-" ? (
+                                <span className="text-muted-foreground">
+                                  {t("calendar.upcoming")}
+                                </span>
+                              ) : (
+                                <span
+                                  className={
+                                    event.actual === event.forecast
+                                      ? "text-green-600"
+                                      : "text-red-600"
+                                  }
+                                >
+                                  {event.actual}
+                                </span>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-right font-mono">
+                              {event.forecast}
+                            </TableCell>
+                            <TableCell className="text-right font-mono">
+                              {event.previous}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <AIEventInsight event={event} />
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  <div className="mt-4 text-center">
+                    <p className="text-sm text-muted-foreground">
+                      {t("ai.supported")}
                     </p>
                   </div>
-
-                  <div className="bg-muted/50 rounded-lg p-4">
-                    <h4 className="font-semibold mb-3">
-                      أنواع التنبيهات المتاحة:
-                    </h4>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-primary rounded-full"></div>
-                        بيانات اقتصادية عالية التأثير
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                        قرارات البنوك المركزية
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        تحركات غير متوقعة في الأسواق
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        تحديثات أسعار الفائدة
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Notification Status */}
-            <div className="mt-8 text-center">
-              <Card className="bg-muted/30 border-dashed">
-                <CardContent className="py-8">
-                  <BellRing className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">
-                    سيتم تفعيل التنبيهات لاحقاً
-                  </p>
                 </CardContent>
               </Card>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* About Liirat Section */}
-      <section id="about" className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              لماذا ليرات نيوز؟
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              منصتك الموثوقة للأخبار المالية والتحليلات الاقتصادية
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Clock className="w-8 h-8 text-primary" />
+        {/* Alert System Section */}
+        <section id="alerts" className="py-20" data-tour-target="alerts">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  {t("alerts.title")}
+                </h2>
+                <p className="text-xl text-muted-foreground">
+                  {t("alerts.description")}
+                </p>
               </div>
-              <h3 className="font-bold text-lg mb-2">تحديثات فورية</h3>
-              <p className="text-muted-foreground">
-                بيانات محدثة كل دقيقة من الأسواق العالمية
-              </p>
-            </div>
 
-            <div className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="font-bold text-lg mb-2">تحليلات متقدمة</h3>
-              <p className="text-muted-foreground">
-                تحليلات عميقة ل��أحداث الاقتصادية
-              </p>
-            </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Bell className="w-5 h-5 text-primary" />
+                    {t("alerts.setup.title")}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>{t("alerts.select.pair")}</Label>
+                        <Select
+                          value={selectedPair}
+                          onValueChange={setSelectedPair}
+                        >
+                          <SelectTrigger
+                            className={
+                              dir === "rtl" ? "text-right" : "text-left"
+                            }
+                          >
+                            <SelectValue
+                              placeholder={t("alerts.select.placeholder")}
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="eurusd">
+                              {t("alert.pairs.eurusd")}
+                            </SelectItem>
+                            <SelectItem value="gbpusd">
+                              {t("alert.pairs.gbpusd")}
+                            </SelectItem>
+                            <SelectItem value="usdjpy">
+                              {t("alert.pairs.usdjpy")}
+                            </SelectItem>
+                            <SelectItem value="usdcad">
+                              {t("alert.pairs.usdcad")}
+                            </SelectItem>
+                            <SelectItem value="audusd">
+                              {t("alert.pairs.audusd")}
+                            </SelectItem>
+                            <SelectItem value="nfp">
+                              {t("alert.pairs.nfp")}
+                            </SelectItem>
+                            <SelectItem value="cpi">
+                              {t("alert.pairs.cpi")}
+                            </SelectItem>
+                            <SelectItem value="gdp">
+                              {t("alert.pairs.gdp")}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-            <div className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="font-bold text-lg mb-2">مصادر موثوقة</h3>
-              <p className="text-muted-foreground">
-                من البنوك المركزية والمؤسسات المالية الرسمية
-              </p>
-            </div>
+                      <Button
+                        onClick={handleAlertSubmit}
+                        className="w-full"
+                        disabled={!selectedPair}
+                      >
+                        {t("alerts.btn.submit")}
+                      </Button>
 
-            <div className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Globe className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="font-bold text-lg mb-2">تغطية عالمية</h3>
-              <p className="text-muted-foreground">
-                جميع الأسواق والعملات الرئيسية
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+                      <p className="text-sm text-muted-foreground text-center">
+                        {t("alerts.info")}
+                      </p>
+                    </div>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              تواصل مع فريق ليرات
-            </h2>
-            <p className="text-xl text-muted-foreground mb-8">
-              للاستفسارات والدعم الفني
-            </p>
-
-            <Card className="text-right">
-              <CardContent className="p-8">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="text-right block">
-                      الاسم الكامل
-                    </Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required
-                      className="text-right"
-                      placeholder="أدخل اسمك الكامل"
-                    />
+                    <div className="bg-muted/50 rounded-lg p-4">
+                      <h4 className="font-semibold mb-3">
+                        {t("alerts.types.title")}
+                      </h4>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-primary rounded-full"></div>
+                          {t("alerts.types.high")}
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                          {t("alerts.types.central")}
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          {t("alerts.types.unexpected")}
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          {t("alerts.types.rates")}
+                        </li>
+                      </ul>
+                    </div>
                   </div>
+                </CardContent>
+              </Card>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-right block">
-                      البريد الإلكتروني
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      className="text-right"
-                      placeholder="example@email.com"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="whatsapp" className="text-right block">
-                      رقم الواتساب
-                    </Label>
-                    <Input
-                      id="whatsapp"
-                      type="tel"
-                      value={whatsapp}
-                      onChange={(e) => setWhatsapp(e.target.value)}
-                      className="text-right"
-                      placeholder="+966xxxxxxxxx"
-                    />
-                  </div>
-
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 text-lg font-semibold"
-                  >
-                    إرسال رسالة
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-muted/50 border-t border-border py-12">
-        <div className="container mx-auto px-4">
-          <div className="text-center">
-            <img
-              src="https://cdn.builder.io/api/v1/assets/8d6e2ebe2191474fb5a6de98317d4278/liirat-official-logo-bf14db?format=webp&width=800"
-              alt="Liirat News"
-              className="h-8 w-auto mx-auto mb-4"
-            />
-            <p className="text-muted-foreground mb-4">
-              منصة ليرات للأخبار المالية والاقتصادية
-            </p>
-            <div className="flex justify-center space-x-6 space-x-reverse text-sm text-muted-foreground">
-              <a href="#" className="hover:text-primary transition-colors">
-                سياسة الخصوصية
-              </a>
-              <a href="#" className="hover:text-primary transition-colors">
-                شروط الاستخدام
-              </a>
-              <a href="#" className="hover:text-primary transition-colors">
-                تواصل معنا
-              </a>
+              {/* Notification Status */}
+              <div className="mt-8 text-center">
+                <Card className="bg-muted/30 border-dashed">
+                  <CardContent className="py-8">
+                    <BellRing className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">
+                      {t("alerts.status")}
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-4">
-              © 2024 Liirat News. جميع الحقوق محفوظة.
-            </p>
           </div>
-        </div>
-      </footer>
+        </section>
+
+        {/* About Liirat Section */}
+        <section id="about" className="py-20 bg-muted/30">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                {t("about.title")}
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                {t("about.description")}
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Clock className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="font-bold text-lg mb-2">
+                  {t("about.realtime.title")}
+                </h3>
+                <p className="text-muted-foreground">
+                  {t("about.realtime.desc")}
+                </p>
+              </div>
+
+              <div className="text-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="font-bold text-lg mb-2">
+                  {t("about.analysis.title")}
+                </h3>
+                <p className="text-muted-foreground">
+                  {t("about.analysis.desc")}
+                </p>
+              </div>
+
+              <div className="text-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Shield className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="font-bold text-lg mb-2">
+                  {t("about.sources.title")}
+                </h3>
+                <p className="text-muted-foreground">
+                  {t("about.sources.desc")}
+                </p>
+              </div>
+
+              <div className="text-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Globe className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="font-bold text-lg mb-2">
+                  {t("about.coverage.title")}
+                </h3>
+                <p className="text-muted-foreground">
+                  {t("about.coverage.desc")}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Contact Section */}
+        <section id="contact" className="py-20" data-tour-target="contact">
+          <div className="container mx-auto px-4">
+            <div className="max-w-2xl mx-auto text-center">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                {t("contact.title")}
+              </h2>
+              <p className="text-xl text-muted-foreground mb-8">
+                {t("contact.description")}
+              </p>
+
+              <Card className="text-right">
+                <CardContent className="p-8">
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="name"
+                        className={`block ${dir === "rtl" ? "text-right" : "text-left"}`}
+                      >
+                        {t("contact.form.name")}
+                      </Label>
+                      <Input
+                        id="name"
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        className={dir === "rtl" ? "text-right" : "text-left"}
+                        placeholder={t("contact.form.name.placeholder")}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="email"
+                        className={`block ${dir === "rtl" ? "text-right" : "text-left"}`}
+                      >
+                        {t("contact.form.email")}
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className={dir === "rtl" ? "text-right" : "text-left"}
+                        placeholder={t("contact.form.email.placeholder")}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="whatsapp"
+                        className={`block ${dir === "rtl" ? "text-right" : "text-left"}`}
+                      >
+                        {t("contact.form.whatsapp")}
+                      </Label>
+                      <Input
+                        id="whatsapp"
+                        type="tel"
+                        value={whatsapp}
+                        onChange={(e) => setWhatsapp(e.target.value)}
+                        className={dir === "rtl" ? "text-right" : "text-left"}
+                        placeholder={t("contact.form.whatsapp.placeholder")}
+                      />
+                    </div>
+
+                    <Button
+                      type="submit"
+                      size="lg"
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 text-lg font-semibold"
+                    >
+                      {t("contact.form.submit")}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="bg-muted/50 border-t border-border py-12">
+          <div className="container mx-auto px-4">
+            <div className="text-center">
+              <img
+                src="https://cdn.builder.io/api/v1/assets/8d6e2ebe2191474fb5a6de98317d4278/liirat-official-logo-bf14db?format=webp&width=800"
+                alt="Liirat News"
+                className="h-8 w-auto mx-auto mb-4"
+              />
+              <p className="text-muted-foreground mb-4">
+                {t("footer.description")}
+              </p>
+              <div className="flex justify-center space-x-6 space-x-reverse text-sm text-muted-foreground">
+                <a href="#" className="hover:text-primary transition-colors">
+                  {t("footer.privacy")}
+                </a>
+                <a href="#" className="hover:text-primary transition-colors">
+                  {t("footer.terms")}
+                </a>
+                <a href="#" className="hover:text-primary transition-colors">
+                  {t("footer.contact")}
+                </a>
+                <TourFooterLink />
+              </div>
+              <p className="text-xs text-muted-foreground mt-4">
+                {t("footer.copyright")}
+              </p>
+            </div>
+          </div>
+        </footer>
+      </div>
+
+      {/* Site Tour Component */}
+      <SiteTour />
+
+      {/* Alert Settings Modal */}
+      <AlertSettingsModal
+        open={showAlertSettings}
+        onOpenChange={setShowAlertSettings}
+      />
     </div>
   );
 }
