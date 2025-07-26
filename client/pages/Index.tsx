@@ -267,6 +267,7 @@ export default function Index() {
               <span className="sr-only">التنبيهات</span>
             </Button>
             <TourTrigger variant="icon" />
+            <LanguageSwitcher variant="icon" />
             <ThemeToggle />
           </div>
         </div>
@@ -323,7 +324,7 @@ export default function Index() {
                     ?.scrollIntoView({ behavior: "smooth" })
                 }
               >
-                إعداد التنبيهات
+                إعداد ا��تنبيهات
               </Button>
             </div>
           </div>
@@ -467,7 +468,7 @@ export default function Index() {
                           التاريخ والوقت
                         </TableHead>
                         <TableHead className="text-right">
-                          العملة/ا��بلد
+                          العملة/البلد
                         </TableHead>
                         <TableHead className="text-right">الأهمية</TableHead>
                         <TableHead className="text-right">الحدث</TableHead>
@@ -595,7 +596,7 @@ export default function Index() {
                             رواتب غير الزراعية الأمريكية
                           </SelectItem>
                           <SelectItem value="cpi">
-                            مؤشر أسعار المستهلك
+                            مؤشر أسعا�� المستهلك
                           </SelectItem>
                           <SelectItem value="gdp">
                             الناتج المحلي الإجمالي
@@ -624,7 +625,7 @@ export default function Index() {
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-primary rounded-full"></div>
-                        بيانات اقتصادية عالية التأثير
+                        بيانات اقتصا��ية عالية التأثير
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
@@ -650,7 +651,7 @@ export default function Index() {
                 <CardContent className="py-8">
                   <BellRing className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">
-                    سيتم تفعيل التنبيهات لاحقاً
+                    سيتم تفعيل التن��يهات لاحقاً
                   </p>
                 </CardContent>
               </Card>
