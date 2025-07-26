@@ -283,6 +283,7 @@ export default function Index() {
               </div>
               <span className="sr-only">التنبيهات</span>
             </Button>
+            <TourTrigger variant="icon" />
             <ThemeToggle />
           </div>
         </div>
@@ -813,7 +814,7 @@ export default function Index() {
               className="h-8 w-auto mx-auto mb-4"
             />
             <p className="text-muted-foreground mb-4">
-              منصة ليرات للأخبار المالية والاقتصادية
+              منصة ليرات للأخبار المالية والاق��صادية
             </p>
             <div className="flex justify-center space-x-6 space-x-reverse text-sm text-muted-foreground">
               <a href="#" className="hover:text-primary transition-colors">
