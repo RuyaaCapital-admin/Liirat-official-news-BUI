@@ -129,11 +129,11 @@ Keep the analysis concise but informative, suitable for traders and investors. F
 
 📈 التأثير المتوقع على الأسواق:
 ${eventData.actual !== eventData.forecast ?
-  `نتوقع تأثيراً ${eventData.importance === 3 ? 'قوياً' : 'معتدلاً'} على عملة ${eventData.country} والأسواق المرتبط�� بها. قد نشهد تحركات في أسواق الذهب والنفط والمؤشرات الرئيسية.` :
+  `نتوقع تأثيراً ${eventData.importance === 3 ? 'قوياً' : 'معتدلاً'} على عملة ${eventData.country} والأسواق المرتبطة بها. قد نشهد تحركات في أسواق الذهب والنفط والمؤشرات الرئيسية.` :
   'التأثير قد يكون محدوداً نظراً لتوافق البيانات مع التوقعات، لكن السوق قد يركز على التفاصيل والتوجهات المستقبلية.'
 }
 
-⚠️ هذا تحليل تجريبي. للحصول على تحليل حقيقي، يرجى إعداد مفتاح OpenAI API.`,
+⚠️ هذا تحليل تجريبي. للح��ول على تحليل حقيقي، يرجى إعداد مفتاح OpenAI API.`,
         whatHappened: `البيانات الفعلية: ${eventData.actual}، المتوقع: ${eventData.forecast}`,
         whyImportant: `حدث بأهمية ${eventData.importance}/3 يؤثر على اقتصاد ${eventData.country}`,
         marketImpact: 'تأثير متوقع على العملات والأسواق العالمية',
@@ -391,14 +391,8 @@ ${eventData.actual !== eventData.forecast ?
                 </div>
                 
                 <div className="mt-6 pt-4 border-t border-border">
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>مدعوم بالذكاء الاصطناعي</span>
-                    <div className="flex items-center gap-2">
-                      <span>اللغة: {insight.language === 'ar' ? 'العربية' : 'English'}</span>
-                      <Badge variant="outline" className="text-xs">
-                        GPT-3.5
-                      </Badge>
-                    </div>
+                  <div className="flex items-center justify-center text-xs text-muted-foreground">
+                    <span>مدعوم بالذك��ء الاصطناعي</span>
                   </div>
                 </div>
               </CardContent>
