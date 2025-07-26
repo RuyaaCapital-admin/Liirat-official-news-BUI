@@ -365,7 +365,7 @@ export function SiteTour({
     if (type === EVENTS.STEP_AFTER || type === EVENTS.TARGET_NOT_FOUND) {
       // Update step index
       setStepIndex(index + (action === ACTIONS.PREV ? -1 : 1));
-    } else if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+    } else if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
       // Tour completed or skipped
       setRun(false);
       setStepIndex(0);
