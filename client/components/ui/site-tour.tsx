@@ -141,7 +141,7 @@ export function SiteTour({
                 📈 شريط الأسعار المباشر
               </h3>
               <p style={{ fontSize: '13px', lineHeight: '1.6', margin: 0, color: 'hsl(var(--muted-foreground))' }}>
-                تابع أسعار العملات والذهب والنفط والمؤشرات العالمية ل��ظة بلحظة. البيانات محدثة كل ثانية من أسواق المال العالمية.
+                تابع أسعار العملات والذهب والنفط والمؤشرات العالمية لحظة بلحظة. البيانات محدثة كل ثانية من أسواق المال العالمية.
               </p>
             </div>
           ),
@@ -413,10 +413,9 @@ export function SiteTour({
         }
       }}
       tooltipComponent={({ tooltipProps, primaryProps, backProps, skipProps, isLastStep, step }) => (
-        <div 
+        <div
           {...tooltipProps}
           style={{
-            ...tooltipProps.style,
             backgroundColor: isDark ? 'hsl(0 0% 8%)' : 'hsl(0 0% 100%)',
             border: `2px solid hsl(85 85% 55%)`,
             borderRadius: 12,
