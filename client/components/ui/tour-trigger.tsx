@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { HelpCircle, Play } from 'lucide-react';
 import { useSiteTour } from './site-tour';
+import { useLanguage } from '@/contexts/language-context';
 
 interface TourTriggerProps {
   variant?: 'button' | 'icon' | 'text';
