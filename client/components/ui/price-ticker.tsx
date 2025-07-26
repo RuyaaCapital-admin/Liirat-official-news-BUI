@@ -87,8 +87,8 @@ export function PriceTicker({
   // Get realistic base prices for different assets
   const getBasePriceForAsset = (symbol: string): number => {
     const basePrices: { [key: string]: number } = {
-      'BTC/USD': 95000,
-      'ETH/USD': 3500,
+      'BTC/USD': 95420,
+      'ETH/USD': 3520,
       'EUR/USD': 1.0850,
       'GBP/USD': 1.2680,
       'USD/JPY': 149.50,
@@ -99,6 +99,23 @@ export function PriceTicker({
       'S&P 500': 4850,
     };
     return basePrices[symbol] || 100;
+  };
+
+  // Get realistic volatility for different asset types
+  const getVolatilityForAsset = (symbol: string): number => {
+    const volatilities: { [key: string]: number } = {
+      'BTC/USD': 5.0,    // High volatility crypto
+      'ETH/USD': 6.0,    // High volatility crypto
+      'EUR/USD': 0.8,    // Low volatility forex
+      'GBP/USD': 1.0,    // Medium volatility forex
+      'USD/JPY': 0.7,    // Low volatility forex
+      'XAU/USD': 1.5,    // Medium volatility commodity
+      'WTI': 2.5,        // High volatility commodity
+      'NASDAQ': 1.8,     // Medium volatility index
+      'DOW': 1.2,        // Medium volatility index
+      'S&P 500': 1.0,    // Medium volatility index
+    };
+    return volatilities[symbol] || 1.0;
   };
 
   // Fetch data on mount and set up interval
