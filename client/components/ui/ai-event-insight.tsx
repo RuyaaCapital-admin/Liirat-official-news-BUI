@@ -89,7 +89,7 @@ export function AIEventInsight({ event, currentLanguage = 'ar', className }: AIE
 
     if (language === 'ar') {
       const analysis = isAboveExpected
-        ? `${eventData.event} أعلى من المتوقع، قد يؤثر إيجابياً على ${eventData.country}.`
+        ? `${eventData.event} أعلى من المتوقع، قد يؤثر إ��جابياً على ${eventData.country}.`
         : `${eventData.event} أقل من المتوقع، ضغط محتمل على ${eventData.country}.`;
 
       return {
@@ -225,6 +225,7 @@ export function AIEventInsight({ event, currentLanguage = 'ar', className }: AIE
           )}
           disabled={event.actual === "-"}
           onClick={handleAnalysisClick}
+          data-tour-target="ai-analysis"
         >
           <Brain className="w-3 h-3 mr-1" />
           تحليل الذكاء الاصطناعي
