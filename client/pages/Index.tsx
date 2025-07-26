@@ -402,7 +402,7 @@ export default function Index() {
                       <SelectContent>
                         <SelectItem value="all">جميع المستويات</SelectItem>
                         <SelectItem value="3">⭐⭐⭐ عالي التأثير</SelectItem>
-                        <SelectItem value="2">⭐⭐ متوسط التأثير</SelectItem>
+                        <SelectItem value="2">⭐⭐ م��وسط التأثير</SelectItem>
                         <SelectItem value="1">⭐ منخفض التأثير</SelectItem>
                       </SelectContent>
                     </Select>
@@ -656,9 +656,9 @@ export default function Index() {
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Clock className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="font-bold text-lg mb-2">تحديثات فورية</h3>
+              <h3 className="font-bold text-lg mb-2">{t('about.realtime.title')}</h3>
               <p className="text-muted-foreground">
-                بيانات محدثة كل دقيقة من الأسواق العالمية
+                {t('about.realtime.desc')}
               </p>
             </div>
 
