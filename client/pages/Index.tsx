@@ -589,11 +589,11 @@ export default function Index() {
                       className="w-full"
                       disabled={!selectedPair}
                     >
-                      أرسل لي تنبيهات
+                      {t('alerts.btn.submit')}
                     </Button>
 
                     <p className="text-sm text-muted-foreground text-center">
-                      سيتم إرسال التنبيهات عبر البريد الإلكتروني والواتساب
+                      {t('alerts.info')}
                     </p>
                   </div>
 
