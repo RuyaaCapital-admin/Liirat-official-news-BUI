@@ -57,6 +57,9 @@ export default function Index() {
   const [searchEvent, setSearchEvent] = useState("");
   const { theme } = useTheme();
 
+  // Language detection - can be extended for user preference
+  const [currentLanguage, setCurrentLanguage] = useState<'ar' | 'en'>('ar');
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Connect to Supabase
@@ -397,7 +400,7 @@ export default function Index() {
                       onValueChange={setSelectedImportance}
                     >
                       <SelectTrigger className="text-right">
-                        <SelectValue placeholder="جميع المستويات" />
+                        <SelectValue placeholder="ج��يع المستويات" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">جميع المستويات</SelectItem>
@@ -568,7 +571,7 @@ export default function Index() {
                         onValueChange={setSelectedPair}
                       >
                         <SelectTrigger className="text-right">
-                          <SelectValue placeholder="اخت�� من القائمة" />
+                          <SelectValue placeholder="اختر من القائمة" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="eurusd">EUR/USD</SelectItem>
@@ -583,7 +586,7 @@ export default function Index() {
                             مؤشر أسعار المستهلك
                           </SelectItem>
                           <SelectItem value="gdp">
-                            الناتج المحلي الإجمالي
+                            الناتج المحلي الإجمال��
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -796,7 +799,7 @@ export default function Index() {
               </a>
             </div>
             <p className="text-xs text-muted-foreground mt-4">
-              © 2024 Liirat News. جميع الحقوق م��فوظة.
+              © 2024 Liirat News. جميع الحقو�� م��فوظة.
             </p>
           </div>
         </div>
