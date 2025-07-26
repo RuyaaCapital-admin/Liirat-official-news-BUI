@@ -400,7 +400,7 @@ export default function Index() {
                         <SelectValue placeholder={t('calendar.select.importance')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">جميع المستويات</SelectItem>
+                        <SelectItem value="all">{t('importance.all')}</SelectItem>
                         <SelectItem value="3">⭐⭐⭐ عالي التأثير</SelectItem>
                         <SelectItem value="2">⭐⭐ م��وسط التأثير</SelectItem>
                         <SelectItem value="1">⭐ منخفض التأثير</SelectItem>
