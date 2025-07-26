@@ -225,30 +225,30 @@ export default function Index() {
             />
           </div>
 
-          <nav className="hidden md:flex items-center space-x-6 space-x-reverse" data-tour-target="navigation">
+          <nav className={`hidden md:flex items-center space-x-6 ${dir === 'rtl' ? 'space-x-reverse' : ''}`} data-tour-target="navigation">
             <a
               href="#calendar"
               className="text-muted-foreground hover:text-primary transition-colors"
             >
-              التقويم الاقتصادي
+              {t('nav.calendar')}
             </a>
             <a
               href="#alerts"
               className="text-muted-foreground hover:text-primary transition-colors"
             >
-              التنبيهات
+              {t('nav.alerts')}
             </a>
             <a
               href="#about"
               className="text-muted-foreground hover:text-primary transition-colors"
             >
-              حول ليرات
+              {t('nav.about')}
             </a>
             <a
               href="#contact"
               className="text-muted-foreground hover:text-primary transition-colors"
             >
-              تواصل معنا
+              {t('nav.contact')}
             </a>
           </nav>
 
@@ -324,7 +324,7 @@ export default function Index() {
                     ?.scrollIntoView({ behavior: "smooth" })
                 }
               >
-                إعداد ا��تنبيهات
+                إعداد التنبيهات
               </Button>
             </div>
           </div>
@@ -563,7 +563,7 @@ export default function Index() {
                 نظام التنبيهات الذكي
               </h2>
               <p className="text-xl text-muted-foreground">
-                احصل على تنبيهات فورية عند صدور البيانات الاقتصادية المهمة
+                احصل على تنبيهات فورية عند صدور ا��بيانات الاقتصادية المهمة
               </p>
             </div>
 
@@ -596,7 +596,7 @@ export default function Index() {
                             رواتب غير الزراعية الأمريكية
                           </SelectItem>
                           <SelectItem value="cpi">
-                            مؤشر أسعا�� المستهلك
+                            مؤشر أسعار المستهلك
                           </SelectItem>
                           <SelectItem value="gdp">
                             الناتج المحلي الإجمالي
@@ -625,7 +625,7 @@ export default function Index() {
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-primary rounded-full"></div>
-                        بيانات اقتصا��ية عالية التأثير
+                        بيانات اقتصادية عالية التأثير
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
@@ -651,7 +651,7 @@ export default function Index() {
                 <CardContent className="py-8">
                   <BellRing className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">
-                    سيتم تفعيل التن��يهات لاحقاً
+                    سيتم تفعيل التنبيهات لاحقاً
                   </p>
                 </CardContent>
               </Card>
