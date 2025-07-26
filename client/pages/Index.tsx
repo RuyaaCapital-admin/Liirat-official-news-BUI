@@ -380,7 +380,7 @@ export default function Index() {
                           🇯🇵 JPY - ال��ن الياباني
                         </SelectItem>
                         <SelectItem value="AUD">
-                          🇦🇺 AUD - الدولار الأسترالي
+                          {t('currency.aud')}
                         </SelectItem>
                         <SelectItem value="CAD">
                           🇨🇦 CAD - الدولار الكندي
