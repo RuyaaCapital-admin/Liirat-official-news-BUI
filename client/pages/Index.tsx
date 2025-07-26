@@ -364,8 +364,8 @@ export default function Index() {
                       value={selectedCountry}
                       onValueChange={setSelectedCountry}
                     >
-                      <SelectTrigger className="text-right">
-                        <SelectValue placeholder="جميع العملات" />
+                      <SelectTrigger className={dir === 'rtl' ? 'text-right' : 'text-left'}>
+                        <SelectValue placeholder={t('calendar.select.currency')} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">جميع العملات</SelectItem>
