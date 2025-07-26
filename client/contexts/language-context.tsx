@@ -62,7 +62,7 @@ const translations = {
     'alerts.info': 'سيتم إرسال التنبيهات عبر البريد الإلكتروني والواتساب',
     'alerts.types.title': 'أنواع التنبيهات المتاحة:',
     'alerts.types.high': 'بيانات اقتصادية عالية التأثير',
-    'alerts.types.central': 'قرارات البنوك المركزية',
+    'alerts.types.central': 'قرارات البنوك المر��زية',
     'alerts.types.unexpected': 'تحركات غير متوقعة في الأسواق',
     'alerts.types.rates': 'تحديثات أسعار الفائدة',
     'alerts.status': 'سيتم تفعيل التنبيهات لاحقاً',
@@ -77,12 +77,12 @@ const translations = {
     'about.sources.title': 'مصادر موثوقة',
     'about.sources.desc': 'من البنوك المركزية والمؤسسات المالية الرسمية',
     'about.coverage.title': 'تغطية عالمية',
-    'about.coverage.desc': 'جميع الأسواق والعملات الرئيسية',
+    'about.coverage.desc': 'جميع الأسواق والعملات ��لرئيسية',
     
     // Contact Section
     'contact.title': 'تواصل مع فريق ليرات',
     'contact.description': 'للاستفسارات والدعم الفني',
-    'contact.form.name': 'الاسم الكامل',
+    'contact.form.name': 'ال��سم الكامل',
     'contact.form.name.placeholder': 'أدخل اسمك الكامل',
     'contact.form.email': 'البريد الإلكتروني',
     'contact.form.email.placeholder': 'example@email.com',
@@ -106,7 +106,7 @@ const translations = {
     'ai.loading.desc': 'قد يستغرق هذا بضع ثوان',
     'ai.error.title': 'خطأ في الحصول على التحليل',
     'ai.retry': 'إعادة المحاولة',
-    'ai.analysis.title': 'التحليل الذكي',
+    'ai.analysis.title': '��لتحليل الذكي',
     'ai.powered': 'مدعوم بالذكاء الاصطناعي',
     'ai.importance': 'أهمية',
     'ai.actual': 'الفعلي',
@@ -133,7 +133,45 @@ const translations = {
     'currency.gbp': '🇬🇧 GBP - الجنيه الإسترليني',
     'currency.jpy': '🇯🇵 JPY - الين الياباني',
     'currency.aud': '🇦🇺 AUD - الدولار الأسترالي',
-    'currency.cad': '🇨🇦 CAD - الدول��ر الكندي',
+    'currency.cad': '🇨🇦 CAD - الدولار الكندي',
+
+    // Calendar placeholders and labels
+    'calendar.select.date': 'اختر التاريخ',
+    'calendar.select.currency': 'جميع العملات',
+    'calendar.select.importance': 'جميع المستويات',
+
+    // Alert pairs
+    'alert.pairs.eurusd': 'EUR/USD',
+    'alert.pairs.gbpusd': 'GBP/USD',
+    'alert.pairs.usdjpy': 'USD/JPY',
+    'alert.pairs.usdcad': 'USD/CAD',
+    'alert.pairs.audusd': 'AUD/USD',
+    'alert.pairs.nfp': 'رواتب غير الزراعية الأمريكية',
+    'alert.pairs.cpi': 'مؤشر أسعار المستهلك',
+    'alert.pairs.gdp': 'الناتج المحلي الإجمالي',
+
+    // Error messages
+    'error.loading': 'خطأ في التحميل',
+    'error.retry': 'إعادة المحاولة',
+    'error.network': 'خطأ في الشبكة',
+
+    // Common actions
+    'common.loading': 'جاري التحميل...',
+    'common.save': 'حفظ',
+    'common.cancel': 'إلغاء',
+    'common.close': 'إغلاق',
+    'common.edit': 'تعديل',
+    'common.delete': 'حذف',
+    'common.add': 'إضافة',
+    'common.select': 'اختيار',
+    'common.confirm': 'تأكيد',
+
+    // Notification system
+    'notifications.title': 'التنبيهات',
+    'notifications.empty': 'لا توجد تنبيهات',
+    'notifications.mark_read': 'تحديد كمقروء',
+    'notifications.clear_all': 'مسح الكل',
+    'notifications.settings': 'إعدادات التنبيهات',
   },
   en: {
     // Navigation
@@ -255,7 +293,7 @@ const translations = {
     'currency.gbp': '🇬🇧 GBP - British Pound',
     'currency.jpy': '🇯🇵 JPY - Japanese Yen',
     'currency.aud': '🇦🇺 AUD - Australian Dollar',
-    'currency.cad': '🇨�� CAD - Canadian Dollar',
+    'currency.cad': '🇨🇦 CAD - Canadian Dollar',
   }
 };
 
