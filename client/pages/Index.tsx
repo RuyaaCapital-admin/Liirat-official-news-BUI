@@ -26,6 +26,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { PriceTicker } from "@/components/ui/price-ticker";
 import {
   Calendar,
   Bell,
@@ -766,7 +767,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تحديثات فورية</h3>
               <p className="text-muted-foreground">
-                بيانات محدثة كل دقيقة من الأسواق العالمية
+                بيانات محدثة كل دقيقة من ال��سواق العالمية
               </p>
             </div>
 
@@ -889,7 +890,7 @@ export default function Index() {
             </p>
             <div className="flex justify-center space-x-6 space-x-reverse text-sm text-muted-foreground">
               <a href="#" className="hover:text-primary transition-colors">
-                سياسة الخصوصية
+                سيا��ة الخصوصية
               </a>
               <a href="#" className="hover:text-primary transition-colors">
                 شروط الاستخدام
