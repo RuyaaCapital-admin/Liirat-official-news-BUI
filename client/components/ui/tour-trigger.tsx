@@ -58,7 +58,7 @@ export function TourTrigger({ variant = 'button', className }: TourTriggerProps)
         className={`gap-2 ${className}`}
       >
         <Play className="w-4 h-4" />
-        بدء جولة الموقع
+        {t('nav.tour')}
       </Button>
       {tourComponent}
     </>
