@@ -142,7 +142,7 @@ export default function Index() {
       time: "08:30",
       event: "Employment Change",
       country: "AUD",
-      countryFlag: "🇦🇺",
+      countryFlag: "��🇺",
       forecast: "15.2K",
       previous: "12.8K",
       actual: "-",
@@ -241,7 +241,7 @@ export default function Index() {
             />
           </div>
 
-          <nav className="hidden md:flex items-center space-x-6 space-x-reverse">
+          <nav className="hidden md:flex items-center space-x-6 space-x-reverse" data-tour-target="navigation">
             <a
               href="#calendar"
               className="text-muted-foreground hover:text-primary transition-colors"
