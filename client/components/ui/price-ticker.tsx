@@ -56,18 +56,39 @@ export function PriceTicker({
   // Fetch real-time data
   const fetchAssetData = async () => {
     try {
-      // For crypto assets, use CoinGecko API
+      // For crypto assets, use CoinGecko API with better error handling
       const cryptoIds = assetConfigs.filter(a => a.type === 'crypto').map(a => a.id);
-      
+
       let cryptoData: any = {};
       if (cryptoIds.length > 0) {
         try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
           const cryptoResponse = await fetch(
-            `https://api.coingecko.com/api/v3/simple/price?ids=${cryptoIds.join(',')}&vs_currencies=usd&include_24hr_change=true`
+            `https://api.coingecko.com/api/v3/simple/price?ids=${cryptoIds.join(',')}&vs_currencies=usd&include_24hr_change=true`,
+            {
+              signal: controller.signal,
+              mode: 'cors',
+              headers: {
+                'Accept': 'application/json',
+              }
+            }
           );
+          clearTimeout(timeoutId);
+
+          if (!cryptoResponse.ok) {
+            throw new Error(`API returned ${cryptoResponse.status}`);
+          }
+
           cryptoData = await cryptoResponse.json();
         } catch (error) {
-          console.warn('Crypto API failed, using mock data');
+          console.warn('Crypto API failed, using mock data:', error instanceof Error ? error.message : 'Unknown error');
+          // Generate realistic mock data for crypto
+          cryptoData = {
+            bitcoin: { usd: 95420, usd_24h_change: 2.3 },
+            ethereum: { usd: 3520, usd_24h_change: -1.8 }
+          };
         }
       }
 
@@ -253,7 +274,7 @@ export function PriceTicker({
       </div>
 
       {/* CSS for smooth scrolling animation */}
-      <style jsx>{`
+      <style>{`
         @keyframes scroll {
           0% {
             transform: translateX(0%);
