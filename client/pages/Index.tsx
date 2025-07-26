@@ -403,7 +403,7 @@ export default function Index() {
                         <SelectItem value="all">{t('importance.all')}</SelectItem>
                         <SelectItem value="3">{t('importance.high')}</SelectItem>
                         <SelectItem value="2">⭐⭐ م��وسط التأثير</SelectItem>
-                        <SelectItem value="1">⭐ منخفض التأثير</SelectItem>
+                        <SelectItem value="1">⭐ منخفض التأثي��</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -665,9 +665,9 @@ export default function Index() {
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="font-bold text-lg mb-2">تحليلات متقدمة</h3>
+              <h3 className="font-bold text-lg mb-2">{t('about.analysis.title')}</h3>
               <p className="text-muted-foreground">
-                تحليلات عميقة للأحداث الاقتصادية
+                {t('about.analysis.desc')}
               </p>
             </div>
 
