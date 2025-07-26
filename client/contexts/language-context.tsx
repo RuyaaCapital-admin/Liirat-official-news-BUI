@@ -62,9 +62,9 @@ const translations = {
     'alerts.info': 'سيتم إرسال التنبيهات عبر البريد الإلكتروني والواتساب',
     'alerts.types.title': 'أنواع التنبيهات المتاحة:',
     'alerts.types.high': 'بيانات اقتصادية عالية التأثير',
-    'alerts.types.central': 'قرارات البنوك المر��زية',
+    'alerts.types.central': 'قرارات البنوك المركزية',
     'alerts.types.unexpected': 'تحركات غير متوقعة في الأسواق',
-    'alerts.types.rates': 'تحديثات أسعار الفائدة',
+    'alerts.types.rates': 'تحديثا�� أسعار الفائدة',
     'alerts.status': 'سيتم تفعيل التنبيهات لاحقاً',
     
     // About Section
@@ -106,7 +106,7 @@ const translations = {
     'ai.loading.desc': 'قد يستغرق هذا بضع ثوان',
     'ai.error.title': 'خطأ في الحصول على التحليل',
     'ai.retry': 'إعادة المحاولة',
-    'ai.analysis.title': '��لتحليل الذكي',
+    'ai.analysis.title': 'التحليل الذكي',
     'ai.powered': 'مدعوم بالذكاء الاصطناعي',
     'ai.importance': 'أهمية',
     'ai.actual': 'الفعلي',
@@ -294,6 +294,44 @@ const translations = {
     'currency.jpy': '🇯🇵 JPY - Japanese Yen',
     'currency.aud': '🇦🇺 AUD - Australian Dollar',
     'currency.cad': '🇨🇦 CAD - Canadian Dollar',
+
+    // Calendar placeholders and labels
+    'calendar.select.date': 'Select Date',
+    'calendar.select.currency': 'All Currencies',
+    'calendar.select.importance': 'All Levels',
+
+    // Alert pairs
+    'alert.pairs.eurusd': 'EUR/USD',
+    'alert.pairs.gbpusd': 'GBP/USD',
+    'alert.pairs.usdjpy': 'USD/JPY',
+    'alert.pairs.usdcad': 'USD/CAD',
+    'alert.pairs.audusd': 'AUD/USD',
+    'alert.pairs.nfp': 'US Non-Farm Payrolls',
+    'alert.pairs.cpi': 'Consumer Price Index',
+    'alert.pairs.gdp': 'Gross Domestic Product',
+
+    // Error messages
+    'error.loading': 'Loading Error',
+    'error.retry': 'Retry',
+    'error.network': 'Network Error',
+
+    // Common actions
+    'common.loading': 'Loading...',
+    'common.save': 'Save',
+    'common.cancel': 'Cancel',
+    'common.close': 'Close',
+    'common.edit': 'Edit',
+    'common.delete': 'Delete',
+    'common.add': 'Add',
+    'common.select': 'Select',
+    'common.confirm': 'Confirm',
+
+    // Notification system
+    'notifications.title': 'Notifications',
+    'notifications.empty': 'No notifications',
+    'notifications.mark_read': 'Mark as read',
+    'notifications.clear_all': 'Clear all',
+    'notifications.settings': 'Notification Settings',
   }
 };
 
