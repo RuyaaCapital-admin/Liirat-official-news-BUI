@@ -193,7 +193,18 @@ export default function Index() {
   });
 
   return (
-    <div className="min-h-screen bg-background arabic">
+    <div className="min-h-screen bg-background arabic relative">
+      {/* Global Background Image */}
+      <div className="fixed inset-0 z-0">
+        <img
+          src="https://cdn.builder.io/api/v1/image/assets%2F165a7c0d273f4448b5890b3ec14b12af%2F87665f5fec764be4b49626e43b10972a?format=webp&width=800"
+          alt="Liirat Global Background"
+          className="w-full h-full object-cover opacity-[0.02]"
+        />
+      </div>
+
+      {/* All content with relative positioning */}
+      <div className="relative z-10">
       {/* Navigation Header */}
       <header className="border-b border-border/40 backdrop-blur-md bg-background/95 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -784,11 +795,12 @@ export default function Index() {
               </a>
             </div>
             <p className="text-xs text-muted-foreground mt-4">
-              © 2024 Liirat News. جميع الحقوق محفوظة.
+              © 2024 Liirat News. جميع الحقوق م��فوظة.
             </p>
           </div>
         </div>
       </footer>
+      </div>
     </div>
   );
 }
