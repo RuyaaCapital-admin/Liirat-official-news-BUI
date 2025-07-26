@@ -28,8 +28,7 @@ import {
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { PriceTicker } from "@/components/ui/price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
-import { SiteTour } from "@/components/ui/site-tour";
-import { TourTrigger, TourFooterLink } from "@/components/ui/tour-trigger";
+
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 import { NotificationDropdown } from "@/components/ui/notification-dropdown";
 import { AlertSettingsModal } from "@/components/ui/alert-settings-modal";
