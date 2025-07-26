@@ -259,19 +259,8 @@ export default function Index() {
           </nav>
 
           <div className="flex items-center space-x-2 space-x-reverse">
-            {/* Notification Bell */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-9 w-9 px-0 relative"
-              data-tour-target="alerts"
-            >
-              <BellRing className="h-4 w-4" />
-              <div className="absolute -top-1 -right-1 h-3 w-3 bg-primary rounded-full text-xs flex items-center justify-center text-primary-foreground">
-                3
-              </div>
-              <span className="sr-only">{t('nav.notifications')}</span>
-            </Button>
+            {/* Notification Dropdown */}
+            <NotificationDropdown onSettingsClick={() => setShowAlertSettings(true)} />
             <TourTrigger variant="icon" />
             <SimpleLanguageToggle />
             <ThemeToggle />
@@ -398,10 +387,10 @@ export default function Index() {
                         </SelectItem>
                         <SelectItem value="EUR">🇪🇺 EUR - اليورو</SelectItem>
                         <SelectItem value="GBP">
-                          🇬🇧 GBP - الجنيه الإسترليني
+                          ����🇧 GBP - الجنيه الإسترليني
                         </SelectItem>
                         <SelectItem value="JPY">
-                          🇯🇵 JPY - ال��ن الياباني
+                          🇯🇵 JPY - ال��ن اليابان��
                         </SelectItem>
                         <SelectItem value="AUD">
                           🇦🇺 AUD - الدولار الأسترالي
@@ -682,7 +671,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تحديثات فورية</h3>
               <p className="text-muted-foreground">
-                بيانات محدثة كل دقيقة من الأسواق العا��مية
+                بيانات محدثة كل دقيقة من الأسواق العالمية
               </p>
             </div>
 
