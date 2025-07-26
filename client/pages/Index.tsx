@@ -142,7 +142,7 @@ export default function Index() {
       time: "08:30",
       event: "Employment Change",
       country: "AUD",
-      countryFlag: "��🇺",
+      countryFlag: "🇦🇺",
       forecast: "15.2K",
       previous: "12.8K",
       actual: "-",
@@ -270,7 +270,12 @@ export default function Index() {
 
           <div className="flex items-center space-x-2 space-x-reverse">
             {/* Notification Bell */}
-            <Button variant="ghost" size="sm" className="h-9 w-9 px-0 relative">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-9 w-9 px-0 relative"
+              data-tour-target="alerts"
+            >
               <BellRing className="h-4 w-4" />
               <div className="absolute -top-1 -right-1 h-3 w-3 bg-primary rounded-full text-xs flex items-center justify-center text-primary-foreground">
                 3
@@ -379,7 +384,7 @@ export default function Index() {
                         <SelectItem value="tomorrow">غداً</SelectItem>
                         <SelectItem value="this-week">هذا الأسبوع</SelectItem>
                         <SelectItem value="next-week">
-                          الأسبوع القادم
+                          الأسبو�� القادم
                         </SelectItem>
                         <SelectItem value="custom">تاريخ مخصص</SelectItem>
                       </SelectContent>
@@ -409,7 +414,7 @@ export default function Index() {
                           🇯🇵 JPY - ال��ن الياباني
                         </SelectItem>
                         <SelectItem value="AUD">
-                          🇦🇺 AUD - الدولار الأسترالي
+                          🇦🇺 AUD - ��لدولار الأسترالي
                         </SelectItem>
                         <SelectItem value="CAD">
                           🇨🇦 CAD - الدولار الكندي
@@ -572,7 +577,7 @@ export default function Index() {
                 نظام التنبيهات الذكي
               </h2>
               <p className="text-xl text-muted-foreground">
-                احصل على تنبيهات فورية عند صدور البيانات الاقتصادية المهمة
+                احص�� على تنبيهات فورية عند صدور البيانات الاقتصادية المهمة
               </p>
             </div>
 
@@ -708,7 +713,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">مصادر موثوقة</h3>
               <p className="text-muted-foreground">
-                من البنوك المركزية والمؤسسات المالية الرسمية
+                من ال��نوك المركزية والمؤسسات المالية الرسمية
               </p>
             </div>
 
