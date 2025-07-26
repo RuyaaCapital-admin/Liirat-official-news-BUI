@@ -28,6 +28,7 @@ import {
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { PriceTicker } from "@/components/ui/price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
+import { SiteTour } from "@/components/ui/site-tour";
 import {
   Calendar,
   Bell,
@@ -458,7 +459,7 @@ export default function Index() {
                     الأحداث الاقتصادية ({filteredEvents.length})
                   </div>
                   <Badge variant="outline" className="text-xs">
-                    تحديث مباشر
+                    تحديث ��باشر
                   </Badge>
                 </CardTitle>
               </CardHeader>
@@ -476,7 +477,7 @@ export default function Index() {
                         <TableHead className="text-right">الأهمية</TableHead>
                         <TableHead className="text-right">الحدث</TableHead>
                         <TableHead className="text-right">
-                          القيمة الفعل��ة
+                          القيمة الفعلية
                         </TableHead>
                         <TableHead className="text-right">التوقع</TableHead>
                         <TableHead className="text-right">السابق</TableHead>
@@ -566,7 +567,7 @@ export default function Index() {
                 نظام التنبيهات الذكي
               </h2>
               <p className="text-xl text-muted-foreground">
-                احصل على تنبيهات فورية عند صدور البيانات الاقتصادية المهمة
+                احصل على تنبيهات فورية عند صدور البيانات الاقتصا��ية المهمة
               </p>
             </div>
 
@@ -613,7 +614,7 @@ export default function Index() {
                       className="w-full"
                       disabled={!selectedPair}
                     >
-                      أ��سل لي تنبيهات
+                      أرسل لي تنبيهات
                     </Button>
 
                     <p className="text-sm text-muted-foreground text-center">
@@ -724,7 +725,7 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              تواصل مع فري�� ليرات
+              تواصل مع فريق ل��رات
             </h2>
             <p className="text-xl text-muted-foreground mb-8">
               للاستفسارات والدعم الفني
