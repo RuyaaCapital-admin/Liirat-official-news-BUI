@@ -644,10 +644,10 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              لماذا ليرات نيوز؟
+              {t('about.title')}
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              منصتك الموثوقة للأخبار المالية والتحليلات الاقتصادية
+              {t('about.description')}
             </p>
           </div>
 
@@ -726,7 +726,7 @@ export default function Index() {
 
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-right block">
-                      ال��ريد الإل��تروني
+                      ال��ريد الإلكتروني
                     </Label>
                     <Input
                       id="email"
