@@ -396,8 +396,8 @@ export default function Index() {
                       value={selectedImportance}
                       onValueChange={setSelectedImportance}
                     >
-                      <SelectTrigger className="text-right">
-                        <SelectValue placeholder="جميع المستويات" />
+                      <SelectTrigger className={dir === 'rtl' ? 'text-right' : 'text-left'}>
+                        <SelectValue placeholder={t('calendar.select.importance')} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">جميع المستويات</SelectItem>
@@ -410,7 +410,7 @@ export default function Index() {
 
                   {/* Search by Event Name */}
                   <div className="space-y-2">
-                    <Label className="text-right block">البحث في الأحداث</Label>
+                    <Label className="text-right block">ال��حث في الأحداث</Label>
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
