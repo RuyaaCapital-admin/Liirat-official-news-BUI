@@ -60,6 +60,25 @@ export default function Index() {
   // Language detection - can be extended for user preference
   const [currentLanguage, setCurrentLanguage] = useState<'ar' | 'en'>('ar');
 
+  // Auto-detect language from page content on mount
+  useEffect(() => {
+    const detectPageLanguage = () => {
+      const htmlDir = document.documentElement.getAttribute('dir');
+      if (htmlDir === 'rtl') {
+        setCurrentLanguage('ar');
+      } else if (htmlDir === 'ltr') {
+        setCurrentLanguage('en');
+      } else {
+        // Fallback: check for Arabic content
+        const hasArabicText = document.body.textContent?.includes('العملة') ||
+                             document.body.textContent?.includes('الاقتصادي');
+        setCurrentLanguage(hasArabicText ? 'ar' : 'en');
+      }
+    };
+
+    detectPageLanguage();
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Connect to Supabase
@@ -527,7 +546,7 @@ export default function Index() {
 
                 <div className="mt-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    البيا��ات محدثة كل دقيقة من مصادر موثوقة •{" "}
+                    البيانات محدثة كل دقيقة من مصادر موثوقة •{" "}
                     {filteredEvents.length} من أصل {economicEvents.length} حدث
                   </p>
                 </div>
@@ -692,7 +711,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تغطية عالمية</h3>
               <p className="text-muted-foreground">
-                جميع الأسواق والعملا�� الرئيسية
+                جميع الأسواق والعملات الرئيسية
               </p>
             </div>
           </div>
