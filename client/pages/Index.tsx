@@ -550,7 +550,7 @@ export default function Index() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bell className="w-5 h-5 text-primary" />
-                  إعداد التنبيهات
+                  {t('alerts.setup.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -644,7 +644,7 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              لماذا ليرات ��يوز؟
+              لماذا ليرات نيوز؟
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               منصتك الموثوقة للأخبار المالية والتحليلات الاقتصادية
