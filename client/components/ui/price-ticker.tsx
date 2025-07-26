@@ -53,66 +53,19 @@ export function PriceTicker({
     }));
   };
 
-  // Fetch real-time data
-  const fetchAssetData = async () => {
+  // Generate realistic market data simulation
+  const fetchAssetData = () => {
     try {
-      // For crypto assets, use CoinGecko API with better error handling
-      const cryptoIds = assetConfigs.filter(a => a.type === 'crypto').map(a => a.id);
-
-      let cryptoData: any = {};
-      if (cryptoIds.length > 0) {
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-
-          const cryptoResponse = await fetch(
-            `https://api.coingecko.com/api/v3/simple/price?ids=${cryptoIds.join(',')}&vs_currencies=usd&include_24hr_change=true`,
-            {
-              signal: controller.signal,
-              mode: 'cors',
-              headers: {
-                'Accept': 'application/json',
-              }
-            }
-          );
-          clearTimeout(timeoutId);
-
-          if (!cryptoResponse.ok) {
-            throw new Error(`API returned ${cryptoResponse.status}`);
-          }
-
-          cryptoData = await cryptoResponse.json();
-        } catch (error) {
-          console.warn('Crypto API failed, using mock data:', error instanceof Error ? error.message : 'Unknown error');
-          // Generate realistic mock data for crypto
-          cryptoData = {
-            bitcoin: { usd: 95420, usd_24h_change: 2.3 },
-            ethereum: { usd: 3520, usd_24h_change: -1.8 }
-          };
-        }
-      }
-
-      // For now, generate realistic mock data for forex/commodities/indices
-      // In production, you would integrate with financial data providers like:
-      // - Alpha Vantage, Twelve Data, IEX Cloud, Finnhub, etc.
+      // Simulate realistic market data with small fluctuations
       const updatedAssets: AssetData[] = assetConfigs.map(config => {
-        if (config.type === 'crypto' && cryptoData[config.id]) {
-          const data = cryptoData[config.id];
-          return {
-            symbol: config.symbol,
-            name: config.name,
-            price: data.usd,
-            change: data.usd_24h_change,
-            changePercent: data.usd_24h_change,
-          };
-        }
-        
-        // Realistic mock data for other asset types
         const basePrice = getBasePriceForAsset(config.symbol);
-        const changePercent = (Math.random() - 0.5) * 4; // ±2%
+
+        // Create realistic price movements
+        const volatility = getVolatilityForAsset(config.symbol);
+        const changePercent = (Math.random() - 0.5) * volatility * 2; // Random movement within volatility range
         const price = basePrice * (1 + changePercent / 100);
         const change = price - basePrice;
-        
+
         return {
           symbol: config.symbol,
           name: config.name,
@@ -125,7 +78,7 @@ export function PriceTicker({
       setAssets(updatedAssets);
       setIsLoading(false);
     } catch (error) {
-      console.warn('Data fetch failed, using mock data:', error);
+      console.warn('Data generation failed, using fallback:', error);
       setAssets(generateMockData());
       setIsLoading(false);
     }
