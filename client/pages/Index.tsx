@@ -602,7 +602,7 @@ export default function Index() {
                           <SelectItem value="usdcad">USD/CAD</SelectItem>
                           <SelectItem value="audusd">AUD/USD</SelectItem>
                           <SelectItem value="nfp">
-                            رواتب غي�� الزراعية الأمريكية
+                            رواتب غير الزراعية الأمريكية
                           </SelectItem>
                           <SelectItem value="cpi">
                             مؤشر أسعار المستهلك
@@ -726,7 +726,7 @@ export default function Index() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20">
+      <section id="contact" className="py-20" data-tour-target="contact">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
