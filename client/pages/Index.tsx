@@ -29,6 +29,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { PriceTicker } from "@/components/ui/price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { SiteTour } from "@/components/ui/site-tour";
+import { TourTrigger, TourFooterLink } from "@/components/ui/tour-trigger";
 import {
   Calendar,
   Bell,
@@ -384,7 +385,7 @@ export default function Index() {
                         <SelectItem value="tomorrow">غداً</SelectItem>
                         <SelectItem value="this-week">هذا الأسبوع</SelectItem>
                         <SelectItem value="next-week">
-                          الأسبو�� القادم
+                          الأسبوع القادم
                         </SelectItem>
                         <SelectItem value="custom">تاريخ مخصص</SelectItem>
                       </SelectContent>
@@ -414,7 +415,7 @@ export default function Index() {
                           🇯🇵 JPY - ال��ن الياباني
                         </SelectItem>
                         <SelectItem value="AUD">
-                          🇦🇺 AUD - ��لدولار الأسترالي
+                          🇦🇺 AUD - الدولار الأسترالي
                         </SelectItem>
                         <SelectItem value="CAD">
                           🇨🇦 CAD - الدولار الكندي
@@ -577,7 +578,7 @@ export default function Index() {
                 نظام التنبيهات الذكي
               </h2>
               <p className="text-xl text-muted-foreground">
-                احص�� على تنبيهات فورية عند صدور البيانات الاقتصادية المهمة
+                احصل على تنبيهات فورية عند صدور البيانات الاقتصادية المهمة
               </p>
             </div>
 
@@ -713,7 +714,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">مصادر موثوقة</h3>
               <p className="text-muted-foreground">
-                من ال��نوك المركزية والمؤسسات المالية الرسمية
+                من البنوك المركزية والمؤسسات المالية الرسمية
               </p>
             </div>
 
