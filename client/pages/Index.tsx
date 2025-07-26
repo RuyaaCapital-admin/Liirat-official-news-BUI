@@ -372,7 +372,7 @@ export default function Index() {
                         <SelectItem value="USD">
                           {t('currency.usd')}
                         </SelectItem>
-                        <SelectItem value="EUR">🇪🇺 EUR - اليورو</SelectItem>
+                        <SelectItem value="EUR">{t('currency.eur')}</SelectItem>
                         <SelectItem value="GBP">
                           🇬🇧 GBP - الجنيه الإسترليني
                         </SelectItem>
