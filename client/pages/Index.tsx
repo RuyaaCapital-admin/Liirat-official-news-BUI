@@ -295,12 +295,11 @@ export default function Index() {
         <div className="container mx-auto px-4 relative">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              أخبار مالية واقتصادية
-              <span className="text-primary block">دقيقة ومحدثة</span>
+              {t('hero.title')}
+              <span className="text-primary block">{t('hero.subtitle')}</span>
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-              منصة ليرات للأخبار المالية - تقويم اقتصادي مباشر، تنبيهات فورية،
-              وتحليلات متقدمة لجميع الأسواق العالمية
+              {t('hero.description')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -312,7 +311,7 @@ export default function Index() {
                     ?.scrollIntoView({ behavior: "smooth" })
                 }
               >
-                اطلع على التقويم
+                {t('hero.btn.calendar')}
               </Button>
               <Button
                 variant="outline"
@@ -324,7 +323,7 @@ export default function Index() {
                     ?.scrollIntoView({ behavior: "smooth" })
                 }
               >
-                إعداد التنبيهات
+                {t('hero.btn.alerts')}
               </Button>
             </div>
           </div>
@@ -544,7 +543,7 @@ export default function Index() {
 
                 <div className="mt-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    البيانات محدثة كل دقيقة من مصادر موثوقة •{" "}
+                    البيانات محدثة كل دقيقة م�� مصادر موثوقة •{" "}
                     {filteredEvents.length} من أصل {economicEvents.length} حدث
                   </p>
                 </div>
@@ -563,7 +562,7 @@ export default function Index() {
                 نظام التنبيهات الذكي
               </h2>
               <p className="text-xl text-muted-foreground">
-                احصل على تنبيهات فورية عند صدور ا��بيانات الاقتصادية المهمة
+                احصل على تنبيهات فورية عند صدور البيانات الاقتصادية المهمة
               </p>
             </div>
 
@@ -599,7 +598,7 @@ export default function Index() {
                             مؤشر أسعار المستهلك
                           </SelectItem>
                           <SelectItem value="gdp">
-                            الناتج المحلي الإجمالي
+                            ا��ناتج المحلي الإجمالي
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -689,7 +688,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تحليلات متقدمة</h3>
               <p className="text-muted-foreground">
-                تحليلات عميقة للأحداث الاقتصادية
+                تحل��لات عميقة للأحداث الاقتصادية
               </p>
             </div>
 
