@@ -98,7 +98,7 @@ export function AIEventInsight({ event, currentLanguage = 'ar', className }: AIE
 📈 التأثير المتوقع على الأسواق:
 ${eventData.actual !== eventData.forecast ?
   `نتوقع تأثيراً ${eventData.importance === 3 ? 'قوياً' : 'معتدلاً'} على عملة ${eventData.country} والأسواق المرتبطة بها. قد نشهد تحركات في أسواق الذهب والنفط والمؤشرات الرئيسية.` :
-  'التأثير قد يكون محدوداً نظراً لتوافق البيانات مع التوقعات، لكن السوق قد يركز على التفاصيل والتوجهات المس��قبلية.'
+  'التأثير قد يكون محدوداً نظراً لتوافق البيانات مع التوقعات، لكن السوق قد يركز على التفاصيل والتوجهات المستقبلية.'
 }
 
 ⚠️ هذا تحليل تجريبي. للحصول على تحليل حقيقي، يرجى إعداد مفتاح OpenAI API.`,
@@ -164,9 +164,7 @@ ${eventData.actual !== eventData.forecast ?
           messages: [
             {
               role: 'system',
-              content: language === 'ar' 
-                ? 'أنت محلل اقتصادي ومالي خبير. قدم تحليلات دقيقة ومفيدة باللغة العربية.'
-                : 'You are an expert economic and financial analyst. Provide accurate and helpful analysis in English.'
+              content: 'Summarize economic events in a single, short, direct sentence. Maximum 25 words. No explanations, no introduction, no extra details. Write ONLY the most actionable insight for a trader. Match the requested language exactly.'
             },
             {
               role: 'user',
@@ -258,7 +256,7 @@ ${eventData.actual !== eventData.forecast ?
             تحليل ذكي للحدث الاقتصادي
           </DialogTitle>
           <DialogDescription className="text-right">
-            تحليل مدعوم بالذكاء الاصطناعي للحدث الاقتصادي وتأثيره على الأسواق
+            تحليل ��دعوم بالذكاء الاصطناعي للحدث الاقتصادي وتأثيره على الأسواق
           </DialogDescription>
         </DialogHeader>
 
