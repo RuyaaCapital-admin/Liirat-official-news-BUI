@@ -78,41 +78,9 @@ export function AIEventInsight({ event, currentLanguage = 'ar', className }: AIE
 
   // Generate AI prompt based on event data and language
   const generatePrompt = (eventData: EconomicEvent, language: 'ar' | 'en'): string => {
-    const languageInstructions = {
-      ar: {
-        instructions: 'يرجى الإجابة باللغة العربية. قدم تحليلاً مالياً واقتصادياً مفصلاً ومهنياً.',
-        whatHappened: 'ماذا حدث؟',
-        whyImportant: 'لماذا هذا مهم؟',
-        marketImpact: 'ما هو التأثير المتوقع على الأسواق؟'
-      },
-      en: {
-        instructions: 'Please respond in English. Provide a detailed and professional financial and economic analysis.',
-        whatHappened: 'What happened?',
-        whyImportant: 'Why is this important?',
-        marketImpact: 'What is the expected market impact?'
-      }
-    };
+    const languageText = language === 'ar' ? 'Arabic' : 'English';
 
-    const lang = languageInstructions[language];
-    
-    return `${lang.instructions}
-
-Economic Event Analysis:
-Event: ${eventData.event}
-Country: ${eventData.country}
-Date/Time: ${eventData.date} ${eventData.time} GMT
-Forecast: ${eventData.forecast}
-Previous: ${eventData.previous}
-Actual: ${eventData.actual}
-Importance Level: ${eventData.importance}/3
-
-Please provide a comprehensive analysis structured as follows:
-
-1. ${lang.whatHappened}
-2. ${lang.whyImportant}  
-3. ${lang.marketImpact}
-
-Keep the analysis concise but informative, suitable for traders and investors. Focus on practical implications for currency markets, commodities, and indices.`;
+    return `Event: ${eventData.event}. Actual: ${eventData.actual}. Forecast: ${eventData.forecast}. Previous: ${eventData.previous}. Date: ${eventData.date}. Write a single, short, actionable sentence for traders. No intro, no extra text. Maximum 25 words. Language: ${languageText}.`;
   };
 
   // Generate demo analysis for testing without API
@@ -130,10 +98,10 @@ Keep the analysis concise but informative, suitable for traders and investors. F
 📈 التأثير المتوقع على الأسواق:
 ${eventData.actual !== eventData.forecast ?
   `نتوقع تأثيراً ${eventData.importance === 3 ? 'قوياً' : 'معتدلاً'} على عملة ${eventData.country} والأسواق المرتبطة بها. قد نشهد تحركات في أسواق الذهب والنفط والمؤشرات الرئيسية.` :
-  'التأثير قد يكون محدوداً نظراً لتوافق البيانات مع التوقعات، لكن السوق قد يركز على التفاصيل والتوجهات المستقبلية.'
+  'التأثير قد يكون محدوداً نظراً لتوافق البيانات مع التوقعات، لكن السوق قد يركز على التفاصيل والتوجهات المس��قبلية.'
 }
 
-⚠️ هذا تحليل تجريبي. للح��ول على تحليل حقيقي، يرجى إعداد مفتاح OpenAI API.`,
+⚠️ هذا تحليل تجريبي. للحصول على تحليل حقيقي، يرجى إعداد مفتاح OpenAI API.`,
         whatHappened: `البيانات الفعلية: ${eventData.actual}، المتوقع: ${eventData.forecast}`,
         whyImportant: `حدث بأهمية ${eventData.importance}/3 يؤثر على اقتصاد ${eventData.country}`,
         marketImpact: 'تأثير متوقع على العملات والأسواق العالمية',
@@ -392,7 +360,7 @@ ${eventData.actual !== eventData.forecast ?
                 
                 <div className="mt-6 pt-4 border-t border-border">
                   <div className="flex items-center justify-center text-xs text-muted-foreground">
-                    <span>مدعوم بالذك��ء الاصطناعي</span>
+                    <span>مدعوم بالذكاء الاصطناعي</span>
                   </div>
                 </div>
               </CardContent>
