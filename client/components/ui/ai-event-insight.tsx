@@ -115,6 +115,55 @@ Please provide a comprehensive analysis structured as follows:
 Keep the analysis concise but informative, suitable for traders and investors. Focus on practical implications for currency markets, commodities, and indices.`;
   };
 
+  // Generate demo analysis for testing without API
+  const generateDemoAnalysis = (eventData: EconomicEvent, language: 'ar' | 'en'): AIInsightResponse => {
+    if (language === 'ar') {
+      return {
+        summary: `تحليل للحدث الاقتصادي: ${eventData.event}
+
+📊 ماذا حدث؟
+جاءت البيانات الفعلية ${eventData.actual} مقارنة بالتوقعات ${eventData.forecast} والقيمة السابقة ${eventData.previous}. ${eventData.actual !== eventData.forecast ? (parseFloat(eventData.actual) > parseFloat(eventData.forecast) ? 'هذا يعني أن البيانات جاءت أعلى من المتوقع.' : 'هذا يعني أن البيانات جاءت أقل من المتوقع.') : 'البيانات جاءت متوافقة مع التوقعات.'}
+
+💡 لماذا هذا مهم؟
+هذا الحدث الاقتصادي له أهمية ${eventData.importance === 3 ? 'عالية جداً' : eventData.importance === 2 ? 'متوسطة' : 'منخفضة'} على الأسواق المالية. ${eventData.country} يلعب دوراً مهماً في الاقتصاد العالمي، وهذه البيانات تؤثر على قرارات البنوك المركزية والمستثمرين.
+
+📈 التأثير المتوقع على الأسواق:
+${eventData.actual !== eventData.forecast ?
+  `نتوقع تأثيراً ${eventData.importance === 3 ? 'قوياً' : 'معتدلاً'} على عملة ${eventData.country} والأسواق المرتبطة بها. قد نشهد تحركات في أسواق الذهب والنفط والمؤشرات الرئيسية.` :
+  'التأثير قد يكون محدوداً نظراً لتوافق البيانات مع التوقعات، لكن السوق قد يركز على التفاصيل والتوجهات المستقبلية.'
+}
+
+⚠️ هذا تحليل تجريبي. للحصول على تحليل حقيقي، يرجى إعداد مفتاح OpenAI API.`,
+        whatHappened: `البيانات الفعلية: ${eventData.actual}، المتوقع: ${eventData.forecast}`,
+        whyImportant: `حدث بأهمية ${eventData.importance}/3 يؤثر على اقتصاد ${eventData.country}`,
+        marketImpact: 'تأثير متوقع على العملات والأسواق العالمية',
+        language: 'ar'
+      };
+    } else {
+      return {
+        summary: `Economic Event Analysis: ${eventData.event}
+
+📊 What Happened?
+The actual reading came in at ${eventData.actual} compared to the forecast of ${eventData.forecast} and previous value of ${eventData.previous}. ${eventData.actual !== eventData.forecast ? (parseFloat(eventData.actual) > parseFloat(eventData.forecast) ? 'This indicates the data came in above expectations.' : 'This indicates the data came in below expectations.') : 'The data aligned with market expectations.'}
+
+💡 Why Is This Important?
+This economic event has ${eventData.importance === 3 ? 'high' : eventData.importance === 2 ? 'moderate' : 'low'} importance for financial markets. ${eventData.country} plays a significant role in the global economy, and this data influences central bank decisions and investor sentiment.
+
+📈 Expected Market Impact:
+${eventData.actual !== eventData.forecast ?
+  `We expect a ${eventData.importance === 3 ? 'strong' : 'moderate'} impact on ${eventData.country} currency and related markets. We may see movements in gold, oil, and major indices.` :
+  'The impact may be limited given the data met expectations, but markets may focus on details and future trends.'
+}
+
+⚠️ This is a demo analysis. For real AI insights, please configure your OpenAI API key.`,
+        whatHappened: `Actual: ${eventData.actual}, Expected: ${eventData.forecast}`,
+        whyImportant: `High-importance event affecting ${eventData.country} economy`,
+        marketImpact: 'Expected impact on currencies and global markets',
+        language: 'en'
+      };
+    }
+  };
+
   // Call OpenAI API
   const fetchAIInsight = async () => {
     setIsLoading(true);
@@ -122,6 +171,17 @@ Keep the analysis concise but informative, suitable for traders and investors. F
 
     try {
       const language = detectLanguage();
+
+      // 🔧 DEMO MODE - Remove this when API is configured
+      if (AI_API_CONFIG.demoMode) {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        const demoInsight = generateDemoAnalysis(event, language);
+        setInsight(demoInsight);
+        setIsLoading(false);
+        return;
+      }
+
       const prompt = generatePrompt(event, language);
 
       // 🔧 API CALL CONFIGURATION
@@ -334,7 +394,7 @@ Keep the analysis concise but informative, suitable for traders and investors. F
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span>مدعوم بالذكاء الاصطناعي</span>
                     <div className="flex items-center gap-2">
-                      <span>اللغة: {insight.language === 'ar' ? 'العربية' : 'English'}</span>
+                      <span>اللغة: {insight.language === 'ar' ? 'العر��ية' : 'English'}</span>
                       <Badge variant="outline" className="text-xs">
                         GPT-3.5
                       </Badge>
