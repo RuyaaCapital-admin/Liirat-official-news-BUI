@@ -26,7 +26,7 @@ export function TourTrigger({
         <Button
           variant="ghost"
           size="sm"
-          className={`h-9 w-9 px-0 ${className}`}
+          className={`h-9 w-9 px-0 hover:bg-primary/10 transition-colors ${className}`}
           onClick={handleStartTour}
           title={t("nav.tour")}
         >
@@ -43,7 +43,7 @@ export function TourTrigger({
       <>
         <button
           onClick={handleStartTour}
-          className={`text-sm text-muted-foreground hover:text-primary transition-colors underline ${className}`}
+          className={`text-sm text-muted-foreground hover:text-primary transition-colors underline hover:no-underline ${className}`}
         >
           {t("footer.tour")}
         </button>
@@ -58,7 +58,7 @@ export function TourTrigger({
         variant="outline"
         size="sm"
         onClick={handleStartTour}
-        className={`gap-2 ${className}`}
+        className={`gap-2 hover:bg-primary hover:text-primary-foreground transition-all duration-200 ${className}`}
       >
         <Play className="w-4 h-4" />
         {t("nav.tour")}
