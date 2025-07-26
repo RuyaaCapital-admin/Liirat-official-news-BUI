@@ -557,28 +557,28 @@ export default function Index() {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label>اختر زوج العملة أو المؤشر</Label>
+                      <Label>{t('alerts.select.pair')}</Label>
                       <Select
                         value={selectedPair}
                         onValueChange={setSelectedPair}
                       >
-                        <SelectTrigger className="text-right">
-                          <SelectValue placeholder="اختر من القائمة" />
+                        <SelectTrigger className={dir === 'rtl' ? 'text-right' : 'text-left'}>
+                          <SelectValue placeholder={t('alerts.select.placeholder')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="eurusd">EUR/USD</SelectItem>
-                          <SelectItem value="gbpusd">GBP/USD</SelectItem>
-                          <SelectItem value="usdjpy">USD/JPY</SelectItem>
-                          <SelectItem value="usdcad">USD/CAD</SelectItem>
-                          <SelectItem value="audusd">AUD/USD</SelectItem>
+                          <SelectItem value="eurusd">{t('alert.pairs.eurusd')}</SelectItem>
+                          <SelectItem value="gbpusd">{t('alert.pairs.gbpusd')}</SelectItem>
+                          <SelectItem value="usdjpy">{t('alert.pairs.usdjpy')}</SelectItem>
+                          <SelectItem value="usdcad">{t('alert.pairs.usdcad')}</SelectItem>
+                          <SelectItem value="audusd">{t('alert.pairs.audusd')}</SelectItem>
                           <SelectItem value="nfp">
-                            رواتب غير الزراعية الأمريكية
+                            {t('alert.pairs.nfp')}
                           </SelectItem>
                           <SelectItem value="cpi">
-                            مؤشر أسعار المستهلك
+                            {t('alert.pairs.cpi')}
                           </SelectItem>
                           <SelectItem value="gdp">
-                            الناتج المحلي الإجمالي
+                            {t('alert.pairs.gdp')}
                           </SelectItem>
                         </SelectContent>
                       </Select>
