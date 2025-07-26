@@ -11,6 +11,7 @@ interface TourTriggerProps {
 
 export function TourTrigger({ variant = 'button', className }: TourTriggerProps) {
   const { startTour, tourComponent } = useSiteTour();
+  const { t } = useLanguage();
 
   const handleStartTour = () => {
     startTour();
@@ -41,7 +42,7 @@ export function TourTrigger({ variant = 'button', className }: TourTriggerProps)
           onClick={handleStartTour}
           className={`text-sm text-muted-foreground hover:text-primary transition-colors underline ${className}`}
         >
-          جولة الموقع
+          جولة المو��ع
         </button>
         {tourComponent}
       </>
