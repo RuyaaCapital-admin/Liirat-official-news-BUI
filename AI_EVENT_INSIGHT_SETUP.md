@@ -5,7 +5,7 @@
 The AI Event Insight feature provides intelligent analysis of economic events using OpenAI's GPT models. When users click the "AI Analysis" button next to any economic event, the system generates a comprehensive analysis including:
 
 - What happened?
-- Why is it important? 
+- Why is it important?
 - What's the likely market impact?
 
 ## 🔧 API Configuration
@@ -29,9 +29,11 @@ The API configuration is centralized in `client/components/ui/ai-event-insight.t
 ```typescript
 // 🔧 REPLACE THESE VALUES
 const AI_API_CONFIG = {
-  apiUrl: process.env.VITE_OPENAI_API_URL || 'https://api.openai.com/v1/chat/completions',
-  apiKey: process.env.VITE_OPENAI_API_KEY || 'your-api-key-here',
-  model: 'gpt-3.5-turbo',
+  apiUrl:
+    process.env.VITE_OPENAI_API_URL ||
+    "https://api.openai.com/v1/chat/completions",
+  apiKey: process.env.VITE_OPENAI_API_KEY || "your-api-key-here",
+  model: "gpt-3.5-turbo",
   maxTokens: 500,
 };
 ```
@@ -50,13 +52,13 @@ The system automatically detects the page language using multiple methods:
 
 ```typescript
 // Language detection in component
-const detectLanguage = (): 'ar' | 'en' => {
-  const htmlDir = document.documentElement.getAttribute('dir');
-  if (htmlDir === 'rtl') return 'ar';
-  
-  const hasArabicText = document.body.textContent?.includes('العملة');
-  if (hasArabicText) return 'ar';
-  
+const detectLanguage = (): "ar" | "en" => {
+  const htmlDir = document.documentElement.getAttribute("dir");
+  if (htmlDir === "rtl") return "ar";
+
+  const hasArabicText = document.body.textContent?.includes("العملة");
+  if (hasArabicText) return "ar";
+
   return currentLanguage; // fallback
 };
 ```
@@ -86,15 +88,15 @@ The system automatically maps economic event data to the AI prompt:
 
 ```typescript
 interface EconomicEvent {
-  date: string;        // "2024-01-15"
-  time: string;        // "14:30"
-  event: string;       // "Consumer Price Index (CPI)"
-  country: string;     // "USD"
+  date: string; // "2024-01-15"
+  time: string; // "14:30"
+  event: string; // "Consumer Price Index (CPI)"
+  country: string; // "USD"
   countryFlag: string; // "🇺🇸"
-  forecast: string;    // "3.2%"
-  previous: string;    // "3.1%"
-  actual: string;      // "3.4%"
-  importance: number;  // 1-3 (1=low, 2=medium, 3=high)
+  forecast: string; // "3.2%"
+  previous: string; // "3.1%"
+  actual: string; // "3.4%"
+  importance: number; // 1-3 (1=low, 2=medium, 3=high)
 }
 ```
 
@@ -103,7 +105,10 @@ interface EconomicEvent {
 The system generates structured prompts based on the event data:
 
 ```typescript
-const generatePrompt = (eventData: EconomicEvent, language: 'ar' | 'en'): string => {
+const generatePrompt = (
+  eventData: EconomicEvent,
+  language: "ar" | "en",
+): string => {
   return `
 Economic Event Analysis:
 Event: ${eventData.event}
@@ -125,10 +130,7 @@ Importance: ${eventData.importance}/3
 The AI analysis button is integrated into each event row:
 
 ```tsx
-<AIEventInsight 
-  event={event}
-  currentLanguage={currentLanguage}
-/>
+<AIEventInsight event={event} currentLanguage={currentLanguage} />
 ```
 
 ### Modal/Dialog Features
@@ -147,10 +149,10 @@ Change the API endpoint to use different providers:
 
 ```typescript
 // For Azure OpenAI
-apiUrl: 'https://your-resource.openai.azure.com/openai/deployments/your-deployment/chat/completions?api-version=2023-12-01-preview'
+apiUrl: "https://your-resource.openai.azure.com/openai/deployments/your-deployment/chat/completions?api-version=2023-12-01-preview";
 
 // For custom proxy
-apiUrl: 'https://your-proxy.com/v1/chat/completions'
+apiUrl: "https://your-proxy.com/v1/chat/completions";
 ```
 
 ### 2. AI Model Selection
@@ -167,13 +169,21 @@ model: 'gpt-3.5-turbo',   // For faster/cheaper responses
 Add more languages by extending the language detection and prompt generation:
 
 ```typescript
-type SupportedLanguage = 'ar' | 'en' | 'fr' | 'de';
+type SupportedLanguage = "ar" | "en" | "fr" | "de";
 
 const languageInstructions = {
-  ar: { /* Arabic instructions */ },
-  en: { /* English instructions */ },
-  fr: { /* French instructions */ },
-  de: { /* German instructions */ },
+  ar: {
+    /* Arabic instructions */
+  },
+  en: {
+    /* English instructions */
+  },
+  fr: {
+    /* French instructions */
+  },
+  de: {
+    /* German instructions */
+  },
 };
 ```
 
@@ -198,9 +208,9 @@ const languageInstructions = {
 ### Basic Usage
 
 ```tsx
-import { AIEventInsight } from '@/components/ui/ai-event-insight';
+import { AIEventInsight } from "@/components/ui/ai-event-insight";
 
-<AIEventInsight 
+<AIEventInsight
   event={{
     date: "2024-01-15",
     time: "14:30",
@@ -208,18 +218,18 @@ import { AIEventInsight } from '@/components/ui/ai-event-insight';
     country: "USD",
     countryFlag: "🇺🇸",
     forecast: "3.2%",
-    previous: "3.1%", 
+    previous: "3.1%",
     actual: "3.4%",
-    importance: 3
+    importance: 3,
   }}
   currentLanguage="ar"
-/>
+/>;
 ```
 
 ### With Custom Language
 
 ```tsx
-<AIEventInsight 
+<AIEventInsight
   event={economicEvent}
   currentLanguage="en"
   className="custom-button-styles"
@@ -255,9 +265,9 @@ import { AIEventInsight } from '@/components/ui/ai-event-insight';
 Enable debug logging by adding to the component:
 
 ```typescript
-const DEBUG = process.env.NODE_ENV === 'development';
+const DEBUG = process.env.NODE_ENV === "development";
 
 if (DEBUG) {
-  console.log('AI API Request:', { prompt, language, event });
+  console.log("AI API Request:", { prompt, language, event });
 }
 ```

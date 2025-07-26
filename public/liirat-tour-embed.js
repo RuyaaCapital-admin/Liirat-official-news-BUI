@@ -3,15 +3,15 @@
  * Drop this script into any page to enable the site tour
  */
 
-(function() {
-  'use strict';
-  
+(function () {
+  "use strict";
+
   // Configuration
   const TOUR_CONFIG = {
     autoStart: true,
-    storageKey: 'liirat-tour-completed',
-    language: 'auto', // 'auto', 'ar', 'en'
-    theme: 'auto' // 'auto', 'dark', 'light'
+    storageKey: "liirat-tour-completed",
+    language: "auto", // 'auto', 'ar', 'en'
+    theme: "auto", // 'auto', 'dark', 'light'
   };
 
   // Tour steps
@@ -19,80 +19,87 @@
     ar: [
       {
         target: '[data-tour-target="ticker"]',
-        title: '📈 شريط الأسعار المباشر',
-        description: 'تابع أسعار العملات والذهب والنفط والمؤشرات العالمية في الوقت الفعلي',
-        position: 'bottom'
+        title: "📈 شريط الأسعار المباشر",
+        description:
+          "تابع أسعار العملات والذهب والنفط والمؤشرات العالمية في الوقت الفعلي",
+        position: "bottom",
       },
       {
         target: '[data-tour-target="calendar"]',
-        title: '📅 التقويم الاقتصادي',
-        description: 'اطلع على أهم الأحداث الاقتصادية والبيانات المالية القادمة',
-        position: 'bottom'
+        title: "📅 التقويم الاقتصادي",
+        description:
+          "اطلع على أهم الأحداث الاقتصادية والبيانات المالية القادمة",
+        position: "bottom",
       },
       {
         target: '[data-tour-target="alerts"]',
-        title: '🔔 التنبيهات الذكية',
-        description: 'احصل على تنبيهات فورية عند صدور البيانات الاقتصادية المهمة',
-        position: 'bottom'
+        title: "🔔 التنبيهات الذكية",
+        description:
+          "احصل على تنبيهات فورية عند صدور البيانات الاقتصادية المهمة",
+        position: "bottom",
       },
       {
         target: '[data-tour-target="ai-analysis"]',
-        title: '🤖 التحليل الذكي',
-        description: 'احصل على تحليل فوري بالذكاء الاصطناعي لكل حدث اقتصادي',
-        position: 'left'
+        title: "🤖 التحليل الذكي",
+        description: "احصل على تحليل فوري بالذكاء الاصطناعي لكل حدث اقتصادي",
+        position: "left",
       },
       {
         target: '[data-tour-target="contact"]',
-        title: '💬 الدعم والمساعدة',
-        description: 'تواصل معنا للحصول على الدعم الفني والاستفسارات',
-        position: 'top'
-      }
+        title: "💬 الدعم والمساعدة",
+        description: "تواصل معنا للحصول على الدعم الفني والاستفسارات",
+        position: "top",
+      },
     ],
     en: [
       {
         target: '[data-tour-target="ticker"]',
-        title: '📈 Live Price Ticker',
-        description: 'Track real-time prices of currencies, gold, oil, and global indices',
-        position: 'bottom'
+        title: "📈 Live Price Ticker",
+        description:
+          "Track real-time prices of currencies, gold, oil, and global indices",
+        position: "bottom",
       },
       {
         target: '[data-tour-target="calendar"]',
-        title: '📅 Economic Calendar',
-        description: 'View upcoming economic events and important financial data releases',
-        position: 'bottom'
+        title: "📅 Economic Calendar",
+        description:
+          "View upcoming economic events and important financial data releases",
+        position: "bottom",
       },
       {
         target: '[data-tour-target="alerts"]',
-        title: '🔔 Smart Alerts',
-        description: 'Get instant notifications when important economic data is released',
-        position: 'bottom'
+        title: "🔔 Smart Alerts",
+        description:
+          "Get instant notifications when important economic data is released",
+        position: "bottom",
       },
       {
         target: '[data-tour-target="ai-analysis"]',
-        title: '🤖 AI Analysis',
-        description: 'Get instant AI-powered analysis for every economic event',
-        position: 'left'
+        title: "🤖 AI Analysis",
+        description: "Get instant AI-powered analysis for every economic event",
+        position: "left",
       },
       {
         target: '[data-tour-target="contact"]',
-        title: '💬 Support & Help',
-        description: 'Contact us for technical support and inquiries',
-        position: 'top'
-      }
-    ]
+        title: "💬 Support & Help",
+        description: "Contact us for technical support and inquiries",
+        position: "top",
+      },
+    ],
   };
 
   // Detect language
   function detectLanguage() {
-    if (TOUR_CONFIG.language !== 'auto') return TOUR_CONFIG.language;
-    
-    const htmlDir = document.documentElement.getAttribute('dir');
-    if (htmlDir === 'rtl') return 'ar';
-    
-    const hasArabicText = document.body.textContent && 
-                         (document.body.textContent.includes('التقويم') || 
-                          document.body.textContent.includes('ليرات'));
-    return hasArabicText ? 'ar' : 'en';
+    if (TOUR_CONFIG.language !== "auto") return TOUR_CONFIG.language;
+
+    const htmlDir = document.documentElement.getAttribute("dir");
+    if (htmlDir === "rtl") return "ar";
+
+    const hasArabicText =
+      document.body.textContent &&
+      (document.body.textContent.includes("التقويم") ||
+        document.body.textContent.includes("ليرات"));
+    return hasArabicText ? "ar" : "en";
   }
 
   // Initialize tour
@@ -114,23 +121,24 @@
   function showWelcomeDialog(language, steps) {
     const welcomeTexts = {
       ar: {
-        title: 'مرحباً بك في ليرات',
-        description: 'هل تريد جولة سريعة لاكتشاف ميزات المنصة؟',
-        startBtn: 'ابدأ الجولة',
-        skipBtn: 'تخطي'
+        title: "مرحباً بك في ليرات",
+        description: "هل تريد جولة سريعة لاكتشاف ميزات المنصة؟",
+        startBtn: "ابدأ الجولة",
+        skipBtn: "تخطي",
       },
       en: {
-        title: 'Welcome to Liirat',
-        description: 'Would you like a quick tour to discover the platform features?',
-        startBtn: 'Start Tour',
-        skipBtn: 'Skip'
-      }
+        title: "Welcome to Liirat",
+        description:
+          "Would you like a quick tour to discover the platform features?",
+        startBtn: "Start Tour",
+        skipBtn: "Skip",
+      },
     };
 
     const texts = welcomeTexts[language] || welcomeTexts.ar;
 
     // Create welcome dialog
-    const dialog = document.createElement('div');
+    const dialog = document.createElement("div");
     dialog.style.cssText = `
       position: fixed;
       inset: 0;
@@ -184,14 +192,14 @@
     document.body.appendChild(dialog);
 
     // Event listeners
-    document.getElementById('liirat-start-tour').onclick = () => {
+    document.getElementById("liirat-start-tour").onclick = () => {
       document.body.removeChild(dialog);
       startTour(language, steps);
     };
 
-    document.getElementById('liirat-skip-tour').onclick = () => {
+    document.getElementById("liirat-skip-tour").onclick = () => {
       document.body.removeChild(dialog);
-      localStorage.setItem(TOUR_CONFIG.storageKey, 'true');
+      localStorage.setItem(TOUR_CONFIG.storageKey, "true");
     };
   }
 
@@ -220,11 +228,17 @@
       }
 
       // Create tour overlay
-      tourOverlay = createTourOverlay(step, target, stepIndex, steps.length, language);
+      tourOverlay = createTourOverlay(
+        step,
+        target,
+        stepIndex,
+        steps.length,
+        language,
+      );
       document.body.appendChild(tourOverlay);
 
       // Scroll target into view
-      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
     function nextStep() {
@@ -243,8 +257,8 @@
       if (tourOverlay) {
         document.body.removeChild(tourOverlay);
       }
-      localStorage.setItem(TOUR_CONFIG.storageKey, 'true');
-      
+      localStorage.setItem(TOUR_CONFIG.storageKey, "true");
+
       // Show completion message
       showCompletionMessage(language);
     }
@@ -258,7 +272,7 @@
 
   // Create tour overlay and callout
   function createTourOverlay(step, target, stepIndex, totalSteps, language) {
-    const overlay = document.createElement('div');
+    const overlay = document.createElement("div");
     overlay.style.cssText = `
       position: fixed;
       inset: 0;
@@ -271,7 +285,7 @@
     const scrollLeft = window.pageXOffset;
 
     // Add dark overlay
-    const darkOverlay = document.createElement('div');
+    const darkOverlay = document.createElement("div");
     darkOverlay.style.cssText = `
       position: absolute;
       inset: 0;
@@ -280,7 +294,7 @@
     `;
 
     // Add highlight
-    const highlight = document.createElement('div');
+    const highlight = document.createElement("div");
     highlight.style.cssText = `
       position: absolute;
       top: ${rect.top + scrollTop - 4}px;
@@ -294,16 +308,24 @@
     `;
 
     // Add callout
-    const callout = createCallout(step, rect, stepIndex, totalSteps, language, scrollTop, scrollLeft);
+    const callout = createCallout(
+      step,
+      rect,
+      stepIndex,
+      totalSteps,
+      language,
+      scrollTop,
+      scrollLeft,
+    );
 
     overlay.appendChild(darkOverlay);
     overlay.appendChild(highlight);
     overlay.appendChild(callout);
 
     // Add pulse animation
-    if (!document.getElementById('liirat-tour-styles')) {
-      const style = document.createElement('style');
-      style.id = 'liirat-tour-styles';
+    if (!document.getElementById("liirat-tour-styles")) {
+      const style = document.createElement("style");
+      style.id = "liirat-tour-styles";
       style.textContent = `
         @keyframes liirat-pulse {
           0%, 100% { opacity: 1; }
@@ -317,9 +339,17 @@
   }
 
   // Create callout bubble
-  function createCallout(step, targetRect, stepIndex, totalSteps, language, scrollTop, scrollLeft) {
-    const callout = document.createElement('div');
-    
+  function createCallout(
+    step,
+    targetRect,
+    stepIndex,
+    totalSteps,
+    language,
+    scrollTop,
+    scrollLeft,
+  ) {
+    const callout = document.createElement("div");
+
     // Calculate position
     let top, left;
     const calloutWidth = 320;
@@ -327,20 +357,36 @@
     const offset = 20;
 
     switch (step.position) {
-      case 'bottom':
+      case "bottom":
         top = targetRect.top + scrollTop + targetRect.height + offset;
-        left = targetRect.left + scrollLeft + targetRect.width / 2 - calloutWidth / 2;
+        left =
+          targetRect.left +
+          scrollLeft +
+          targetRect.width / 2 -
+          calloutWidth / 2;
         break;
-      case 'top':
+      case "top":
         top = targetRect.top + scrollTop - calloutHeight - offset;
-        left = targetRect.left + scrollLeft + targetRect.width / 2 - calloutWidth / 2;
+        left =
+          targetRect.left +
+          scrollLeft +
+          targetRect.width / 2 -
+          calloutWidth / 2;
         break;
-      case 'left':
-        top = targetRect.top + scrollTop + targetRect.height / 2 - calloutHeight / 2;
+      case "left":
+        top =
+          targetRect.top +
+          scrollTop +
+          targetRect.height / 2 -
+          calloutHeight / 2;
         left = targetRect.left + scrollLeft - calloutWidth - offset;
         break;
-      case 'right':
-        top = targetRect.top + scrollTop + targetRect.height / 2 - calloutHeight / 2;
+      case "right":
+        top =
+          targetRect.top +
+          scrollTop +
+          targetRect.height / 2 -
+          calloutHeight / 2;
         left = targetRect.left + scrollLeft + targetRect.width + offset;
         break;
       default:
@@ -353,8 +399,8 @@
     left = Math.max(10, Math.min(left, window.innerWidth - calloutWidth - 10));
 
     const navigationTexts = {
-      ar: { prev: 'السابق', next: 'التالي', finish: 'إنهاء' },
-      en: { prev: 'Previous', next: 'Next', finish: 'Finish' }
+      ar: { prev: "السابق", next: "التالي", finish: "إنهاء" },
+      en: { prev: "Previous", next: "Next", finish: "Finish" },
     };
     const nav = navigationTexts[language] || navigationTexts.ar;
 
@@ -369,13 +415,13 @@
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
       border: 2px solid rgba(34, 197, 94, 0.2);
       pointer-events: auto;
-      direction: ${language === 'ar' ? 'rtl' : 'ltr'};
+      direction: ${language === "ar" ? "rtl" : "ltr"};
     `;
 
     callout.innerHTML = `
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
         <div style="display: flex; align-items: center; gap: 0.5rem;">
-          <span style="font-size: 1.25rem;">${step.title.split(' ')[0]}</span>
+          <span style="font-size: 1.25rem;">${step.title.split(" ")[0]}</span>
           <span style="
             background: #f3f4f6;
             color: #6b7280;
@@ -391,21 +437,21 @@
           padding: 0.25rem;
         ">✕</button>
       </div>
-      <h3 style="font-weight: 600; margin-bottom: 0.5rem; text-align: ${language === 'ar' ? 'right' : 'left'};">
+      <h3 style="font-weight: 600; margin-bottom: 0.5rem; text-align: ${language === "ar" ? "right" : "left"};">
         ${step.title}
       </h3>
-      <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1.5rem; line-height: 1.5; text-align: ${language === 'ar' ? 'right' : 'left'};">
+      <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1.5rem; line-height: 1.5; text-align: ${language === "ar" ? "right" : "left"};">
         ${step.description}
       </p>
       <div style="display: flex; align-items: center; justify-content: space-between;">
         <button onclick="this.closest('div').dispatchEvent(new CustomEvent('liirat-prev-step'))" 
-                ${stepIndex === 0 ? 'disabled' : ''} style="
+                ${stepIndex === 0 ? "disabled" : ""} style="
           background: transparent;
           border: 1px solid #d1d5db;
           padding: 0.5rem 1rem;
           border-radius: 6px;
-          cursor: ${stepIndex === 0 ? 'not-allowed' : 'pointer'};
-          opacity: ${stepIndex === 0 ? '0.5' : '1'};
+          cursor: ${stepIndex === 0 ? "not-allowed" : "pointer"};
+          opacity: ${stepIndex === 0 ? "0.5" : "1"};
         ">${nav.prev}</button>
         <button onclick="this.closest('div').dispatchEvent(new CustomEvent('liirat-next-step'))" style="
           background: #16a34a;
@@ -424,11 +470,11 @@
   // Show completion message
   function showCompletionMessage(language) {
     const completionTexts = {
-      ar: 'تمت الجولة بنجاح! استمتع باستخدام ليرات',
-      en: 'Tour completed! Enjoy using Liirat'
+      ar: "تمت الجولة بنجاح! استمتع باستخدام ليرات",
+      en: "Tour completed! Enjoy using Liirat",
     };
 
-    const message = document.createElement('div');
+    const message = document.createElement("div");
     message.style.cssText = `
       position: fixed;
       bottom: 2rem;
@@ -465,18 +511,17 @@
   window.LiiratTour = {
     start: initTour,
     reset: () => localStorage.removeItem(TOUR_CONFIG.storageKey),
-    isCompleted: () => !!localStorage.getItem(TOUR_CONFIG.storageKey)
+    isCompleted: () => !!localStorage.getItem(TOUR_CONFIG.storageKey),
   };
 
   // Auto-initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
       setTimeout(initTour, 1000); // Small delay to ensure page is rendered
     });
   } else {
     setTimeout(initTour, 1000);
   }
-
 })();
 
 // Usage examples:

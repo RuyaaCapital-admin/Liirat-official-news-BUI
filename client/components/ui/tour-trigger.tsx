@@ -1,15 +1,18 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { HelpCircle, Play } from 'lucide-react';
-import { useSiteTour } from './site-tour';
-import { useLanguage } from '@/contexts/language-context';
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { HelpCircle, Play } from "lucide-react";
+import { useSiteTour } from "./site-tour";
+import { useLanguage } from "@/contexts/language-context";
 
 interface TourTriggerProps {
-  variant?: 'button' | 'icon' | 'text';
+  variant?: "button" | "icon" | "text";
   className?: string;
 }
 
-export function TourTrigger({ variant = 'button', className }: TourTriggerProps) {
+export function TourTrigger({
+  variant = "button",
+  className,
+}: TourTriggerProps) {
   const { startTour, tourComponent } = useSiteTour();
   const { t } = useLanguage();
 
@@ -17,7 +20,7 @@ export function TourTrigger({ variant = 'button', className }: TourTriggerProps)
     startTour();
   };
 
-  if (variant === 'icon') {
+  if (variant === "icon") {
     return (
       <>
         <Button
@@ -25,24 +28,24 @@ export function TourTrigger({ variant = 'button', className }: TourTriggerProps)
           size="sm"
           className={`h-9 w-9 px-0 ${className}`}
           onClick={handleStartTour}
-          title={t('nav.tour')}
+          title={t("nav.tour")}
         >
           <HelpCircle className="h-4 w-4" />
-          <span className="sr-only">{t('nav.tour')}</span>
+          <span className="sr-only">{t("nav.tour")}</span>
         </Button>
         {tourComponent}
       </>
     );
   }
 
-  if (variant === 'text') {
+  if (variant === "text") {
     return (
       <>
         <button
           onClick={handleStartTour}
           className={`text-sm text-muted-foreground hover:text-primary transition-colors underline ${className}`}
         >
-          {t('footer.tour')}
+          {t("footer.tour")}
         </button>
         {tourComponent}
       </>
@@ -58,7 +61,7 @@ export function TourTrigger({ variant = 'button', className }: TourTriggerProps)
         className={`gap-2 ${className}`}
       >
         <Play className="w-4 h-4" />
-        {t('nav.tour')}
+        {t("nav.tour")}
       </Button>
       {tourComponent}
     </>
@@ -67,10 +70,5 @@ export function TourTrigger({ variant = 'button', className }: TourTriggerProps)
 
 // Helper component to add to footer
 export function TourFooterLink() {
-  return (
-    <TourTrigger 
-      variant="text" 
-      className="hover:text-primary" 
-    />
-  );
+  return <TourTrigger variant="text" className="hover:text-primary" />;
 }

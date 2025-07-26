@@ -7,12 +7,14 @@ The Liirat Site Tour is a smart, interactive onboarding experience that guides n
 ## ✨ Key Features
 
 ### 🎨 **Smart Design**
+
 - **Theme Integration**: Seamlessly matches your dark theme
-- **No Visual Clutter**: Clean overlays with transparent backgrounds  
+- **No Visual Clutter**: Clean overlays with transparent backgrounds
 - **Modern UI**: Professional callout bubbles with smooth animations
 - **Responsive**: Works perfectly on desktop and mobile
 
 ### 🌐 **Language Intelligence**
+
 - **Auto-Detection**: Detects Arabic/English from page content
 - **Bilingual Support**: Complete Arabic and English translations
 - **RTL Support**: Proper right-to-left layout for Arabic
@@ -27,6 +29,7 @@ The Liirat Site Tour is a smart, interactive onboarding experience that guides n
 6. **🧭 Navigation** - Site navigation overview
 
 ### 🧠 **Intelligent Behavior**
+
 - **First-Visit Detection**: Only shows for new users
 - **Local Storage**: Remembers completion status
 - **Skip Option**: Users can skip anytime
@@ -46,17 +49,18 @@ import { TourTrigger } from '@/components/ui/tour-trigger';
 // Manual tour trigger (icon button)
 <TourTrigger variant="icon" />
 
-// Manual tour trigger (text link)  
+// Manual tour trigger (text link)
 <TourTrigger variant="text" />
 ```
 
 ### **Hook Usage**
 
 ```tsx
-import { useSiteTour } from '@/components/ui/site-tour';
+import { useSiteTour } from "@/components/ui/site-tour";
 
 function MyComponent() {
-  const { tourComponent, startTour, resetTour, isTourCompleted } = useSiteTour();
+  const { tourComponent, startTour, resetTour, isTourCompleted } =
+    useSiteTour();
 
   return (
     <div>
@@ -99,27 +103,27 @@ For non-React projects, use the standalone embed script:
 ```html
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Your Site</title>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Your content with data-tour-target attributes -->
-    
+
     <!-- Add tour script before closing body tag -->
     <script src="/liirat-tour-embed.js"></script>
-    
+
     <!-- Optional: Manual controls -->
     <script>
-        // Start tour manually
-        LiiratTour.start();
-        
-        // Reset tour completion
-        LiiratTour.reset();
-        
-        // Check if completed
-        console.log('Tour completed:', LiiratTour.isCompleted());
+      // Start tour manually
+      LiiratTour.start();
+
+      // Reset tour completion
+      LiiratTour.reset();
+
+      // Check if completed
+      console.log("Tour completed:", LiiratTour.isCompleted());
     </script>
-</body>
+  </body>
 </html>
 ```
 
@@ -129,12 +133,12 @@ For non-React projects, use the standalone embed script:
 
 ```typescript
 interface TourStep {
-  id: string;                    // Unique identifier
-  target: string;               // CSS selector
-  title: string;                // Step title
-  description: string;          // Step description  
-  emoji: string;                // Visual emoji
-  position: 'top' | 'bottom' | 'left' | 'right' | 'center';
+  id: string; // Unique identifier
+  target: string; // CSS selector
+  title: string; // Step title
+  description: string; // Step description
+  emoji: string; // Visual emoji
+  position: "top" | "bottom" | "left" | "right" | "center";
   offset?: { x: number; y: number }; // Position offset
 }
 ```
@@ -145,24 +149,24 @@ interface TourStep {
 const tourSteps = {
   ar: [
     {
-      id: 'ticker',
+      id: "ticker",
       target: '[data-tour-target="ticker"]',
-      title: '📈 شريط الأسعار المباشر',
-      description: 'تابع أسعار العملات والذهب والنفط في الوقت الفعلي',
-      position: 'bottom'
-    }
+      title: "📈 شريط الأسعار المباشر",
+      description: "تابع أسعار العملات والذهب والنفط في الوقت الفعلي",
+      position: "bottom",
+    },
     // ... more steps
   ],
   en: [
     {
-      id: 'ticker', 
+      id: "ticker",
       target: '[data-tour-target="ticker"]',
-      title: '📈 Live Price Ticker',
-      description: 'Track real-time prices of currencies, gold, and oil',
-      position: 'bottom'
-    }
+      title: "📈 Live Price Ticker",
+      description: "Track real-time prices of currencies, gold, and oil",
+      position: "bottom",
+    },
     // ... more steps
-  ]
+  ],
 };
 ```
 
@@ -192,12 +196,14 @@ const tourSteps = {
 ## 📱 **Responsive Behavior**
 
 ### **Desktop Features**
+
 - Full-size callout bubbles
 - Precise element highlighting
 - Smooth animations
 - Hover effects
 
 ### **Mobile Adaptations**
+
 - Smaller callout bubbles
 - Touch-friendly buttons
 - Adjusted positioning
@@ -206,6 +212,7 @@ const tourSteps = {
 ## 🔧 **Integration Points**
 
 ### **Header Navigation**
+
 ```tsx
 <div className="flex items-center space-x-2">
   <Button data-tour-target="alerts">🔔</Button>
@@ -215,6 +222,7 @@ const tourSteps = {
 ```
 
 ### **Footer Links**
+
 ```tsx
 <div className="footer-links">
   <a href="#privacy">Privacy</a>
@@ -229,23 +237,23 @@ const tourSteps = {
 
 ```typescript
 // Track tour start
-analytics.track('tour_started', {
+analytics.track("tour_started", {
   language: detectedLanguage,
-  timestamp: Date.now()
+  timestamp: Date.now(),
 });
 
 // Track step completion
-analytics.track('tour_step_completed', {
+analytics.track("tour_step_completed", {
   step_id: currentStep.id,
   step_number: currentStepIndex,
-  language: language
+  language: language,
 });
 
 // Track tour completion
-analytics.track('tour_completed', {
+analytics.track("tour_completed", {
   completion_time: Date.now() - startTime,
   total_steps: tourSteps.length,
-  language: language
+  language: language,
 });
 ```
 
@@ -253,25 +261,27 @@ analytics.track('tour_completed', {
 
 ```typescript
 // Track skip behavior
-analytics.track('tour_skipped', {
+analytics.track("tour_skipped", {
   step_at_skip: currentStepIndex,
-  reason: 'user_action'
+  reason: "user_action",
 });
 
 // Track manual tour starts
-analytics.track('tour_manual_start', {
-  trigger_location: 'header' | 'footer' | 'manual'
+analytics.track("tour_manual_start", {
+  trigger_location: "header" | "footer" | "manual",
 });
 ```
 
 ## 🎯 **Performance Optimization**
 
 ### **Lazy Loading**
+
 - Tour components load only when needed
 - Minimal initial bundle impact
 - Dynamic script loading for embed version
 
 ### **Memory Management**
+
 - Proper cleanup of event listeners
 - DOM element removal after completion
 - Local storage optimization
@@ -279,16 +289,19 @@ analytics.track('tour_manual_start', {
 ## 🔍 **Accessibility Features**
 
 ### **Keyboard Navigation**
+
 - Tab navigation through tour steps
 - Enter/Space to proceed
 - Escape to skip tour
 
 ### **Screen Reader Support**
+
 - ARIA labels for all interactive elements
 - Proper heading structure
 - Screen reader announcements
 
 ### **Color Contrast**
+
 - High contrast callout bubbles
 - Clear visual indicators
 - Theme-aware styling
@@ -296,29 +309,32 @@ analytics.track('tour_manual_start', {
 ## 🚀 **Production Deployment**
 
 ### **Environment Setup**
+
 ```bash
 # No additional dependencies required
 # Tour works with existing React/TypeScript setup
 ```
 
 ### **Performance Monitoring**
+
 ```typescript
 // Monitor tour performance
 const tourMetrics = {
   loadTime: performance.now(),
   completionRate: completedTours / totalTourStarts,
-  averageSteps: totalStepsCompleted / completedTours
+  averageSteps: totalStepsCompleted / completedTours,
 };
 ```
 
 ### **Error Handling**
+
 ```typescript
 try {
   // Tour initialization
   initializeTour();
 } catch (error) {
   // Graceful fallback
-  console.warn('Tour failed to initialize:', error);
+  console.warn("Tour failed to initialize:", error);
   // Continue without tour
 }
 ```
@@ -328,11 +344,13 @@ try {
 ### **Common Issues**
 
 1. **Tour not starting**
+
    - Check data-tour-target attributes
    - Verify localStorage is available
    - Ensure DOM elements exist
 
 2. **Language detection fails**
+
    - Manually set language prop
    - Check HTML dir attribute
    - Verify Arabic content exists
@@ -346,30 +364,33 @@ try {
 
 ```typescript
 // Enable debug logging
-localStorage.setItem('liirat-tour-debug', 'true');
+localStorage.setItem("liirat-tour-debug", "true");
 
 // Reset tour state
-localStorage.removeItem('liirat-tour-completed');
+localStorage.removeItem("liirat-tour-completed");
 
 // Force language
-localStorage.setItem('liirat-tour-language', 'ar');
+localStorage.setItem("liirat-tour-language", "ar");
 ```
 
 ## 📝 **Best Practices**
 
 ### **Content Guidelines**
+
 - Keep descriptions under 25 words
 - Use action-oriented language
 - Include relevant emojis for visual appeal
 - Test in both languages
 
 ### **UX Principles**
+
 - Never block critical user actions
 - Provide clear skip options
 - Highlight most important features first
 - Test with real users
 
 ### **Technical Standards**
+
 - Follow accessibility guidelines
 - Optimize for performance
 - Handle edge cases gracefully
@@ -378,13 +399,15 @@ localStorage.setItem('liirat-tour-language', 'ar');
 ## 🎉 **Success Metrics**
 
 ### **Key Performance Indicators**
+
 - **Tour Completion Rate**: Target >70%
 - **Feature Discovery**: Increased feature usage
 - **User Retention**: Higher return visits
 - **Support Reduction**: Fewer basic questions
 
 ### **A/B Testing**
+
 - Test different step orders
-- Experiment with copy variations  
+- Experiment with copy variations
 - Compare auto-start vs manual trigger
 - Measure optimal tour length

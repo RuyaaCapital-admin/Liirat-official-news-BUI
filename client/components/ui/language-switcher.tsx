@@ -1,42 +1,45 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
-import { Languages, Globe } from 'lucide-react';
-import { useLanguage } from '@/contexts/language-context';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Languages, Globe } from "lucide-react";
+import { useLanguage } from "@/contexts/language-context";
+import { cn } from "@/lib/utils";
 
 interface LanguageSwitcherProps {
-  variant?: 'default' | 'icon' | 'compact';
+  variant?: "default" | "icon" | "compact";
   className?: string;
 }
 
-export function LanguageSwitcher({ variant = 'default', className }: LanguageSwitcherProps) {
+export function LanguageSwitcher({
+  variant = "default",
+  className,
+}: LanguageSwitcherProps) {
   const { language, setLanguage, t } = useLanguage();
 
   const languages = [
     {
-      code: 'ar' as const,
-      name: 'العربية',
-      flag: '🇸🇦',
-      dir: 'rtl'
+      code: "ar" as const,
+      name: "العربية",
+      flag: "🇸🇦",
+      dir: "rtl",
     },
     {
-      code: 'en' as const,
-      name: 'English',
-      flag: '🇺🇸',
-      dir: 'ltr'
-    }
+      code: "en" as const,
+      name: "English",
+      flag: "🇺🇸",
+      dir: "ltr",
+    },
   ];
 
-  const currentLanguage = languages.find(lang => lang.code === language);
+  const currentLanguage = languages.find((lang) => lang.code === language);
 
-  if (variant === 'icon') {
+  if (variant === "icon") {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -56,7 +59,7 @@ export function LanguageSwitcher({ variant = 'default', className }: LanguageSwi
               onClick={() => setLanguage(lang.code)}
               className={cn(
                 "cursor-pointer",
-                language === lang.code && "bg-accent"
+                language === lang.code && "bg-accent",
               )}
             >
               <span className="mr-2">{lang.flag}</span>
@@ -73,7 +76,7 @@ export function LanguageSwitcher({ variant = 'default', className }: LanguageSwi
     );
   }
 
-  if (variant === 'compact') {
+  if (variant === "compact") {
     return (
       <div className={cn("flex items-center gap-1", className)}>
         {languages.map((lang) => (
@@ -94,11 +97,7 @@ export function LanguageSwitcher({ variant = 'default', className }: LanguageSwi
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className={cn("gap-2", className)}
-        >
+        <Button variant="outline" size="sm" className={cn("gap-2", className)}>
           <Languages className="h-4 w-4" />
           <span className="hidden sm:inline">{currentLanguage?.flag}</span>
           <span className="hidden md:inline">{currentLanguage?.name}</span>
@@ -111,7 +110,7 @@ export function LanguageSwitcher({ variant = 'default', className }: LanguageSwi
             onClick={() => setLanguage(lang.code)}
             className={cn(
               "cursor-pointer flex items-center justify-between",
-              language === lang.code && "bg-accent"
+              language === lang.code && "bg-accent",
             )}
           >
             <div className="flex items-center gap-2">
@@ -120,7 +119,7 @@ export function LanguageSwitcher({ variant = 'default', className }: LanguageSwi
             </div>
             {language === lang.code && (
               <Badge variant="secondary" className="text-xs">
-                {language === 'ar' ? 'نشط' : 'Active'}
+                {language === "ar" ? "نشط" : "Active"}
               </Badge>
             )}
           </DropdownMenuItem>
