@@ -599,24 +599,24 @@ export default function Index() {
 
                   <div className="bg-muted/50 rounded-lg p-4">
                     <h4 className="font-semibold mb-3">
-                      أنواع التنبيهات المتاحة:
+                      {t('alerts.types.title')}
                     </h4>
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-primary rounded-full"></div>
-                        بيانات اقتصادية عالية التأثير
+                        {t('alerts.types.high')}
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                        قرارات البنوك المركزية
+                        {t('alerts.types.central')}
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        تحركات غير متوقعة في الأسواق
+                        {t('alerts.types.unexpected')}
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        تحديثات أسعار الفائدة
+                        {t('alerts.types.rates')}
                       </li>
                     </ul>
                   </div>
@@ -726,7 +726,7 @@ export default function Index() {
 
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-right block">
-                      ال��ريد الإلكتروني
+                      ال��ريد الإل��تروني
                     </Label>
                     <Input
                       id="email"
