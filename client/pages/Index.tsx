@@ -401,7 +401,7 @@ export default function Index() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">{t('importance.all')}</SelectItem>
-                        <SelectItem value="3">⭐⭐⭐ عالي التأثير</SelectItem>
+                        <SelectItem value="3">{t('importance.high')}</SelectItem>
                         <SelectItem value="2">⭐⭐ م��وسط التأثير</SelectItem>
                         <SelectItem value="1">⭐ منخفض التأثير</SelectItem>
                       </SelectContent>
