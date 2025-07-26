@@ -230,7 +230,6 @@ export default function Index() {
 
             <nav
               className={`hidden md:flex items-center space-x-6 ${dir === "rtl" ? "space-x-reverse" : ""}`}
-
             >
               <a
                 href="#calendar"
@@ -275,7 +274,6 @@ export default function Index() {
           className="sticky top-[72px] z-40"
           pauseOnHover={true}
           speed={60}
-
         />
 
         {/* Hero Section */}
@@ -328,11 +326,7 @@ export default function Index() {
         </section>
 
         {/* Enhanced Economic Calendar Section */}
-        <section
-          id="calendar"
-          className="py-20 bg-muted/30"
-
-        >
+        <section id="calendar" className="py-20 bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -908,7 +902,6 @@ export default function Index() {
                 <a href="#" className="hover:text-primary transition-colors">
                   {t("footer.contact")}
                 </a>
-
               </div>
               <p className="text-xs text-muted-foreground mt-4">
                 {t("footer.copyright")}
@@ -917,8 +910,6 @@ export default function Index() {
           </div>
         </footer>
       </div>
-
-
 
       {/* Alert Settings Modal */}
       <AlertSettingsModal

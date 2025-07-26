@@ -30,7 +30,6 @@ const translations = {
     "nav.notifications": "التنبيهات",
     "nav.theme": "تبديل المظهر",
 
-
     // Hero Section
     "hero.title": "أخبار مالية واقتصادية",
     "hero.subtitle": "دقيقة ومحدثة",
@@ -194,7 +193,6 @@ const translations = {
     "nav.contact": "Contact Us",
     "nav.notifications": "Notifications",
     "nav.theme": "Toggle Theme",
-
 
     // Hero Section
     "hero.title": "Financial & Economic News",
