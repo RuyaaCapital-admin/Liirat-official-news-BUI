@@ -30,6 +30,8 @@ import { PriceTicker } from "@/components/ui/price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { SiteTour } from "@/components/ui/site-tour";
 import { TourTrigger, TourFooterLink } from "@/components/ui/tour-trigger";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { useLanguage } from "@/contexts/language-context";
 import {
   Calendar,
   Bell,
@@ -379,7 +381,7 @@ export default function Index() {
                       onValueChange={setSelectedDate}
                     >
                       <SelectTrigger className="text-right">
-                        <SelectValue placeholder="اختر التاريخ" />
+                        <SelectValue placeholder="اخت�� التاريخ" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="today">اليوم</SelectItem>
@@ -667,7 +669,7 @@ export default function Index() {
                 <CardContent className="py-8">
                   <BellRing className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">
-                    سيتم تفعيل التنبيهات لاحقا��
+                    سيتم تفعيل التنبيهات لاحقاً
                   </p>
                 </CardContent>
               </Card>
@@ -705,7 +707,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تحليلات متقدمة</h3>
               <p className="text-muted-foreground">
-                تحليلات عميقة للأحداث الاقتصادية
+                تحليلات عميقة للأحداث ا��اقتصادية
               </p>
             </div>
 
@@ -725,7 +727,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تغطية عالمية</h3>
               <p className="text-muted-foreground">
-                جميع الأسواق والعملات الرئيسية
+                جم��ع الأسواق والعملات الرئيسية
               </p>
             </div>
           </div>
@@ -829,7 +831,7 @@ export default function Index() {
               <TourFooterLink />
             </div>
             <p className="text-xs text-muted-foreground mt-4">
-              © 2024 Liirat News. جميع الحقوق م��فوظة.
+              © 2024 Liirat News. جميع ا��حقوق م��فوظة.
             </p>
           </div>
         </div>
