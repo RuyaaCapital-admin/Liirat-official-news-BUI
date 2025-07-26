@@ -42,17 +42,17 @@ interface AIEventInsightProps {
 // API Configuration - Replace these with your actual values
 const AI_API_CONFIG = {
   // 🔧 REPLACE WITH YOUR OPENAI API ENDPOINT
-  apiUrl: process.env.VITE_OPENAI_API_URL || 'https://api.openai.com/v1/chat/completions',
+  apiUrl: import.meta.env.VITE_OPENAI_API_URL || 'https://api.openai.com/v1/chat/completions',
 
   // 🔧 REPLACE WITH YOUR OPENAI API KEY
-  apiKey: process.env.VITE_OPENAI_API_KEY || 'your-api-key-here',
+  apiKey: import.meta.env.VITE_OPENAI_API_KEY || 'your-api-key-here',
 
   // Model configuration
   model: 'gpt-3.5-turbo',
   maxTokens: 500,
 
   // Demo mode - set to true to show demo analysis without API calls
-  demoMode: !process.env.VITE_OPENAI_API_KEY || process.env.VITE_OPENAI_API_KEY === 'your-api-key-here',
+  demoMode: !import.meta.env.VITE_OPENAI_API_KEY || import.meta.env.VITE_OPENAI_API_KEY === 'your-api-key-here',
 };
 
 export function AIEventInsight({ event, currentLanguage = 'ar', className }: AIEventInsightProps) {
@@ -129,7 +129,7 @@ Keep the analysis concise but informative, suitable for traders and investors. F
 
 📈 التأثير المتوقع على الأسواق:
 ${eventData.actual !== eventData.forecast ?
-  `نتوقع تأثيراً ${eventData.importance === 3 ? 'قوياً' : 'معتدلاً'} على عملة ${eventData.country} والأسواق المرتبطة بها. قد نشهد تحركات في أسواق الذهب والنفط والمؤشرات الرئيسية.` :
+  `نتوقع تأثيراً ${eventData.importance === 3 ? 'قوياً' : 'معتدلاً'} على عملة ${eventData.country} والأسواق المرتبط�� بها. قد نشهد تحركات في أسواق الذهب والنفط والمؤشرات الرئيسية.` :
   'التأثير قد يكون محدوداً نظراً لتوافق البيانات مع التوقعات، لكن السوق قد يركز على التفاصيل والتوجهات المستقبلية.'
 }
 
@@ -394,7 +394,7 @@ ${eventData.actual !== eventData.forecast ?
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span>مدعوم بالذكاء الاصطناعي</span>
                     <div className="flex items-center gap-2">
-                      <span>اللغة: {insight.language === 'ar' ? 'العر��ية' : 'English'}</span>
+                      <span>اللغة: {insight.language === 'ar' ? 'العربية' : 'English'}</span>
                       <Badge variant="outline" className="text-xs">
                         GPT-3.5
                       </Badge>
