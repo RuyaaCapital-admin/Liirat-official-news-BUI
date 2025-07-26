@@ -355,22 +355,22 @@ export default function Index() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                   {/* Date Picker */}
                   <div className="space-y-2">
-                    <Label className="text-right block">التاريخ</Label>
+                    <Label className={`block ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>{t('calendar.filters.date')}</Label>
                     <Select
                       value={selectedDate}
                       onValueChange={setSelectedDate}
                     >
-                      <SelectTrigger className="text-right">
-                        <SelectValue placeholder="اختر التاريخ" />
+                      <SelectTrigger className={dir === 'rtl' ? 'text-right' : 'text-left'}>
+                        <SelectValue placeholder={t('date.today')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="today">اليوم</SelectItem>
-                        <SelectItem value="tomorrow">غداً</SelectItem>
-                        <SelectItem value="this-week">هذا الأسبوع</SelectItem>
+                        <SelectItem value="today">{t('date.today')}</SelectItem>
+                        <SelectItem value="tomorrow">{t('date.tomorrow')}</SelectItem>
+                        <SelectItem value="this-week">{t('date.thisweek')}</SelectItem>
                         <SelectItem value="next-week">
-                          الأسبوع القادم
+                          {t('date.nextweek')}
                         </SelectItem>
-                        <SelectItem value="custom">تاريخ مخصص</SelectItem>
+                        <SelectItem value="custom">{t('date.custom')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
