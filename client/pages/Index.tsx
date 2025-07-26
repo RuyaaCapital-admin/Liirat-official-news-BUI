@@ -31,7 +31,11 @@ import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { SiteTour } from "@/components/ui/site-tour";
 import { TourTrigger, TourFooterLink } from "@/components/ui/tour-trigger";
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
+import { NotificationDropdown } from "@/components/ui/notification-dropdown";
+import { AlertSettingsModal } from "@/components/ui/alert-settings-modal";
+import { CustomDatePicker } from "@/components/ui/custom-date-picker";
 import { useLanguage } from "@/contexts/language-context";
+import { useAlerts } from "@/contexts/alert-context";
 import {
   Calendar,
   Bell,
@@ -617,7 +621,7 @@ export default function Index() {
 
                   <div className="bg-muted/50 rounded-lg p-4">
                     <h4 className="font-semibold mb-3">
-                      أنواع التنبيهات المتاحة:
+                      أنواع التنبيهات المتاح��:
                     </h4>
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-center gap-2">
@@ -662,7 +666,7 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              لماذا لير��ت نيوز؟
+              لماذا ليرات نيوز؟
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               منصتك الموثوقة للأخبار المالية والتحليلات الاقتصادية
