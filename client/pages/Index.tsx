@@ -410,7 +410,7 @@ export default function Index() {
 
                   {/* Search by Event Name */}
                   <div className="space-y-2">
-                    <Label className="text-right block">ال��حث في الأحداث</Label>
+                    <Label className="text-right block">ال��حث في ا��أحداث</Label>
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
@@ -685,7 +685,7 @@ export default function Index() {
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Globe className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="font-bold text-lg mb-2">تغطية عالمية</h3>
+              <h3 className="font-bold text-lg mb-2">{t('about.coverage.title')}</h3>
               <p className="text-muted-foreground">
                 جم��ع الأسواق والعملات الرئيسية
               </p>
