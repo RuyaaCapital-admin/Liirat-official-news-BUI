@@ -359,7 +359,7 @@ export default function Index() {
 
                   {/* Country/Currency Selector */}
                   <div className="space-y-2">
-                    <Label className="text-right block">العملة/البلد</Label>
+                    <Label className={`block ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>{t('calendar.filters.currency')}</Label>
                     <Select
                       value={selectedCountry}
                       onValueChange={setSelectedCountry}
