@@ -377,7 +377,7 @@ export default function Index() {
                           {t('currency.gbp')}
                         </SelectItem>
                         <SelectItem value="JPY">
-                          🇯🇵 JPY - ال��ن الياباني
+                          {t('currency.jpy')}
                         </SelectItem>
                         <SelectItem value="AUD">
                           {t('currency.aud')}
@@ -402,23 +402,23 @@ export default function Index() {
                       <SelectContent>
                         <SelectItem value="all">{t('importance.all')}</SelectItem>
                         <SelectItem value="3">{t('importance.high')}</SelectItem>
-                        <SelectItem value="2">⭐⭐ م��وسط التأثير</SelectItem>
-                        <SelectItem value="1">⭐ منخفض التأثير</SelectItem>
+                        <SelectItem value="2">{t('importance.medium')}</SelectItem>
+                        <SelectItem value="1">{t('importance.low')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   {/* Search by Event Name */}
                   <div className="space-y-2">
-                    <Label className="text-right block">ال��حث في ا��أحداث</Label>
+                    <Label className={`block ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>{t('calendar.filters.search')}</Label>
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <Search className={`absolute ${dir === 'rtl' ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4`} />
                       <Input
                         type="text"
                         value={searchEvent}
                         onChange={(e) => setSearchEvent(e.target.value)}
-                        className="text-right pl-10"
-                        placeholder="ابحث عن حدث..."
+                        className={`${dir === 'rtl' ? 'text-right pr-10' : 'text-left pl-10'}`}
+                        placeholder={t('calendar.filters.search.placeholder')}
                       />
                     </div>
                   </div>
@@ -629,7 +629,7 @@ export default function Index() {
                 <CardContent className="py-8">
                   <BellRing className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">
-                    سيتم تفعيل التنبيهات لاحقاً
+                    {t('alerts.status')}
                   </p>
                 </CardContent>
               </Card>
@@ -687,7 +687,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">{t('about.coverage.title')}</h3>
               <p className="text-muted-foreground">
-                جم��ع الأسواق والعملات الرئيسية
+                {t('about.coverage.desc')}
               </p>
             </div>
           </div>
@@ -699,18 +699,18 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              تواصل مع فريق ل��رات
+              {t('contact.title')}
             </h2>
             <p className="text-xl text-muted-foreground mb-8">
-              للاستفسارات والدعم الفني
+              {t('contact.description')}
             </p>
 
             <Card className="text-right">
               <CardContent className="p-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="name" className="text-right block">
-                      الاسم الكامل
+                    <Label htmlFor="name" className={`block ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
+                      {t('contact.form.name')}
                     </Label>
                     <Input
                       id="name"
@@ -718,14 +718,14 @@ export default function Index() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required
-                      className="text-right"
-                      placeholder="أدخل اسمك الكامل"
+                      className={dir === 'rtl' ? 'text-right' : 'text-left'}
+                      placeholder={t('contact.form.name.placeholder')}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-right block">
-                      ال��ريد الإلكتروني
+                    <Label htmlFor="email" className={`block ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
+                      {t('contact.form.email')}
                     </Label>
                     <Input
                       id="email"
@@ -733,22 +733,22 @@ export default function Index() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="text-right"
-                      placeholder="example@email.com"
+                      className={dir === 'rtl' ? 'text-right' : 'text-left'}
+                      placeholder={t('contact.form.email.placeholder')}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="whatsapp" className="text-right block">
-                      رقم الواتساب
+                    <Label htmlFor="whatsapp" className={`block ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
+                      {t('contact.form.whatsapp')}
                     </Label>
                     <Input
                       id="whatsapp"
                       type="tel"
                       value={whatsapp}
                       onChange={(e) => setWhatsapp(e.target.value)}
-                      className="text-right"
-                      placeholder="+966xxxxxxxxx"
+                      className={dir === 'rtl' ? 'text-right' : 'text-left'}
+                      placeholder={t('contact.form.whatsapp.placeholder')}
                     />
                   </div>
 
@@ -757,7 +757,7 @@ export default function Index() {
                     size="lg"
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 text-lg font-semibold"
                   >
-                    إرسال رسالة
+                    {t('contact.form.submit')}
                   </Button>
                 </form>
               </CardContent>
@@ -776,22 +776,22 @@ export default function Index() {
               className="h-8 w-auto mx-auto mb-4"
             />
             <p className="text-muted-foreground mb-4">
-              منصة ليرات للأخبار المالية والاقتصادية
+              {t('footer.description')}
             </p>
             <div className="flex justify-center space-x-6 space-x-reverse text-sm text-muted-foreground">
               <a href="#" className="hover:text-primary transition-colors">
-                سياسة الخصوصية
+                {t('footer.privacy')}
               </a>
               <a href="#" className="hover:text-primary transition-colors">
-                شروط الاستخدام
+                {t('footer.terms')}
               </a>
               <a href="#" className="hover:text-primary transition-colors">
-                تواصل معنا
+                {t('footer.contact')}
               </a>
               <TourFooterLink />
             </div>
             <p className="text-xs text-muted-foreground mt-4">
-              © 2024 Liirat News. جميع الحقوق م��فوظة.
+              {t('footer.copyright')}
             </p>
           </div>
         </div>
