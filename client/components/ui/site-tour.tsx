@@ -141,7 +141,7 @@ export function SiteTour({
                 📈 شريط الأسعار المباشر
               </h3>
               <p style={{ fontSize: '13px', lineHeight: '1.6', margin: 0, color: 'hsl(var(--muted-foreground))' }}>
-                تابع أسعار العملات والذهب والنفط والمؤشرات العالمية لحظة بلحظة. البيانات محدثة كل ثانية من أسواق المال العالمية.
+                تابع أسعار العملات والذهب والنفط والمؤشرات العالمية ل��ظة بلحظة. البيانات محدثة كل ثانية من أسواق المال العالمية.
               </p>
             </div>
           ),
@@ -362,7 +362,7 @@ export function SiteTour({
   const handleJoyrideCallback = useCallback((data: CallBackProps) => {
     const { status, type, index, action } = data;
 
-    if ([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND].includes(type)) {
+    if (type === EVENTS.STEP_AFTER || type === EVENTS.TARGET_NOT_FOUND) {
       // Update step index
       setStepIndex(index + (action === ACTIONS.PREV ? -1 : 1));
     } else if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
