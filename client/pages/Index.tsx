@@ -43,131 +43,7 @@ import {
 import { useState, useEffect } from "react";
 import { useTheme } from "@/hooks/use-theme";
 
-// Updated MarketTicker – replace the old function with this
-const MarketTicker = () => {
-  // Instruments to fetch (BTC, Dow via DIA, Nasdaq via QQQ, gold, silver, oil)
-  const instruments = [
-    { label: "BTC/USD", type: "crypto", id: "bitcoin" },
-    { label: "DOW", type: "stock", symbol: "DIA" },
-    { label: "NASDAQ", type: "stock", symbol: "QQQ" },
-    { label: "Gold", type: "stock", symbol: "XAUUSD" },
-    { label: "Silver", type: "stock", symbol: "XAGUSD" },
-    { label: "Oil", type: "stock", symbol: "WTI" },
-  ];
 
-  // State for fetched quotes and loading status
-  const [tickerData, setTickerData] = useState<
-    { label: string; price: number | null; change: number | null }[]
-  >([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Read Alpha Vantage API key from env (defaults to 'demo')
-  const API_KEY =
-    (import.meta as any).env?.VITE_ALPHA_VANTAGE_API_KEY ||
-    (import.meta as any).env?.VITE_ALPHAVANTAGE_API_KEY ||
-    "demo";
-
-  // Fetch price and change data for each instrument
-  async function fetchPrices() {
-    try {
-      const results = await Promise.all(
-        instruments.map(async (inst) => {
-          try {
-            if (inst.type === "crypto") {
-              const res = await fetch(
-                `https://api.coingecko.com/api/v3/simple/price?ids=${inst.id}&vs_currencies=usd&include_24hr_change=true`,
-              );
-              const data = await res.json();
-              const price: number | null = data?.[inst.id]?.usd ?? null;
-              const change: number | null =
-                data?.[inst.id]?.usd_24h_change ?? null;
-              return { label: inst.label, price, change };
-            } else {
-              const res = await fetch(
-                `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${inst.symbol}&apikey=${API_KEY}`,
-              );
-              const data = await res.json();
-              const quote = data?.["Global Quote"] ?? {};
-              const price = quote["05. price"]
-                ? parseFloat(quote["05. price"])
-                : null;
-              let change: number | null = null;
-              if (quote && quote["10. change percent"]) {
-                const raw = (quote["10. change percent"] as string).replace(
-                  "%",
-                  "",
-                );
-                change = parseFloat(raw);
-              }
-              return { label: inst.label, price, change };
-            }
-          } catch {
-            return { label: inst.label, price: null, change: null };
-          }
-        }),
-      );
-      setTickerData(results);
-      setIsLoading(false);
-    } catch {
-      setTickerData([]);
-      setIsLoading(false);
-    }
-  }
-
-  // Initial fetch and 30‑second refresh
-  useEffect(() => {
-    fetchPrices();
-    const intervalId = setInterval(fetchPrices, 30_000);
-    return () => clearInterval(intervalId);
-  }, []);
-
-  return (
-    <>
-      {isLoading ? (
-        <span>Loading market prices…</span>
-      ) : (
-        <div
-          style={{
-            display: "flex",
-            gap: "1.5rem",
-            whiteSpace: "nowrap",
-            animation: "scroll 30s linear infinite",
-          }}
-        >
-          {tickerData.map((item) => (
-            <span
-              key={item.label}
-              style={{
-                fontWeight: 500,
-                color:
-                  item.change == null
-                    ? "inherit"
-                    : item.change >= 0
-                    ? "#16a34a"
-                    : "#dc2626",
-              }}
-            >
-              {item.label}: {item.price != null ? item.price.toFixed(2) : "–"}
-              {item.change != null ? (
-                <>
-                  {" "}
-                  ({item.change >= 0 ? "+" : ""}
-                  {item.change.toFixed(2)}%)
-                </>
-              ) : null}
-            </span>
-          ))}
-        </div>
-      )}
-      <style>
-        {`@keyframes scroll {
-          0% { transform: translateX(100%); }
-          100% { transform: translateX(-100%); }
-        }`}
-      </style>
-    </>
-  );
-};
 
 export default function Index() {
   const [email, setEmail] = useState("");
@@ -767,7 +643,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تحديثات فورية</h3>
               <p className="text-muted-foreground">
-                بيانات محدثة كل دقيقة من ال��سواق العالمية
+                بيانات محدثة كل دقيقة من الأسواق العالمية
               </p>
             </div>
 
@@ -890,7 +766,7 @@ export default function Index() {
             </p>
             <div className="flex justify-center space-x-6 space-x-reverse text-sm text-muted-foreground">
               <a href="#" className="hover:text-primary transition-colors">
-                سيا��ة الخصوصية
+                سياسة الخصوصية
               </a>
               <a href="#" className="hover:text-primary transition-colors">
                 شروط الاستخدام
