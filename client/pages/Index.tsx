@@ -370,7 +370,7 @@ export default function Index() {
                       <SelectContent>
                         <SelectItem value="all">{t('currency.all')}</SelectItem>
                         <SelectItem value="USD">
-                          🇺🇸 USD - الدولار الأمري��ي
+                          {t('currency.usd')}
                         </SelectItem>
                         <SelectItem value="EUR">🇪🇺 EUR - اليورو</SelectItem>
                         <SelectItem value="GBP">
