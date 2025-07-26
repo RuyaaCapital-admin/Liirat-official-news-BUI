@@ -121,7 +121,7 @@ export default function Index() {
       time: "13:15",
       event: "ZEW Economic Sentiment",
       country: "EUR",
-      countryFlag: "🇩🇪",
+      countryFlag: "🇩���",
       forecast: "95.2",
       previous: "94.8",
       actual: "-",
@@ -490,7 +490,7 @@ export default function Index() {
                           <TableCell className="text-right font-mono font-bold">
                             {event.actual === "-" ? (
                               <span className="text-muted-foreground">
-                                قريباً
+                                {t('calendar.upcoming')}
                               </span>
                             ) : (
                               <span
@@ -630,7 +630,7 @@ export default function Index() {
                 <CardContent className="py-8">
                   <BellRing className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">
-                    سي��م تفعيل التنبيهات لاحقاً
+                    سيتم تفعيل التنبيهات لاحقاً
                   </p>
                 </CardContent>
               </Card>
@@ -668,7 +668,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تحليلات متقدمة</h3>
               <p className="text-muted-foreground">
-                تحليلات عميقة للأحداث الاقتصادية
+                تحليلات عمي��ة للأحداث الاقتصادية
               </p>
             </div>
 
