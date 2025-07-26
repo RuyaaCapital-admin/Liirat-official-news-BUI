@@ -368,7 +368,7 @@ export default function Index() {
                         <SelectValue placeholder={t('calendar.select.currency')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">جميع العملات</SelectItem>
+                        <SelectItem value="all">{t('currency.all')}</SelectItem>
                         <SelectItem value="USD">
                           🇺🇸 USD - الدولار الأمري��ي
                         </SelectItem>
