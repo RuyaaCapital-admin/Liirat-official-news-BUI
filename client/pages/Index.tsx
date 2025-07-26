@@ -121,7 +121,7 @@ export default function Index() {
       time: "13:15",
       event: "ZEW Economic Sentiment",
       country: "EUR",
-      countryFlag: "🇩���",
+      countryFlag: "🇩🇪",
       forecast: "95.2",
       previous: "94.8",
       actual: "-",
@@ -538,13 +538,13 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                نظام التنبيهات الذكي
-              </h2>
-              <p className="text-xl text-muted-foreground">
-                احصل على تنبيهات فورية عند صدور البيانات الاقتصادية المهمة
-              </p>
-            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              {t('alerts.title')}
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              {t('alerts.description')}
+            </p>
+          </div>
 
             <Card>
               <CardHeader>
@@ -644,7 +644,7 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              لماذا ليرات نيوز؟
+              لماذا ليرات ��يوز؟
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               منصتك الموثوقة للأخبار المالية والتحليلات الاقتصادية
@@ -668,7 +668,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تحليلات متقدمة</h3>
               <p className="text-muted-foreground">
-                تحليلات عمي��ة للأحداث الاقتصادية
+                تحليلات عميقة للأحداث الاقتصادية
               </p>
             </div>
 
