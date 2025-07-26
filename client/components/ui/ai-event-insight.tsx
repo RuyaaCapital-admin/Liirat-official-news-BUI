@@ -108,8 +108,6 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
     setError(null);
 
     try {
-      const language = detectLanguage();
-
       // 🔧 DEMO MODE - Remove this when API is configured
       if (AI_API_CONFIG.demoMode) {
         // Simulate API delay
@@ -224,7 +222,7 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-right">
             <Sparkles className="w-5 h-5 text-primary" />
-            تحليل ذكي للحدث الاقتصادي
+            تحليل ذكي للحدث ا��اقتصادي
           </DialogTitle>
           <DialogDescription className="text-right">
             تحليل مدعوم بالذكاء الاصطناعي للحدث الاقتصادي وتأثيره على الأسواق
