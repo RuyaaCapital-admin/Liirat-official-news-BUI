@@ -347,7 +347,7 @@ export default function Index() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Filter className="w-5 h-5 text-primary" />
-                  فلاتر التقويم الاقتصادي
+                  {t('calendar.filters.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -398,7 +398,7 @@ export default function Index() {
                           🇯🇵 JPY - ال��ن الياباني
                         </SelectItem>
                         <SelectItem value="AUD">
-                          🇦🇺 AUD - الدولار الأ��ترالي
+                          🇦🇺 AUD - الدولار الأسترالي
                         </SelectItem>
                         <SelectItem value="CAD">
                           🇨🇦 CAD - الدولار الكندي
@@ -542,7 +542,7 @@ export default function Index() {
 
                 <div className="mt-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    البيانات محدثة كل دقيقة من مصادر موثوقة •{" "}
+                    ��لبيانات محدثة كل دقيقة من مصادر موثوقة •{" "}
                     {filteredEvents.length} من أصل {economicEvents.length} حدث
                   </p>
                 </div>
@@ -591,7 +591,7 @@ export default function Index() {
                           <SelectItem value="usdcad">USD/CAD</SelectItem>
                           <SelectItem value="audusd">AUD/USD</SelectItem>
                           <SelectItem value="nfp">
-                            رو��تب غير الزراعية الأمريكية
+                            رواتب غير الزراعية الأمريكية
                           </SelectItem>
                           <SelectItem value="cpi">
                             مؤشر أسعار المستهلك
@@ -707,7 +707,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تغطية عالمية</h3>
               <p className="text-muted-foreground">
-                جم��ع الأسواق والعملات الرئيسية
+                ��م��ع الأسواق والعملات الرئيسية
               </p>
             </div>
           </div>
