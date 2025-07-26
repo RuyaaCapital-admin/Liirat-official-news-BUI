@@ -402,7 +402,7 @@ export default function Index() {
                       <SelectContent>
                         <SelectItem value="all">جميع المستويات</SelectItem>
                         <SelectItem value="3">⭐⭐⭐ عالي التأثير</SelectItem>
-                        <SelectItem value="2">⭐��� متوسط التأثير</SelectItem>
+                        <SelectItem value="2">⭐⭐ متوسط التأثير</SelectItem>
                         <SelectItem value="1">⭐ منخفض التأثير</SelectItem>
                       </SelectContent>
                     </Select>
@@ -443,22 +443,22 @@ export default function Index() {
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow className="text-right">
-                        <TableHead className="text-right">
-                          التاريخ والوقت
+                      <TableRow className={dir === 'rtl' ? 'text-right' : 'text-left'}>
+                        <TableHead className={dir === 'rtl' ? 'text-right' : 'text-left'}>
+                          {t('calendar.table.datetime')}
                         </TableHead>
-                        <TableHead className="text-right">
-                          العملة/البلد
+                        <TableHead className={dir === 'rtl' ? 'text-right' : 'text-left'}>
+                          {t('calendar.table.country')}
                         </TableHead>
-                        <TableHead className="text-right">الأهمية</TableHead>
-                        <TableHead className="text-right">الحدث</TableHead>
-                        <TableHead className="text-right">
-                          القيمة الفعلية
+                        <TableHead className={dir === 'rtl' ? 'text-right' : 'text-left'}>{t('calendar.table.importance')}</TableHead>
+                        <TableHead className={dir === 'rtl' ? 'text-right' : 'text-left'}>{t('calendar.table.event')}</TableHead>
+                        <TableHead className={dir === 'rtl' ? 'text-right' : 'text-left'}>
+                          {t('calendar.table.actual')}
                         </TableHead>
-                        <TableHead className="text-right">التوقع</TableHead>
-                        <TableHead className="text-right">السابق</TableHead>
-                        <TableHead className="text-right">
-                          تحليل الذكاء الاصطناعي
+                        <TableHead className={dir === 'rtl' ? 'text-right' : 'text-left'}>{t('calendar.table.forecast')}</TableHead>
+                        <TableHead className={dir === 'rtl' ? 'text-right' : 'text-left'}>{t('calendar.table.previous')}</TableHead>
+                        <TableHead className={dir === 'rtl' ? 'text-right' : 'text-left'}>
+                          {t('calendar.table.analysis')}
                         </TableHead>
                       </TableRow>
                     </TableHeader>
@@ -630,7 +630,7 @@ export default function Index() {
                 <CardContent className="py-8">
                   <BellRing className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">
-                    سيتم تفعيل التنبيهات لاحقاً
+                    سي��م تفعيل التنبيهات لاحقاً
                   </p>
                 </CardContent>
               </Card>
@@ -741,7 +741,7 @@ export default function Index() {
 
                   <div className="space-y-2">
                     <Label htmlFor="whatsapp" className="text-right block">
-                      رقم الوا��ساب
+                      رقم الواتساب
                     </Label>
                     <Input
                       id="whatsapp"
