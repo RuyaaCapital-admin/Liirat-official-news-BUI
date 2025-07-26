@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Brain, Loader2, TrendingUp, TrendingDown, AlertCircle, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/language-context';
 
 export interface EconomicEvent {
   date: string;
