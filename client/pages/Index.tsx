@@ -251,7 +251,15 @@ export default function Index() {
 
       {/* Hero Section */}
       <section className="py-20 lg:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/20"></div>
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src="https://cdn.builder.io/api/v1/image/assets%2F165a7c0d273f4448b5890b3ec14b12af%2F87665f5fec764be4b49626e43b10972a?format=webp&width=800"
+            alt="Liirat Background"
+            className="w-full h-full object-cover opacity-5"
+          />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/95 to-muted/40"></div>
         <div className="container mx-auto px-4 relative">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
@@ -260,7 +268,7 @@ export default function Index() {
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
               منصة ليرات للأخبار المالية - تقويم اقتصادي مباشر، تنبيهات فورية،
-              وتحليلات مت��دمة لجميع الأسواق العالمية
+              وتحليلات متقدمة لجميع الأسواق العالمية
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -299,7 +307,7 @@ export default function Index() {
               التقويم الاقتصادي المباشر
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              تابع أهم الأحد��ث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع
+              تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع
               إمكانيات تصفية متقدمة
             </p>
           </div>
@@ -357,7 +365,7 @@ export default function Index() {
                           🇬🇧 GBP - الجنيه الإسترليني
                         </SelectItem>
                         <SelectItem value="JPY">
-                          🇯🇵 JPY - الين الياباني
+                          🇯🇵 JPY - ال��ن الياباني
                         </SelectItem>
                         <SelectItem value="AUD">
                           🇦🇺 AUD - الدولار الأسترالي
@@ -542,7 +550,7 @@ export default function Index() {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label>��ختر زوج العملة أو المؤشر</Label>
+                      <Label>اختر زوج العملة أو المؤشر</Label>
                       <Select
                         value={selectedPair}
                         onValueChange={setSelectedPair}
@@ -653,7 +661,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تحليلات متقدمة</h3>
               <p className="text-muted-foreground">
-                تحليلات عميقة ل��أحداث الاقتصادية
+                تحليلات عميقة للأحداث الاقتصادية
               </p>
             </div>
 
