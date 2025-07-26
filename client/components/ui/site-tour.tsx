@@ -28,9 +28,9 @@ export function SiteTour({ autoStart = true, onComplete, className }: SiteTourPr
   const [isActive, setIsActive] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [language, setLanguage] = useState<'ar' | 'en'>('ar');
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
   const [showWelcome, setShowWelcome] = useState(false);
+  const { language, t } = useLanguage();
 
   // Detect language from page content
   const detectLanguage = (): 'ar' | 'en' => {
