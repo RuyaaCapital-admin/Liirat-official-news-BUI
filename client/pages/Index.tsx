@@ -351,23 +351,10 @@ export default function Index() {
                   {/* Date Picker */}
                   <div className="space-y-2">
                     <Label className={`block ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>{t('calendar.filters.date')}</Label>
-                    <Select
+                    <CustomDatePicker
                       value={selectedDate}
                       onValueChange={setSelectedDate}
-                    >
-                      <SelectTrigger className={dir === 'rtl' ? 'text-right' : 'text-left'}>
-                        <SelectValue placeholder={t('date.today')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="today">{t('date.today')}</SelectItem>
-                        <SelectItem value="tomorrow">{t('date.tomorrow')}</SelectItem>
-                        <SelectItem value="this-week">{t('date.thisweek')}</SelectItem>
-                        <SelectItem value="next-week">
-                          {t('date.nextweek')}
-                        </SelectItem>
-                        <SelectItem value="custom">{t('date.custom')}</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    />
                   </div>
 
                   {/* Country/Currency Selector */}
@@ -387,13 +374,13 @@ export default function Index() {
                         </SelectItem>
                         <SelectItem value="EUR">🇪🇺 EUR - اليورو</SelectItem>
                         <SelectItem value="GBP">
-                          ����🇧 GBP - الجنيه الإسترليني
+                          🇬🇧 GBP - الجنيه الإسترليني
                         </SelectItem>
                         <SelectItem value="JPY">
-                          🇯🇵 JPY - ال��ن اليابان��
+                          🇯🇵 JPY - ال��ن الياباني
                         </SelectItem>
                         <SelectItem value="AUD">
-                          🇦🇺 AUD - الدولار الأسترالي
+                          ��🇺 AUD - الدولار الأسترالي
                         </SelectItem>
                         <SelectItem value="CAD">
                           🇨🇦 CAD - الدولار الكندي
@@ -585,7 +572,7 @@ export default function Index() {
                           <SelectItem value="usdcad">USD/CAD</SelectItem>
                           <SelectItem value="audusd">AUD/USD</SelectItem>
                           <SelectItem value="nfp">
-                            رواتب غير الزراعية الأمريكية
+                            رواتب غير الزراعية ��لأمريكية
                           </SelectItem>
                           <SelectItem value="cpi">
                             مؤشر أسعار المستهلك
@@ -797,7 +784,7 @@ export default function Index() {
                 سياسة الخصوصية
               </a>
               <a href="#" className="hover:text-primary transition-colors">
-                شروط الاستخدام
+                ��روط الاستخدام
               </a>
               <a href="#" className="hover:text-primary transition-colors">
                 تواصل معنا
