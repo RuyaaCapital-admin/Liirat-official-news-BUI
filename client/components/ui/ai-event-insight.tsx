@@ -36,7 +36,6 @@ export interface AIInsightResponse {
 
 interface AIEventInsightProps {
   event: EconomicEvent;
-  currentLanguage?: 'ar' | 'en';
   className?: string;
 }
 
