@@ -335,11 +335,10 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              التقويم الاقتصادي المباشر
+              {t('calendar.title')}
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع
-              إمكانيات تصفية متقدمة
+              {t('calendar.description')}
             </p>
           </div>
 
@@ -399,7 +398,7 @@ export default function Index() {
                           🇯🇵 JPY - ال��ن الياباني
                         </SelectItem>
                         <SelectItem value="AUD">
-                          🇦🇺 AUD - الدولار الأسترالي
+                          🇦🇺 AUD - الدولار الأ��ترالي
                         </SelectItem>
                         <SelectItem value="CAD">
                           🇨🇦 CAD - الدولار الكندي
@@ -543,7 +542,7 @@ export default function Index() {
 
                 <div className="mt-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    البيانات محدثة كل دقيقة م�� مصادر موثوقة •{" "}
+                    البيانات محدثة كل دقيقة من مصادر موثوقة •{" "}
                     {filteredEvents.length} من أصل {economicEvents.length} حدث
                   </p>
                 </div>
@@ -592,13 +591,13 @@ export default function Index() {
                           <SelectItem value="usdcad">USD/CAD</SelectItem>
                           <SelectItem value="audusd">AUD/USD</SelectItem>
                           <SelectItem value="nfp">
-                            رواتب غير الزراعية الأمريكية
+                            رو��تب غير الزراعية الأمريكية
                           </SelectItem>
                           <SelectItem value="cpi">
                             مؤشر أسعار المستهلك
                           </SelectItem>
                           <SelectItem value="gdp">
-                            ا��ناتج المحلي الإجمالي
+                            الناتج المحلي الإجمالي
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -688,7 +687,7 @@ export default function Index() {
               </div>
               <h3 className="font-bold text-lg mb-2">تحليلات متقدمة</h3>
               <p className="text-muted-foreground">
-                تحل��لات عميقة للأحداث الاقتصادية
+                تحليلات عميقة للأحداث الاقتصادية
               </p>
             </div>
 
