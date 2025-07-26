@@ -370,7 +370,7 @@ export default function Index() {
                       <SelectContent>
                         <SelectItem value="all">جميع العملات</SelectItem>
                         <SelectItem value="USD">
-                          🇺🇸 USD - الدولار الأمريكي
+                          🇺🇸 USD - الدولار الأمري��ي
                         </SelectItem>
                         <SelectItem value="EUR">🇪🇺 EUR - اليورو</SelectItem>
                         <SelectItem value="GBP">
@@ -380,7 +380,7 @@ export default function Index() {
                           🇯🇵 JPY - ال��ن الياباني
                         </SelectItem>
                         <SelectItem value="AUD">
-                          ��🇺 AUD - الدولار الأسترالي
+                          🇦🇺 AUD - الدولار الأسترالي
                         </SelectItem>
                         <SelectItem value="CAD">
                           🇨🇦 CAD - الدولار الكندي
@@ -572,7 +572,7 @@ export default function Index() {
                           <SelectItem value="usdcad">USD/CAD</SelectItem>
                           <SelectItem value="audusd">AUD/USD</SelectItem>
                           <SelectItem value="nfp">
-                            رواتب غير الزراعية ��لأمريكية
+                            رواتب غير الزراعية الأمريكية
                           </SelectItem>
                           <SelectItem value="cpi">
                             مؤشر أسعار المستهلك
@@ -784,7 +784,7 @@ export default function Index() {
                 سياسة الخصوصية
               </a>
               <a href="#" className="hover:text-primary transition-colors">
-                ��روط الاستخدام
+                شروط الاستخدام
               </a>
               <a href="#" className="hover:text-primary transition-colors">
                 تواصل معنا
@@ -801,6 +801,12 @@ export default function Index() {
 
       {/* Site Tour Component */}
       <SiteTour />
+
+      {/* Alert Settings Modal */}
+      <AlertSettingsModal
+        open={showAlertSettings}
+        onOpenChange={setShowAlertSettings}
+      />
     </div>
   );
 }
