@@ -62,20 +62,7 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { language } = useLanguage();
 
-  // Detect language from website content or user preference
-  const detectLanguage = (): 'ar' | 'en' => {
-    // Check HTML dir attribute
-    const htmlDir = document.documentElement.getAttribute('dir');
-    if (htmlDir === 'rtl') return 'ar';
-    
-    // Check for Arabic text in the page
-    const hasArabicText = document.body.textContent?.includes('العملة') || 
-                         document.body.textContent?.includes('الاقتصادي');
-    if (hasArabicText) return 'ar';
-    
-    // Default to current language prop or Arabic
-    return currentLanguage;
-  };
+
 
   // Generate AI prompt based on event data and language
   const generatePrompt = (eventData: EconomicEvent, language: 'ar' | 'en'): string => {
@@ -94,7 +81,7 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
         : `${eventData.event} أقل من المتوقع، ضغط محتمل على ${eventData.country}.`;
 
       return {
-        summary: `${analysis}\n\n⚠️ ��ذا تحليل تجريبي. للحصول على تحليل حقيقي من الذكاء الاصطناعي، يرجى إعداد مفتاح OpenAI API في متغيرات البيئة.`,
+        summary: `${analysis}\n\n⚠️ هذا تحليل تجريبي. للحصول على تحليل حقيقي من الذكاء الاصطناعي، يرجى إعداد مفتاح OpenAI API في متغيرات البيئة.`,
         whatHappened: analysis,
         whyImportant: analysis,
         marketImpact: analysis,
