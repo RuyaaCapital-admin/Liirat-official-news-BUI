@@ -42,7 +42,7 @@ export function TourTrigger({ variant = 'button', className }: TourTriggerProps)
           onClick={handleStartTour}
           className={`text-sm text-muted-foreground hover:text-primary transition-colors underline ${className}`}
         >
-          جولة الموقع
+          {t('footer.tour')}
         </button>
         {tourComponent}
       </>
