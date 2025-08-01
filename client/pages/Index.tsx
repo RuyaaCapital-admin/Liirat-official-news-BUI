@@ -72,9 +72,44 @@ export default function Index() {
     console.log("Form submitted:", { name, email, whatsapp });
   };
 
-  const handleAlertSubmit = () => {
-    // TODO: Connect to Supabase for alert system
-    console.log("Alert setup for:", selectedPair);
+  const handleAlertSubmit = async () => {
+    if (!selectedPair || !email) {
+      alert("Please select a trading pair and enter your email address.");
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/alerts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          symbol: selectedPair,
+          type: 'price',
+          condition: `Price movement alert for ${selectedPair}`,
+          notificationMethod: 'email',
+          contactInfo: email
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create alert');
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        alert(`✅ Smart alert created for ${selectedPair}! You'll be notified at ${email} when market conditions change.`);
+        setSelectedPair("");
+        setEmail("");
+      } else {
+        throw new Error(result.error || 'Failed to create alert');
+      }
+    } catch (error: any) {
+      console.error('Alert creation error:', error);
+      alert(`❌ Failed to create alert: ${error.message}`);
+    }
   };
 
   // Enhanced economic calendar data with mixed language support
@@ -978,76 +1013,75 @@ export default function Index() {
             </div>
           </div>
         </footer>
-      </div>
-
-      {/* Alert Settings Modal */}
-      <AlertSettingsModal
-        open={showAlertSettings}
-        onOpenChange={setShowAlertSettings}
-      />
-      
-      {/* Neumorphic CSS Styles */}
-      <style jsx>{`
-        .neumorphic-nav-button {
-          border-radius: 12px;
-          box-shadow: 
-            5px 5px 10px #bebebe,
-            -5px -5px 10px #ffffff;
-          transition: all 0.3s ease;
-        }
-        
-        .neumorphic-nav-button:hover {
-          transform: translateY(-2px);
-          box-shadow: 
-            8px 8px 16px #bebebe,
-            -8px -8px 16px #ffffff;
-        }
-        
-        .neumorphic-hero-card {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 30px;
-          box-shadow: 
-            20px 20px 60px rgba(0, 0, 0, 0.3),
-            -20px -20px 60px rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          backdrop-filter: blur(10px);
-        }
-        
-        .neumorphic-hero-button {
-          border-radius: 20px;
-          box-shadow: 
-            10px 10px 20px rgba(0, 0, 0, 0.3),
-            -10px -10px 20px rgba(255, 255, 255, 0.1);
-          transition: all 0.3s ease;
-        }
-        
-        .neumorphic-hero-button:hover {
-          transform: translateY(-3px);
-          box-shadow: 
-            15px 15px 30px rgba(0, 0, 0, 0.3),
-            -15px -15px 30px rgba(255, 255, 255, 0.1);
-        }
-        
-        .neumorphic-hero-button-secondary {
-          border-radius: 20px;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          color: white;
-          box-shadow: 
-            8px 8px 16px rgba(0, 0, 0, 0.3),
-            -8px -8px 16px rgba(255, 255, 255, 0.1);
-          transition: all 0.3s ease;
-        }
-        
-        .neumorphic-hero-button-secondary:hover {
-          transform: translateY(-2px);
-          background: rgba(255, 255, 255, 0.2);
-          box-shadow: 
-            12px 12px 24px rgba(0, 0, 0, 0.3),
-            -12px -12px 24px rgba(255, 255, 255, 0.1);
-        }
-      `}</style>
         </main>
+
+        {/* Alert Settings Modal */}
+        <AlertSettingsModal
+          open={showAlertSettings}
+          onOpenChange={setShowAlertSettings}
+        />
+        
+        {/* Neumorphic CSS Styles */}
+        <style>{`
+          .neumorphic-nav-button {
+            border-radius: 12px;
+            box-shadow: 
+              5px 5px 10px #bebebe,
+              -5px -5px 10px #ffffff;
+            transition: all 0.3s ease;
+          }
+          
+          .neumorphic-nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+              8px 8px 16px #bebebe,
+              -8px -8px 16px #ffffff;
+          }
+          
+          .neumorphic-hero-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            box-shadow: 
+              20px 20px 60px rgba(0, 0, 0, 0.3),
+              -20px -20px 60px rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+          }
+          
+          .neumorphic-hero-button {
+            border-radius: 20px;
+            box-shadow: 
+              10px 10px 20px rgba(0, 0, 0, 0.3),
+              -10px -10px 20px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+          }
+          
+          .neumorphic-hero-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+              15px 15px 30px rgba(0, 0, 0, 0.3),
+              -15px -15px 30px rgba(255, 255, 255, 0.1);
+          }
+          
+          .neumorphic-hero-button-secondary {
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            box-shadow: 
+              8px 8px 16px rgba(0, 0, 0, 0.3),
+              -8px -8px 16px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+          }
+          
+          .neumorphic-hero-button-secondary:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 
+              12px 12px 24px rgba(0, 0, 0, 0.3),
+              -12px -12px 24px rgba(255, 255, 255, 0.1);
+          }
+        `}</style>
       </div>
     </div>
   );

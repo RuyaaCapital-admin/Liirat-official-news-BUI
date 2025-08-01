@@ -10,10 +10,12 @@ import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/components/ui/use-toast';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { SimpleLanguageToggle } from '@/components/ui/simple-language-toggle';
 import TradingViewWidget from '@/components/ui/tradingview-widget';
 import { Send, Bot, User, TrendingUp, Newspaper, BarChart3, Settings, RefreshCw, MessageCircle, Brain, Zap, Home, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/hooks/use-theme';
+import { useLanguage } from '@/contexts/language-context';
 
 interface Message {
   id: string;
@@ -58,12 +60,12 @@ const AITradingAssistant: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { theme } = useTheme();
+  const { language, t, dir } = useLanguage();
 
   const popularSymbols = ['XAUUSD', 'BTCUSD', 'EURUSD', 'GBPUSD', 'USDJPY', 'SPX500'];
 
   useEffect(() => {
     scrollToBottom();
-    fetchMarketData();
     fetchNews();
   }, []);
 
@@ -71,27 +73,7 @@ const AITradingAssistant: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const fetchMarketData = async () => {
-    try {
-      const response = await fetch('/api/market-data');
-      if (!response.ok) {
-        throw new Error('Failed to fetch market data');
-      }
-      const data = await response.json();
-      setMarketData(data);
-    } catch (error) {
-      console.error('Error fetching market data:', error);
-      // Set mock data as fallback
-      setMarketData([
-        { symbol: 'XAUUSD', price: 2034.50, change: 12.30, changePercent: 0.61, volume: 125000 },
-        { symbol: 'BTCUSD', price: 43250.75, change: -1250.25, changePercent: -2.81, volume: 890000 },
-        { symbol: 'EURUSD', price: 1.0856, change: 0.0023, changePercent: 0.21, volume: 450000 },
-        { symbol: 'GBPUSD', price: 1.2645, change: -0.0089, changePercent: -0.70, volume: 320000 },
-        { symbol: 'USDJPY', price: 148.23, change: 0.45, changePercent: 0.30, volume: 280000 },
-        { symbol: 'SPX500', price: 4850.25, change: 15.75, changePercent: 0.33, volume: 2100000 }
-      ]);
-    }
-  };
+  // Removed fake market data fetching - keeping it honest
 
   const fetchNews = async () => {
     try {
@@ -99,8 +81,12 @@ const AITradingAssistant: React.FC = () => {
       if (!response.ok) {
         throw new Error('Failed to fetch news');
       }
-      const data = await response.json();
-      setNews(data);
+      const result = await response.json();
+      if (result.success && result.data) {
+        setNews(result.data);
+      } else {
+        throw new Error('Invalid news data response');
+      }
     } catch (error) {
       console.error('Error fetching news:', error);
       // Set mock news as fallback
@@ -150,6 +136,12 @@ const AITradingAssistant: React.FC = () => {
     setIsLoading(true);
 
     try {
+      // Prepare conversation history for API
+      const conversationHistory = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+
       const response = await fetch('/api/ai-chat', {
         method: 'POST',
         headers: {
@@ -157,14 +149,17 @@ const AITradingAssistant: React.FC = () => {
         },
         body: JSON.stringify({
           message: currentMessage,
-          symbol: selectedSymbol,
-          marketData,
-          news
+          conversationHistory: conversationHistory,
+          context: {
+            selectedSymbol,
+            recentNews: news.slice(0, 2) // Send only recent news for context
+          }
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
@@ -174,15 +169,26 @@ const AITradingAssistant: React.FC = () => {
         role: 'assistant',
         content: data.response,
         timestamp: new Date(),
-        type: data.type || 'text'
+        type: 'analysis'
       };
 
       setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('AI Chat Error:', error);
+      
+      // Show appropriate error message
+      let errorMessage = 'Failed to get AI response. Please try again.';
+      if (error.message.includes('quota')) {
+        errorMessage = 'AI service is currently at capacity. Please try again later.';
+      } else if (error.message.includes('API key')) {
+        errorMessage = 'AI service is not properly configured. Please contact support.';
+      } else if (error.message.includes('network')) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to get AI response. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
       
@@ -224,30 +230,40 @@ const AITradingAssistant: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={`min-h-screen bg-background ${language === "ar" ? "arabic" : "english"}`} dir={dir}>
       {/* Navigation Header */}
       <header className="border-b border-border/40 backdrop-blur-md bg-background/95 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link to="/" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
-              <ArrowLeft className="h-5 w-5" />
-              <span>Back to Home</span>
+          <div className={`flex items-center ${dir === 'rtl' ? 'space-x-reverse' : ''} space-x-6`}>
+            <Link to="/" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">{language === 'ar' ? 'الرئيسية' : 'Home'}</span>
             </Link>
+            <nav className={`hidden md:flex items-center ${dir === 'rtl' ? 'space-x-reverse' : ''} space-x-4`}>
+              <a href="/#calendar" className="text-muted-foreground hover:text-primary transition-colors text-sm">
+                {language === 'ar' ? 'التقويم' : 'Calendar'}
+              </a>
+              <a href="/#alerts" className="text-muted-foreground hover:text-primary transition-colors text-sm">
+                {language === 'ar' ? 'التنبيهات' : 'Alerts'}
+              </a>
+            </nav>
           </div>
           
           <div className="flex items-center gap-4">
             <img
               src="/liirat-logo.png"
               alt="Liirat News"
-              className="h-12 w-auto"
+              className="h-12 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => window.location.href = '/'}
             />
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className={`flex items-center ${dir === 'rtl' ? 'space-x-reverse' : ''} space-x-3`}>
             <Badge className="bg-primary/20 text-primary border border-primary/30">
               <Brain className="h-4 w-4 mr-1" />
-              AI Trading
+              {language === 'ar' ? 'مساعد التداول' : 'AI Trading'}
             </Badge>
+            <SimpleLanguageToggle />
             <ThemeToggle />
           </div>
         </div>
@@ -257,35 +273,46 @@ const AITradingAssistant: React.FC = () => {
         {/* Header */}
         <div className="mb-8 text-center">
           <div className="bg-card border border-border rounded-3xl p-8 mb-6 shadow-lg">
-            <h1 className="text-4xl font-bold text-foreground mb-3">AI Trading Assistant</h1>
-            <p className="text-lg text-muted-foreground">Your intelligent companion for market analysis and trading strategies</p>
+            <h1 className="text-4xl font-bold text-foreground mb-3">
+              {language === 'ar' ? 'مساعد التداول الذكي' : 'AI Trading Assistant'}
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              {language === 'ar' 
+                ? 'رفيقك الذكي لتحليل الأسواق واستراتيجيات التداول' 
+                : 'Your intelligent companion for market analysis and trading strategies'
+              }
+            </p>
             <div className="flex justify-center gap-4 mt-4">
               <Badge className="bg-primary/20 text-primary border border-primary/30">
                 <Brain className="h-4 w-4 mr-1" />
-                Powered by GPT-4
+                {language === 'ar' ? 'مدعوم بـ GPT-3.5' : 'Powered by GPT-3.5'}
               </Badge>
               <Badge className="bg-accent/20 text-accent-foreground border border-accent/30">
                 <Zap className="h-4 w-4 mr-1" />
-                Live Data
+                {language === 'ar' ? 'بيانات حية' : 'Live Data'}
               </Badge>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Chat Interface */}
           <div className="lg:col-span-1">
             <Card className="h-[700px]">
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                    <Bot className="h-6 w-6 text-primary" />
+                <CardHeader className="pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                      <Bot className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl">
+                        {language === 'ar' ? 'المساعد الذكي' : 'AI Assistant'}
+                      </CardTitle>
+                      <CardDescription>
+                        {language === 'ar' ? 'تحدث مع مساعد التداول' : 'Chat with your trading companion'}
+                      </CardDescription>
+                    </div>
                   </div>
-                  <div>
-                    <CardTitle className="text-xl">AI Assistant</CardTitle>
-                    <CardDescription>Chat with your trading companion</CardDescription>
-                  </div>
-                </div>
               </CardHeader>
               
               <div className="flex flex-col h-[580px]">
@@ -420,37 +447,32 @@ const AITradingAssistant: React.FC = () => {
 
             {/* Market Data and News */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Market Data */}
+              {/* Live Market Data - Real TradingView Widget */}
               <Card>
                 <CardHeader className="pb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
                       <TrendingUp className="h-5 w-5 text-primary" />
                     </div>
-                    <CardTitle className="text-xl">Market Data</CardTitle>
+                    <CardTitle className="text-xl">Live Market Data</CardTitle>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <ScrollArea className="h-[300px]">
-                    <div className="space-y-3">
-                      {marketData.map((item) => (
-                        <div key={item.symbol} className="bg-muted/50 rounded-2xl p-4 border border-border/50">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="font-semibold text-foreground">{item.symbol}</p>
-                              <p className="text-sm text-muted-foreground">Vol: {item.volume.toLocaleString()}</p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-semibold text-foreground">${item.price.toFixed(2)}</p>
-                              <p className={`text-sm ${item.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                {item.change >= 0 ? '+' : ''}{item.change.toFixed(2)} ({item.changePercent.toFixed(2)}%)
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
+                <CardContent className="p-0">
+                  <div className="h-[300px] w-full">
+                    <iframe 
+                      src={`https://s.tradingview.com/embed-widget/hotlists/?locale=en#%7B%22colorTheme%22%3A%22${theme}%22%2C%22dateRange%22%3A%2212M%22%2C%22exchange%22%3A%22US%22%2C%22showChart%22%3Atrue%2C%22locale%22%3A%22en%22%2C%22width%22%3A%22100%25%22%2C%22height%22%3A%22300%22%2C%22largeChartUrl%22%3A%22%22%2C%22isTransparent%22%3A${theme === 'dark' ? 'true' : 'false'}%2C%22showSymbolLogo%22%3Atrue%2C%22showFloatingTooltip%22%3Afalse%2C%22plotLineColorGrowing%22%3A%22hsl(85%2C%2070%25%2C%2050%25)%22%2C%22plotLineColorFalling%22%3A%22rgba(239%2C%2083%2C%2080%2C%201)%22%2C%22gridLineColor%22%3A%22rgba(240%2C%20243%2C%20250%2C%200.06)%22%2C%22scaleFontColor%22%3A%22rgba(209%2C%20212%2C%20220%2C%201)%22%2C%22belowLineFillColorGrowing%22%3A%22rgba(41%2C%2098%2C%20255%2C%200.12)%22%2C%22belowLineFillColorFalling%22%3A%22rgba(239%2C%2083%2C%2080%2C%200.12)%22%2C%22belowLineFillColorGrowingBottom%22%3A%22rgba(41%2C%2098%2C%20255%2C%200)%22%2C%22belowLineFillColorFallingBottom%22%3A%22rgba(239%2C%2083%2C%2080%2C%200)%22%2C%22symbolActiveColor%22%3A%22rgba(41%2C%2098%2C%20255%2C%200.12)%22%2C%22utm_source%22%3A%22liirat.com%22%2C%22utm_medium%22%3A%22widget_new%22%2C%22utm_campaign%22%3A%22hotlists%22%7D`}
+                      style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        border: 'none',
+                        backgroundColor: theme === 'dark' ? 'transparent' : '#ffffff'
+                      }}
+                      frameBorder="0"
+                      allowTransparency={theme === 'dark'}
+                      scrolling="no"
+                      allowFullScreen
+                    />
+                  </div>
                 </CardContent>
               </Card>
 
