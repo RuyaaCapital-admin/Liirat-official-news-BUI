@@ -28,7 +28,6 @@ import {
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { PriceTicker } from "@/components/ui/price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
-import AITradingNav from "@/components/ui/ai-trading-nav";
 
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 import { NotificationDropdown } from "@/components/ui/notification-dropdown";
@@ -48,6 +47,7 @@ import {
   Search,
   Filter,
   Star,
+  Bot,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTheme } from "@/hooks/use-theme";
@@ -233,6 +233,13 @@ export default function Index() {
               className={`hidden md:flex items-center space-x-6 ${dir === "rtl" ? "space-x-reverse" : ""}`}
             >
               <a
+                href="/ai-trading"
+                className="neumorphic-nav-button bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center gap-2"
+              >
+                <Bot className="h-4 w-4" />
+                AI Trading
+              </a>
+              <a
                 href="#calendar"
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
@@ -290,17 +297,28 @@ export default function Index() {
           <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/95 to-muted/40"></div>
           <div className="container mx-auto px-4 relative">
             <div className="text-center max-w-4xl mx-auto">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                {t("hero.title")}
-                <span className="text-primary block">{t("hero.subtitle")}</span>
-              </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-                {t("hero.description")}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="neumorphic-hero-card p-12 mb-8">
+                <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-white">
+                  {t("hero.title")}
+                  <span className="text-blue-400 block">{t("hero.subtitle")}</span>
+                </h1>
+                <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
+                  {t("hero.description")}
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-6 justify-center">
                 <Button
                   size="lg"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg font-semibold"
+                  className="neumorphic-hero-button bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-10 py-6 text-xl font-bold shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center gap-3"
+                  onClick={() => window.location.href = '/ai-trading'}
+                >
+                  <Bot className="h-6 w-6" />
+                  Launch AI Trading Assistant
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="neumorphic-hero-button-secondary px-8 py-6 text-lg font-semibold"
                   onClick={() =>
                     document
                       .getElementById("calendar")
@@ -312,7 +330,7 @@ export default function Index() {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="px-8 py-4 text-lg"
+                  className="neumorphic-hero-button-secondary px-8 py-6 text-lg font-semibold"
                   onClick={() =>
                     document
                       .getElementById("alerts")
@@ -326,12 +344,7 @@ export default function Index() {
           </div>
         </section>
 
-        {/* AI Trading Assistant Section */}
-        <section className="py-20 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-          <div className="container mx-auto px-4">
-            <AITradingNav />
-          </div>
-        </section>
+
 
         {/* Enhanced Economic Calendar Section */}
         <section id="calendar" className="py-20 bg-muted/30">
@@ -924,6 +937,68 @@ export default function Index() {
         open={showAlertSettings}
         onOpenChange={setShowAlertSettings}
       />
+      
+      {/* Neumorphic CSS Styles */}
+      <style jsx>{`
+        .neumorphic-nav-button {
+          border-radius: 12px;
+          box-shadow: 
+            5px 5px 10px #bebebe,
+            -5px -5px 10px #ffffff;
+          transition: all 0.3s ease;
+        }
+        
+        .neumorphic-nav-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 
+            8px 8px 16px #bebebe,
+            -8px -8px 16px #ffffff;
+        }
+        
+        .neumorphic-hero-card {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 30px;
+          box-shadow: 
+            20px 20px 60px rgba(0, 0, 0, 0.3),
+            -20px -20px 60px rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(10px);
+        }
+        
+        .neumorphic-hero-button {
+          border-radius: 20px;
+          box-shadow: 
+            10px 10px 20px rgba(0, 0, 0, 0.3),
+            -10px -10px 20px rgba(255, 255, 255, 0.1);
+          transition: all 0.3s ease;
+        }
+        
+        .neumorphic-hero-button:hover {
+          transform: translateY(-3px);
+          box-shadow: 
+            15px 15px 30px rgba(0, 0, 0, 0.3),
+            -15px -15px 30px rgba(255, 255, 255, 0.1);
+        }
+        
+        .neumorphic-hero-button-secondary {
+          border-radius: 20px;
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: white;
+          box-shadow: 
+            8px 8px 16px rgba(0, 0, 0, 0.3),
+            -8px -8px 16px rgba(255, 255, 255, 0.1);
+          transition: all 0.3s ease;
+        }
+        
+        .neumorphic-hero-button-secondary:hover {
+          transform: translateY(-2px);
+          background: rgba(255, 255, 255, 0.2);
+          box-shadow: 
+            12px 12px 24px rgba(0, 0, 0, 0.3),
+            -12px -12px 24px rgba(255, 255, 255, 0.1);
+        }
+      `}</style>
     </div>
   );
 }
