@@ -221,12 +221,12 @@ const AITradingAssistant: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100">
       {/* Navigation Header */}
-      <header className="neumorphic-header border-b border-gray-700/50 backdrop-blur-md bg-gray-900/95 sticky top-0 z-50">
+      <header className="neumorphic-header border-b border-gray-300 backdrop-blur-md bg-white/95 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Link to="/" className="flex items-center gap-3 text-white hover:text-gray-300 transition-colors">
+            <Link to="/" className="flex items-center gap-3 text-gray-700 hover:text-gray-900 transition-colors">
               <ArrowLeft className="h-5 w-5" />
               <span>Back to Home</span>
             </Link>
@@ -241,7 +241,7 @@ const AITradingAssistant: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-3">
-            <Badge className="neumorphic-badge bg-blue-600/20 text-blue-300 border border-blue-500/30">
+            <Badge className="neumorphic-badge bg-gray-200 text-gray-700 border border-gray-300">
               <Brain className="h-4 w-4 mr-1" />
               AI Trading
             </Badge>
@@ -252,15 +252,15 @@ const AITradingAssistant: React.FC = () => {
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8 text-center">
-          <div className="neumorphic-card-dark p-8 mb-6">
-            <h1 className="text-4xl font-bold text-white mb-3">AI Trading Assistant</h1>
-            <p className="text-lg text-gray-300">Your intelligent companion for market analysis and trading strategies</p>
+          <div className="neumorphic-card p-8 mb-6">
+            <h1 className="text-4xl font-bold text-gray-800 mb-3">AI Trading Assistant</h1>
+            <p className="text-lg text-gray-600">Your intelligent companion for market analysis and trading strategies</p>
             <div className="flex justify-center gap-4 mt-4">
-              <Badge className="neumorphic-badge bg-blue-600/20 text-blue-300 border border-blue-500/30">
+              <Badge className="neumorphic-badge bg-gray-200 text-gray-700 border border-gray-300">
                 <Brain className="h-4 w-4 mr-1" />
                 Powered by GPT-4
               </Badge>
-              <Badge className="neumorphic-badge bg-green-600/20 text-green-300 border border-green-500/30">
+              <Badge className="neumorphic-badge bg-gray-200 text-gray-700 border border-gray-300">
                 <Zap className="h-4 w-4 mr-1" />
                 Live Data
               </Badge>
@@ -271,15 +271,15 @@ const AITradingAssistant: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Chat Interface */}
           <div className="lg:col-span-1">
-            <div className="neumorphic-card-dark h-[700px]">
-              <div className="p-6 border-b border-gray-700">
+            <div className="neumorphic-card h-[700px]">
+              <div className="p-6 border-b border-gray-300">
                 <div className="flex items-center gap-3">
-                  <div className="neumorphic-icon-dark">
-                    <Bot className="h-6 w-6 text-blue-400" />
+                  <div className="neumorphic-icon">
+                    <Bot className="h-6 w-6 text-gray-600" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-white">AI Assistant</h2>
-                    <p className="text-sm text-gray-400">Chat with your trading companion</p>
+                    <h2 className="text-xl font-semibold text-gray-800">AI Assistant</h2>
+                    <p className="text-sm text-gray-600">Chat with your trading companion</p>
                   </div>
                 </div>
               </div>
@@ -295,8 +295,8 @@ const AITradingAssistant: React.FC = () => {
                         <div
                           className={`max-w-[80%] rounded-2xl p-4 ${
                             message.role === 'user'
-                              ? 'neumorphic-inset-dark bg-blue-600/20 text-blue-100 border border-blue-500/30'
-                              : 'neumorphic-card-dark bg-gray-800/50 text-gray-100 border border-gray-700/50'
+                              ? 'neumorphic-inset bg-gray-100 text-gray-800 border border-gray-300'
+                              : 'neumorphic-card bg-white text-gray-800 border border-gray-300'
                           }`}
                         >
                           <div className="flex items-center gap-2 mb-2">
@@ -315,9 +315,9 @@ const AITradingAssistant: React.FC = () => {
                     ))}
                     {isLoading && (
                       <div className="flex justify-start">
-                        <div className="neumorphic-card-dark bg-gray-800/50 rounded-2xl p-4 border border-gray-700/50">
+                        <div className="neumorphic-card bg-white rounded-2xl p-4 border border-gray-300">
                           <div className="flex items-center gap-2">
-                            <Bot className="h-4 w-4 text-blue-400" />
+                            <Bot className="h-4 w-4 text-gray-600" />
                             <div className="flex space-x-1">
                               <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
                               <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -331,20 +331,20 @@ const AITradingAssistant: React.FC = () => {
                   </div>
                 </ScrollArea>
                 
-                <div className="p-6 border-t border-gray-700">
+                <div className="p-6 border-t border-gray-300">
                   <div className="flex gap-3">
                     <Textarea
                       value={inputMessage}
                       onChange={(e) => setInputMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Ask about market analysis, trading strategies, or news..."
-                      className="flex-1 neumorphic-inset-dark bg-gray-800/50 border-0 resize-none rounded-2xl text-white placeholder-gray-400"
+                      className="flex-1 neumorphic-inset bg-gray-100 border-0 resize-none rounded-2xl text-gray-800 placeholder-gray-500"
                       rows={2}
                     />
                     <Button
                       onClick={sendMessage}
                       disabled={isLoading || !inputMessage.trim()}
-                      className="neumorphic-button-dark bg-blue-600 hover:bg-blue-700 text-white px-6"
+                      className="neumorphic-button bg-gray-700 hover:bg-gray-800 text-white px-6"
                     >
                       <Send className="h-4 w-4" />
                     </Button>
@@ -357,11 +357,11 @@ const AITradingAssistant: React.FC = () => {
           {/* Chart and Market Data */}
           <div className="lg:col-span-2 space-y-8">
             {/* TradingView Chart */}
-            <div className="neumorphic-card-dark">
-              <div className="p-6 border-b border-gray-700">
+            <div className="neumorphic-card">
+              <div className="p-6 border-b border-gray-300">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <h2 className="text-xl font-semibold text-white">Market Chart</h2>
+                    <h2 className="text-xl font-semibold text-gray-800">Market Chart</h2>
                     <div className="flex gap-2">
                       {popularSymbols.map((symbol) => (
                         <Button
@@ -369,10 +369,10 @@ const AITradingAssistant: React.FC = () => {
                           variant={selectedSymbol === symbol ? "default" : "outline"}
                           size="sm"
                           onClick={() => setSelectedSymbol(symbol)}
-                          className={`text-xs neumorphic-button-dark ${
+                          className={`text-xs neumorphic-button ${
                             selectedSymbol === symbol 
-                              ? 'bg-blue-600 text-white' 
-                              : 'bg-gray-800/50 text-gray-300 border border-gray-600'
+                              ? 'bg-gray-700 text-white' 
+                              : 'bg-white text-gray-700 border border-gray-300'
                           }`}
                         >
                           {symbol}
@@ -385,7 +385,7 @@ const AITradingAssistant: React.FC = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => addIndicator('SMA')}
-                      className="neumorphic-button-dark bg-gray-800/50 text-gray-300 text-xs border border-gray-600"
+                      className="neumorphic-button bg-white text-gray-700 text-xs border border-gray-300"
                     >
                       +SMA
                     </Button>
@@ -393,7 +393,7 @@ const AITradingAssistant: React.FC = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => addIndicator('RSI')}
-                      className="neumorphic-button-dark bg-gray-800/50 text-gray-300 text-xs border border-gray-600"
+                      className="neumorphic-button bg-white text-gray-700 text-xs border border-gray-300"
                     >
                       +RSI
                     </Button>
@@ -401,7 +401,7 @@ const AITradingAssistant: React.FC = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => addIndicator('MACD')}
-                      className="neumorphic-button-dark bg-gray-800/50 text-gray-300 text-xs border border-gray-600"
+                      className="neumorphic-button bg-white text-gray-700 text-xs border border-gray-300"
                     >
                       +MACD
                     </Button>
@@ -411,7 +411,7 @@ const AITradingAssistant: React.FC = () => {
               <div className="p-4">
                 <TradingViewWidget 
                   symbol={selectedSymbol}
-                  theme="dark"
+                  theme="light"
                   height="400px"
                   className="w-full"
                 />
@@ -421,28 +421,28 @@ const AITradingAssistant: React.FC = () => {
             {/* Market Data and News */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Market Data */}
-              <div className="neumorphic-card-dark">
-                <div className="p-6 border-b border-gray-700">
+              <div className="neumorphic-card">
+                <div className="p-6 border-b border-gray-300">
                   <div className="flex items-center gap-3">
-                    <div className="neumorphic-icon-dark">
-                      <TrendingUp className="h-5 w-5 text-green-400" />
+                    <div className="neumorphic-icon">
+                      <TrendingUp className="h-5 w-5 text-gray-600" />
                     </div>
-                    <h2 className="text-xl font-semibold text-white">Market Data</h2>
+                    <h2 className="text-xl font-semibold text-gray-800">Market Data</h2>
                   </div>
                 </div>
                 <div className="p-6">
                   <ScrollArea className="h-[300px]">
                     <div className="space-y-3">
                       {marketData.map((item) => (
-                        <div key={item.symbol} className="neumorphic-inset-dark bg-gray-800/50 rounded-2xl p-4 border border-gray-700/50">
+                        <div key={item.symbol} className="neumorphic-inset bg-gray-100 rounded-2xl p-4 border border-gray-300">
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="font-semibold text-white">{item.symbol}</p>
-                              <p className="text-sm text-gray-400">Vol: {item.volume.toLocaleString()}</p>
+                              <p className="font-semibold text-gray-800">{item.symbol}</p>
+                              <p className="text-sm text-gray-600">Vol: {item.volume.toLocaleString()}</p>
                             </div>
                             <div className="text-right">
-                              <p className="font-semibold text-white">${item.price.toFixed(2)}</p>
-                              <p className={`text-sm ${item.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                              <p className="font-semibold text-gray-800">${item.price.toFixed(2)}</p>
+                              <p className={`text-sm ${item.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                                 {item.change >= 0 ? '+' : ''}{item.change.toFixed(2)} ({item.changePercent.toFixed(2)}%)
                               </p>
                             </div>
@@ -455,25 +455,25 @@ const AITradingAssistant: React.FC = () => {
               </div>
 
               {/* News Feed */}
-              <div className="neumorphic-card-dark">
-                <div className="p-6 border-b border-gray-700">
+              <div className="neumorphic-card">
+                <div className="p-6 border-b border-gray-300">
                   <div className="flex items-center gap-3">
-                    <div className="neumorphic-icon-dark">
-                      <Newspaper className="h-5 w-5 text-purple-400" />
+                    <div className="neumorphic-icon">
+                      <Newspaper className="h-5 w-5 text-gray-600" />
                     </div>
-                    <h2 className="text-xl font-semibold text-white">Latest News</h2>
+                    <h2 className="text-xl font-semibold text-gray-800">Latest News</h2>
                   </div>
                 </div>
                 <div className="p-6">
                   <ScrollArea className="h-[300px]">
                     <div className="space-y-3">
                       {news.map((item) => (
-                        <div key={item.id} className="neumorphic-inset-dark bg-gray-800/50 rounded-2xl p-4 border border-gray-700/50">
+                        <div key={item.id} className="neumorphic-inset bg-gray-100 rounded-2xl p-4 border border-gray-300">
                           <div className="flex items-start gap-3">
                             <div className={`w-3 h-3 rounded-full mt-2 ${getImpactColor(item.impact)}`}></div>
                             <div className="flex-1">
-                              <p className="font-semibold text-white text-sm mb-2">{item.title}</p>
-                              <p className="text-xs text-gray-400 mb-3">{item.summary}</p>
+                              <p className="font-semibold text-gray-800 text-sm mb-2">{item.title}</p>
+                              <p className="text-xs text-gray-600 mb-3">{item.summary}</p>
                               <div className="flex items-center justify-between text-xs text-gray-500">
                                 <span>{item.source}</span>
                                 <span>{new Date(item.publishedAt).toLocaleDateString()}</span>
@@ -491,73 +491,73 @@ const AITradingAssistant: React.FC = () => {
         </div>
       </div>
 
-      {/* Dark Neumorphic CSS */}
+      {/* Light Neumorphic CSS */}
       <style jsx>{`
         .neumorphic-header {
-          background: #1a1a1a;
+          background: #ffffff;
           box-shadow: 
-            0 4px 20px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            0 4px 20px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.8);
         }
         
-        .neumorphic-card-dark {
-          background: #2a2a2a;
+        .neumorphic-card {
+          background: #e0e0e0;
           border-radius: 20px;
           box-shadow: 
-            20px 20px 60px #1a1a1a,
-            -20px -20px 60px #3a3a3a;
-          border: 1px solid #404040;
+            20px 20px 60px #bebebe,
+            -20px -20px 60px #ffffff;
+          border: 1px solid #d0d0d0;
         }
         
-        .neumorphic-inset-dark {
-          background: #2a2a2a;
+        .neumorphic-inset {
+          background: #e0e0e0;
           border-radius: 15px;
           box-shadow: 
-            inset 5px 5px 10px #1a1a1a,
-            inset -5px -5px 10px #3a3a3a;
-          border: 1px solid #404040;
+            inset 5px 5px 10px #bebebe,
+            inset -5px -5px 10px #ffffff;
+          border: 1px solid #d0d0d0;
         }
         
-        .neumorphic-button-dark {
+        .neumorphic-button {
           border-radius: 12px;
           box-shadow: 
-            5px 5px 10px #1a1a1a,
-            -5px -5px 10px #3a3a3a;
+            5px 5px 10px #bebebe,
+            -5px -5px 10px #ffffff;
           transition: all 0.2s ease;
-          border: 1px solid #404040;
+          border: 1px solid #d0d0d0;
         }
         
-        .neumorphic-button-dark:hover {
+        .neumorphic-button:hover {
           box-shadow: 
-            inset 2px 2px 5px #1a1a1a,
-            inset -2px -2px 5px #3a3a3a;
+            inset 2px 2px 5px #bebebe,
+            inset -2px -2px 5px #ffffff;
         }
         
-        .neumorphic-button-dark:active {
+        .neumorphic-button:active {
           box-shadow: 
-            inset 3px 3px 6px #1a1a1a,
-            inset -3px -3px 6px #3a3a3a;
+            inset 3px 3px 6px #bebebe,
+            inset -3px -3px 6px #ffffff;
         }
         
-        .neumorphic-icon-dark {
+        .neumorphic-icon {
           width: 40px;
           height: 40px;
           border-radius: 12px;
-          background: #2a2a2a;
+          background: #e0e0e0;
           display: flex;
           align-items: center;
           justify-content: center;
           box-shadow: 
-            5px 5px 10px #1a1a1a,
-            -5px -5px 10px #3a3a3a;
-          border: 1px solid #404040;
+            5px 5px 10px #bebebe,
+            -5px -5px 10px #ffffff;
+          border: 1px solid #d0d0d0;
         }
         
         .neumorphic-badge {
           border-radius: 20px;
           box-shadow: 
-            3px 3px 6px #1a1a1a,
-            -3px -3px 6px #3a3a3a;
+            3px 3px 6px #bebebe,
+            -3px -3px 6px #ffffff;
         }
       `}</style>
     </div>

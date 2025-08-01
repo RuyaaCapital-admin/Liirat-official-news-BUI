@@ -234,7 +234,7 @@ export default function Index() {
             >
               <a
                 href="/ai-trading"
-                className="neumorphic-nav-button bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center gap-2"
+                                  className="neumorphic-nav-button bg-gradient-to-r from-gray-700 to-gray-800 text-white px-4 py-2 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center gap-2"
               >
                 <Bot className="h-4 w-4" />
                 AI Trading
@@ -298,18 +298,18 @@ export default function Index() {
           <div className="container mx-auto px-4 relative">
             <div className="text-center max-w-4xl mx-auto">
               <div className="neumorphic-hero-card p-12 mb-8">
-                <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-white">
+                <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-gray-900">
                   {t("hero.title")}
-                  <span className="text-blue-400 block">{t("hero.subtitle")}</span>
+                  <span className="text-gray-700 block">{t("hero.subtitle")}</span>
                 </h1>
-                <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
+                <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed">
                   {t("hero.description")}
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-6 justify-center">
                 <Button
                   size="lg"
-                  className="neumorphic-hero-button bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-10 py-6 text-xl font-bold shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center gap-3"
+                  className="neumorphic-hero-button bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white px-10 py-6 text-xl font-bold shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center gap-3"
                   onClick={() => window.location.href = '/ai-trading'}
                 >
                   <Bot className="h-6 w-6" />

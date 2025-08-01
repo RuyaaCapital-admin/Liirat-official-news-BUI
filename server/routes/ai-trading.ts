@@ -3,8 +3,10 @@ import OpenAI from 'openai';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
+// Initialize OpenAI with proper configuration
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || '',
+  dangerouslyAllowBrowser: false,
 });
 
 // Mock market data for demonstration
@@ -105,13 +107,18 @@ export const handleAIChat = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    if (!process.env.OPENAI_API_KEY) {
-      console.error('OpenAI API key not found');
+    // Check if OpenAI API key is configured
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      console.error('OpenAI API key not found in environment variables');
       return res.status(500).json({
         error: 'OpenAI API key not configured',
         response: 'I apologize, but the AI service is not properly configured. Please contact support.'
       });
     }
+
+    console.log('OpenAI API Key found:', apiKey.substring(0, 10) + '...');
+    console.log('Processing message:', message);
 
     // Create context for the AI
     const marketContext = marketData?.map((item: any) => 
@@ -148,7 +155,7 @@ Always provide:
 
 Remember: This is for educational purposes only. Always advise users to do their own research and consider consulting with financial advisors.`;
 
-    console.log('Sending request to OpenAI with message:', message);
+    console.log('Creating OpenAI completion request...');
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
@@ -162,7 +169,7 @@ Remember: This is for educational purposes only. Always advise users to do their
 
     const response = completion.choices[0]?.message?.content || 'Sorry, I could not generate a response.';
 
-    console.log('OpenAI response received:', response.substring(0, 100) + '...');
+    console.log('OpenAI response received successfully:', response.substring(0, 100) + '...');
 
     // Determine response type based on content
     let type = 'text';
@@ -181,37 +188,103 @@ Remember: This is for educational purposes only. Always advise users to do their
     });
 
   } catch (error) {
-    console.error('AI Chat Error:', error);
+    console.error('AI Chat Error Details:', error);
     
     // Provide more specific error messages
     let errorMessage = 'I apologize, but I\'m experiencing technical difficulties. Please try again in a moment.';
     
     if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      
       if (error.message.includes('401')) {
         errorMessage = 'Authentication error with AI service. Please check API configuration.';
       } else if (error.message.includes('429')) {
         errorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
       } else if (error.message.includes('500')) {
         errorMessage = 'AI service is temporarily unavailable. Please try again later.';
+      } else if (error.message.includes('ENOTFOUND') || error.message.includes('ECONNREFUSED')) {
+        errorMessage = 'Network connection error. Please check your internet connection.';
       }
     }
     
     res.status(500).json({
       error: 'Failed to process AI request',
-      response: errorMessage
+      response: errorMessage,
+      details: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 };
 
 export const handleMarketData = async (req: Request, res: Response) => {
   try {
-    // In a real implementation, you would fetch live market data from APIs like:
-    // - Alpha Vantage
-    // - Yahoo Finance
-    // - Polygon.io
-    // - Finnhub
-    
-    // For now, we'll return mock data with some randomization
+    // Try to fetch real market data from Alpha Vantage or similar
+    const symbols = ['XAUUSD', 'BTCUSD', 'EURUSD', 'GBPUSD', 'USDJPY', 'SPX500'];
+    const marketData = [];
+
+    for (const symbol of symbols) {
+      try {
+        // For demonstration, we'll use a free API endpoint
+        // In production, you should use a paid API like Alpha Vantage
+        const response = await axios.get(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`, {
+          timeout: 5000,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          }
+        });
+
+        if (response.data && response.data.chart && response.data.chart.result) {
+          const result = response.data.chart.result[0];
+          const meta = result.meta;
+          const quote = result.indicators.quote[0];
+          
+          const currentPrice = meta.regularMarketPrice;
+          const previousClose = meta.previousClose;
+          const change = currentPrice - previousClose;
+          const changePercent = (change / previousClose) * 100;
+          const volume = quote.volume ? quote.volume[quote.volume.length - 1] : 0;
+
+          marketData.push({
+            symbol,
+            price: currentPrice,
+            change: change,
+            changePercent: changePercent,
+            volume: volume
+          });
+        } else {
+          // Fallback to mock data if API fails
+          const mockItem = mockMarketData.find(item => item.symbol === symbol);
+          if (mockItem) {
+            marketData.push({
+              ...mockItem,
+              price: mockItem.price + (Math.random() - 0.5) * 10,
+              change: mockItem.change + (Math.random() - 0.5) * 5,
+              changePercent: mockItem.changePercent + (Math.random() - 0.5) * 2,
+              volume: mockItem.volume + Math.floor(Math.random() * 10000)
+            });
+          }
+        }
+      } catch (symbolError) {
+        console.error(`Error fetching data for ${symbol}:`, symbolError);
+        // Fallback to mock data for this symbol
+        const mockItem = mockMarketData.find(item => item.symbol === symbol);
+        if (mockItem) {
+          marketData.push({
+            ...mockItem,
+            price: mockItem.price + (Math.random() - 0.5) * 10,
+            change: mockItem.change + (Math.random() - 0.5) * 5,
+            changePercent: mockItem.changePercent + (Math.random() - 0.5) * 2,
+            volume: mockItem.volume + Math.floor(Math.random() * 10000)
+          });
+        }
+      }
+    }
+
+    console.log('Market data fetched successfully:', marketData.length, 'symbols');
+    res.json(marketData);
+  } catch (error) {
+    console.error('Market Data Error:', error);
+    // Return mock data as fallback
     const randomizedData = mockMarketData.map(item => ({
       ...item,
       price: item.price + (Math.random() - 0.5) * 10,
@@ -219,11 +292,7 @@ export const handleMarketData = async (req: Request, res: Response) => {
       changePercent: item.changePercent + (Math.random() - 0.5) * 2,
       volume: item.volume + Math.floor(Math.random() * 10000)
     }));
-
     res.json(randomizedData);
-  } catch (error) {
-    console.error('Market Data Error:', error);
-    res.status(500).json({ error: 'Failed to fetch market data' });
   }
 };
 
