@@ -297,13 +297,15 @@ export default function Index() {
           <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/95 to-muted/40"></div>
           <div className="container mx-auto px-4 relative">
             <div className="text-center max-w-4xl mx-auto">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                {t("hero.title")}
-                <span className="text-primary block">{t("hero.subtitle")}</span>
-              </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-                {t("hero.description")}
-              </p>
+              <div className="neumorphic-hero-card p-12 mb-8">
+                <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-white">
+                  {t("hero.title")}
+                  <span className="text-blue-400 block">{t("hero.subtitle")}</span>
+                </h1>
+                <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
+                  {t("hero.description")}
+                </p>
+              </div>
               <div className="flex flex-col sm:flex-row gap-6 justify-center">
                 <Button
                   size="lg"
@@ -953,36 +955,48 @@ export default function Index() {
             -8px -8px 16px #ffffff;
         }
         
+        .neumorphic-hero-card {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 30px;
+          box-shadow: 
+            20px 20px 60px rgba(0, 0, 0, 0.3),
+            -20px -20px 60px rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(10px);
+        }
+        
         .neumorphic-hero-button {
           border-radius: 20px;
           box-shadow: 
-            10px 10px 20px #bebebe,
-            -10px -10px 20px #ffffff;
+            10px 10px 20px rgba(0, 0, 0, 0.3),
+            -10px -10px 20px rgba(255, 255, 255, 0.1);
           transition: all 0.3s ease;
         }
         
         .neumorphic-hero-button:hover {
           transform: translateY(-3px);
           box-shadow: 
-            15px 15px 30px #bebebe,
-            -15px -15px 30px #ffffff;
+            15px 15px 30px rgba(0, 0, 0, 0.3),
+            -15px -15px 30px rgba(255, 255, 255, 0.1);
         }
         
         .neumorphic-hero-button-secondary {
           border-radius: 20px;
-          background: #e0e0e0;
-          border: none;
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: white;
           box-shadow: 
-            8px 8px 16px #bebebe,
-            -8px -8px 16px #ffffff;
+            8px 8px 16px rgba(0, 0, 0, 0.3),
+            -8px -8px 16px rgba(255, 255, 255, 0.1);
           transition: all 0.3s ease;
         }
         
         .neumorphic-hero-button-secondary:hover {
           transform: translateY(-2px);
+          background: rgba(255, 255, 255, 0.2);
           box-shadow: 
-            12px 12px 24px #bebebe,
-            -12px -12px 24px #ffffff;
+            12px 12px 24px rgba(0, 0, 0, 0.3),
+            -12px -12px 24px rgba(255, 255, 255, 0.1);
         }
       `}</style>
     </div>

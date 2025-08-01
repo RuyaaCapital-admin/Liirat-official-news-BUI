@@ -105,6 +105,14 @@ export const handleAIChat = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Message is required' });
     }
 
+    if (!process.env.OPENAI_API_KEY) {
+      console.error('OpenAI API key not found');
+      return res.status(500).json({
+        error: 'OpenAI API key not configured',
+        response: 'I apologize, but the AI service is not properly configured. Please contact support.'
+      });
+    }
+
     // Create context for the AI
     const marketContext = marketData?.map((item: any) => 
       `${item.symbol}: $${item.price} (${item.change >= 0 ? '+' : ''}${item.changePercent}%)`
@@ -140,6 +148,8 @@ Always provide:
 
 Remember: This is for educational purposes only. Always advise users to do their own research and consider consulting with financial advisors.`;
 
+    console.log('Sending request to OpenAI with message:', message);
+
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
@@ -151,6 +161,8 @@ Remember: This is for educational purposes only. Always advise users to do their
     });
 
     const response = completion.choices[0]?.message?.content || 'Sorry, I could not generate a response.';
+
+    console.log('OpenAI response received:', response.substring(0, 100) + '...');
 
     // Determine response type based on content
     let type = 'text';
@@ -170,9 +182,23 @@ Remember: This is for educational purposes only. Always advise users to do their
 
   } catch (error) {
     console.error('AI Chat Error:', error);
+    
+    // Provide more specific error messages
+    let errorMessage = 'I apologize, but I\'m experiencing technical difficulties. Please try again in a moment.';
+    
+    if (error instanceof Error) {
+      if (error.message.includes('401')) {
+        errorMessage = 'Authentication error with AI service. Please check API configuration.';
+      } else if (error.message.includes('429')) {
+        errorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
+      } else if (error.message.includes('500')) {
+        errorMessage = 'AI service is temporarily unavailable. Please try again later.';
+      }
+    }
+    
     res.status(500).json({
       error: 'Failed to process AI request',
-      response: 'I apologize, but I\'m experiencing technical difficulties. Please try again in a moment.'
+      response: errorMessage
     });
   }
 };
