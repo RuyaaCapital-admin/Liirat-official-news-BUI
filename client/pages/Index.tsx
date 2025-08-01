@@ -28,8 +28,7 @@ import {
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { PriceTicker } from "@/components/ui/price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
-import { SiteTour } from "@/components/ui/site-tour";
-import { TourTrigger, TourFooterLink } from "@/components/ui/tour-trigger";
+
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 import { NotificationDropdown } from "@/components/ui/notification-dropdown";
 import { AlertSettingsModal } from "@/components/ui/alert-settings-modal";
@@ -231,7 +230,6 @@ export default function Index() {
 
             <nav
               className={`hidden md:flex items-center space-x-6 ${dir === "rtl" ? "space-x-reverse" : ""}`}
-              data-tour-target="navigation"
             >
               <a
                 href="#calendar"
@@ -264,7 +262,7 @@ export default function Index() {
               <NotificationDropdown
                 onSettingsClick={() => setShowAlertSettings(true)}
               />
-              <TourTrigger variant="icon" />
+
               <SimpleLanguageToggle />
               <ThemeToggle />
             </div>
@@ -276,7 +274,6 @@ export default function Index() {
           className="sticky top-[72px] z-40"
           pauseOnHover={true}
           speed={60}
-          data-tour-target="ticker"
         />
 
         {/* Hero Section */}
@@ -329,11 +326,7 @@ export default function Index() {
         </section>
 
         {/* Enhanced Economic Calendar Section */}
-        <section
-          id="calendar"
-          className="py-20 bg-muted/30"
-          data-tour-target="calendar"
-        >
+        <section id="calendar" className="py-20 bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -621,7 +614,7 @@ export default function Index() {
         </section>
 
         {/* Alert System Section */}
-        <section id="alerts" className="py-20" data-tour-target="alerts">
+        <section id="alerts" className="py-20">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
@@ -807,7 +800,7 @@ export default function Index() {
         </section>
 
         {/* Contact Section */}
-        <section id="contact" className="py-20" data-tour-target="contact">
+        <section id="contact" className="py-20">
           <div className="container mx-auto px-4">
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -909,7 +902,6 @@ export default function Index() {
                 <a href="#" className="hover:text-primary transition-colors">
                   {t("footer.contact")}
                 </a>
-                <TourFooterLink />
               </div>
               <p className="text-xs text-muted-foreground mt-4">
                 {t("footer.copyright")}
@@ -918,9 +910,6 @@ export default function Index() {
           </div>
         </footer>
       </div>
-
-      {/* Site Tour Component */}
-      <SiteTour />
 
       {/* Alert Settings Modal */}
       <AlertSettingsModal
