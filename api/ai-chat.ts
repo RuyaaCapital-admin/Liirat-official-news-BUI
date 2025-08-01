@@ -126,66 +126,9 @@ Keep it real, keep it short, keep it valuable. 🎯`
       }
     ];
 
-    // Define available tools for the AI
-    const tools = [
-      {
-        type: 'function' as const,
-        function: {
-          name: 'get_live_price',
-          description: 'Get current live price for a trading symbol',
-          parameters: {
-            type: 'object',
-            properties: {
-              symbol: {
-                type: 'string',
-                description: 'Trading symbol (e.g., EURUSD, XAUUSD, BTCUSD)'
-              }
-            },
-            required: ['symbol']
-          }
-        }
-      },
-      {
-        type: 'function' as const,
-        function: {
-          name: 'analyze_chart_pattern',
-          description: 'Analyze chart patterns and technical indicators for a symbol',
-          parameters: {
-            type: 'object',
-            properties: {
-              symbol: {
-                type: 'string',
-                description: 'Trading symbol to analyze'
-              },
-              timeframe: {
-                type: 'string',
-                description: 'Chart timeframe (1m, 5m, 15m, 1h, 4h, 1d)',
-                enum: ['1m', '5m', '15m', '1h', '4h', '1d']
-              }
-            },
-            required: ['symbol']
-          }
-        }
-      },
-      {
-        type: 'function' as const,
-        function: {
-          name: 'check_market_sentiment',
-          description: 'Check current market sentiment and news impact',
-          parameters: {
-            type: 'object',
-            properties: {
-              symbol: {
-                type: 'string',
-                description: 'Symbol to check sentiment for (optional)'
-              }
-            }
-          }
-        }
-      }
-    ];
 
-    // Call OpenAI API with function calling
+
+    // Call OpenAI API - simplified for reliability
     const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: messages,
@@ -193,67 +136,9 @@ Keep it real, keep it short, keep it valuable. 🎯`
       temperature: 0.7,
       presence_penalty: 0.1,
       frequency_penalty: 0.1,
-      tools: tools,
-      tool_choice: 'auto'
     });
 
-    const message = completion.choices[0]?.message;
-    
-    // Handle function calls
-    if (message?.tool_calls) {
-      const toolResults = [];
-      
-      for (const toolCall of message.tool_calls) {
-        const functionName = toolCall.function.name;
-        const functionArgs = JSON.parse(toolCall.function.arguments);
-        
-        let result;
-        switch (functionName) {
-          case 'get_live_price':
-            result = await getLivePrice(functionArgs.symbol);
-            break;
-          case 'analyze_chart_pattern':
-            result = await analyzeChartPattern(functionArgs.symbol, functionArgs.timeframe);
-            break;
-          case 'check_market_sentiment':
-            result = await checkMarketSentiment(functionArgs.symbol);
-            break;
-          default:
-            result = { error: 'Unknown function' };
-        }
-        
-        toolResults.push({
-          tool_call_id: toolCall.id,
-          role: 'tool' as const,
-          content: JSON.stringify(result)
-        });
-      }
-      
-      // Make a second call with tool results
-      const followUpMessages = [
-        ...messages,
-        message,
-        ...toolResults
-      ];
-      
-      const followUpCompletion = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages: followUpMessages,
-        max_tokens: 400,
-        temperature: 0.7,
-      });
-      
-      const finalResponse = followUpCompletion.choices[0]?.message?.content;
-      
-      return res.status(200).json({
-        success: true,
-        response: finalResponse,
-        tools_used: message.tool_calls.map(tc => tc.function.name),
-        usage: completion.usage
-      });
-    }
-
-    const aiResponse = message?.content;
+    const aiResponse = completion.choices[0]?.message?.content;
 
     if (!aiResponse) {
       return res.status(500).json({ error: 'No response from AI' });
