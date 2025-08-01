@@ -28,6 +28,7 @@ import {
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { PriceTicker } from "@/components/ui/price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
+import AITradingNav from "@/components/ui/ai-trading-nav";
 
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 import { NotificationDropdown } from "@/components/ui/notification-dropdown";
@@ -322,6 +323,13 @@ export default function Index() {
                 </Button>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* AI Trading Assistant Section */}
+        <section className="py-20 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+          <div className="container mx-auto px-4">
+            <AITradingNav />
           </div>
         </section>
 
