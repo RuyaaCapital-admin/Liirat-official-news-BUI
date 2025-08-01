@@ -77,8 +77,12 @@ const AITradingAssistant: React.FC = () => {
       if (!response.ok) {
         throw new Error('Failed to fetch market data');
       }
-      const data = await response.json();
-      setMarketData(data);
+      const result = await response.json();
+      if (result.success && result.data) {
+        setMarketData(result.data);
+      } else {
+        throw new Error('Invalid market data response');
+      }
     } catch (error) {
       console.error('Error fetching market data:', error);
       // Set mock data as fallback
@@ -99,8 +103,12 @@ const AITradingAssistant: React.FC = () => {
       if (!response.ok) {
         throw new Error('Failed to fetch news');
       }
-      const data = await response.json();
-      setNews(data);
+      const result = await response.json();
+      if (result.success && result.data) {
+        setNews(result.data);
+      } else {
+        throw new Error('Invalid news data response');
+      }
     } catch (error) {
       console.error('Error fetching news:', error);
       // Set mock news as fallback
@@ -150,6 +158,12 @@ const AITradingAssistant: React.FC = () => {
     setIsLoading(true);
 
     try {
+      // Prepare conversation history for API
+      const conversationHistory = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+
       const response = await fetch('/api/ai-chat', {
         method: 'POST',
         headers: {
@@ -157,14 +171,18 @@ const AITradingAssistant: React.FC = () => {
         },
         body: JSON.stringify({
           message: currentMessage,
-          symbol: selectedSymbol,
-          marketData,
-          news
+          conversationHistory: conversationHistory,
+          context: {
+            selectedSymbol,
+            marketData: marketData.slice(0, 3), // Send only top 3 for context
+            recentNews: news.slice(0, 2) // Send only recent news for context
+          }
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
@@ -174,15 +192,26 @@ const AITradingAssistant: React.FC = () => {
         role: 'assistant',
         content: data.response,
         timestamp: new Date(),
-        type: data.type || 'text'
+        type: 'analysis'
       };
 
       setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('AI Chat Error:', error);
+      
+      // Show appropriate error message
+      let errorMessage = 'Failed to get AI response. Please try again.';
+      if (error.message.includes('quota')) {
+        errorMessage = 'AI service is currently at capacity. Please try again later.';
+      } else if (error.message.includes('API key')) {
+        errorMessage = 'AI service is not properly configured. Please contact support.';
+      } else if (error.message.includes('network')) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to get AI response. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
       
