@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/components/ui/use-toast';
-import { Send, Bot, User, TrendingUp, News, BarChart3, Settings, RefreshCw } from 'lucide-react';
+import { Send, Bot, User, TrendingUp, Newspaper, BarChart3, Settings, RefreshCw } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -71,7 +71,6 @@ const AITradingAssistant: React.FC = () => {
   const initializeTradingView = () => {
     if (typeof window !== 'undefined' && (window as any).TradingView) {
       const widget = new (window as any).TradingView.widget({
-        autosize: true,
         symbol: selectedSymbol,
         interval: 'D',
         timezone: 'Etc/UTC',
@@ -95,8 +94,7 @@ const AITradingAssistant: React.FC = () => {
         user_id: 'public_user_id',
         fullscreen: false,
         autosize: true,
-        studies_overrides: {},
-        theme: 'dark'
+        studies_overrides: {}
       });
       setChartWidget(widget);
     }
@@ -383,7 +381,7 @@ const AITradingAssistant: React.FC = () => {
               <Card className="bg-slate-800/50 border-slate-700">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-white flex items-center gap-2">
-                    <News className="h-5 w-5" />
+                    <Newspaper className="h-5 w-5" />
                     Latest News
                   </CardTitle>
                 </CardHeader>

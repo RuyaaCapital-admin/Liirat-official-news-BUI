@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Bot, TrendingUp, Brain, Zap } from 'lucide-react';
+import { Bot, TrendingUp, Brain, Zap, Newspaper } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const AITradingNav: React.FC = () => {
@@ -20,7 +20,7 @@ const AITradingNav: React.FC = () => {
       description: "Interactive charts with technical indicators"
     },
     {
-      icon: <Zap className="h-6 w-6" />,
+      icon: <Newspaper className="h-6 w-6" />,
       title: "Real-time News",
       description: "Stay updated with market-moving news"
     }
