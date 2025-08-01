@@ -72,9 +72,44 @@ export default function Index() {
     console.log("Form submitted:", { name, email, whatsapp });
   };
 
-  const handleAlertSubmit = () => {
-    // TODO: Connect to Supabase for alert system
-    console.log("Alert setup for:", selectedPair);
+  const handleAlertSubmit = async () => {
+    if (!selectedPair || !email) {
+      alert("Please select a trading pair and enter your email address.");
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/alerts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          symbol: selectedPair,
+          type: 'price',
+          condition: `Price movement alert for ${selectedPair}`,
+          notificationMethod: 'email',
+          contactInfo: email
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create alert');
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        alert(`✅ Smart alert created for ${selectedPair}! You'll be notified at ${email} when market conditions change.`);
+        setSelectedPair("");
+        setEmail("");
+      } else {
+        throw new Error(result.error || 'Failed to create alert');
+      }
+    } catch (error: any) {
+      console.error('Alert creation error:', error);
+      alert(`❌ Failed to create alert: ${error.message}`);
+    }
   };
 
   // Enhanced economic calendar data with mixed language support

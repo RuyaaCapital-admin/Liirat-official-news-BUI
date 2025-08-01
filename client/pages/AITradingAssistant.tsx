@@ -63,7 +63,6 @@ const AITradingAssistant: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-    fetchMarketData();
     fetchNews();
   }, []);
 
@@ -71,31 +70,7 @@ const AITradingAssistant: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const fetchMarketData = async () => {
-    try {
-      const response = await fetch('/api/market-data');
-      if (!response.ok) {
-        throw new Error('Failed to fetch market data');
-      }
-      const result = await response.json();
-      if (result.success && result.data) {
-        setMarketData(result.data);
-      } else {
-        throw new Error('Invalid market data response');
-      }
-    } catch (error) {
-      console.error('Error fetching market data:', error);
-      // Set mock data as fallback
-      setMarketData([
-        { symbol: 'XAUUSD', price: 2034.50, change: 12.30, changePercent: 0.61, volume: 125000 },
-        { symbol: 'BTCUSD', price: 43250.75, change: -1250.25, changePercent: -2.81, volume: 890000 },
-        { symbol: 'EURUSD', price: 1.0856, change: 0.0023, changePercent: 0.21, volume: 450000 },
-        { symbol: 'GBPUSD', price: 1.2645, change: -0.0089, changePercent: -0.70, volume: 320000 },
-        { symbol: 'USDJPY', price: 148.23, change: 0.45, changePercent: 0.30, volume: 280000 },
-        { symbol: 'SPX500', price: 4850.25, change: 15.75, changePercent: 0.33, volume: 2100000 }
-      ]);
-    }
-  };
+  // Removed fake market data fetching - keeping it honest
 
   const fetchNews = async () => {
     try {
@@ -174,7 +149,6 @@ const AITradingAssistant: React.FC = () => {
           conversationHistory: conversationHistory,
           context: {
             selectedSymbol,
-            marketData: marketData.slice(0, 3), // Send only top 3 for context
             recentNews: news.slice(0, 2) // Send only recent news for context
           }
         }),
@@ -449,37 +423,28 @@ const AITradingAssistant: React.FC = () => {
 
             {/* Market Data and News */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Market Data */}
+              {/* Market Data - Removed fake data */}
               <Card>
                 <CardHeader className="pb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
                       <TrendingUp className="h-5 w-5 text-primary" />
                     </div>
-                    <CardTitle className="text-xl">Market Data</CardTitle>
+                    <CardTitle className="text-xl">Live Market Data</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px]">
-                    <div className="space-y-3">
-                      {marketData.map((item) => (
-                        <div key={item.symbol} className="bg-muted/50 rounded-2xl p-4 border border-border/50">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="font-semibold text-foreground">{item.symbol}</p>
-                              <p className="text-sm text-muted-foreground">Vol: {item.volume.toLocaleString()}</p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-semibold text-foreground">${item.price.toFixed(2)}</p>
-                              <p className={`text-sm ${item.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                {item.change >= 0 ? '+' : ''}{item.change.toFixed(2)} ({item.changePercent.toFixed(2)}%)
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                  <div className="h-[300px] flex items-center justify-center">
+                    <div className="text-center">
+                      <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">
+                        Real-time market data integration coming soon.
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Use the TradingView chart above for live prices.
+                      </p>
                     </div>
-                  </ScrollArea>
+                  </div>
                 </CardContent>
               </Card>
 
