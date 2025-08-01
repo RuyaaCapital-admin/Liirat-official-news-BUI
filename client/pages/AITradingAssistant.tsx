@@ -9,7 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/components/ui/use-toast';
-import { Send, Bot, User, TrendingUp, Newspaper, BarChart3, Settings, RefreshCw } from 'lucide-react';
+import TradingViewWidget from '@/components/ui/tradingview-widget';
+import { Send, Bot, User, TrendingUp, Newspaper, BarChart3, Settings, RefreshCw, MessageCircle, Brain, Zap } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -51,7 +52,6 @@ const AITradingAssistant: React.FC = () => {
   const [selectedSymbol, setSelectedSymbol] = useState('XAUUSD');
   const [marketData, setMarketData] = useState<MarketData[]>([]);
   const [news, setNews] = useState<NewsItem[]>([]);
-  const [chartWidget, setChartWidget] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -59,7 +59,6 @@ const AITradingAssistant: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-    initializeTradingView();
     fetchMarketData();
     fetchNews();
   }, []);
@@ -68,37 +67,7 @@ const AITradingAssistant: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const initializeTradingView = () => {
-    if (typeof window !== 'undefined' && (window as any).TradingView) {
-      const widget = new (window as any).TradingView.widget({
-        symbol: selectedSymbol,
-        interval: 'D',
-        timezone: 'Etc/UTC',
-        theme: 'dark',
-        style: '1',
-        locale: 'en',
-        toolbar_bg: '#f1f3f6',
-        enable_publishing: false,
-        allow_symbol_change: true,
-        container_id: 'tradingview_chart',
-        studies: [
-          'MASimple@tv-basicstudies',
-          'RSI@tv-basicstudies',
-          'MACD@tv-basicstudies'
-        ],
-        disabled_features: ['use_localstorage_for_settings'],
-        enabled_features: ['study_templates'],
-        charts_storage_url: 'https://saveload.tradingview.com',
-        charts_storage_api_version: '1.1',
-        client_id: 'tradingview.com',
-        user_id: 'public_user_id',
-        fullscreen: false,
-        autosize: true,
-        studies_overrides: {}
-      });
-      setChartWidget(widget);
-    }
-  };
+
 
   const fetchMarketData = async () => {
     try {
@@ -179,13 +148,10 @@ const AITradingAssistant: React.FC = () => {
   };
 
   const addIndicator = (indicator: string) => {
-    if (chartWidget) {
-      // This would integrate with TradingView widget API
-      toast({
-        title: "Indicator Added",
-        description: `${indicator} has been added to the chart.`,
-      });
-    }
+    toast({
+      title: "Indicator Added",
+      description: `${indicator} has been added to the chart.`,
+    });
   };
 
   const getImpactColor = (impact: string) => {
@@ -198,106 +164,120 @@ const AITradingAssistant: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-4">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-white mb-2">AI Trading Assistant</h1>
-          <p className="text-gray-300">Your intelligent companion for market analysis and trading strategies</p>
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <div className="neumorphic-card p-8 mb-6">
+            <h1 className="text-4xl font-bold text-gray-800 mb-3">AI Trading Assistant</h1>
+            <p className="text-lg text-gray-600">Your intelligent companion for market analysis and trading strategies</p>
+            <div className="flex justify-center gap-4 mt-4">
+              <Badge className="neumorphic-badge bg-blue-100 text-blue-800">
+                <Brain className="h-4 w-4 mr-1" />
+                Powered by GPT-4
+              </Badge>
+              <Badge className="neumorphic-badge bg-green-100 text-green-800">
+                <Zap className="h-4 w-4 mr-1" />
+                Live Data
+              </Badge>
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Chat Interface */}
           <div className="lg:col-span-1">
-            <Card className="h-[600px] bg-slate-800/50 border-slate-700">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Bot className="h-5 w-5" />
-                  AI Assistant
-                </CardTitle>
-                <CardDescription className="text-gray-400">
-                  Chat with your AI trading companion
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="flex flex-col h-[500px]">
-                  <ScrollArea className="flex-1 px-4">
-                    <div className="space-y-4">
-                      {messages.map((message) => (
-                        <div
-                          key={message.id}
-                          className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                        >
-                          <div
-                            className={`max-w-[80%] rounded-lg p-3 ${
-                              message.role === 'user'
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-slate-700 text-gray-100'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2 mb-1">
-                              {message.role === 'user' ? (
-                                <User className="h-4 w-4" />
-                              ) : (
-                                <Bot className="h-4 w-4" />
-                              )}
-                              <span className="text-xs opacity-70">
-                                {message.timestamp.toLocaleTimeString()}
-                              </span>
-                            </div>
-                            <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                          </div>
-                        </div>
-                      ))}
-                      {isLoading && (
-                        <div className="flex justify-start">
-                          <div className="bg-slate-700 text-gray-100 rounded-lg p-3">
-                            <div className="flex items-center gap-2">
-                              <Bot className="h-4 w-4" />
-                              <div className="flex space-x-1">
-                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      <div ref={messagesEndRef} />
-                    </div>
-                  </ScrollArea>
-                  <Separator className="my-2" />
-                  <div className="p-4">
-                    <div className="flex gap-2">
-                      <Textarea
-                        value={inputMessage}
-                        onChange={(e) => setInputMessage(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        placeholder="Ask about market analysis, trading strategies, or news..."
-                        className="flex-1 bg-slate-700 border-slate-600 text-white placeholder-gray-400 resize-none"
-                        rows={2}
-                      />
-                      <Button
-                        onClick={sendMessage}
-                        disabled={isLoading || !inputMessage.trim()}
-                        className="bg-blue-600 hover:bg-blue-700"
-                      >
-                        <Send className="h-4 w-4" />
-                      </Button>
-                    </div>
+            <div className="neumorphic-card h-[700px]">
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center gap-3">
+                  <div className="neumorphic-icon">
+                    <Bot className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-800">AI Assistant</h2>
+                    <p className="text-sm text-gray-600">Chat with your trading companion</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+              
+              <div className="flex flex-col h-[580px]">
+                <ScrollArea className="flex-1 px-6">
+                  <div className="space-y-4 py-4">
+                    {messages.map((message) => (
+                      <div
+                        key={message.id}
+                        className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div
+                          className={`max-w-[80%] rounded-2xl p-4 ${
+                            message.role === 'user'
+                              ? 'neumorphic-inset bg-blue-50 text-blue-900'
+                              : 'neumorphic-card bg-white text-gray-800'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            {message.role === 'user' ? (
+                              <User className="h-4 w-4" />
+                            ) : (
+                              <Bot className="h-4 w-4" />
+                            )}
+                            <span className="text-xs opacity-70">
+                              {message.timestamp.toLocaleTimeString()}
+                            </span>
+                          </div>
+                          <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                        </div>
+                      </div>
+                    ))}
+                    {isLoading && (
+                      <div className="flex justify-start">
+                        <div className="neumorphic-card bg-white rounded-2xl p-4">
+                          <div className="flex items-center gap-2">
+                            <Bot className="h-4 w-4 text-blue-600" />
+                            <div className="flex space-x-1">
+                              <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                              <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                              <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
+                </ScrollArea>
+                
+                <div className="p-6 border-t border-gray-200">
+                  <div className="flex gap-3">
+                    <Textarea
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Ask about market analysis, trading strategies, or news..."
+                      className="flex-1 neumorphic-inset bg-gray-50 border-0 resize-none rounded-2xl"
+                      rows={2}
+                    />
+                    <Button
+                      onClick={sendMessage}
+                      disabled={isLoading || !inputMessage.trim()}
+                      className="neumorphic-button bg-blue-500 hover:bg-blue-600 text-white px-6"
+                    >
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Chart and Market Data */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-8">
             {/* TradingView Chart */}
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader className="pb-3">
+            <div className="neumorphic-card">
+              <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <CardTitle className="text-white">Market Chart</CardTitle>
+                    <h2 className="text-xl font-semibold text-gray-800">Market Chart</h2>
                     <div className="flex gap-2">
                       {popularSymbols.map((symbol) => (
                         <Button
@@ -305,7 +285,11 @@ const AITradingAssistant: React.FC = () => {
                           variant={selectedSymbol === symbol ? "default" : "outline"}
                           size="sm"
                           onClick={() => setSelectedSymbol(symbol)}
-                          className="text-xs"
+                          className={`text-xs neumorphic-button ${
+                            selectedSymbol === symbol 
+                              ? 'bg-blue-500 text-white' 
+                              : 'bg-white text-gray-700'
+                          }`}
                         >
                           {symbol}
                         </Button>
@@ -317,7 +301,7 @@ const AITradingAssistant: React.FC = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => addIndicator('SMA')}
-                      className="text-xs"
+                      className="neumorphic-button bg-white text-gray-700 text-xs"
                     >
                       +SMA
                     </Button>
@@ -325,7 +309,7 @@ const AITradingAssistant: React.FC = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => addIndicator('RSI')}
-                      className="text-xs"
+                      className="neumorphic-button bg-white text-gray-700 text-xs"
                     >
                       +RSI
                     </Button>
@@ -333,68 +317,79 @@ const AITradingAssistant: React.FC = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => addIndicator('MACD')}
-                      className="text-xs"
+                      className="neumorphic-button bg-white text-gray-700 text-xs"
                     >
                       +MACD
                     </Button>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div id="tradingview_chart" className="h-[400px]"></div>
-              </CardContent>
-            </Card>
+              </div>
+              <div className="p-4">
+                <TradingViewWidget 
+                  symbol={selectedSymbol}
+                  theme="light"
+                  height="400px"
+                  className="w-full"
+                />
+              </div>
+            </div>
 
             {/* Market Data and News */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Market Data */}
-              <Card className="bg-slate-800/50 border-slate-700">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5" />
-                    Market Data
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+              <div className="neumorphic-card">
+                <div className="p-6 border-b border-gray-200">
+                  <div className="flex items-center gap-3">
+                    <div className="neumorphic-icon">
+                      <TrendingUp className="h-5 w-5 text-green-600" />
+                    </div>
+                    <h2 className="text-xl font-semibold text-gray-800">Market Data</h2>
+                  </div>
+                </div>
+                <div className="p-6">
                   <ScrollArea className="h-[300px]">
                     <div className="space-y-3">
                       {marketData.map((item) => (
-                        <div key={item.symbol} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
-                          <div>
-                            <p className="font-semibold text-white">{item.symbol}</p>
-                            <p className="text-sm text-gray-400">Vol: {item.volume.toLocaleString()}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-semibold text-white">${item.price.toFixed(2)}</p>
-                            <p className={`text-sm ${item.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                              {item.change >= 0 ? '+' : ''}{item.change.toFixed(2)} ({item.changePercent.toFixed(2)}%)
-                            </p>
+                        <div key={item.symbol} className="neumorphic-inset bg-gray-50 rounded-2xl p-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-semibold text-gray-800">{item.symbol}</p>
+                              <p className="text-sm text-gray-600">Vol: {item.volume.toLocaleString()}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-semibold text-gray-800">${item.price.toFixed(2)}</p>
+                              <p className={`text-sm ${item.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                {item.change >= 0 ? '+' : ''}{item.change.toFixed(2)} ({item.changePercent.toFixed(2)}%)
+                              </p>
+                            </div>
                           </div>
                         </div>
                       ))}
                     </div>
                   </ScrollArea>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
               {/* News Feed */}
-              <Card className="bg-slate-800/50 border-slate-700">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <Newspaper className="h-5 w-5" />
-                    Latest News
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+              <div className="neumorphic-card">
+                <div className="p-6 border-b border-gray-200">
+                  <div className="flex items-center gap-3">
+                    <div className="neumorphic-icon">
+                      <Newspaper className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <h2 className="text-xl font-semibold text-gray-800">Latest News</h2>
+                  </div>
+                </div>
+                <div className="p-6">
                   <ScrollArea className="h-[300px]">
                     <div className="space-y-3">
                       {news.map((item) => (
-                        <div key={item.id} className="p-3 bg-slate-700/50 rounded-lg">
-                          <div className="flex items-start gap-2">
-                            <div className={`w-2 h-2 rounded-full mt-2 ${getImpactColor(item.impact)}`}></div>
+                        <div key={item.id} className="neumorphic-inset bg-gray-50 rounded-2xl p-4">
+                          <div className="flex items-start gap-3">
+                            <div className={`w-3 h-3 rounded-full mt-2 ${getImpactColor(item.impact)}`}></div>
                             <div className="flex-1">
-                              <p className="font-semibold text-white text-sm mb-1">{item.title}</p>
-                              <p className="text-xs text-gray-400 mb-2">{item.summary}</p>
+                              <p className="font-semibold text-gray-800 text-sm mb-2">{item.title}</p>
+                              <p className="text-xs text-gray-600 mb-3">{item.summary}</p>
                               <div className="flex items-center justify-between text-xs text-gray-500">
                                 <span>{item.source}</span>
                                 <span>{new Date(item.publishedAt).toLocaleDateString()}</span>
@@ -405,19 +400,73 @@ const AITradingAssistant: React.FC = () => {
                       ))}
                     </div>
                   </ScrollArea>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* TradingView Widget Script */}
-      <script
-        type="text/javascript"
-        src="https://s3.tradingview.com/tv.js"
-        onLoad={initializeTradingView}
-      />
+
+      
+      {/* Neumorphic CSS */}
+      <style jsx>{`
+        .neumorphic-card {
+          background: #e0e0e0;
+          border-radius: 20px;
+          box-shadow: 
+            20px 20px 60px #bebebe,
+            -20px -20px 60px #ffffff;
+        }
+        
+        .neumorphic-inset {
+          background: #e0e0e0;
+          border-radius: 15px;
+          box-shadow: 
+            inset 5px 5px 10px #bebebe,
+            inset -5px -5px 10px #ffffff;
+        }
+        
+        .neumorphic-button {
+          border-radius: 12px;
+          box-shadow: 
+            5px 5px 10px #bebebe,
+            -5px -5px 10px #ffffff;
+          transition: all 0.2s ease;
+        }
+        
+        .neumorphic-button:hover {
+          box-shadow: 
+            inset 2px 2px 5px #bebebe,
+            inset -2px -2px 5px #ffffff;
+        }
+        
+        .neumorphic-button:active {
+          box-shadow: 
+            inset 3px 3px 6px #bebebe,
+            inset -3px -3px 6px #ffffff;
+        }
+        
+        .neumorphic-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: 12px;
+          background: #e0e0e0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 
+            5px 5px 10px #bebebe,
+            -5px -5px 10px #ffffff;
+        }
+        
+        .neumorphic-badge {
+          border-radius: 20px;
+          box-shadow: 
+            3px 3px 6px #bebebe,
+            -3px -3px 6px #ffffff;
+        }
+      `}</style>
     </div>
   );
 };
