@@ -217,24 +217,30 @@ export default function Index() {
 
       {/* All content with relative positioning */}
       <div className="relative z-10">
+        <main role="main">
         {/* Navigation Header */}
         <header className="border-b border-border/40 backdrop-blur-md bg-background/95 sticky top-0 z-50">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center space-x-4 space-x-reverse">
               <img
-                src="https://cdn.builder.io/api/v1/assets/8d6e2ebe2191474fb5a6de98317d4278/liirat-official-logo-bf14db?format=webp&width=800"
+                src="/liirat-logo.png"
                 alt="Liirat News"
                 className="h-14 w-auto cursor-pointer hover:opacity-80 transition-opacity"
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                role="button"
+                tabIndex={0}
+                aria-label="Go to top of page"
               />
             </div>
 
             <nav
               className={`hidden md:flex items-center space-x-6 ${dir === "rtl" ? "space-x-reverse" : ""}`}
+              role="navigation"
+              aria-label="Main navigation"
             >
               <a
                 href="/ai-trading"
-                className="neumorphic-nav-button bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center gap-2"
+                className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground px-4 py-2 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center gap-2"
               >
                 <Bot className="h-4 w-4" />
                 AI Trading
@@ -286,56 +292,56 @@ export default function Index() {
 
         {/* Hero Section */}
         <section className="py-20 lg:py-32 relative overflow-hidden">
-          {/* Background Image */}
+          {/* Official Logo Background Pattern */}
           <div className="absolute inset-0">
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets%2F165a7c0d273f4448b5890b3ec14b12af%2F87665f5fec764be4b49626e43b10972a?format=webp&width=800"
-              alt="Liirat Background"
-              className="w-full h-full object-cover opacity-5"
-            />
+            <div className="w-full h-full bg-gradient-to-br from-primary/5 via-background to-primary/10"></div>
+            <div className="absolute inset-0 bg-[url('/liirat-logo.png')] bg-center bg-no-repeat bg-contain opacity-[0.03]"></div>
           </div>
-          <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/95 to-muted/40"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-primary/5"></div>
           <div className="container mx-auto px-4 relative">
             <div className="text-center max-w-4xl mx-auto">
-              <div className="neumorphic-hero-card p-12 mb-8">
-                <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-white">
+              <div className="backdrop-blur-sm bg-card/80 border border-primary/20 rounded-3xl p-12 mb-8 shadow-2xl">
+                <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-foreground">
                   {t("hero.title")}
-                  <span className="text-blue-400 block">{t("hero.subtitle")}</span>
+                  <span className="text-primary block">{t("hero.subtitle")}</span>
                 </h1>
-                <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
+                <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
                   {t("hero.description")}
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-6 justify-center">
                 <Button
                   size="lg"
-                  className="neumorphic-hero-button bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-10 py-6 text-xl font-bold shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center gap-3"
+                  className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground px-10 py-6 text-xl font-bold shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center gap-3 rounded-2xl"
                   onClick={() => window.location.href = '/ai-trading'}
+                  aria-label="Launch AI Trading Assistant - Navigate to AI trading tools"
                 >
-                  <Bot className="h-6 w-6" />
+                  <Bot className="h-6 w-6" aria-hidden="true" />
                   Launch AI Trading Assistant
                 </Button>
                 <Button
                   variant="outline"
                   size="lg"
-                  className="neumorphic-hero-button-secondary px-8 py-6 text-lg font-semibold"
+                  className="border-primary/50 text-primary hover:bg-primary/10 hover:border-primary px-8 py-6 text-lg font-semibold rounded-2xl"
                   onClick={() =>
                     document
                       .getElementById("calendar")
                       ?.scrollIntoView({ behavior: "smooth" })
                   }
+                  aria-label="Navigate to economic calendar section"
                 >
                   {t("hero.btn.calendar")}
                 </Button>
                 <Button
                   variant="outline"
                   size="lg"
-                  className="neumorphic-hero-button-secondary px-8 py-6 text-lg font-semibold"
+                  className="border-primary/50 text-primary hover:bg-primary/10 hover:border-primary px-8 py-6 text-lg font-semibold rounded-2xl"
                   onClick={() =>
                     document
                       .getElementById("alerts")
                       ?.scrollIntoView({ behavior: "smooth" })
                   }
+                  aria-label="Navigate to alerts setup section"
                 >
                   {t("hero.btn.alerts")}
                 </Button>
@@ -634,6 +640,48 @@ export default function Index() {
           </div>
         </section>
 
+        {/* Market Overview Section */}
+        <section className="py-20 bg-muted/30">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                {t("market.title")}
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                {t("market.description")}
+              </p>
+            </div>
+
+            <div className="max-w-6xl mx-auto">
+              <Card className="overflow-hidden">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-primary" />
+                    Live Market Overview
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="h-[500px] w-full">
+                    <iframe 
+                      src={`https://s.tradingview.com/embed-widget/market-overview/?locale=en#%7B%22colorTheme%22%3A%22${theme}%22%2C%22dateRange%22%3A%2212M%22%2C%22showChart%22%3Atrue%2C%22largeChartUrl%22%3A%22%22%2C%22isTransparent%22%3A${theme === 'dark' ? 'true' : 'false'}%2C%22showSymbolLogo%22%3Atrue%2C%22showFloatingTooltip%22%3Afalse%2C%22width%22%3A%22100%25%22%2C%22height%22%3A%22500%22%2C%22plotLineColorGrowing%22%3A%22hsl(85%2C%2070%25%2C%2050%25)%22%2C%22plotLineColorFalling%22%3A%22rgba(239%2C%2083%2C%2080%2C%201)%22%2C%22gridLineColor%22%3A%22rgba(240%2C%20243%2C%20250%2C%200.06)%22%2C%22scaleFontColor%22%3A%22rgba(209%2C%20212%2C%20220%2C%201)%22%2C%22belowLineFillColorGrowing%22%3A%22rgba(41%2C%2098%2C%20255%2C%200.12)%22%2C%22belowLineFillColorFalling%22%3A%22rgba(239%2C%2083%2C%2080%2C%200.12)%22%2C%22belowLineFillColorGrowingBottom%22%3A%22rgba(41%2C%2098%2C%20255%2C%200)%22%2C%22belowLineFillColorFallingBottom%22%3A%22rgba(239%2C%2083%2C%2080%2C%200)%22%2C%22symbolActiveColor%22%3A%22rgba(41%2C%2098%2C%20255%2C%200.12)%22%2C%22tabs%22%3A%5B%7B%22title%22%3A%22Indices%22%2C%22symbols%22%3A%5B%7B%22s%22%3A%22FOREXCOM%3ASPX500%22%2C%22d%22%3A%22S%26P%20500%22%7D%2C%7B%22s%22%3A%22FOREXCOM%3ANSXUSD%22%2C%22d%22%3A%22US%20100%22%7D%2C%7B%22s%22%3A%22FOREXCOM%3ADJI%22%2C%22d%22%3A%22Dow%2030%22%7D%2C%7B%22s%22%3A%22INDEX%3ANKY%22%2C%22d%22%3A%22Nikkei%20225%22%7D%2C%7B%22s%22%3A%22INDEX%3ADEU40%22%2C%22d%22%3A%22DAX%20Index%22%7D%2C%7B%22s%22%3A%22FOREXCOM%3AUKXGBP%22%2C%22d%22%3A%22UK%20100%22%7D%5D%2C%22originalTitle%22%3A%22Indices%22%7D%2C%7B%22title%22%3A%22Futures%22%2C%22symbols%22%3A%5B%7B%22s%22%3A%22CME_MINI%3AES1!%22%2C%22d%22%3A%22S%26P%20500%22%7D%2C%7B%22s%22%3A%22CME%3A6E1!%22%2C%22d%22%3A%22Euro%22%7D%2C%7B%22s%22%3A%22COMEX%3AGC1!%22%2C%22d%22%3A%22Gold%22%7D%2C%7B%22s%22%3A%22NYMEX%3ACL1!%22%2C%22d%22%3A%22WTI%20Crude%20Oil%22%7D%2C%7B%22s%22%3A%22NYMEX%3ANG1!%22%2C%22d%22%3A%22Gas%22%7D%2C%7B%22s%22%3A%22CBOT%3AZC1!%22%2C%22d%22%3A%22Corn%22%7D%5D%2C%22originalTitle%22%3A%22Futures%22%7D%2C%7B%22title%22%3A%22Bonds%22%2C%22symbols%22%3A%5B%7B%22s%22%3A%22CBOT%3AZB1!%22%2C%22d%22%3A%22T-Bond%22%7D%2C%7B%22s%22%3A%22CBOT%3AUB1!%22%2C%22d%22%3A%22Ultra%20T-Bond%22%7D%2C%7B%22s%22%3A%22EUREX%3AFGBL1!%22%2C%22d%22%3A%22Euro%20Bund%22%7D%2C%7B%22s%22%3A%22EUREX%3AFBTP1!%22%2C%22d%22%3A%22Euro%20BTP%22%7D%2C%7B%22s%22%3A%22EUREX%3AFGBM1!%22%2C%22d%22%3A%22Euro%20BOBL%22%7D%5D%2C%22originalTitle%22%3A%22Bonds%22%7D%2C%7B%22title%22%3A%22Forex%22%2C%22symbols%22%3A%5B%7B%22s%22%3A%22FX%3AEURUSD%22%2C%22d%22%3A%22EUR%20to%20USD%22%7D%2C%7B%22s%22%3A%22FX%3AGBPUSD%22%2C%22d%22%3A%22GBP%20to%20USD%22%7D%2C%7B%22s%22%3A%22FX%3AUSDJPY%22%2C%22d%22%3A%22USD%20to%20JPY%22%7D%2C%7B%22s%22%3A%22FX%3AUSDCHF%22%2C%22d%22%3A%22USD%20to%20CHF%22%7D%2C%7B%22s%22%3A%22FX%3AAUDUSD%22%2C%22d%22%3A%22AUD%20to%20USD%22%7D%2C%7B%22s%22%3A%22FX%3AUSDCAD%22%2C%22d%22%3A%22USD%20to%20CAD%22%7D%5D%2C%22originalTitle%22%3A%22Forex%22%7D%5D%2C%22utm_source%22%3A%22liirat.com%22%2C%22utm_medium%22%3A%22widget_new%22%2C%22utm_campaign%22%3A%22market-overview%22%7D`}
+                      style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        border: 'none',
+                        backgroundColor: theme === 'dark' ? 'transparent' : '#ffffff'
+                      }}
+                      frameBorder="0"
+                      allowTransparency={theme === 'dark'}
+                      scrolling="no"
+                      allowFullScreen
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
         {/* Alert System Section */}
         <section id="alerts" className="py-20">
           <div className="container mx-auto px-4">
@@ -906,7 +954,7 @@ export default function Index() {
           <div className="container mx-auto px-4">
             <div className="text-center">
               <img
-                src="https://cdn.builder.io/api/v1/assets/8d6e2ebe2191474fb5a6de98317d4278/liirat-official-logo-bf14db?format=webp&width=800"
+                src="/liirat-logo.png"
                 alt="Liirat News"
                 className="h-8 w-auto mx-auto mb-4"
               />
@@ -999,6 +1047,8 @@ export default function Index() {
             -12px -12px 24px rgba(255, 255, 255, 0.1);
         }
       `}</style>
+        </main>
+      </div>
     </div>
   );
 }

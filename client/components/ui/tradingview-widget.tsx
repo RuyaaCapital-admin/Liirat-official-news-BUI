@@ -38,7 +38,7 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
           theme: theme,
           style: style,
           locale: 'en',
-          toolbar_bg: '#f1f3f6',
+          toolbar_bg: theme === 'dark' ? '#1a1a1a' : '#f1f3f6',
           enable_publishing: false,
           allow_symbol_change: true,
           container_id: containerRef.current.id,
@@ -55,7 +55,22 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
           user_id: 'public_user_id',
           fullscreen: false,
           autosize: true,
-          studies_overrides: {}
+          studies_overrides: {},
+          overrides: theme === 'dark' ? {
+            "paneProperties.background": "#0a0a0a",
+            "paneProperties.vertGridProperties.color": "#1a1a1a",
+            "paneProperties.horzGridProperties.color": "#1a1a1a",
+            "symbolWatermarkProperties.transparency": 90,
+            "scalesProperties.textColor": "#AAA",
+            "mainSeriesProperties.candleStyle.upColor": "#26a69a",
+            "mainSeriesProperties.candleStyle.downColor": "#ef5350",
+            "mainSeriesProperties.candleStyle.drawWick": true,
+            "mainSeriesProperties.candleStyle.drawBorder": true,
+            "mainSeriesProperties.candleStyle.borderUpColor": "#26a69a",
+            "mainSeriesProperties.candleStyle.borderDownColor": "#ef5350",
+            "mainSeriesProperties.candleStyle.wickUpColor": "#26a69a",
+            "mainSeriesProperties.candleStyle.wickDownColor": "#ef5350"
+          } : {}
         });
       }
     };
