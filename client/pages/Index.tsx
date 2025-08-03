@@ -273,13 +273,7 @@ export default function Index() {
               role="navigation"
               aria-label="Main navigation"
             >
-              <a
-                href="/ai-trading"
-                className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground px-4 py-2 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center gap-2"
-              >
-                <Bot className="h-4 w-4" />
-                AI Trading
-              </a>
+
               <a
                 href="#calendar"
                 className="text-muted-foreground hover:text-primary transition-colors"
