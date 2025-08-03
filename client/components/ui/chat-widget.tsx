@@ -130,13 +130,13 @@ export function ChatWidget({ className }: ChatWidgetProps) {
 
   if (!isOpen) {
     return (
-      <div className={cn('fixed bottom-6 z-50', dir === 'rtl' ? 'left-6' : 'right-6', className)}>
+      <div className={cn('fixed bottom-4 z-50', dir === 'rtl' ? 'left-4 sm:left-6' : 'right-4 sm:right-6', className)}>
         <Button
           onClick={() => setIsOpen(true)}
           size="lg"
-          className="h-14 w-14 rounded-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-primary/20"
+          className="h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-primary/20"
         >
-          <MessageCircle className="h-6 w-6" />
+          <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6" />
         </Button>
       </div>
     );
