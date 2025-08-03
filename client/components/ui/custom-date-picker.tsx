@@ -47,36 +47,51 @@ export function CustomDatePicker({
   const presetOptions = [
     {
       value: "today",
-      label: t("date.today"),
+      label: language === "ar" ? "اليوم" : "Today",
       getDate: () => new Date(),
     },
     {
       value: "tomorrow",
-      label: t("date.tomorrow"),
+      label: language === "ar" ? "غداً" : "Tomorrow",
       getDate: () => addDays(new Date(), 1),
     },
     {
-      value: "this-week",
-      label: t("date.thisweek"),
-      getDate: () => ({
-        from: startOfWeek(new Date()),
-        to: endOfWeek(new Date()),
-      }),
-    },
-    {
-      value: "next-week",
-      label: t("date.nextweek"),
-      getDate: () => ({
-        from: startOfWeek(addDays(new Date(), 7)),
-        to: endOfWeek(addDays(new Date(), 7)),
-      }),
+      value: "weekly",
+      label: language === "ar" ? "الأسبوع" : "Weekly",
+      isGroup: true,
+      subOptions: [
+        {
+          value: "this-week",
+          label: language === "ar" ? "هذا الأسبوع" : "This Week",
+          getDate: () => ({
+            from: startOfWeek(new Date()),
+            to: endOfWeek(new Date()),
+          }),
+        },
+        {
+          value: "next-week",
+          label: language === "ar" ? "الأسبوع القادم" : "Next Week",
+          getDate: () => ({
+            from: startOfWeek(addDays(new Date(), 7)),
+            to: endOfWeek(addDays(new Date(), 7)),
+          }),
+        },
+      ]
     },
     {
       value: "this-month",
-      label: language === "ar" ? "هذا الشهر" : "This Month",
+      label: language === "ar" ? "الشهر" : "Monthly",
       getDate: () => ({
         from: startOfMonth(new Date()),
         to: endOfMonth(new Date()),
+      }),
+    },
+    {
+      value: "next",
+      label: language === "ar" ? "القادم" : "Next",
+      getDate: () => ({
+        from: addDays(new Date(), 1),
+        to: addDays(new Date(), 7),
       }),
     },
   ];
