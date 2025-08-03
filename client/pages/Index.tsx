@@ -38,6 +38,7 @@ import {
   Bot,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useTheme } from "@/hooks/use-theme";
 
 
 export default function Index() {
