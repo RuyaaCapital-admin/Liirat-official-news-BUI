@@ -150,7 +150,7 @@ Remember: This is for educational purposes only. Always advise users to do their
 
     console.log('Sending request to OpenAI with message:', message);
 
-    const completion = await openai.chat.completions.create({
+    const completion = await openai!.chat.completions.create({
       model: "gpt-4",
       messages: [
         { role: "system", content: systemPrompt },
