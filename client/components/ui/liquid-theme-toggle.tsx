@@ -34,9 +34,12 @@ const Switch = () => {
 };
 
 const StyledWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+
   .liquid-3 {
-    --primary: ${props => props.theme?.isDark ? '#fff' : '#000'};
-    --secondary: ${props => props.theme?.isDark ? '#000' : '#fff'};
+    --primary: #000;
+    --secondary: #fff;
     --time: 0.6s;
     appearance: none;
     position: relative;
@@ -51,6 +54,7 @@ const StyledWrapper = styled.div`
     filter: blur(0.16em) contrast(20);
     mix-blend-mode: difference;
     overflow: hidden;
+    margin: 0 auto;
 
     &::before {
       content: "";
