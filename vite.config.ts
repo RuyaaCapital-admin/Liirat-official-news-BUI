@@ -11,6 +11,23 @@ export default defineConfig(({ mode, command }) => ({
       allow: ['./client', './shared'],
       deny: ['.env', '.env.*', '*.{crt,pem}', '**/.git/**', 'server/**'],
     },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        configure: (proxy, options) => {
+          // Start our Express server on port 3001
+          import('./server/index.js').then(({ createServer }) => {
+            const app = createServer();
+            app.listen(3001, () => {
+              console.log('Express API server running on port 3001');
+            });
+          }).catch((error) => {
+            console.warn('Could not start API server:', error.message);
+          });
+        }
+      }
+    }
   },
   build: {
     outDir: 'dist/spa',  // ensure this matches your deployment settings
