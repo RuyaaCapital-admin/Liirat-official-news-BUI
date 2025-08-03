@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
 
-import LiquidThemeToggle from "@/components/ui/liquid-theme-toggle";
+import { WorkingLiquidToggle } from "@/components/ui/working-liquid-toggle";
 import { PriceTicker } from "@/components/ui/price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
@@ -133,7 +133,7 @@ export default function Index() {
               />
 
               <SimpleLanguageToggle />
-              <LiquidThemeToggle />
+              <WorkingLiquidToggle />
             </div>
           </div>
         </header>
