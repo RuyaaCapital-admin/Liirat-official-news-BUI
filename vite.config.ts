@@ -16,17 +16,36 @@ export default defineConfig(({ mode, command }) => ({
         target: "http://localhost:3001",
         changeOrigin: true,
         configure: (proxy, options) => {
-          // Start our Express server on port 3001
-          import("./server/index.js")
-            .then(({ createServer }) => {
-              const app = createServer();
-              app.listen(3001, () => {
-                console.log("Express API server running on port 3001");
+          // Only start server once
+          if (!global.expressServerStarted) {
+            global.expressServerStarted = true;
+
+            import("./server/index.js")
+              .then(({ createServer }) => {
+                const app = createServer();
+
+                // Try different ports if 3001 is in use
+                const tryPort = (port) => {
+                  const server = app.listen(port, () => {
+                    console.log(`Express API server running on port ${port}`);
+                  });
+
+                  server.on('error', (err) => {
+                    if (err.code === 'EADDRINUSE' && port < 3010) {
+                      console.log(`Port ${port} in use, trying ${port + 1}`);
+                      tryPort(port + 1);
+                    } else {
+                      console.warn("Could not start API server:", err.message);
+                    }
+                  });
+                };
+
+                tryPort(3001);
+              })
+              .catch((error) => {
+                console.warn("Could not start API server:", error.message);
               });
-            })
-            .catch((error) => {
-              console.warn("Could not start API server:", error.message);
-            });
+          }
         },
       },
     },
