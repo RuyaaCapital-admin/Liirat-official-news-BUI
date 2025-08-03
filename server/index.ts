@@ -2,13 +2,14 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
-import { 
-  handleAIChat, 
-  handleMarketData, 
-  handleNews, 
-  handleChartIndicator, 
-  handleTechnicalAnalysis 
+import {
+  handleAIChat,
+  handleMarketData,
+  handleNews,
+  handleChartIndicator,
+  handleTechnicalAnalysis
 } from "./routes/ai-trading";
+import { handleChat } from "./routes/chat";
 
 export function createServer() {
   const app = express();
@@ -25,6 +26,9 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+
+  // Chat widget route
+  app.post("/api/chat", handleChat);
 
   // AI Trading Assistant routes
   app.post("/api/ai-chat", handleAIChat);
