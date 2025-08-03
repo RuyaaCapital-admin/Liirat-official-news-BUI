@@ -17,14 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { PriceTicker } from "@/components/ui/price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
@@ -34,7 +27,7 @@ import { ModernEconomicCalendar } from "@/components/ui/modern-economic-calendar
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 import { NotificationDropdown } from "@/components/ui/notification-dropdown";
 import { AlertSettingsModal } from "@/components/ui/alert-settings-modal";
-import { CustomDatePicker } from "@/components/ui/custom-date-picker";
+
 import { useLanguage } from "@/contexts/language-context";
 import { useAlerts } from "@/contexts/alert-context";
 import {
@@ -46,9 +39,7 @@ import {
   Globe,
   Zap,
   BellRing,
-  Search,
-  Filter,
-  Star,
+
   Bot,
 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -132,7 +123,7 @@ export default function Index() {
       time: "16:00",
       event: "ECB Interest Rate Decision",
       country: "EUR",
-      countryFlag: "����🇺",
+      countryFlag: "🇪🇺",
       forecast: "4.25%",
       previous: "4.25%",
       actual: "-",
