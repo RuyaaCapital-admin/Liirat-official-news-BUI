@@ -99,7 +99,7 @@ export function ModernEconomicCalendar({ className }: ModernEconomicCalendarProp
       time: '20:00',
       country: 'اليابان',
       countryFlag: '🇯🇵',
-      event: 'الناتج المحلي ��لإجمالي',
+      event: 'الناتج المحلي الإجمالي',
       importance: 2,
       actual: '1.2%',
       forecast: '1.0%',
@@ -149,7 +149,7 @@ export function ModernEconomicCalendar({ className }: ModernEconomicCalendarProp
 
   const currencyOptions = [
     { value: 'all', label: 'الكل' },
-    { value: 'USD', label: 'الدولار الأم��يكي' },
+    { value: 'USD', label: 'الدولار الأمريكي' },
     { value: 'EUR', label: 'اليورو' },
     { value: 'GBP', label: 'الجنيه الإسترليني' },
     { value: 'JPY', label: 'الين الياباني' },
@@ -228,8 +228,8 @@ export function ModernEconomicCalendar({ className }: ModernEconomicCalendarProp
   const filteredEvents = events.filter(event => {
     if (selectedCategory !== 'all' && event.category !== selectedCategory) return false;
     if (selectedCurrency !== 'all' && event.currency !== selectedCurrency) return false;
-    if (selectedImportance !== 'all' && event.importance.toString() !== selectedImportance) return false;
-    if (searchQuery && !event.event.toLowerCase().includes(searchQuery.toLowerCase()) && 
+    if (!selectedImportance.includes('all') && !selectedImportance.includes(event.importance.toString())) return false;
+    if (searchQuery && !event.event.toLowerCase().includes(searchQuery.toLowerCase()) &&
         !event.country.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
