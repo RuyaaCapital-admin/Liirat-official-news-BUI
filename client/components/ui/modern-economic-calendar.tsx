@@ -46,7 +46,7 @@ export function ModernEconomicCalendar({ className }: ModernEconomicCalendarProp
   const [selectedWeek, setSelectedWeek] = useState('this-week');
   const [selectedDay, setSelectedDay] = useState('all');
   const [selectedCurrency, setSelectedCurrency] = useState('all');
-  const [selectedImportance, setSelectedImportance] = useState('all');
+  const [selectedImportance, setSelectedImportance] = useState<string[]>(['all']);
   const [events, setEvents] = useState<EconomicEvent[]>([]);
   const [isLoadingAI, setIsLoadingAI] = useState<string | null>(null);
 
@@ -99,7 +99,7 @@ export function ModernEconomicCalendar({ className }: ModernEconomicCalendarProp
       time: '20:00',
       country: 'اليابان',
       countryFlag: '🇯🇵',
-      event: 'الناتج المحلي الإجمالي',
+      event: 'الناتج المحلي ��لإجمالي',
       importance: 2,
       actual: '1.2%',
       forecast: '1.0%',
@@ -149,7 +149,7 @@ export function ModernEconomicCalendar({ className }: ModernEconomicCalendarProp
 
   const currencyOptions = [
     { value: 'all', label: 'الكل' },
-    { value: 'USD', label: 'الدولار الأمريكي' },
+    { value: 'USD', label: 'الدولار الأم��يكي' },
     { value: 'EUR', label: 'اليورو' },
     { value: 'GBP', label: 'الجنيه الإسترليني' },
     { value: 'JPY', label: 'الين الياباني' },
@@ -417,7 +417,7 @@ export function ModernEconomicCalendar({ className }: ModernEconomicCalendarProp
               <div>الفعلي</div>
               <div>المتوقع</div>
               <div>السابق</div>
-              <div>تحليل الذكاء الاصط��اعي</div>
+              <div>تحليل الذكاء الاصطناعي</div>
             </div>
 
             {/* Events List */}
@@ -549,7 +549,7 @@ export function ModernEconomicCalendar({ className }: ModernEconomicCalendarProp
             {filteredEvents.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>لا توجد أحداث اقتصادي�� تطابق المرشحات المحددة</p>
+                <p>لا توجد أحداث اقتصادية تطابق المرشحات المحددة</p>
               </div>
             )}
           </div>
