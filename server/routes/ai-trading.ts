@@ -3,9 +3,9 @@ import OpenAI from 'openai';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
-const openai = new OpenAI({
+const openai = process.env.OPENAI_API_KEY ? new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-});
+}) : null;
 
 // Mock market data for demonstration
 const mockMarketData = [
