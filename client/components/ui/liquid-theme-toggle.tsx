@@ -21,10 +21,10 @@ const Switch = () => {
 
   return (
     <StyledWrapper>
-      <input 
-        type="checkbox" 
-        role="switch" 
-        className="liquid-3" 
+      <input
+        type="checkbox"
+        role="switch"
+        className="liquid-3"
         checked={isDark}
         onChange={handleToggle}
         aria-label="Toggle dark/light theme"
@@ -44,15 +44,15 @@ const StyledWrapper = styled.div`
     appearance: none;
     position: relative;
     cursor: pointer;
-    width: 4em;
+    width: 10em;
     aspect-ratio: 2 / 1;
     background: var(--primary);
     border-radius: 20em;
-    box-shadow: 0 0 0 0.25em var(--secondary);
+    box-shadow: 0 0 0 1em var(--secondary);
     transform: translateX(0.5px);
     transition: transform var(--time) cubic-bezier(0.75, 0, 0.75, 1);
-    filter: blur(0.16em) contrast(20);
-    mix-blend-mode: difference;
+    filter: blur(0.66em) contrast(20);
+    mix-blend-mode: darken;
     overflow: hidden;
     margin: 0 auto;
 
@@ -67,20 +67,18 @@ const StyledWrapper = styled.div`
       background: radial-gradient(
           closest-side circle at 12.5% 50%,
           var(--secondary) 50%,
-          transparent 0
+          #0000 0
         ),
         radial-gradient(
           closest-side circle at 87.5% 50%,
           var(--secondary) 50%,
-          transparent 0
+          #0000 0
         ),
-        transparent;
+        #f000;
       transition: transform var(--time) cubic-bezier(0.75, 0, 0.75, 1.3);
     }
 
     &:checked {
-      --primary: #fff;
-      --secondary: #000;
       transform: translateX(-0.5px);
       &::before {
         transform: translate(-75%, -50%);
@@ -88,13 +86,13 @@ const StyledWrapper = styled.div`
     }
 
     &:focus-visible {
-      outline: 2px solid hsl(var(--primary));
+      outline: 2px solid rgba(255, 255, 255, 0.5);
       outline-offset: 2px;
     }
 
     @media (max-width: 768px) {
-      width: 3em;
-      box-shadow: 0 0 0 0.2em var(--secondary);
+      width: 6em;
+      box-shadow: 0 0 0 0.6em var(--secondary);
     }
   }
 `;
