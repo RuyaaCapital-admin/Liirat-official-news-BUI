@@ -7,7 +7,7 @@ import {
   handleMarketData,
   handleNews,
   handleChartIndicator,
-  handleTechnicalAnalysis
+  handleTechnicalAnalysis,
 } from "./routes/ai-trading";
 import { handleChat } from "./routes/chat";
 

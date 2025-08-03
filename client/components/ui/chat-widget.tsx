@@ -1,24 +1,24 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useLanguage } from '@/contexts/language-context';
-import { 
-  MessageCircle, 
-  Send, 
-  X, 
-  Bot, 
-  User, 
+import React, { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useLanguage } from "@/contexts/language-context";
+import {
+  MessageCircle,
+  Send,
+  X,
+  Bot,
+  User,
   Minimize2,
-  Maximize2
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+  Maximize2,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface Message {
   id: string;
   content: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   timestamp: Date;
 }
 
@@ -31,19 +31,20 @@ export function ChatWidget({ className }: ChatWidgetProps) {
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: '1',
-      content: 'مرحباً! أنا مساعدك الذكي للأخبار الاقتصادية. كيف يمكنني مساعدتك اليوم؟',
-      role: 'assistant',
-      timestamp: new Date()
-    }
+      id: "1",
+      content:
+        "مرحباً! أنا مساعدك الذكي للأخبار الاقتصادية. كيف يمكنني مساعدتك اليوم؟",
+      role: "assistant",
+      timestamp: new Date(),
+    },
   ]);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { language, dir } = useLanguage();
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -56,58 +57,59 @@ export function ChatWidget({ className }: ChatWidgetProps) {
     const userMessage: Message = {
       id: Date.now().toString(),
       content: inputValue,
-      role: 'user',
-      timestamp: new Date()
+      role: "user",
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputValue('');
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue("");
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
+      const response = await fetch("/api/chat", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           message: inputValue,
-          language: language
-        })
+          language: language,
+        }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send message');
+        throw new Error("Failed to send message");
       }
 
       const data = await response.json();
-      
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: data.response || 'عذراً، حدث خطأ في الاستجابة.',
-        role: 'assistant',
-        timestamp: new Date()
+        content: data.response || "عذراً، حدث خطأ في الاستجابة.",
+        role: "assistant",
+        timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
+      setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
-      console.error('Chat error:', error);
+      console.error("Chat error:", error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: language === 'ar' 
-          ? 'عذراً، حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.'
-          : 'Sorry, there was a connection error. Please try again.',
-        role: 'assistant',
-        timestamp: new Date()
+        content:
+          language === "ar"
+            ? "عذراً، حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى."
+            : "Sorry, there was a connection error. Please try again.",
+        role: "assistant",
+        timestamp: new Date(),
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
@@ -115,22 +117,28 @@ export function ChatWidget({ className }: ChatWidgetProps) {
 
   const translations = {
     ar: {
-      title: 'المساعد الذكي',
-      placeholder: 'اكتب رسالتك هنا...',
-      send: 'إرسال'
+      title: "المساعد الذكي",
+      placeholder: "اكتب رسالتك هنا...",
+      send: "إرسال",
     },
     en: {
-      title: 'AI Assistant',
-      placeholder: 'Type your message here...',
-      send: 'Send'
-    }
+      title: "AI Assistant",
+      placeholder: "Type your message here...",
+      send: "Send",
+    },
   };
 
   const t = translations[language as keyof typeof translations];
 
   if (!isOpen) {
     return (
-      <div className={cn('fixed bottom-4 z-50', dir === 'rtl' ? 'left-4 sm:left-6' : 'right-4 sm:right-6', className)}>
+      <div
+        className={cn(
+          "fixed bottom-4 z-50",
+          dir === "rtl" ? "left-4 sm:left-6" : "right-4 sm:right-6",
+          className,
+        )}
+      >
         <Button
           onClick={() => setIsOpen(true)}
           size="lg"
@@ -143,11 +151,13 @@ export function ChatWidget({ className }: ChatWidgetProps) {
   }
 
   return (
-    <div className={cn(
-      'fixed bottom-4 z-50 w-[calc(100vw-2rem)] max-w-80 sm:w-80 md:w-96',
-      dir === 'rtl' ? 'left-4 sm:left-6' : 'right-4 sm:right-6',
-      className
-    )}>
+    <div
+      className={cn(
+        "fixed bottom-4 z-50 w-[calc(100vw-2rem)] max-w-80 sm:w-80 md:w-96",
+        dir === "rtl" ? "left-4 sm:left-6" : "right-4 sm:right-6",
+        className,
+      )}
+    >
       <Card className="bg-background/95 backdrop-blur-sm border-border/50 shadow-2xl">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-t-lg">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -161,7 +171,11 @@ export function ChatWidget({ className }: ChatWidgetProps) {
               onClick={() => setIsMinimized(!isMinimized)}
               className="h-6 w-6 p-0 hover:bg-primary-foreground/20"
             >
-              {isMinimized ? <Maximize2 className="h-3 w-3" /> : <Minimize2 className="h-3 w-3" />}
+              {isMinimized ? (
+                <Maximize2 className="h-3 w-3" />
+              ) : (
+                <Minimize2 className="h-3 w-3" />
+              )}
             </Button>
             <Button
               variant="ghost"
@@ -173,7 +187,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
             </Button>
           </div>
         </CardHeader>
-        
+
         {!isMinimized && (
           <CardContent className="p-0">
             <ScrollArea className="h-64 sm:h-80 p-3 sm:p-4">
@@ -182,45 +196,58 @@ export function ChatWidget({ className }: ChatWidgetProps) {
                   <div
                     key={message.id}
                     className={cn(
-                      'flex gap-3 max-w-[85%]',
-                      message.role === 'user' 
-                        ? (dir === 'rtl' ? 'ml-auto flex-row-reverse' : 'ml-auto') 
-                        : (dir === 'rtl' ? 'mr-auto flex-row-reverse' : 'mr-auto')
+                      "flex gap-3 max-w-[85%]",
+                      message.role === "user"
+                        ? dir === "rtl"
+                          ? "ml-auto flex-row-reverse"
+                          : "ml-auto"
+                        : dir === "rtl"
+                          ? "mr-auto flex-row-reverse"
+                          : "mr-auto",
                     )}
                   >
-                    <div className={cn(
-                      'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center',
-                      message.role === 'user' 
-                        ? 'bg-primary text-primary-foreground' 
-                        : 'bg-muted text-muted-foreground'
-                    )}>
-                      {message.role === 'user' ? (
+                    <div
+                      className={cn(
+                        "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center",
+                        message.role === "user"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground",
+                      )}
+                    >
+                      {message.role === "user" ? (
                         <User className="h-4 w-4" />
                       ) : (
                         <Bot className="h-4 w-4" />
                       )}
                     </div>
-                    <div className={cn(
-                      'rounded-lg p-3 text-sm break-words',
-                      message.role === 'user'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted text-muted-foreground'
-                    )}>
+                    <div
+                      className={cn(
+                        "rounded-lg p-3 text-sm break-words",
+                        message.role === "user"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground",
+                      )}
+                    >
                       <p className="whitespace-pre-wrap">{message.content}</p>
                       <p className="text-xs opacity-70 mt-1">
-                        {message.timestamp.toLocaleTimeString(language === 'ar' ? 'ar-SA' : 'en-US', {
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
+                        {message.timestamp.toLocaleTimeString(
+                          language === "ar" ? "ar-SA" : "en-US",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          },
+                        )}
                       </p>
                     </div>
                   </div>
                 ))}
                 {isLoading && (
-                  <div className={cn(
-                    'flex gap-3 max-w-[85%]',
-                    dir === 'rtl' ? 'mr-auto flex-row-reverse' : 'mr-auto'
-                  )}>
+                  <div
+                    className={cn(
+                      "flex gap-3 max-w-[85%]",
+                      dir === "rtl" ? "mr-auto flex-row-reverse" : "mr-auto",
+                    )}
+                  >
                     <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted text-muted-foreground flex items-center justify-center">
                       <Bot className="h-4 w-4" />
                     </div>
@@ -236,7 +263,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
                 <div ref={messagesEndRef} />
               </div>
             </ScrollArea>
-            
+
             <div className="p-3 sm:p-4 border-t border-border/50 bg-muted/30">
               <div className="flex gap-2">
                 <Input

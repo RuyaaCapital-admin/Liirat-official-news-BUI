@@ -76,7 +76,7 @@ export function CustomDatePicker({
             to: endOfWeek(addDays(new Date(), 7)),
           }),
         },
-      ]
+      ],
     },
     {
       value: "this-month",
@@ -187,7 +187,11 @@ export function CustomDatePicker({
                         {preset.subOptions.map((subOption) => (
                           <Button
                             key={subOption.value}
-                            variant={tempValue === subOption.value ? "default" : "outline"}
+                            variant={
+                              tempValue === subOption.value
+                                ? "default"
+                                : "outline"
+                            }
                             size="sm"
                             onClick={() => handlePresetSelect(subOption.value)}
                             className="justify-start text-xs"
@@ -199,7 +203,9 @@ export function CustomDatePicker({
                     </div>
                   ) : (
                     <Button
-                      variant={tempValue === preset.value ? "default" : "outline"}
+                      variant={
+                        tempValue === preset.value ? "default" : "outline"
+                      }
                       size="sm"
                       onClick={() => handlePresetSelect(preset.value)}
                       className="justify-start text-xs"

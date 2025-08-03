@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useTheme } from 'next-themes';
+import React, { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 
 export function NewLiquidToggle() {
   const { theme, setTheme } = useTheme();
@@ -18,11 +18,11 @@ export function NewLiquidToggle() {
     );
   }
 
-  const isDark = theme === 'dark';
+  const isDark = theme === "dark";
 
   const handleToggle = () => {
-    console.log('Toggle clicked, current theme:', theme);
-    setTheme(isDark ? 'light' : 'dark');
+    console.log("Toggle clicked, current theme:", theme);
+    setTheme(isDark ? "light" : "dark");
   };
 
   return (
@@ -35,14 +35,14 @@ export function NewLiquidToggle() {
         onChange={handleToggle}
         aria-label="Toggle dark/light theme"
       />
-      
+
       <style jsx global>{`
         .liquid-toggle-container {
           display: flex;
           align-items: center;
           justify-content: center;
         }
-        
+
         .liquid-toggle-input {
           --primary: #000;
           --secondary: #fff;
