@@ -1,42 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { useTheme } from 'next-themes';
 
 const Switch = () => {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  // Avoid hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
-  const isDark = theme === 'dark';
-
-  const handleToggle = () => {
-    setTheme(isDark ? 'light' : 'dark');
-  };
-
   return (
     <StyledWrapper>
-      <input
-        type="checkbox"
-        role="switch"
-        className="liquid-3"
-        checked={isDark}
-        onChange={handleToggle}
-        aria-label="Toggle dark/light theme"
-      />
+      <input type="checkbox" role="switch" className="liquid-3" />
     </StyledWrapper>
   );
-};
+}
 
 const StyledWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-
   .liquid-3 {
     --primary: #000;
     --secondary: #fff;
@@ -44,17 +17,16 @@ const StyledWrapper = styled.div`
     appearance: none;
     position: relative;
     cursor: pointer;
-    width: 3em;
+    width: 10em;
     aspect-ratio: 2 / 1;
     background: var(--primary);
     border-radius: 20em;
-    box-shadow: 0 0 0 0.15em var(--secondary);
+    box-shadow: 0 0 0 1em var(--secondary);
     transform: translateX(0.5px);
-    transition: transform var(--time) cubic-bezier(0.75, 0, 0.75, 1);
-    filter: blur(0.15em) contrast(20);
+    transition: transform var(--time) cubic-bezier(0.75, 0, 0.75, 50);
+    filter: blur(0.66em) contrast(20);
     mix-blend-mode: darken;
     overflow: hidden;
-    margin: 0 auto;
 
     &::before {
       content: "";
@@ -83,16 +55,6 @@ const StyledWrapper = styled.div`
       &::before {
         transform: translate(-75%, -50%);
       }
-    }
-
-    &:focus-visible {
-      outline: 2px solid rgba(255, 255, 255, 0.5);
-      outline-offset: 2px;
-    }
-
-    @media (max-width: 768px) {
-      width: 2.5em;
-      box-shadow: 0 0 0 0.1em var(--secondary);
     }
   }
 `;
