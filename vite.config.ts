@@ -34,8 +34,8 @@ export default defineConfig(({ mode, command }) => ({
   },
   plugins: [
     react(),
-    // Only include expressPlugin in development
-    command === 'serve' && expressPlugin(),
+    // Express server now runs separately and is proxied
+    // command === 'serve' && expressPlugin(),
   ].filter(Boolean),
   resolve: {
     alias: {
