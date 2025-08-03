@@ -18,9 +18,7 @@ export default defineConfig(({ mode, command }) => ({
   },
   plugins: [
     react(),
-    // Express server integrated with Vite
-    command === 'serve' && expressPlugin(),
-  ].filter(Boolean),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client"),
