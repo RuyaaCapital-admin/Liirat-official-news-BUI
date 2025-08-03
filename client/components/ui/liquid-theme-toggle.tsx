@@ -79,6 +79,8 @@ const StyledWrapper = styled.div`
     }
 
     &:checked {
+      --primary: #fff;
+      --secondary: #000;
       transform: translateX(-0.5px);
       &::before {
         transform: translate(-75%, -50%);
