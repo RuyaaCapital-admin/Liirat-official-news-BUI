@@ -10,13 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 
 import LiquidThemeToggle from "@/components/ui/liquid-theme-toggle";
 import { PriceTicker } from "@/components/ui/price-ticker";
@@ -44,7 +38,7 @@ import {
   Bot,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useTheme } from "@/hooks/use-theme";
+
 
 export default function Index() {
   const [email, setEmail] = useState("");
