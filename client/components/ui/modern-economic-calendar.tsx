@@ -242,7 +242,7 @@ export function ModernEconomicCalendar({ className }: ModernEconomicCalendarProp
           التقويم الاقتصادي المباشر
         </h1>
         <p className="text-lg text-muted-foreground">
-          تابع أهم الأحداث الاقتصادية والمؤشرات المالية مع تحليلات الذكاء الاصطناعي
+          تابع أهم الأحداث الاقتصا��ية والمؤشرات المالية مع تحليلات الذكاء الاصطناعي
         </p>
       </div>
 
@@ -353,36 +353,63 @@ export function ModernEconomicCalendar({ className }: ModernEconomicCalendarProp
 
             {/* Importance Filter */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">مستوى الأهمية</label>
+              <label className="text-sm font-medium text-muted-foreground">مستوى الأهمية (اختيار متعدد)</label>
               <div className="flex gap-2">
                 <Button
-                  variant={selectedImportance === 'all' ? 'default' : 'outline'}
+                  variant={selectedImportance.includes('all') ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setSelectedImportance('all')}
+                  onClick={() => {
+                    if (selectedImportance.includes('all')) {
+                      setSelectedImportance([]);
+                    } else {
+                      setSelectedImportance(['all']);
+                    }
+                  }}
                   className="flex-1 text-xs"
                 >
                   الكل
                 </Button>
                 <Button
-                  variant={selectedImportance === '1' ? 'default' : 'outline'}
+                  variant={selectedImportance.includes('1') ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setSelectedImportance('1')}
+                  onClick={() => {
+                    const newSelection = selectedImportance.filter(item => item !== 'all');
+                    if (selectedImportance.includes('1')) {
+                      setSelectedImportance(newSelection.filter(item => item !== '1'));
+                    } else {
+                      setSelectedImportance([...newSelection, '1']);
+                    }
+                  }}
                   className="flex-1 text-xs"
                 >
                   عادي
                 </Button>
                 <Button
-                  variant={selectedImportance === '2' ? 'default' : 'outline'}
+                  variant={selectedImportance.includes('2') ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setSelectedImportance('2')}
+                  onClick={() => {
+                    const newSelection = selectedImportance.filter(item => item !== 'all');
+                    if (selectedImportance.includes('2')) {
+                      setSelectedImportance(newSelection.filter(item => item !== '2'));
+                    } else {
+                      setSelectedImportance([...newSelection, '2']);
+                    }
+                  }}
                   className="flex-1 text-xs"
                 >
                   متوسط
                 </Button>
                 <Button
-                  variant={selectedImportance === '3' ? 'default' : 'outline'}
+                  variant={selectedImportance.includes('3') ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setSelectedImportance('3')}
+                  onClick={() => {
+                    const newSelection = selectedImportance.filter(item => item !== 'all');
+                    if (selectedImportance.includes('3')) {
+                      setSelectedImportance(newSelection.filter(item => item !== '3'));
+                    } else {
+                      setSelectedImportance([...newSelection, '3']);
+                    }
+                  }}
                   className="flex-1 text-xs"
                 >
                   مرتفع
