@@ -34,11 +34,12 @@ function expressPlugin(): Plugin {
     apply: 'serve', // only during dev
     configureServer(server) {
       // Lazy import to avoid unresolved path in production
-      import('./server').then(({ createServer }) => {
+      import('./server/index.js').then(({ createServer }) => {
         const app = createServer();
         server.middlewares.use(app);
-      }).catch(() => {
-        console.warn('Dev-only server not available');
+        console.log('Express server integrated with Vite dev server');
+      }).catch((error) => {
+        console.warn('Dev-only server not available:', error.message);
       });
     },
   };
