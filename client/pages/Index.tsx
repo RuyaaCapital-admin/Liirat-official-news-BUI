@@ -1007,7 +1007,10 @@ export default function Index() {
           open={showAlertSettings}
           onOpenChange={setShowAlertSettings}
         />
-        
+
+        {/* Chat Widget */}
+        <ChatWidget />
+
         {/* Neumorphic CSS Styles */}
         <style>{`
           .neumorphic-nav-button {
