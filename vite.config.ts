@@ -11,52 +11,15 @@ export default defineConfig(({ mode, command }) => ({
       allow: ["./client", "./shared"],
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
     },
-    proxy: {
-      "/api": {
-        target: "http://localhost:3001",
-        changeOrigin: true,
-        configure: (proxy, options) => {
-          // Only start server once
-          if (!global.expressServerStarted) {
-            global.expressServerStarted = true;
 
-            import("./server/index.js")
-              .then(({ createServer }) => {
-                const app = createServer();
-
-                // Try different ports if 3001 is in use
-                const tryPort = (port) => {
-                  const server = app.listen(port, () => {
-                    console.log(`Express API server running on port ${port}`);
-                  });
-
-                  server.on('error', (err) => {
-                    if (err.code === 'EADDRINUSE' && port < 3010) {
-                      console.log(`Port ${port} in use, trying ${port + 1}`);
-                      tryPort(port + 1);
-                    } else {
-                      console.warn("Could not start API server:", err.message);
-                    }
-                  });
-                };
-
-                tryPort(3001);
-              })
-              .catch((error) => {
-                console.warn("Could not start API server:", error.message);
-              });
-          }
-        },
-      },
-    },
   },
   build: {
     outDir: "dist/spa", // ensure this matches your deployment settings
   },
   plugins: [
     react(),
-    // Express server now runs separately and is proxied
-    // command === 'serve' && expressPlugin(),
+    // Express server integrated with Vite
+    command === 'serve' && expressPlugin(),
   ].filter(Boolean),
   resolve: {
     alias: {
