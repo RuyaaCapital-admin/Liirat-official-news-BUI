@@ -79,6 +79,12 @@ const StyledWrapper = styled.div`
         transform: translate(-75%, -50%);
       }
     }
+
+    @media (max-width: 768px) {
+      width: 2em;
+      box-shadow: 0 0 0 0.2em var(--secondary);
+      filter: blur(0.13em) contrast(20);
+    }
   }
 `;
 
