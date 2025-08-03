@@ -175,7 +175,7 @@ export default function Index() {
               />
 
               <SimpleLanguageToggle />
-              <ThemeToggle />
+              <LiquidThemeToggle />
             </div>
           </div>
         </header>
