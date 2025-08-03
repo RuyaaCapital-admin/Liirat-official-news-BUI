@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { ThemeToggle } from "@/components/ui/theme-toggle";
+import LiquidThemeToggle from "@/components/ui/liquid-theme-toggle";
 import { PriceTicker } from "@/components/ui/price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
