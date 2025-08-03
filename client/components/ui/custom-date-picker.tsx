@@ -97,6 +97,14 @@ export function CustomDatePicker({
   ];
 
   const getCurrentLabel = () => {
+    // Check for suboptions first
+    for (const preset of presetOptions) {
+      if (preset.subOptions) {
+        const subOption = preset.subOptions.find((sub) => sub.value === value);
+        if (subOption) return subOption.label;
+      }
+    }
+
     const preset = presetOptions.find((p) => p.value === value);
     if (preset) return preset.label;
 
