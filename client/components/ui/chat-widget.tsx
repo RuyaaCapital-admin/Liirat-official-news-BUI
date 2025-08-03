@@ -159,7 +159,15 @@ export function ChatWidget({ className }: ChatWidgetProps) {
       )}
     >
       <Card className="bg-background/95 backdrop-blur-sm border-border/50 shadow-2xl">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-t-lg">
+        <CardHeader
+          className="flex flex-row items-center justify-between space-y-0 pb-2 text-primary-foreground rounded-t-lg"
+          style={{
+            backgroundImage: "url(https://cdn.builder.io/api/v1/image/assets%2F165a7c0d273f4448b5890b3ec14b12af%2F2014a4c719b44f12afb18f1028726b99)",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            backgroundSize: "cover"
+          }}
+        >
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <Bot className="h-4 w-4" />
             {t.title}
@@ -280,6 +288,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
                   disabled={!inputValue.trim() || isLoading}
                   size="sm"
                   className="px-3"
+                  style={{ backgroundColor: "rgba(173, 251, 70, 1)" }}
                 >
                   <Send className="h-4 w-4" />
                 </Button>
