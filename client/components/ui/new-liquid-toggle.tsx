@@ -47,18 +47,18 @@ export function NewLiquidToggle() {
           --primary: #000;
           --secondary: #fff;
           --time: 0.6s;
-          
+
           appearance: none;
           position: relative;
           cursor: pointer;
-          width: 2.5em;
-          height: 1.25em;
+          width: 3em;
+          aspect-ratio: 2 / 1;
           background: var(--primary);
           border-radius: 20em;
-          box-shadow: 0 0 0 0.15em var(--secondary);
+          box-shadow: 0 0 0 0.3em var(--secondary);
           transform: translateX(0.5px);
           transition: transform var(--time) cubic-bezier(0.75, 0, 0.75, 1);
-          filter: blur(0.15em) contrast(20);
+          filter: blur(0.2em) contrast(20);
           mix-blend-mode: darken;
           overflow: hidden;
           margin: 0;
@@ -72,16 +72,16 @@ export function NewLiquidToggle() {
           left: 50%;
           top: 50%;
           transform: translate(-25%, -50%);
-          background: 
+          background:
             radial-gradient(
               closest-side circle at 12.5% 50%,
               var(--secondary) 50%,
-              transparent 0
+              #0000 0
             ),
             radial-gradient(
               closest-side circle at 87.5% 50%,
               var(--secondary) 50%,
-              transparent 0
+              #0000 0
             ),
             #f000;
           transition: transform var(--time) cubic-bezier(0.75, 0, 0.75, 1.3);
@@ -102,10 +102,9 @@ export function NewLiquidToggle() {
 
         @media (max-width: 768px) {
           .liquid-toggle-input {
-            width: 2em;
-            height: 1em;
-            box-shadow: 0 0 0 0.12em var(--secondary);
-            filter: blur(0.12em) contrast(20);
+            width: 2.5em;
+            box-shadow: 0 0 0 0.25em var(--secondary);
+            filter: blur(0.17em) contrast(20);
           }
         }
       `}</style>
