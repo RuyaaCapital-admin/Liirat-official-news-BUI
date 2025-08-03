@@ -176,7 +176,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
         
         {!isMinimized && (
           <CardContent className="p-0">
-            <ScrollArea className="h-80 p-4">
+            <ScrollArea className="h-64 sm:h-80 p-3 sm:p-4">
               <div className="space-y-4">
                 {messages.map((message) => (
                   <div
