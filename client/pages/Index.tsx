@@ -339,15 +339,7 @@ export default function Index() {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground px-10 py-6 text-xl font-bold shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center gap-3 rounded-2xl"
-                  onClick={() => window.location.href = '/ai-trading'}
-                  aria-label="Launch AI Trading Assistant - Navigate to AI trading tools"
-                >
-                  <Bot className="h-6 w-6" aria-hidden="true" />
-                  Launch AI Trading Assistant
-                </Button>
+
                 <Button
                   variant="outline"
                   size="lg"
