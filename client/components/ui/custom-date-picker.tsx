@@ -177,15 +177,37 @@ export function CustomDatePicker({
             </h4>
             <div className="grid grid-cols-2 gap-2">
               {presetOptions.map((preset) => (
-                <Button
-                  key={preset.value}
-                  variant={tempValue === preset.value ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handlePresetSelect(preset.value)}
-                  className="justify-start text-xs"
-                >
-                  {preset.label}
-                </Button>
+                <div key={preset.value}>
+                  {preset.subOptions ? (
+                    <div className="col-span-2 space-y-1">
+                      <div className="text-xs font-medium text-muted-foreground px-2 py-1">
+                        {preset.label}
+                      </div>
+                      <div className="grid grid-cols-2 gap-1 ml-2">
+                        {preset.subOptions.map((subOption) => (
+                          <Button
+                            key={subOption.value}
+                            variant={tempValue === subOption.value ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handlePresetSelect(subOption.value)}
+                            className="justify-start text-xs"
+                          >
+                            {subOption.label}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <Button
+                      variant={tempValue === preset.value ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handlePresetSelect(preset.value)}
+                      className="justify-start text-xs"
+                    >
+                      {preset.label}
+                    </Button>
+                  )}
+                </div>
               ))}
             </div>
           </div>
