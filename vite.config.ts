@@ -11,14 +11,11 @@ export default defineConfig(({ mode, command }) => ({
       allow: ["./client", "./shared"],
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
     },
-
   },
   build: {
     outDir: "dist/spa", // ensure this matches your deployment settings
   },
-  plugins: [
-    react(),
-  ],
+  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client"),

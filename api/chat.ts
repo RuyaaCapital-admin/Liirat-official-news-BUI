@@ -1,44 +1,49 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import OpenAI from 'openai';
+import { VercelRequest, VercelResponse } from "@vercel/node";
+import OpenAI from "openai";
 
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-}) : null;
+const openai = process.env.OPENAI_API_KEY
+  ? new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+  : null;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Handle CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const { message, language = 'ar' } = req.body;
+    const { message, language = "ar" } = req.body;
 
     if (!message) {
-      return res.status(400).json({ 
-        error: language === 'ar' ? 'الرسالة مطلوبة' : 'Message is required' 
+      return res.status(400).json({
+        error: language === "ar" ? "الرسالة مطلوبة" : "Message is required",
       });
     }
 
     if (!openai) {
-      console.error('OpenAI API key not found');
+      console.error("OpenAI API key not found");
       return res.status(500).json({
-        error: 'OpenAI API key not configured',
-        response: language === 'ar' 
-          ? 'عذراً، الخدمة غير متوفرة حالياً. يرجى المحاولة لاحقاً.'
-          : 'Sorry, the service is not available right now. Please try again later.'
+        error: "OpenAI API key not configured",
+        response:
+          language === "ar"
+            ? "عذراً، الخدمة غير متوفرة حالياً. يرجى المحاولة لاحقاً."
+            : "Sorry, the service is not available right now. Please try again later.",
       });
     }
 
-    const systemPrompt = language === 'ar' ? `
+    const systemPrompt =
+      language === "ar"
+        ? `
 أنت مساعد ذكي متخصص في الأخبار الاقتصادية والمالية للموقع الإخباري "ليرات". يمكنك مساعدة المستخدمين في:
 
 1. تحليل الأحداث الاقتصادية والمالية
@@ -54,7 +59,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 - مهنية ومناسبة لجمهور متنوع
 
 تذكر: هذا للأغراض التعليمية والإعلامية فقط، وليس نصيحة استثمارية.
-` : `
+`
+        : `
 You are an intelligent assistant specialized in economic and financial news for the "Liirat" news website. You can help users with:
 
 1. Analyzing economic and financial events
@@ -72,54 +78,63 @@ Your responses should be:
 Remember: This is for educational and informational purposes only, not investment advice.
 `;
 
-    console.log('Sending request to OpenAI with message:', message);
+    console.log("Sending request to OpenAI with message:", message);
 
     const completion = await openai!.chat.completions.create({
       model: "gpt-4",
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: message }
+        { role: "user", content: message },
       ],
       max_tokens: 1000,
       temperature: 0.7,
     });
 
-    const response = completion.choices[0]?.message?.content || 
-      (language === 'ar' ? 'عذراً، لم أستطع إنشاء رد.' : 'Sorry, I could not generate a response.');
+    const response =
+      completion.choices[0]?.message?.content ||
+      (language === "ar"
+        ? "عذراً، لم أستطع إنشاء رد."
+        : "Sorry, I could not generate a response.");
 
-    console.log('OpenAI response received:', response.substring(0, 100) + '...');
+    console.log(
+      "OpenAI response received:",
+      response.substring(0, 100) + "...",
+    );
 
     res.json({
       response,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-
   } catch (error) {
-    console.error('Chat Error:', error);
-    
-    let errorMessage = language === 'ar' 
-      ? 'عذراً، أواجه صعوبات تقنية. يرجى المحاولة مرة أخرى.' 
-      : 'Sorry, I\'m experiencing technical difficulties. Please try again.';
-    
+    console.error("Chat Error:", error);
+
+    let errorMessage =
+      language === "ar"
+        ? "عذراً، أواجه صعوبات تقنية. يرجى المحاولة مرة أخرى."
+        : "Sorry, I'm experiencing technical difficulties. Please try again.";
+
     if (error instanceof Error) {
-      if (error.message.includes('401')) {
-        errorMessage = language === 'ar' 
-          ? 'خطأ في المصادقة مع خدمة الذكاء الاصطناعي.'
-          : 'Authentication error with AI service.';
-      } else if (error.message.includes('429')) {
-        errorMessage = language === 'ar' 
-          ? 'تم تجاوز الحد المسموح. يرجى الانتظار والمحاولة مرة أخرى.'
-          : 'Rate limit exceeded. Please wait and try again.';
-      } else if (error.message.includes('500')) {
-        errorMessage = language === 'ar' 
-          ? 'الخدمة غير متوفرة مؤقتاً. يرجى المحاولة لاحقاً.'
-          : 'Service is temporarily unavailable. Please try again later.';
+      if (error.message.includes("401")) {
+        errorMessage =
+          language === "ar"
+            ? "خطأ في المصادقة مع خدمة الذكاء الاصطناعي."
+            : "Authentication error with AI service.";
+      } else if (error.message.includes("429")) {
+        errorMessage =
+          language === "ar"
+            ? "تم تجاوز الحد المسموح. يرجى الانتظار والمحاولة مرة أخرى."
+            : "Rate limit exceeded. Please wait and try again.";
+      } else if (error.message.includes("500")) {
+        errorMessage =
+          language === "ar"
+            ? "الخدمة غير متوفرة مؤقتاً. يرجى المحاولة لاحقاً."
+            : "Service is temporarily unavailable. Please try again later.";
       }
     }
-    
+
     res.status(500).json({
-      error: 'Failed to process chat request',
-      response: errorMessage
+      error: "Failed to process chat request",
+      response: errorMessage,
     });
   }
 }
