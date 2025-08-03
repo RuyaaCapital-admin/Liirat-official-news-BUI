@@ -162,10 +162,11 @@ export function ChatWidget({ className }: ChatWidgetProps) {
         <CardHeader
           className="flex flex-row items-center justify-between space-y-0 pb-2 text-primary-foreground rounded-t-lg"
           style={{
-            backgroundImage: "url(https://cdn.builder.io/api/v1/image/assets%2F165a7c0d273f4448b5890b3ec14b12af%2F2014a4c719b44f12afb18f1028726b99)",
+            backgroundImage:
+              "url(https://cdn.builder.io/api/v1/image/assets%2F165a7c0d273f4448b5890b3ec14b12af%2F2014a4c719b44f12afb18f1028726b99)",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
-            backgroundSize: "cover"
+            backgroundSize: "cover",
           }}
         >
           <CardTitle className="text-sm font-medium flex items-center gap-2">
