@@ -1,10 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { useTheme } from 'next-themes';
 
 const Switch = () => {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  const isDark = theme === 'dark';
+
+  const handleToggle = () => {
+    setTheme(isDark ? 'light' : 'dark');
+  };
+
   return (
     <StyledWrapper>
-      <input type="checkbox" role="switch" className="liquid-3" />
+      <input
+        type="checkbox"
+        role="switch"
+        className="liquid-3"
+        checked={isDark}
+        onChange={handleToggle}
+      />
     </StyledWrapper>
   );
 }
@@ -17,14 +40,14 @@ const StyledWrapper = styled.div`
     appearance: none;
     position: relative;
     cursor: pointer;
-    width: 10em;
+    width: 2.5em;
     aspect-ratio: 2 / 1;
     background: var(--primary);
     border-radius: 20em;
-    box-shadow: 0 0 0 1em var(--secondary);
+    box-shadow: 0 0 0 0.25em var(--secondary);
     transform: translateX(0.5px);
     transition: transform var(--time) cubic-bezier(0.75, 0, 0.75, 50);
-    filter: blur(0.66em) contrast(20);
+    filter: blur(0.17em) contrast(20);
     mix-blend-mode: darken;
     overflow: hidden;
 
