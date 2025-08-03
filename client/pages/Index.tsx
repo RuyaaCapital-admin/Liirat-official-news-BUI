@@ -50,10 +50,7 @@ export default function Index() {
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [selectedPair, setSelectedPair] = useState("");
-  const [selectedDate, setSelectedDate] = useState("today");
-  const [selectedCountry, setSelectedCountry] = useState("all");
-  const [selectedImportance, setSelectedImportance] = useState("all");
-  const [searchEvent, setSearchEvent] = useState("");
+
   const [showAlertSettings, setShowAlertSettings] = useState(false);
   const { theme } = useTheme();
   const { language, t, dir } = useLanguage();
