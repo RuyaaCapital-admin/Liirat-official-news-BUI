@@ -39,6 +39,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTheme } from "@/hooks/use-theme";
+import { NewLiquidToggle } from "@/components/ui/new-liquid-toggle";
 
 
 export default function Index() {
@@ -133,20 +134,7 @@ export default function Index() {
               />
 
               <SimpleLanguageToggle />
-              <button
-                onClick={() => {
-                  const html = document.documentElement;
-                  const isDark = html.classList.contains('dark');
-                  if (isDark) {
-                    html.classList.remove('dark');
-                  } else {
-                    html.classList.add('dark');
-                  }
-                }}
-                className="w-12 h-6 bg-gray-300 dark:bg-gray-600 rounded-full relative transition-colors"
-              >
-                <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 dark:translate-x-6 transition-transform"></div>
-              </button>
+              <NewLiquidToggle />
             </div>
           </div>
         </header>
