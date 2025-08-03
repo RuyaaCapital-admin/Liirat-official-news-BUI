@@ -36,7 +36,7 @@ function expressPlugin(): Plugin {
       // Lazy import to avoid unresolved path in production
       import('./server/index.js').then(({ createServer }) => {
         const app = createServer();
-        server.middlewares.use('/api', app);
+        server.middlewares.use(app);
         console.log('Express server integrated with Vite dev server on /api');
       }).catch((error) => {
         console.warn('Dev-only server not available:', error.message);
