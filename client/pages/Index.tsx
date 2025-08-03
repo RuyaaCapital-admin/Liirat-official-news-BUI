@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
 
-import { WorkingLiquidToggle } from "@/components/ui/working-liquid-toggle";
+
 import { PriceTicker } from "@/components/ui/price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
@@ -133,7 +133,20 @@ export default function Index() {
               />
 
               <SimpleLanguageToggle />
-              <WorkingLiquidToggle />
+              <button
+                onClick={() => {
+                  const html = document.documentElement;
+                  const isDark = html.classList.contains('dark');
+                  if (isDark) {
+                    html.classList.remove('dark');
+                  } else {
+                    html.classList.add('dark');
+                  }
+                }}
+                className="w-12 h-6 bg-gray-300 dark:bg-gray-600 rounded-full relative transition-colors"
+              >
+                <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 dark:translate-x-6 transition-transform"></div>
+              </button>
             </div>
           </div>
         </header>
