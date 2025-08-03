@@ -144,8 +144,8 @@ export function ChatWidget({ className }: ChatWidgetProps) {
 
   return (
     <div className={cn(
-      'fixed bottom-6 z-50 w-80 sm:w-96',
-      dir === 'rtl' ? 'left-6' : 'right-6',
+      'fixed bottom-4 z-50 w-[calc(100vw-2rem)] max-w-80 sm:w-80 md:w-96',
+      dir === 'rtl' ? 'left-4 sm:left-6' : 'right-4 sm:right-6',
       className
     )}>
       <Card className="bg-background/95 backdrop-blur-sm border-border/50 shadow-2xl">
