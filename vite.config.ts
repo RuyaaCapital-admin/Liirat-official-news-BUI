@@ -39,8 +39,12 @@ function expressPlugin(): Plugin {
         .then(({ createServer }) => {
           const app = createServer();
 
-          // Add middleware for API routes only
-          server.middlewares.use("/api", app);
+          // Debug middleware
+          server.middlewares.use("/api", (req, res, next) => {
+            console.log("API request received:", req.method, req.url);
+            app(req, res, next);
+          });
+
           console.log("Express server integrated with Vite dev server");
         })
         .catch((error) => {
