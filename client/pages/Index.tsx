@@ -23,6 +23,7 @@ import { PriceTicker } from "@/components/ui/price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import { ModernEconomicCalendar } from "@/components/ui/modern-economic-calendar";
+import { AdvancedAlertSystem } from "@/components/ui/advanced-alert-system";
 
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 import { NotificationDropdown } from "@/components/ui/notification-dropdown";
