@@ -44,14 +44,14 @@ const StyledWrapper = styled.div`
     appearance: none;
     position: relative;
     cursor: pointer;
-    width: 10em;
+    width: 3em;
     aspect-ratio: 2 / 1;
     background: var(--primary);
     border-radius: 20em;
-    box-shadow: 0 0 0 1em var(--secondary);
+    box-shadow: 0 0 0 0.15em var(--secondary);
     transform: translateX(0.5px);
     transition: transform var(--time) cubic-bezier(0.75, 0, 0.75, 1);
-    filter: blur(0.66em) contrast(20);
+    filter: blur(0.15em) contrast(20);
     mix-blend-mode: darken;
     overflow: hidden;
     margin: 0 auto;
@@ -91,8 +91,8 @@ const StyledWrapper = styled.div`
     }
 
     @media (max-width: 768px) {
-      width: 6em;
-      box-shadow: 0 0 0 0.6em var(--secondary);
+      width: 2.5em;
+      box-shadow: 0 0 0 0.1em var(--secondary);
     }
   }
 `;
