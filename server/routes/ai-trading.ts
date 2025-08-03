@@ -105,7 +105,7 @@ export const handleAIChat = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    if (!process.env.OPENAI_API_KEY) {
+    if (!openai) {
       console.error('OpenAI API key not found');
       return res.status(500).json({
         error: 'OpenAI API key not configured',
