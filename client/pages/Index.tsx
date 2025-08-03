@@ -50,7 +50,7 @@ export default function Index() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
-  const [selectedPair, setSelectedPair] = useState("");
+
 
   const [showAlertSettings, setShowAlertSettings] = useState(false);
   const { theme } = useTheme();
