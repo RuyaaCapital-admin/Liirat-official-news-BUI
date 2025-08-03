@@ -2,13 +2,14 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
-import { 
-  handleAIChat, 
-  handleMarketData, 
-  handleNews, 
-  handleChartIndicator, 
-  handleTechnicalAnalysis 
+import {
+  handleAIChat,
+  handleMarketData,
+  handleNews,
+  handleChartIndicator,
+  handleTechnicalAnalysis,
 } from "./routes/ai-trading";
+import { handleChat } from "./routes/chat";
 
 export function createServer() {
   const app = express();
@@ -19,19 +20,22 @@ export function createServer() {
   app.use(express.urlencoded({ extended: true }));
 
   // Example API routes
-  app.get("/api/ping", (_req, res) => {
+  app.get("/ping", (_req, res) => {
     const ping = process.env.PING_MESSAGE ?? "ping";
     res.json({ message: ping });
   });
 
-  app.get("/api/demo", handleDemo);
+  app.get("/demo", handleDemo);
+
+  // Chat widget route
+  app.post("/chat", handleChat);
 
   // AI Trading Assistant routes
-  app.post("/api/ai-chat", handleAIChat);
-  app.get("/api/market-data", handleMarketData);
-  app.get("/api/news", handleNews);
-  app.post("/api/chart-indicator", handleChartIndicator);
-  app.post("/api/technical-analysis", handleTechnicalAnalysis);
+  app.post("/ai-chat", handleAIChat);
+  app.get("/market-data", handleMarketData);
+  app.get("/news", handleNews);
+  app.post("/chart-indicator", handleChartIndicator);
+  app.post("/technical-analysis", handleTechnicalAnalysis);
 
   return app;
 }

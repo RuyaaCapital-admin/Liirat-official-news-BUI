@@ -47,41 +47,64 @@ export function CustomDatePicker({
   const presetOptions = [
     {
       value: "today",
-      label: t("date.today"),
+      label: language === "ar" ? "اليوم" : "Today",
       getDate: () => new Date(),
     },
     {
       value: "tomorrow",
-      label: t("date.tomorrow"),
+      label: language === "ar" ? "غداً" : "Tomorrow",
       getDate: () => addDays(new Date(), 1),
     },
     {
-      value: "this-week",
-      label: t("date.thisweek"),
-      getDate: () => ({
-        from: startOfWeek(new Date()),
-        to: endOfWeek(new Date()),
-      }),
-    },
-    {
-      value: "next-week",
-      label: t("date.nextweek"),
-      getDate: () => ({
-        from: startOfWeek(addDays(new Date(), 7)),
-        to: endOfWeek(addDays(new Date(), 7)),
-      }),
+      value: "weekly",
+      label: language === "ar" ? "الأسبوع" : "Weekly",
+      isGroup: true,
+      subOptions: [
+        {
+          value: "this-week",
+          label: language === "ar" ? "هذا الأسبوع" : "This Week",
+          getDate: () => ({
+            from: startOfWeek(new Date()),
+            to: endOfWeek(new Date()),
+          }),
+        },
+        {
+          value: "next-week",
+          label: language === "ar" ? "الأسبوع القادم" : "Next Week",
+          getDate: () => ({
+            from: startOfWeek(addDays(new Date(), 7)),
+            to: endOfWeek(addDays(new Date(), 7)),
+          }),
+        },
+      ],
     },
     {
       value: "this-month",
-      label: language === "ar" ? "هذا الشهر" : "This Month",
+      label: language === "ar" ? "الشهر" : "Monthly",
       getDate: () => ({
         from: startOfMonth(new Date()),
         to: endOfMonth(new Date()),
       }),
     },
+    {
+      value: "next",
+      label: language === "ar" ? "القادم" : "Next",
+      getDate: () => ({
+        from: addDays(new Date(), 1),
+        to: addDays(new Date(), 7),
+      }),
+    },
   ];
 
   const getCurrentLabel = () => {
+    // Check for suboptions first
+    for (const preset of presetOptions) {
+      if (preset.subOptions) {
+        const subOption = preset.subOptions.find((sub) => sub.value === value);
+        if (subOption) return subOption.label;
+      }
+    }
+
     const preset = presetOptions.find((p) => p.value === value);
     if (preset) return preset.label;
 
@@ -154,15 +177,43 @@ export function CustomDatePicker({
             </h4>
             <div className="grid grid-cols-2 gap-2">
               {presetOptions.map((preset) => (
-                <Button
-                  key={preset.value}
-                  variant={tempValue === preset.value ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handlePresetSelect(preset.value)}
-                  className="justify-start text-xs"
-                >
-                  {preset.label}
-                </Button>
+                <div key={preset.value}>
+                  {preset.subOptions ? (
+                    <div className="col-span-2 space-y-1">
+                      <div className="text-xs font-medium text-muted-foreground px-2 py-1">
+                        {preset.label}
+                      </div>
+                      <div className="grid grid-cols-2 gap-1 ml-2">
+                        {preset.subOptions.map((subOption) => (
+                          <Button
+                            key={subOption.value}
+                            variant={
+                              tempValue === subOption.value
+                                ? "default"
+                                : "outline"
+                            }
+                            size="sm"
+                            onClick={() => handlePresetSelect(subOption.value)}
+                            className="justify-start text-xs"
+                          >
+                            {subOption.label}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <Button
+                      variant={
+                        tempValue === preset.value ? "default" : "outline"
+                      }
+                      size="sm"
+                      onClick={() => handlePresetSelect(preset.value)}
+                      className="justify-start text-xs"
+                    >
+                      {preset.label}
+                    </Button>
+                  )}
+                </div>
               ))}
             </div>
           </div>
