@@ -166,7 +166,7 @@ const getCountryFlag = (country: string) => {
     IE: "🇮🇪",
     FI: "🇫🇮",
     GR: "🇬🇷",
-    CZ: "🇨��",
+    CZ: "🇨🇿",
     PL: "🇵🇱",
     HU: "🇭🇺",
     SK: "🇸🇰",
@@ -250,6 +250,20 @@ export function MacroCalendarTable({
 
   const t = (enText: string, arText: string) =>
     language === "ar" ? arText : enText;
+
+  // Listen for online/offline changes
+  React.useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   // Filter countries based on search
   const filteredCountries = useMemo(() => {
