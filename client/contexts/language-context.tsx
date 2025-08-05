@@ -34,7 +34,7 @@ const translations = {
     "hero.title": "أخبار مالية واقتصادية",
     "hero.subtitle": "دقيقة ومحدثة",
     "hero.description":
-      "منصة ليرات للأخبار ا��مالية - تقويم اقتصادي مباشر، تنبيهات فورية، وتحليلات متقدمة لجميع الأسواق العالمية",
+      "منصة ليرات للأخبار المالية - تقويم اقتصادي مباشر، تنبيهات فورية، وتحليلات متقدمة لجميع الأسواق العالمية",
     "hero.btn.calendar": "اطلع على التقويم",
     "hero.btn.alerts": "إعداد التنبيهات",
 
@@ -74,7 +74,7 @@ const translations = {
     "alerts.types.high": "بيانات اقتصادية عالية التأثير",
     "alerts.types.central": "قرارات البنوك المركزية",
     "alerts.types.unexpected": "تحركات غير متوقعة في الأسواق",
-    "alerts.types.rates": "تحديثا�� أسعار الفائدة",
+    "alerts.types.rates": "تحديثا�� أسعار الفائد��",
     "alerts.status": "سيتم تفعيل التنبيهات لاحقاً",
 
     // About Section
@@ -180,7 +180,7 @@ const translations = {
 
     // Notification system
     "notifications.title": "التنبيهات",
-    "notifications.empty": "لا توجد تنبيهات",
+    "notifications.empty": "لا توجد ��نبيهات",
     "notifications.mark_read": "تحديد كمقروء",
     "notifications.clear_all": "مسح الكل",
     "notifications.settings": "إعدادات التنبيهات",
