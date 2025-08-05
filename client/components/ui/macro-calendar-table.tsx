@@ -83,38 +83,43 @@ const formatDate = (dateStr: string) => {
 export function MacroCalendarTable({
   events,
   className,
+  language = "en",
+  dir = "ltr",
 }: MacroCalendarTableProps) {
+  const t = (enText: string, arText: string) => language === "ar" ? arText : enText;
+  const textAlign = dir === "rtl" ? "text-right" : "text-left";
+
   return (
-    <div className={cn("overflow-x-auto", className)}>
+    <div className={cn("overflow-x-auto", className)} dir={dir}>
       <table className="w-full border-collapse bg-card rounded-lg overflow-hidden shadow-sm">
         <thead>
           <tr className="bg-muted/50 border-b border-border">
-            <th className="text-left p-4 font-semibold text-foreground">
-              Date
+            <th className={`${textAlign} p-4 font-semibold text-foreground`}>
+              {t("Date", "التاريخ")}
             </th>
-            <th className="text-left p-4 font-semibold text-foreground">
-              Time
+            <th className={`${textAlign} p-4 font-semibold text-foreground`}>
+              {t("Time", "الوقت")}
             </th>
-            <th className="text-left p-4 font-semibold text-foreground">
-              Country
+            <th className={`${textAlign} p-4 font-semibold text-foreground`}>
+              {t("Country", "الدولة")}
             </th>
-            <th className="text-left p-4 font-semibold text-foreground">
-              Event
+            <th className={`${textAlign} p-4 font-semibold text-foreground`}>
+              {t("Event", "الحدث")}
             </th>
-            <th className="text-left p-4 font-semibold text-foreground">
-              Category
-            </th>
-            <th className="text-center p-4 font-semibold text-foreground">
-              Importance
+            <th className={`${textAlign} p-4 font-semibold text-foreground`}>
+              {t("Category", "الفئة")}
             </th>
             <th className="text-center p-4 font-semibold text-foreground">
-              Previous
+              {t("Importance", "الأهمية")}
             </th>
             <th className="text-center p-4 font-semibold text-foreground">
-              Forecast
+              {t("Previous", "السابق")}
             </th>
             <th className="text-center p-4 font-semibold text-foreground">
-              Actual
+              {t("Forecast", "التوقع")}
+            </th>
+            <th className="text-center p-4 font-semibold text-foreground">
+              {t("Actual", "الفعلي")}
             </th>
           </tr>
         </thead>
@@ -122,7 +127,7 @@ export function MacroCalendarTable({
           {events.length === 0 ? (
             <tr>
               <td colSpan={9} className="text-center p-8 text-muted-foreground">
-                No economic events available
+                {t("No economic events available", "لا توجد أحداث اقتصادية متاحة")}
               </td>
             </tr>
           ) : (
