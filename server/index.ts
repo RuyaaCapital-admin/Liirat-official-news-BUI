@@ -10,6 +10,7 @@ import {
   handleTechnicalAnalysis,
 } from "./routes/ai-trading";
 import { handleChat } from "./routes/chat";
+import { getEconomicEvents, getNews } from "./routes/eodhd";
 
 export function createServer() {
   const app = express();
