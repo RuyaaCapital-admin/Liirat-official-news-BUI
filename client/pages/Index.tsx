@@ -14,7 +14,9 @@ import { Badge } from "@/components/ui/badge";
 import { PriceTicker } from "@/components/ui/price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
-import { ModernEconomicCalendar } from "@/components/ui/modern-economic-calendar";
+import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
+import { NewsCardsList } from "@/components/ui/news-cards-list";
+import { EconomicEventsResponse, NewsResponse } from "@shared/api";
 import { AdvancedAlertSystem } from "@/components/ui/advanced-alert-system";
 
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
@@ -43,6 +45,14 @@ export default function Index() {
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
 
+  // EODHD Data State
+  const [economicEvents, setEconomicEvents] = useState<
+    EconomicEventsResponse["events"]
+  >([]);
+  const [news, setNews] = useState<NewsResponse["news"]>([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
+  const [isLoadingNews, setIsLoadingNews] = useState(true);
+
   const [showAlertSettings, setShowAlertSettings] = useState(false);
   const { theme } = useTheme();
   const { language, t, dir } = useLanguage();
@@ -53,6 +63,42 @@ export default function Index() {
     // TODO: Connect to Supabase
     console.log("Form submitted:", { name, email, whatsapp });
   };
+
+  // Fetch EODHD data
+  useEffect(() => {
+    const fetchEconomicEvents = async () => {
+      try {
+        setIsLoadingEvents(true);
+        const response = await fetch("/api/economic-events");
+        if (response.ok) {
+          const data: EconomicEventsResponse = await response.json();
+          setEconomicEvents(data.events);
+        }
+      } catch (error) {
+        console.error("Failed to fetch economic events:", error);
+      } finally {
+        setIsLoadingEvents(false);
+      }
+    };
+
+    const fetchNews = async () => {
+      try {
+        setIsLoadingNews(true);
+        const response = await fetch("/api/news");
+        if (response.ok) {
+          const data: NewsResponse = await response.json();
+          setNews(data.news);
+        }
+      } catch (error) {
+        console.error("Failed to fetch news:", error);
+      } finally {
+        setIsLoadingNews(false);
+      }
+    };
+
+    fetchEconomicEvents();
+    fetchNews();
+  }, []);
 
   // Enhanced economic calendar data with mixed language support
 
@@ -192,10 +238,79 @@ export default function Index() {
             </div>
           </section>
 
-          {/* Modern Economic Calendar Section */}
+          {/* EODHD Economic Calendar Section */}
           <section id="calendar" className="py-20 bg-muted/30">
             <div className="container mx-auto px-4">
-              <ModernEconomicCalendar />
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  {t("calendar.title")}
+                </h2>
+                <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                  {language === "ar"
+                    ? "تابع الأحداث الاقتصادية المهمة وال��خبار المالية في الوقت الفعلي"
+                    : "Track important economic events and real-time financial news"}
+                </p>
+              </div>
+
+              {/* Economic Events Table */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-primary" />
+                    {language === "ar"
+                      ? "التقويم الاقتصادي"
+                      : "Economic Calendar"}
+                  </CardTitle>
+                  <CardDescription>
+                    {language === "ar"
+                      ? "أحداث اقتصادية مهمة ومؤشرات مالية رئيسية"
+                      : "Important economic events and key financial indicators"}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {isLoadingEvents ? (
+                    <div className="flex items-center justify-center py-12">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      <span className="ml-2">Loading economic events...</span>
+                    </div>
+                  ) : (
+                    <MacroCalendarTable
+                      events={economicEvents}
+                      className="rounded-lg overflow-hidden"
+                      language={language}
+                      dir={dir}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* News Cards */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-primary" />
+                    {language === "ar" ? "الأخبار المالية" : "Financial News"}
+                  </CardTitle>
+                  <CardDescription>
+                    {language === "ar"
+                      ? "آخر الأخبار والتحليلات المالية"
+                      : "Latest financial news and market analysis"}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {isLoadingNews ? (
+                    <div className="flex items-center justify-center py-12">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      <span className="ml-2">Loading news...</span>
+                    </div>
+                  ) : (
+                    <NewsCardsList
+                      news={news}
+                      className="max-h-[600px] overflow-y-auto"
+                    />
+                  )}
+                </CardContent>
+              </Card>
             </div>
           </section>
 

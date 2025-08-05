@@ -34,7 +34,7 @@ const translations = {
     "hero.title": "أخبار مالية واقتصادية",
     "hero.subtitle": "دقيقة ومحدثة",
     "hero.description":
-      "منصة ليرات للأخبار ا��مالية - تقويم اقتصادي مباشر، تنبيهات فورية، وتحليلات متقدمة لجميع الأسواق العالمية",
+      "منصة ليرات للأخبار المالية - تقويم اقتصادي مباشر، تنبيهات فورية، وتحليلات متقدمة لجميع الأسواق العالمية",
     "hero.btn.calendar": "اطلع على التقويم",
     "hero.btn.alerts": "إعداد التنبيهات",
 
@@ -49,7 +49,7 @@ const translations = {
     "calendar.filters.search": "البحث في الأحداث",
     "calendar.filters.search.placeholder": "ابحث عن حدث...",
     "calendar.table.datetime": "التاريخ والوقت",
-    "calendar.table.country": "العملة/ا��بلد",
+    "calendar.table.country": "العملة/البلد",
     "calendar.table.importance": "الأهمية",
     "calendar.table.event": "الحدث",
     "calendar.table.actual": "القيمة الفعلية",
@@ -64,7 +64,7 @@ const translations = {
     // Alerts Section
     "alerts.title": "نظام التنبيهات الذكي",
     "alerts.description":
-      "احصل على تنبيهات فورية عند صدور البيانات الاقتصادية المهمة",
+      "احصل على تنبيهات فو��ية عند صدور البيانات الاقتصادية المهمة",
     "alerts.setup.title": "إعداد التنبيهات",
     "alerts.select.pair": "اختر زوج العملة أو المؤشر",
     "alerts.select.placeholder": "اختر من القائمة",
@@ -74,7 +74,7 @@ const translations = {
     "alerts.types.high": "بيانات اقتصادية عالية التأثير",
     "alerts.types.central": "قرارات البنوك المركزية",
     "alerts.types.unexpected": "تحركات غير متوقعة في الأسواق",
-    "alerts.types.rates": "تحديثا�� أسعار الفائدة",
+    "alerts.types.rates": "تحديثات أسعار الفائدة",
     "alerts.status": "سيتم تفعيل التنبيهات لاحقاً",
 
     // About Section
@@ -87,12 +87,12 @@ const translations = {
     "about.sources.title": "مصادر موثوقة",
     "about.sources.desc": "من البنوك المركزية والمؤسسات المالية الرسمية",
     "about.coverage.title": "تغطية عالمية",
-    "about.coverage.desc": "جميع الأسواق والعملات ��لرئيسية",
+    "about.coverage.desc": "جميع الأسواق والعملات الرئيسية",
 
     // Contact Section
     "contact.title": "تواصل مع فريق ليرات",
     "contact.description": "للاستفسارات والدعم الفني",
-    "contact.form.name": "ال��سم الكامل",
+    "contact.form.name": "الاسم الكامل",
     "contact.form.name.placeholder": "أدخل اسمك الكامل",
     "contact.form.email": "البريد الإلكتروني",
     "contact.form.email.placeholder": "example@email.com",
