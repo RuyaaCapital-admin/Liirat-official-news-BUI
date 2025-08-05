@@ -45,6 +45,12 @@ export default function Index() {
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
 
+  // EODHD Data State
+  const [economicEvents, setEconomicEvents] = useState<EconomicEventsResponse['events']>([]);
+  const [news, setNews] = useState<NewsResponse['news']>([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
+  const [isLoadingNews, setIsLoadingNews] = useState(true);
+
   const [showAlertSettings, setShowAlertSettings] = useState(false);
   const { theme } = useTheme();
   const { language, t, dir } = useLanguage();
