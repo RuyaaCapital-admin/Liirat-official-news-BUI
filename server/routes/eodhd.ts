@@ -74,6 +74,14 @@ export const getEconomicEvents: RequestHandler = async (req, res) => {
       return res.json(result);
     }
 
+    // Check if response is JSON before parsing
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      console.warn(`EODHD API returned non-JSON content: ${contentType}`);
+      const result: EconomicEventsResponse = { events: getMockEvents() };
+      return res.json(result);
+    }
+
     const data = await response.json();
 
     // Transform the data to match our interface
