@@ -3,6 +3,8 @@ import { EconomicEventsResponse, NewsResponse } from "@shared/api";
 
 const EODHD_API_TOKEN = process.env.EODHD_API_TOKEN || 'demo'; // Use demo token as fallback
 
+console.log('EODHD API Token status:', EODHD_API_TOKEN ? 'Available' : 'Not found');
+
 export const getEconomicEvents: RequestHandler = async (req, res) => {
   try {
     const response = await fetch(
