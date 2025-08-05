@@ -64,18 +64,30 @@ export default function Index() {
     console.log("Form submitted:", { name, email, whatsapp });
   };
 
-  // Fetch EODHD data
+  // Fetch EODHD data with enhanced error handling and fallback
   useEffect(() => {
     const fetchEconomicEvents = async () => {
       try {
         setIsLoadingEvents(true);
-        const response = await fetch("/api/economic-events");
+        // Add timeout to prevent hanging
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+        const response = await fetch("/api/economic-events", {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
         if (response.ok) {
           const data: EconomicEventsResponse = await response.json();
-          setEconomicEvents(data.events);
+          setEconomicEvents(data.events || []);
+        } else {
+          console.warn("Economic events API returned non-OK status:", response.status);
+          setEconomicEvents([]); // Set empty array on failure
         }
       } catch (error) {
         console.error("Failed to fetch economic events:", error);
+        setEconomicEvents([]); // Always set fallback data
       } finally {
         setIsLoadingEvents(false);
       }
@@ -84,13 +96,25 @@ export default function Index() {
     const fetchNews = async () => {
       try {
         setIsLoadingNews(true);
-        const response = await fetch("/api/news");
+        // Add timeout to prevent hanging
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+        const response = await fetch("/api/news", {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
         if (response.ok) {
           const data: NewsResponse = await response.json();
-          setNews(data.news);
+          setNews(data.news || []);
+        } else {
+          console.warn("News API returned non-OK status:", response.status);
+          setNews([]); // Set empty array on failure
         }
       } catch (error) {
         console.error("Failed to fetch news:", error);
+        setNews([]); // Always set fallback data
       } finally {
         setIsLoadingNews(false);
       }
@@ -247,7 +271,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "تابع الأحداث الاقتصادية المهمة وال��خبار المالية في الوقت الفعلي"
+                    ? "تابع الأحداث الاقتصادية المهمة وال��خبار الم��لية في الوقت الفعلي"
                     : "Track important economic events and real-time financial news"}
                 </p>
               </div>
