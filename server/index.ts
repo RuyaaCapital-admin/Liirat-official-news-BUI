@@ -38,5 +38,9 @@ export function createServer() {
   app.post("/chart-indicator", handleChartIndicator);
   app.post("/technical-analysis", handleTechnicalAnalysis);
 
+  // EODHD API routes
+  app.get("/api/economic-events", getEconomicEvents);
+  app.get("/api/news", getNews);
+
   return app;
 }
