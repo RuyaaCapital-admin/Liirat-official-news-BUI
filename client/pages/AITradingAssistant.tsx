@@ -325,7 +325,7 @@ const AITradingAssistant: React.FC = () => {
               {language === "ar" ? "مساعد التداول" : "AI Trading"}
             </Badge>
             <SimpleLanguageToggle />
-            <ThemeToggle />
+            <NewLiquidToggle />
           </div>
         </div>
       </header>
