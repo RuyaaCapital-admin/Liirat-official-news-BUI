@@ -74,7 +74,7 @@ export default function Index() {
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
         const response = await fetch("/api/economic-events", {
-          signal: controller.signal
+          signal: controller.signal,
         });
         clearTimeout(timeoutId);
 
@@ -82,7 +82,10 @@ export default function Index() {
           const data: EconomicEventsResponse = await response.json();
           setEconomicEvents(data.events || []);
         } else {
-          console.warn("Economic events API returned non-OK status:", response.status);
+          console.warn(
+            "Economic events API returned non-OK status:",
+            response.status,
+          );
           setEconomicEvents([]); // Set empty array on failure
         }
       } catch (error) {
@@ -101,7 +104,7 @@ export default function Index() {
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
         const response = await fetch("/api/news", {
-          signal: controller.signal
+          signal: controller.signal,
         });
         clearTimeout(timeoutId);
 

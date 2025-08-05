@@ -24,13 +24,14 @@ const getMockEvents = () => [
     actual: "",
     forecast: "4.25%",
     previous: "4.25%",
-  }
+  },
 ];
 
 const getMockNews = () => [
   {
     title: "Market Update: Trading Activity Today",
-    content: "Market overview and key developments affecting financial markets.",
+    content:
+      "Market overview and key developments affecting financial markets.",
     link: "#",
     symbols: ["SPX", "EUR", "USD"],
     tags: ["market", "trading"],
@@ -39,7 +40,7 @@ const getMockNews = () => [
       polarity: 0,
       label: "neutral" as const,
     },
-  }
+  },
 ];
 
 const EODHD_API_TOKEN =
@@ -60,9 +61,9 @@ export const getEconomicEvents: RequestHandler = async (req, res) => {
       {
         signal: controller.signal,
         headers: {
-          'User-Agent': 'LiiratApp/1.0'
-        }
-      }
+          "User-Agent": "LiiratApp/1.0",
+        },
+      },
     );
     clearTimeout(timeoutId);
 
@@ -114,9 +115,9 @@ export const getNews: RequestHandler = async (req, res) => {
       {
         signal: controller.signal,
         headers: {
-          'User-Agent': 'LiiratApp/1.0'
-        }
-      }
+          "User-Agent": "LiiratApp/1.0",
+        },
+      },
     );
     clearTimeout(timeoutId);
 
