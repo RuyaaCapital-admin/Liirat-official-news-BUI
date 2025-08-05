@@ -62,6 +62,42 @@ export default function Index() {
     console.log("Form submitted:", { name, email, whatsapp });
   };
 
+  // Fetch EODHD data
+  useEffect(() => {
+    const fetchEconomicEvents = async () => {
+      try {
+        setIsLoadingEvents(true);
+        const response = await fetch('/api/economic-events');
+        if (response.ok) {
+          const data: EconomicEventsResponse = await response.json();
+          setEconomicEvents(data.events);
+        }
+      } catch (error) {
+        console.error('Failed to fetch economic events:', error);
+      } finally {
+        setIsLoadingEvents(false);
+      }
+    };
+
+    const fetchNews = async () => {
+      try {
+        setIsLoadingNews(true);
+        const response = await fetch('/api/news');
+        if (response.ok) {
+          const data: NewsResponse = await response.json();
+          setNews(data.news);
+        }
+      } catch (error) {
+        console.error('Failed to fetch news:', error);
+      } finally {
+        setIsLoadingNews(false);
+      }
+    };
+
+    fetchEconomicEvents();
+    fetchNews();
+  }, []);
+
   // Enhanced economic calendar data with mixed language support
 
   return (
