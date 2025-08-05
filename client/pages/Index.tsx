@@ -378,9 +378,7 @@ export default function Index() {
                         scrolling="no"
                         allowFullScreen
                       /> */}
-                      <div className="flex items-center justify-center h-full text-muted-foreground">
-                        <p>Market overview widget has been removed</p>
-                      </div>
+                      {/* Market section removed completely */}
                     </div>
                   </CardContent>
                 </Card>
