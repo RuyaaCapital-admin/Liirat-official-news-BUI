@@ -98,7 +98,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     {
       symbol: "AUDUSD",
       name: "AUD/USD",
-      nameAr: "دولار أسترالي/د��لار",
+      nameAr: "دولار أسترالي/دولار",
       currentPrice: 0.6598,
       change: 0.0015,
       changePercent: 0.23,

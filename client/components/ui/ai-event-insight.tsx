@@ -93,7 +93,7 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
 
     if (language === "ar") {
       const analysis = isAboveExpected
-        ? `${eventData.event} أعلى من المتوقع، قد يؤثر إ��جابياً على ${eventData.country}.`
+        ? `${eventData.event} أعلى من المتوقع، قد يؤثر إيجابياً على ${eventData.country}.`
         : `${eventData.event} أقل من المتوقع، ضغط محتمل على ${eventData.country}.`;
 
       return {
@@ -245,7 +245,7 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-right">
             <Sparkles className="w-5 h-5 text-primary" />
-            تحليل ذكي للحدث ا��اقتصادي
+            تحليل ذكي للحدث الاقتصادي
           </DialogTitle>
           <DialogDescription className="text-right">
             تحليل مدعوم بالذكاء الاصطناعي للحدث الاقتصادي وتأثيره على الأسواق

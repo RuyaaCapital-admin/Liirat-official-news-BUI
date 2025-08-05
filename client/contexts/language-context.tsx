@@ -64,7 +64,7 @@ const translations = {
     // Alerts Section
     "alerts.title": "نظام التنبيهات الذكي",
     "alerts.description":
-      "احصل على تنبيهات فو��ية عند صدور البيانات الاقتصادية المهمة",
+      "احصل على تنبيهات فورية عند صدور البيانات الاقتصادية المهمة",
     "alerts.setup.title": "إعداد التنبيهات",
     "alerts.select.pair": "اختر زوج العملة أو المؤشر",
     "alerts.select.placeholder": "اختر من القائمة",
