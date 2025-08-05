@@ -277,6 +277,8 @@ export default function Index() {
                     <MacroCalendarTable
                       events={economicEvents}
                       className="rounded-lg overflow-hidden"
+                      language={language}
+                      dir={dir}
                     />
                   )}
                 </CardContent>
