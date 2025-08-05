@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import { EconomicEventsResponse, NewsResponse } from "@shared/api";
 
-const EODHD_API_TOKEN = process.env.EODHD_API_TOKEN || "demo"; // Use demo token as fallback
+const EODHD_API_TOKEN = process.env.NEXT_PUBLIC_EODHD_API_KEY || process.env.EODHD_API_TOKEN || "demo"; // Use demo token as fallback
 
 console.log(
   "EODHD API Token status:",
