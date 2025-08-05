@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTheme } from "@/hooks/use-theme";
 
 export function NewLiquidToggle() {
-  const { theme, setTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -21,8 +21,7 @@ export function NewLiquidToggle() {
   const isDark = theme === "dark";
 
   const handleToggle = () => {
-    console.log("Toggle clicked, current theme:", theme);
-    setTheme(isDark ? "light" : "dark");
+    toggleTheme();
   };
 
   return (
