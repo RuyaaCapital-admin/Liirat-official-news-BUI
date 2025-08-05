@@ -118,7 +118,35 @@ const AITradingAssistant: React.FC = () => {
     } catch (error) {
       console.error("Error fetching news:", error);
       // Set mock news as fallback
-      setNews([
+      const newsData = language === "ar" ? [
+        {
+          id: "1",
+          title: "بنك الاحتياطي الفيدرالي يشير إلى تخفيضات محتملة في أسعار الفائدة لعام 2024",
+          summary:
+            "أشار بنك الاحتياطي الفيدرالي إلى موقف أكثر مرونة، مما يشير إلى تخفيضات محتملة في أسعار الفائدة في العام القادم.",
+          source: "رويترز",
+          publishedAt: "2024-01-15T10:30:00Z",
+          impact: "high",
+        },
+        {
+          id: "2",
+          title: "متوقع موافقة على صناديق بيتكوين المتداولة هذا الأسبوع",
+          summary:
+            "من المتوقع أن تحصل صناديق العملات المشفرة الرئيسية على الموافقة التنظيمية، مما قد يعزز الاعتماد المؤسسي.",
+          source: "بلومبرغ",
+          publishedAt: "2024-01-15T09:15:00Z",
+          impact: "high",
+        },
+        {
+          id: "3",
+          title: "أسعار الذهب تصل إلى مستويات قياسية جديدة وسط عدم اليقين الاقتصادي",
+          summary:
+            "ارتفعت أسعار الذهب إلى مستويات قياسية حيث يسعى المستثمرون إلى الأصول الآمنة خلال تقلبات السوق.",
+          source: "سي إن بي سي",
+          publishedAt: "2024-01-15T08:45:00Z",
+          impact: "medium",
+        },
+      ] : [
         {
           id: "1",
           title: "Federal Reserve Signals Potential Rate Cuts in 2024",
@@ -146,7 +174,8 @@ const AITradingAssistant: React.FC = () => {
           publishedAt: "2024-01-15T08:45:00Z",
           impact: "medium",
         },
-      ]);
+      ];
+      setNews(newsData);
     }
   };
 
