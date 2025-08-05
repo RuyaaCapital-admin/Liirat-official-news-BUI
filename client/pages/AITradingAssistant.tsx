@@ -401,7 +401,7 @@ const AITradingAssistant: React.FC = () => {
                     </CardTitle>
                     <CardDescription>
                       {language === "ar"
-                        ? "��حدث مع مساعد التداول"
+                        ? "تحدث مع مساعد التداول"
                         : "Chat with your trading companion"}
                     </CardDescription>
                   </div>
