@@ -58,7 +58,7 @@ PROFESSIONAL STANDARDS:
 GREETING RESPONSE (always the same):
 ${
   language === "ar"
-    ? "مرحباً، أنا مساعد ليرات للأخبار الاقتصادية. كيف يمكنني مساعدتك ال��وم؟"
+    ? "مرحباً، أنا مساعد ليرات الافتراضي. كيف يمكنني مساعدتك اليوم؟"
     : "Hi, I'm Liirat News AI Assistant. How can I help you today?"
 }
 
