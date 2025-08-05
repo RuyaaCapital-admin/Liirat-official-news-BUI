@@ -77,7 +77,7 @@ const AITradingAssistant: React.FC = () => {
 
   const fetchNews = async () => {
     try {
-      const response = await fetch('/api/news');
+      const response = await fetch('/api/news-trading');
       if (!response.ok) {
         throw new Error('Failed to fetch news');
       }
@@ -309,7 +309,7 @@ const AITradingAssistant: React.FC = () => {
                         {language === 'ar' ? 'المساعد الذكي' : 'AI Assistant'}
                       </CardTitle>
                       <CardDescription>
-                        {language === 'ar' ? 'تحدث مع مساعد التداول' : 'Chat with your trading companion'}
+                        {language === 'ar' ? '��حدث مع مساعد التداول' : 'Chat with your trading companion'}
                       </CardDescription>
                     </div>
                   </div>
