@@ -20,23 +20,23 @@ export function createServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Example API routes
-  app.get("/ping", (_req, res) => {
+  // API routes with consistent /api prefix
+  app.get("/api/ping", (_req, res) => {
     const ping = process.env.PING_MESSAGE ?? "ping";
     res.json({ message: ping });
   });
 
-  app.get("/demo", handleDemo);
+  app.get("/api/demo", handleDemo);
 
   // Chat widget route
-  app.post("/chat", handleChat);
+  app.post("/api/chat", handleChat);
 
   // AI Trading Assistant routes
-  app.post("/ai-chat", handleAIChat);
-  app.get("/market-data", handleMarketData);
-  app.get("/news", handleNews);
-  app.post("/chart-indicator", handleChartIndicator);
-  app.post("/technical-analysis", handleTechnicalAnalysis);
+  app.post("/api/ai-chat", handleAIChat);
+  app.get("/api/market-data", handleMarketData);
+  app.get("/api/news-trading", handleNews); // Renamed to avoid conflict
+  app.post("/api/chart-indicator", handleChartIndicator);
+  app.post("/api/technical-analysis", handleTechnicalAnalysis);
 
   // EODHD API routes
   app.get("/api/economic-events", getEconomicEvents);
