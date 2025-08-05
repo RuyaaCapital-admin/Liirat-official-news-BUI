@@ -20,17 +20,15 @@ export function SimpleLanguageToggle({ className }: SimpleLanguageToggleProps) {
       size="sm"
       onClick={toggleLanguage}
       className={cn(
-        "h-9 px-3 font-medium transition-all duration-200",
+        "h-9 w-9 p-0 font-medium transition-all duration-200",
         "hover:bg-primary/10 hover:text-primary",
-        "border border-border/50 hover:border-primary/50",
+        "border border-border/50 hover:border-primary/50 rounded-full",
         className,
       )}
+      title={language === "ar" ? "Switch to English" : "Switch to Arabic"}
     >
-      <span className="flex items-center gap-1.5">
-        <span className="text-sm">{language === "ar" ? "🇸🇦" : "🇺🇸"}</span>
-        <span className="text-xs font-semibold">
-          {language === "ar" ? "AR" : "EN"}
-        </span>
+      <span className="text-sm font-bold">
+        {language === "ar" ? "EN" : "ع"}
       </span>
     </Button>
   );
