@@ -6,10 +6,7 @@ const EODHD_API_TOKEN =
   process.env.EODHD_API_TOKEN ||
   "demo"; // Use demo token as fallback
 
-console.log(
-  "EODHD API Token status:",
-  EODHD_API_TOKEN ? "Available" : "Not found",
-);
+// EODHD API Token configured
 
 export const getEconomicEvents: RequestHandler = async (req, res) => {
   try {
