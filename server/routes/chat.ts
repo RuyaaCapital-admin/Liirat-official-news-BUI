@@ -95,6 +95,8 @@ Remember: This is for educational and informational purposes only, not investmen
   } catch (error) {
     console.error("Chat Error:", error);
 
+    const { language = "ar" } = req.body;
+
     let errorMessage =
       language === "ar"
         ? "عذراً، أواجه صعوبات تقنية. يرجى المحاولة مرة أخرى."

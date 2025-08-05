@@ -15,7 +15,7 @@ export default defineConfig(({ mode, command }) => ({
   build: {
     outDir: "dist/spa", // ensure this matches your deployment settings
   },
-  plugins: [react()],
+  plugins: [react(), expressPlugin()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client"),
@@ -30,12 +30,12 @@ function expressPlugin(): Plugin {
     apply: "serve", // only during dev
     configureServer(server) {
       // Lazy import to avoid unresolved path in production
-      import("./server/index.js")
+      import("./server/index.ts")
         .then(({ createServer }) => {
           const app = createServer();
 
           // Debug middleware
-          server.middlewares.use("/api", (req, res, next) => {
+          server.middlewares.use("/api", (req: any, res: any, next: any) => {
             console.log("API request received:", req.method, req.url);
             app(req, res, next);
           });
