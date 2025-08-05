@@ -116,8 +116,15 @@ export default function Index() {
         clearTimeout(timeoutId);
 
         if (response.ok) {
-          const data: NewsResponse = await response.json();
-          setNews(data.news || []);
+          // Check if response is JSON before parsing
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            const data: NewsResponse = await response.json();
+            setNews(data.news || []);
+          } else {
+            console.warn("News API returned non-JSON content:", contentType);
+            setNews([]);
+          }
         } else {
           console.warn("News API returned non-OK status:", response.status);
           setNews([]); // Set empty array on failure
