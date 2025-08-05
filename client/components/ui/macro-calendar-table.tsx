@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 interface MacroCalendarTableProps {
   events: EconomicEvent[];
   className?: string;
+  language?: "ar" | "en";
+  dir?: "rtl" | "ltr";
 }
 
 const getImportanceColor = (importance: number) => {
