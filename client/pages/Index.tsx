@@ -236,10 +236,78 @@ export default function Index() {
             </div>
           </section>
 
-          {/* Modern Economic Calendar Section */}
+          {/* EODHD Economic Calendar Section */}
           <section id="calendar" className="py-20 bg-muted/30">
             <div className="container mx-auto px-4">
-              <ModernEconomicCalendar />
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  {t("calendar.title")}
+                </h2>
+                <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                  {language === "ar"
+                    ? "تابع الأحداث الاقتصادية المهمة وال��خبار المالية في الوقت الفعلي"
+                    : "Track important economic events and real-time financial news"
+                  }
+                </p>
+              </div>
+
+              {/* Economic Events Table */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-primary" />
+                    {language === "ar" ? "التقويم الاقتصادي" : "Economic Calendar"}
+                  </CardTitle>
+                  <CardDescription>
+                    {language === "ar"
+                      ? "أحداث اقتصادية مهمة ومؤشرات مالية رئيسية"
+                      : "Important economic events and key financial indicators"
+                    }
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {isLoadingEvents ? (
+                    <div className="flex items-center justify-center py-12">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      <span className="ml-2">Loading economic events...</span>
+                    </div>
+                  ) : (
+                    <MacroCalendarTable
+                      events={economicEvents}
+                      className="rounded-lg overflow-hidden"
+                    />
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* News Cards */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-primary" />
+                    {language === "ar" ? "الأخبار المالية" : "Financial News"}
+                  </CardTitle>
+                  <CardDescription>
+                    {language === "ar"
+                      ? "آخر الأخبار والتحليلات المالية"
+                      : "Latest financial news and market analysis"
+                    }
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {isLoadingNews ? (
+                    <div className="flex items-center justify-center py-12">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      <span className="ml-2">Loading news...</span>
+                    </div>
+                  ) : (
+                    <NewsCardsList
+                      news={news}
+                      className="max-h-[600px] overflow-y-auto"
+                    />
+                  )}
+                </CardContent>
+              </Card>
             </div>
           </section>
 
