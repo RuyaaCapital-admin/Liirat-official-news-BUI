@@ -46,8 +46,10 @@ export default function Index() {
   const [whatsapp, setWhatsapp] = useState("");
 
   // EODHD Data State
-  const [economicEvents, setEconomicEvents] = useState<EconomicEventsResponse['events']>([]);
-  const [news, setNews] = useState<NewsResponse['news']>([]);
+  const [economicEvents, setEconomicEvents] = useState<
+    EconomicEventsResponse["events"]
+  >([]);
+  const [news, setNews] = useState<NewsResponse["news"]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [isLoadingNews, setIsLoadingNews] = useState(true);
 
@@ -67,13 +69,13 @@ export default function Index() {
     const fetchEconomicEvents = async () => {
       try {
         setIsLoadingEvents(true);
-        const response = await fetch('/api/economic-events');
+        const response = await fetch("/api/economic-events");
         if (response.ok) {
           const data: EconomicEventsResponse = await response.json();
           setEconomicEvents(data.events);
         }
       } catch (error) {
-        console.error('Failed to fetch economic events:', error);
+        console.error("Failed to fetch economic events:", error);
       } finally {
         setIsLoadingEvents(false);
       }
@@ -82,13 +84,13 @@ export default function Index() {
     const fetchNews = async () => {
       try {
         setIsLoadingNews(true);
-        const response = await fetch('/api/news');
+        const response = await fetch("/api/news");
         if (response.ok) {
           const data: NewsResponse = await response.json();
           setNews(data.news);
         }
       } catch (error) {
-        console.error('Failed to fetch news:', error);
+        console.error("Failed to fetch news:", error);
       } finally {
         setIsLoadingNews(false);
       }
@@ -246,8 +248,7 @@ export default function Index() {
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
                     ? "تابع الأحداث الاقتصادية المهمة وال��خبار المالية في الوقت الفعلي"
-                    : "Track important economic events and real-time financial news"
-                  }
+                    : "Track important economic events and real-time financial news"}
                 </p>
               </div>
 
@@ -256,13 +257,14 @@ export default function Index() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-primary" />
-                    {language === "ar" ? "التقويم الاقتصادي" : "Economic Calendar"}
+                    {language === "ar"
+                      ? "التقويم الاقتصادي"
+                      : "Economic Calendar"}
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
                       ? "أحداث اقتصادية مهمة ومؤشرات مالية رئيسية"
-                      : "Important economic events and key financial indicators"
-                    }
+                      : "Important economic events and key financial indicators"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -290,8 +292,7 @@ export default function Index() {
                   <CardDescription>
                     {language === "ar"
                       ? "آخر الأخبار والتحليلات المالية"
-                      : "Latest financial news and market analysis"
-                    }
+                      : "Latest financial news and market analysis"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
