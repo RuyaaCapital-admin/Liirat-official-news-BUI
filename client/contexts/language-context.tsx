@@ -41,7 +41,7 @@ const translations = {
     // Economic Calendar
     "calendar.title": "التقويم الاقتصادي المباشر",
     "calendar.description":
-      "تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع إمكانيات تصفية متقدمة",
+      "تابع أهم الأحداث الاقتصادية والمؤشرات المالية ف�� الوقت الفعلي مع إمكانيات تصفية متقدمة",
     "calendar.filters.title": "فلاتر التقويم الاقتصادي",
     "calendar.filters.date": "التاريخ",
     "calendar.filters.currency": "العملة/البلد",
@@ -81,13 +81,13 @@ const translations = {
     "about.title": "لماذا ليرات نيوز؟",
     "about.description": "منصتك الموثوقة للأخبار المالية والتحليلات الاقتصادية",
     "about.realtime.title": "تحديثات فورية",
-    "about.realtime.desc": "بيانات محدثة كل دقي��ة من الأسواق العالمية",
+    "about.realtime.desc": "بيانات محدثة كل دقيقة من الأسواق العالمية",
     "about.analysis.title": "تحليلات متقدمة",
     "about.analysis.desc": "تحليلات عميقة للأحداث الاقتصادية",
     "about.sources.title": "مصادر موثوقة",
     "about.sources.desc": "من البنوك المركزية والمؤسسات المالية الرسمية",
     "about.coverage.title": "تغطية عالمية",
-    "about.coverage.desc": "جميع الأسواق والعملات ��لرئيسية",
+    "about.coverage.desc": "جميع الأسواق والعملات الرئيسية",
 
     // Contact Section
     "contact.title": "تواصل مع فريق ليرات",
@@ -128,7 +128,7 @@ const translations = {
     // Date/Time Options
     "date.today": "اليوم",
     "date.tomorrow": "غداً",
-    "date.thisweek": "هذا الأسبوع",
+    "date.thisweek": "ه��ا الأسبوع",
     "date.nextweek": "الأسبوع القادم",
     "date.custom": "تاريخ مخصص",
 
@@ -309,7 +309,7 @@ const translations = {
     "currency.usd": "🇺🇸 USD - US Dollar",
     "currency.eur": "🇪🇺 EUR - Euro",
     "currency.gbp": "🇬🇧 GBP - British Pound",
-    "currency.jpy": "����🇵 JPY - Japanese Yen",
+    "currency.jpy": "🇯🇵 JPY - Japanese Yen",
     "currency.aud": "🇦🇺 AUD - Australian Dollar",
     "currency.cad": "🇨🇦 CAD - Canadian Dollar",
 
