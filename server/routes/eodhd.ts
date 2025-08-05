@@ -13,12 +13,26 @@ console.log(
 
 export const getEconomicEvents: RequestHandler = async (req, res) => {
   try {
+    // Create AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout for serverless
+
     const response = await fetch(
       `https://eodhd.com/api/economic-events?api_token=${EODHD_API_TOKEN}&fmt=json&limit=20`,
+      {
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'LiiratApp/1.0'
+        }
+      }
     );
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
-      throw new Error(`EODHD API error: ${response.status}`);
+      console.warn(`EODHD API returned status: ${response.status}`);
+      // Return empty events instead of throwing error
+      const result: EconomicEventsResponse = { events: [] };
+      return res.json(result);
     }
 
     const data = await response.json();
@@ -42,7 +56,9 @@ export const getEconomicEvents: RequestHandler = async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error("Error fetching economic events:", error);
-    res.status(500).json({ error: "Failed to fetch economic events" });
+    // Always return valid response instead of 500 error
+    const result: EconomicEventsResponse = { events: [] };
+    res.json(result);
   }
 };
 
@@ -51,12 +67,26 @@ export const getNews: RequestHandler = async (req, res) => {
     const offset = req.query.offset || "0";
     const limit = req.query.limit || "20";
 
+    // Create AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout for serverless
+
     const response = await fetch(
       `https://eodhd.com/api/news?offset=${offset}&limit=${limit}&api_token=${EODHD_API_TOKEN}&fmt=json`,
+      {
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'LiiratApp/1.0'
+        }
+      }
     );
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
-      throw new Error(`EODHD API error: ${response.status}`);
+      console.warn(`EODHD News API returned status: ${response.status}`);
+      // Return empty news instead of throwing error
+      const result: NewsResponse = { news: [] };
+      return res.json(result);
     }
 
     const data = await response.json();
@@ -83,6 +113,8 @@ export const getNews: RequestHandler = async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error("Error fetching news:", error);
-    res.status(500).json({ error: "Failed to fetch news" });
+    // Always return valid response instead of 500 error
+    const result: NewsResponse = { news: [] };
+    res.json(result);
   }
 };
