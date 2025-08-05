@@ -43,8 +43,8 @@ export function NewLiquidToggle() {
         }
 
         .liquid-toggle-input {
-          --primary: #000;
-          --secondary: #fff;
+          --primary: ${isDark ? "#fff" : "#000"};
+          --secondary: ${isDark ? "#000" : "#fff"};
           --time: 0.6s;
 
           appearance: none;
