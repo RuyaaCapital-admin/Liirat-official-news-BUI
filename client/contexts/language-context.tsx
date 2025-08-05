@@ -64,7 +64,7 @@ const translations = {
     // Alerts Section
     "alerts.title": "نظام التنبيهات الذكي",
     "alerts.description":
-      "احصل ��لى تنبيهات فورية عند صدور البيانات الاقتصادية المهمة",
+      "احصل على تنبيهات فو��ية عند صدور البيانات الاقتصادية المهمة",
     "alerts.setup.title": "إعداد التنبيهات",
     "alerts.select.pair": "اختر زوج العملة أو المؤشر",
     "alerts.select.placeholder": "اختر من القائمة",
@@ -81,7 +81,7 @@ const translations = {
     "about.title": "لماذا ليرات نيوز؟",
     "about.description": "منصتك الموثوقة للأخبار المالية والتحليلات الاقتصادية",
     "about.realtime.title": "تحديثات فورية",
-    "about.realtime.desc": "بيانات محدثة كل دق��قة من الأسواق العالمية",
+    "about.realtime.desc": "بيانات محدثة كل دقيقة من الأسواق العالمية",
     "about.analysis.title": "تحليلات متقدمة",
     "about.analysis.desc": "تحليلات عميقة للأحداث الاقتصادية",
     "about.sources.title": "مصادر موثوقة",
@@ -92,7 +92,7 @@ const translations = {
     // Contact Section
     "contact.title": "تواصل مع فريق ليرات",
     "contact.description": "للاستفسارات والدعم الفني",
-    "contact.form.name": "ال��سم الكامل",
+    "contact.form.name": "الاسم الكامل",
     "contact.form.name.placeholder": "أدخل اسمك الكامل",
     "contact.form.email": "البريد الإلكتروني",
     "contact.form.email.placeholder": "example@email.com",
@@ -309,7 +309,7 @@ const translations = {
     "currency.usd": "🇺🇸 USD - US Dollar",
     "currency.eur": "🇪🇺 EUR - Euro",
     "currency.gbp": "🇬🇧 GBP - British Pound",
-    "currency.jpy": "��🇵 JPY - Japanese Yen",
+    "currency.jpy": "🇯🇵 JPY - Japanese Yen",
     "currency.aud": "🇦🇺 AUD - Australian Dollar",
     "currency.cad": "🇨🇦 CAD - Canadian Dollar",
 
