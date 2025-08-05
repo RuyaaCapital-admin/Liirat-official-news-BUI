@@ -166,7 +166,7 @@ const getCountryFlag = (country: string) => {
     IE: "🇮🇪",
     FI: "🇫🇮",
     GR: "🇬🇷",
-    CZ: "🇨🇿",
+    CZ: "🇨��",
     PL: "🇵🇱",
     HU: "🇭🇺",
     SK: "🇸🇰",
@@ -180,7 +180,7 @@ const getCountryFlag = (country: string) => {
     MX: "🇲🇽",
     RU: "🇷🇺",
     ZA: "🇿🇦",
-    KR: "🇰���",
+    KR: "🇰🇷",
     SG: "🇸🇬",
     HK: "🇭🇰",
     TH: "🇹🇭",
@@ -246,7 +246,7 @@ export function MacroCalendarTable({
   const [dateRange, setDateRange] = useState("all");
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [isOnline, setIsOnline] = useState(true); // Mock online status
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   const t = (enText: string, arText: string) =>
     language === "ar" ? arText : enText;
@@ -325,10 +325,11 @@ export function MacroCalendarTable({
   ]);
 
   const handleUpdate = () => {
-    // Simulate refresh - in real app this would fetch new data
-    setIsOnline(Math.random() > 0.3); // Random online/offline for demo
-    // Force a brief offline then online state to show the update
-    setTimeout(() => setIsOnline(true), 1000);
+    // Update online status from navigator
+    setIsOnline(navigator.onLine);
+    // This will trigger a refresh of the calendar data
+    // In production, this would call the API to fetch fresh data
+    window.location.reload();
   };
 
   const clearFilters = () => {
