@@ -49,7 +49,7 @@ const translations = {
     "calendar.filters.search": "البحث في الأحداث",
     "calendar.filters.search.placeholder": "ابحث عن حدث...",
     "calendar.table.datetime": "التاريخ والوقت",
-    "calendar.table.country": "العملة/ا��بلد",
+    "calendar.table.country": "العملة/البلد",
     "calendar.table.importance": "الأهمية",
     "calendar.table.event": "الحدث",
     "calendar.table.actual": "القيمة الفعلية",
@@ -74,14 +74,14 @@ const translations = {
     "alerts.types.high": "بيانات اقتصادية عالية التأثير",
     "alerts.types.central": "قرارات البنوك المركزية",
     "alerts.types.unexpected": "تحركات غير متوقعة في الأسواق",
-    "alerts.types.rates": "تحديثا�� أسعار الفائد��",
+    "alerts.types.rates": "تحديثا�� أسعار الفائدة",
     "alerts.status": "سيتم تفعيل التنبيهات لاحقاً",
 
     // About Section
     "about.title": "لماذا ليرات نيوز؟",
     "about.description": "منصتك الموثوقة للأخبار المالية والتحليلات الاقتصادية",
     "about.realtime.title": "تحديثات فورية",
-    "about.realtime.desc": "بيانات محدثة كل دقيقة من الأسواق العالمية",
+    "about.realtime.desc": "بيانات محدثة كل دقي��ة من الأسواق العالمية",
     "about.analysis.title": "تحليلات متقدمة",
     "about.analysis.desc": "تحليلات عميقة للأحداث الاقتصادية",
     "about.sources.title": "مصادر موثوقة",
@@ -180,7 +180,7 @@ const translations = {
 
     // Notification system
     "notifications.title": "التنبيهات",
-    "notifications.empty": "لا توجد ��نبيهات",
+    "notifications.empty": "لا توجد تنبيهات",
     "notifications.mark_read": "تحديد كمقروء",
     "notifications.clear_all": "مسح الكل",
     "notifications.settings": "إعدادات التنبيهات",
@@ -309,7 +309,7 @@ const translations = {
     "currency.usd": "🇺🇸 USD - US Dollar",
     "currency.eur": "🇪🇺 EUR - Euro",
     "currency.gbp": "🇬🇧 GBP - British Pound",
-    "currency.jpy": "🇯🇵 JPY - Japanese Yen",
+    "currency.jpy": "����🇵 JPY - Japanese Yen",
     "currency.aud": "🇦🇺 AUD - Australian Dollar",
     "currency.cad": "🇨🇦 CAD - Canadian Dollar",
 
