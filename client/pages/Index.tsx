@@ -85,7 +85,10 @@ export default function Index() {
             const data: EconomicEventsResponse = await response.json();
             setEconomicEvents(data.events || []);
           } else {
-            console.warn("Economic events API returned non-JSON content:", contentType);
+            console.warn(
+              "Economic events API returned non-JSON content:",
+              contentType,
+            );
             setEconomicEvents([]);
           }
         } else {
