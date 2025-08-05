@@ -86,7 +86,8 @@ export function MacroCalendarTable({
   language = "en",
   dir = "ltr",
 }: MacroCalendarTableProps) {
-  const t = (enText: string, arText: string) => language === "ar" ? arText : enText;
+  const t = (enText: string, arText: string) =>
+    language === "ar" ? arText : enText;
   const textAlign = dir === "rtl" ? "text-right" : "text-left";
 
   return (
@@ -127,7 +128,10 @@ export function MacroCalendarTable({
           {events.length === 0 ? (
             <tr>
               <td colSpan={9} className="text-center p-8 text-muted-foreground">
-                {t("No economic events available", "لا توجد أحداث اقتصادية متاحة")}
+                {t(
+                  "No economic events available",
+                  "لا توجد أحداث اقتصادية متاحة",
+                )}
               </td>
             </tr>
           ) : (
