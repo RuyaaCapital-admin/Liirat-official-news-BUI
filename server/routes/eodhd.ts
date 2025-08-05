@@ -11,7 +11,7 @@ console.log(
 export const getEconomicEvents: RequestHandler = async (req, res) => {
   try {
     const response = await fetch(
-      `https://eodhd.com/api/economic-events?api_token=${EODHD_API_TOKEN}&fmt=json`,
+      `https://eodhd.com/api/economic-events?api_token=${EODHD_API_TOKEN}&fmt=json&limit=20`,
     );
 
     if (!response.ok) {
