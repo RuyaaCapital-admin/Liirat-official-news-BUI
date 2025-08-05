@@ -30,7 +30,7 @@ function expressPlugin(): Plugin {
     apply: "serve", // only during dev
     configureServer(server) {
       // Lazy import to avoid unresolved path in production
-      import("./server/index.js")
+      import("./server/index.ts")
         .then(({ createServer }) => {
           const app = createServer();
 
