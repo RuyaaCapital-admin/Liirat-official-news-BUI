@@ -95,7 +95,7 @@ const AITradingAssistant: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
     fetchNews();
-  }, []);
+  }, [language]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
