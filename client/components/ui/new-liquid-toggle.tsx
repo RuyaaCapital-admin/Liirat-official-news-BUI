@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/hooks/use-theme";
 
 export function NewLiquidToggle() {
   const { theme, setTheme } = useTheme();
