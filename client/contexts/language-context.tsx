@@ -41,7 +41,7 @@ const translations = {
     // Economic Calendar
     "calendar.title": "التقويم الاقتصادي المباشر",
     "calendar.description":
-      "تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع إمكانيات تصفية متقدمة",
+      "تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع إمكا��يات تصفية متقدمة",
     "calendar.filters.title": "فلاتر التقويم الاقتصادي",
     "calendar.filters.date": "التاريخ",
     "calendar.filters.currency": "العملة/البلد",
@@ -73,7 +73,7 @@ const translations = {
     "alerts.types.title": "أنواع التنبيهات المتاحة:",
     "alerts.types.high": "بيانات اقتصادية عالية التأثير",
     "alerts.types.central": "قرارات البنوك المركزية",
-    "alerts.types.unexpected": "تحركات ��ير متوقعة في الأسواق",
+    "alerts.types.unexpected": "تحركات غير متوقعة في الأسواق",
     "alerts.types.rates": "تحديثات أسعار الفائدة",
     "alerts.status": "سيتم تفعيل التنبيهات لاحقاً",
 
@@ -81,7 +81,7 @@ const translations = {
     "about.title": "لماذا ليرات نيوز؟",
     "about.description": "منصتك الموثوقة للأخبار المالية والتحليلات الاقتصادية",
     "about.realtime.title": "تحديثات فورية",
-    "about.realtime.desc": "بيانات محدثة كل دقيقة من الأسواق العالمية",
+    "about.realtime.desc": "بيانات محدث�� كل دقيقة من الأسواق العالمية",
     "about.analysis.title": "تحليلات متقدمة",
     "about.analysis.desc": "تحليلات عميقة للأحداث الاقتصادية",
     "about.sources.title": "مصادر موثوقة",
