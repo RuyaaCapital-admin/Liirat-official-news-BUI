@@ -35,7 +35,7 @@ function expressPlugin(): Plugin {
           const app = createServer();
 
           // Debug middleware
-          server.middlewares.use("/api", (req, res, next) => {
+          server.middlewares.use("/api", (req: any, res: any, next: any) => {
             console.log("API request received:", req.method, req.url);
             app(req, res, next);
           });

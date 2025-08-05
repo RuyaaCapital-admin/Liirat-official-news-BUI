@@ -35,7 +35,7 @@ export function NewLiquidToggle() {
         aria-label="Toggle dark/light theme"
       />
 
-      <style jsx={true} global={true}>{`
+      <style>{`
         .liquid-toggle-container {
           display: flex;
           align-items: center;
