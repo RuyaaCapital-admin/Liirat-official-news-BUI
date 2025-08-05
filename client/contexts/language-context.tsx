@@ -73,7 +73,7 @@ const translations = {
     "alerts.types.title": "أنواع التنبيهات المتاحة:",
     "alerts.types.high": "بيانات اقتصادية عالية التأثير",
     "alerts.types.central": "قرارات البنوك المركزية",
-    "alerts.types.unexpected": "تحركات غير متوقعة في الأسواق",
+    "alerts.types.unexpected": "تحركات ��ير متوقعة في الأسواق",
     "alerts.types.rates": "تحديثات أسعار الفائدة",
     "alerts.status": "سيتم تفعيل التنبيهات لاحقاً",
 
@@ -110,7 +110,7 @@ const translations = {
 
     // AI Analysis
     "ai.button": "تحليل الذكاء الاصطناعي",
-    "ai.title": "تحليل ذكي للحدث الاقتصا��ي",
+    "ai.title": "تحليل ذكي للحدث الاقتصادي",
     "ai.description":
       "تحليل مدعوم بالذكاء الاصطناعي للحدث الاقتصادي وتأثيره على الأسواق",
     "ai.loading": "جاري تحليل الحدث الاقتصادي...",
