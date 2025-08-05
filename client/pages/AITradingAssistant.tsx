@@ -15,8 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/components/ui/use-toast";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
+import { NewLiquidToggle } from "@/components/ui/new-liquid-toggle";
 import TradingViewWidget from "@/components/ui/tradingview-widget";
 import {
   Send,
