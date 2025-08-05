@@ -14,7 +14,9 @@ import { Badge } from "@/components/ui/badge";
 import { PriceTicker } from "@/components/ui/price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
-import { ModernEconomicCalendar } from "@/components/ui/modern-economic-calendar";
+import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
+import { NewsCardsList } from "@/components/ui/news-cards-list";
+import { EconomicEventsResponse, NewsResponse } from "@shared/api";
 import { AdvancedAlertSystem } from "@/components/ui/advanced-alert-system";
 
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
