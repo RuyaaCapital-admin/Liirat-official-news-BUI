@@ -250,4 +250,28 @@
       inset -4px -4px 8px var(--neumorphic-inset-light),
       0 0 0 2px hsl(var(--primary));
   }
+
+  .neumorphic-button-small {
+    background: hsl(var(--background));
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow:
+      3px 3px 6px var(--neumorphic-shadow-dark),
+      -3px -3px 6px var(--neumorphic-shadow-light);
+    transition: all 0.2s ease;
+  }
+
+  .neumorphic-button-small:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      4px 4px 8px var(--neumorphic-shadow-dark),
+      -4px -4px 8px var(--neumorphic-shadow-light);
+  }
+
+  .neumorphic-button-small:active {
+    box-shadow:
+      inset 2px 2px 4px var(--neumorphic-inset-dark),
+      inset -2px -2px 4px var(--neumorphic-inset-light);
+    transform: translateY(0);
+  }
 }
