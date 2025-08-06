@@ -57,9 +57,10 @@ export async function handlePriceAlert(req: Request, res: Response) {
   }
 
   // If no API key or using mock key, return mock data
-  if (!apiKey || apiKey === "mock_key_for_development") {
+  if (!apiKey || apiKey === "mock_key_for_development" || apiKey === "your_polygon_api_key_here") {
     console.log(
-      `Returning mock data for ${symbol} - API key not configured for production`,
+      `Returning mock data for ${symbol} - API key not configured for production.`,
+      `Set POLYGON_API_KEY environment variable to a valid Polygon.io API key.`
     );
     return getMockPriceData(symbol, res);
   }
