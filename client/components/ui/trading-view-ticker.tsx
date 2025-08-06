@@ -60,10 +60,11 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
           }
         ],
         "showSymbolLogo": false,
-        "isTransparent": true,
-        "displayMode": "adaptive",
+        "isTransparent": false,
+        "displayMode": "regular",
         "colorTheme": "dark",
-        "locale": "en"
+        "locale": "en",
+        "largeChartUrl": ""
       }`;
 
     container.current.appendChild(script);
