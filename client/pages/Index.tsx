@@ -210,13 +210,7 @@ export default function Index() {
               </nav>
 
               <div className="flex items-center space-x-2 space-x-reverse">
-                <NotificationDropdown
-                  className="sm:h-9 sm:w-9 h-8 w-8"
-                  onSettingsClick={() => {
-                    // Open notification settings modal or redirect to settings page
-                    alert(language === 'ar' ? 'إعدادات التنبيهات ستكون متاحة قريباً' : 'Notification settings coming soon');
-                  }}
-                />
+                <NotificationDropdown className="sm:h-9 sm:w-9 h-8 w-8" />
                 <SimpleLanguageToggle />
                 <NewLiquidToggle />
               </div>
