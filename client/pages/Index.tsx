@@ -162,7 +162,7 @@ export default function Index() {
       <div className="relative z-10">
         <main role="main">
           {/* Navigation Header */}
-          <header className="border-b border-border/40 backdrop-blur-md bg-background/95 sticky top-0 z-[60]">
+          <header className="neumorphic-sm backdrop-blur-md bg-background/95 sticky top-0 z-[60] border-0">
             <div className="container mx-auto px-4 py-4 flex items-center justify-between">
               <div className="flex items-center space-x-4 space-x-reverse">
                 <img
