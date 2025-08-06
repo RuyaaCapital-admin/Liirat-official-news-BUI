@@ -319,16 +319,6 @@ export default function Index() {
                           : "Loading financial news..."}
                       </span>
                     </div>
-                  ) : marketauxError ? (
-                    <div className="flex items-center justify-center py-12 text-destructive">
-                      <AlertTriangle className="w-5 h-5 mr-2" />
-                      <span>
-                        {language === "ar"
-                          ? "خطأ في تحميل الأخبار:"
-                          : "Error loading news:"}{" "}
-                        {marketauxError}
-                      </span>
-                    </div>
                   ) : (
                     <MacroCalendarTable
                       events={marketauxNews.map((item) => ({
