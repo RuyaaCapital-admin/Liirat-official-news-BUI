@@ -94,7 +94,7 @@ export function NotificationDropdown({
 
       <DropdownMenuContent
         align={dir === "rtl" ? "start" : "end"}
-        className="w-80 max-h-[500px] overflow-hidden z-[100]"
+        className="w-80 sm:w-96 max-w-[95vw] max-h-[70vh] sm:max-h-[500px] overflow-hidden z-[100]"
         sideOffset={5}
         avoidCollisions={true}
       >
