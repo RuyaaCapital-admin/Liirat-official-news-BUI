@@ -66,7 +66,8 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
   }, []);
 
   return (
-    <div className={cn("tradingview-widget-container border-b border-border bg-card relative overflow-hidden", className)} ref={container}>
+    <div className={cn("w-full flex justify-center border-b border-border bg-card", className)}>
+      <div className="tradingview-widget-container relative overflow-hidden" style={{ maxWidth: '580px', width: '580px' }} ref={container}>
       <div className="tradingview-widget-container__widget relative">
         {/* Invisible overlay to completely disable all clicks and interactions */}
         <div
@@ -121,25 +122,25 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
           bottom: 0;
           right: 0;
           background: var(--card);
-          width: 150px;
-          height: 30px;
-          z-index: 15;
+          width: 250px;
+          height: 50px;
+          z-index: 25;
           pointer-events: none;
         }
 
         .tradingview-widget-container::before {
           content: '';
           position: absolute;
-          bottom: 0;
+          top: 0;
           right: 0;
-          background: var(--background);
-          width: 200px;
-          height: 35px;
-          z-index: 14;
+          background: var(--card);
+          width: 300px;
+          height: 100%;
+          z-index: 24;
           pointer-events: none;
         }
 
-        /* Additional right-side logo hiding */
+        /* Additional right-side logo hiding - cover entire right area */
         .tradingview-widget-container .tradingview-widget-container__widget::after {
           content: '';
           position: absolute;
@@ -147,9 +148,15 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
           right: 0;
           bottom: 0;
           background: var(--card);
-          width: 100px;
-          z-index: 20;
+          width: 150px;
+          z-index: 30;
           pointer-events: none;
+        }
+
+        /* Extra aggressive right-side masking */
+        .tradingview-widget-container iframe {
+          mask: linear-gradient(to right, white 0%, white 70%, transparent 100%) !important;
+          -webkit-mask: linear-gradient(to right, white 0%, white 70%, transparent 100%) !important;
         }
 
         /* Force continuous scrolling and prevent hover pause */
@@ -174,6 +181,7 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
           opacity: 0 !important;
         }
       `}</style>
+      </div>
     </div>
   );
 }
