@@ -106,9 +106,14 @@ export function NewLiquidToggle() {
 
         @media (max-width: 768px) {
           .liquid-toggle-input {
-            width: 2.5em;
-            box-shadow: 0 0 0 0.25em var(--secondary);
-            filter: blur(0.17em) contrast(20);
+            width: 1.8em;
+            box-shadow: 0 0 0 0.15em var(--secondary);
+            filter: blur(0.12em) contrast(20);
+          }
+
+          .liquid-toggle-container {
+            padding: 3px;
+            border-radius: 12px;
           }
         }
       `}</style>
