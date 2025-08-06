@@ -81,17 +81,7 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
         ref={container}
       >
         <div className="tradingview-widget-container__widget relative">
-          {/* Minimal click prevention - only prevent clicks, allow animation */}
-          <div
-            className="absolute inset-0 z-20 cursor-default bg-transparent"
-            onClick={(e) => e.preventDefault()}
-            style={{
-              pointerEvents: "auto",
-              userSelect: "none",
-              WebkitUserSelect: "none",
-            }}
-          />
-          {/* Additional click blocker for logo area */}
+          {/* Minimal click prevention for logo area only */}
           <div
             className="click-blocker"
             onClick={(e) => e.preventDefault()}
