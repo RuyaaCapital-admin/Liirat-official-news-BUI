@@ -293,12 +293,19 @@ export function ModernEconomicCalendar({
       return false;
     if (!selectedImportance.includes(event.importance.toString()))
       return false;
-    if (
-      searchQuery &&
-      !event.event.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      !event.country.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-      return false;
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const matchesArabic =
+        event.event.includes(searchQuery) ||
+        event.country.includes(searchQuery) ||
+        event.currency.includes(searchQuery);
+      const matchesEnglish =
+        event.event.toLowerCase().includes(query) ||
+        event.country.toLowerCase().includes(query) ||
+        event.currency.toLowerCase().includes(query);
+
+      if (!matchesArabic && !matchesEnglish) return false;
+    }
     return true;
   });
 
@@ -577,7 +584,7 @@ export function ModernEconomicCalendar({
               <div>الحدث</div>
               <div>الأهمية</div>
               <div>الفعلي</div>
-              <div>المتوقع</div>
+              <div>المت��قع</div>
               <div>السابق</div>
               <div>تحليل الذكاء الاصطناعي</div>
             </div>
