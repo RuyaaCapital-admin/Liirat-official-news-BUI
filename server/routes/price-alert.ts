@@ -1,5 +1,39 @@
 import { Request, Response } from "express";
 
+// Mock price data for development and fallback
+function getMockPriceData(symbol: string, res: Response) {
+  const upperSymbol = symbol.toUpperCase();
+
+  // Mock price data for common symbols
+  const mockPrices: Record<string, number> = {
+    "EURUSD": 1.0856,
+    "GBPUSD": 1.2645,
+    "USDJPY": 148.23,
+    "AAPL": 185.25,
+    "GOOGL": 142.30,
+    "MSFT": 415.50,
+    "TSLA": 248.75,
+    "NVDA": 785.45,
+    "SPY": 485.20,
+    "QQQ": 398.75,
+    "BTCUSD": 43250.75,
+    "ETHUSD": 2650.50,
+  };
+
+  const basePrice = mockPrices[upperSymbol] || 100.00;
+  // Add some random variation to simulate price movement
+  const variation = (Math.random() - 0.5) * 0.02; // ±1% variation
+  const price = basePrice * (1 + variation);
+
+  return res.status(200).json({
+    symbol: upperSymbol,
+    price: parseFloat(price.toFixed(4)),
+    timestamp: Date.now(),
+    source: "mock_data",
+    note: "This is mock data for development purposes"
+  });
+}
+
 export async function handlePriceAlert(req: Request, res: Response) {
   // Enable CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
