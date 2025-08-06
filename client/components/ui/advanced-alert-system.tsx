@@ -108,7 +108,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     {
       symbol: "NZDUSD",
       name: "NZD/USD",
-      nameAr: "دولار نيوزيلندي/دولار",
+      nameAr: "دولار نيوزيلندي/دو��ار",
       currentPrice: 0.6123,
       change: 0.0008,
       changePercent: 0.13,
@@ -325,7 +325,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Pair Search */}
-          <div className="space-y-2 relative">
+          <div className="space-y-2 relative z-20">
             <Label className="text-sm font-medium">
               {language === "ar"
                 ? "البحث عن زوج العملات"
