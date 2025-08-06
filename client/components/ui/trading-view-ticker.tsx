@@ -75,6 +75,44 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
         if (iframe) {
           iframe.style.pointerEvents = 'none';
           iframe.style.overflow = 'hidden';
+
+          // Try to access iframe content and hide logo elements
+          try {
+            // Continuously monitor for logo elements
+            const hideLogoElements = () => {
+              const doc = iframe.contentDocument || iframe.contentWindow?.document;
+              if (doc) {
+                // Hide all potential logo elements
+                const logoSelectors = [
+                  '[class*="logo"]',
+                  '[class*="Logo"]',
+                  '[class*="brand"]',
+                  '[class*="Brand"]',
+                  '[class*="copyright"]',
+                  '[class*="tv-"]',
+                  'a[href*="tradingview"]',
+                  '[data-logo]',
+                  '[data-brand]'
+                ];
+
+                logoSelectors.forEach(selector => {
+                  const elements = doc.querySelectorAll(selector);
+                  elements.forEach((el: any) => {
+                    el.style.display = 'none';
+                    el.style.visibility = 'hidden';
+                    el.style.opacity = '0';
+                  });
+                });
+              }
+            };
+
+            // Run immediately and then every 500ms
+            hideLogoElements();
+            setInterval(hideLogoElements, 500);
+          } catch (e) {
+            // Cross-origin restrictions prevent iframe access, overlays will handle it
+            console.log('Using overlay method for logo hiding');
+          }
         }
       }, 1000);
     };
