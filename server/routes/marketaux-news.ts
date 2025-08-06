@@ -19,18 +19,11 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
       });
     }
 
-    // Calculate published_after date (last 7 days)
-    const publishedAfter = new Date();
-    publishedAfter.setDate(publishedAfter.getDate() - 7);
-    const publishedAfterISO = publishedAfter.toISOString();
-
-    // Build API URL
+    // Build API URL according to specifications
     const apiUrl = new URL("https://api.marketaux.com/v1/news/all");
     apiUrl.searchParams.append("countries", countries as string);
-    apiUrl.searchParams.append("filter_entities", "true");
-    apiUrl.searchParams.append("limit", limit as string);
-    apiUrl.searchParams.append("published_after", publishedAfterISO);
     apiUrl.searchParams.append("language", language as string);
+    apiUrl.searchParams.append("limit", limit as string);
     apiUrl.searchParams.append("api_token", apiKey);
 
     console.log(`Fetching Marketaux news for language: ${language}`);
