@@ -2,8 +2,10 @@ import { RequestHandler } from "express";
 import { MarketauxNewsResponse } from "@shared/api";
 
 export const handleMarketauxNews: RequestHandler = async (req, res) => {
+  console.log(`[Marketaux] Request received: ${req.url}`);
   try {
     const { language = "en", countries = "us,gb,ae", limit = "3" } = req.query;
+    console.log(`[Marketaux] Query params: language=${language}, countries=${countries}, limit=${limit}`);
 
     // Get API key from environment variable
     const apiKey = process.env.MARKETAUX_API_KEY;
