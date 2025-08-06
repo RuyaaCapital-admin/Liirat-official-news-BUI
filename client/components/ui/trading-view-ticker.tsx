@@ -27,7 +27,7 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             "title": "S&P 500"
           },
           {
-            "proName": "FOREXCOM:NSXUSD", 
+            "proName": "FOREXCOM:NSXUSD",
             "title": "US 100"
           },
           {
@@ -66,6 +66,22 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
         "locale": "en",
         "largeChartUrl": ""
       }`;
+
+    script.onload = () => {
+      // Allow some time for the widget to initialize
+      setTimeout(() => {
+        // Ensure iframe allows animations
+        const iframe = container.current?.querySelector('iframe');
+        if (iframe) {
+          iframe.style.pointerEvents = 'none';
+          iframe.style.overflow = 'hidden';
+        }
+      }, 1000);
+    };
+
+    script.onerror = () => {
+      console.warn('TradingView widget failed to load');
+    };
 
     container.current.appendChild(script);
 
