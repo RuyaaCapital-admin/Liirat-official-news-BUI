@@ -216,6 +216,48 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     localStorage.setItem("price-alerts", JSON.stringify(alerts));
   }, [alerts]);
 
+  // Monitor price alerts and trigger notifications
+  useEffect(() => {
+    const checkPriceAlerts = () => {
+      alerts.forEach((alert) => {
+        if (!alert.isActive) return;
+
+        const pair = currencyPairs.find((p) => p.symbol === alert.pair);
+        if (!pair) return;
+
+        const isTriggered =
+          (alert.condition === "above" && pair.currentPrice >= alert.targetPrice) ||
+          (alert.condition === "below" && pair.currentPrice <= alert.targetPrice);
+
+        if (isTriggered) {
+          // Add notification to alert context
+          const message = language === "ar"
+            ? `تنبيه سعر: ${alert.name} ${alert.condition === "above" ? "فوق" : "تحت"} ${alert.targetPrice.toFixed(4)}`
+            : `Price Alert: ${alert.name} ${alert.condition === "above" ? "above" : "below"} ${alert.targetPrice.toFixed(4)}`;
+
+          addAlert({
+            eventName: `${alert.pair} ${language === "ar" ? "تنبيه سعر" : "Price Alert"}`,
+            message,
+            importance: 3, // High importance for price alerts
+          });
+
+          // Deactivate the alert to prevent spam
+          setAlerts(prev =>
+            prev.map(a => a.id === alert.id ? { ...a, isActive: false } : a)
+          );
+        }
+      });
+    };
+
+    // Check alerts every 30 seconds
+    const interval = setInterval(checkPriceAlerts, 30000);
+
+    // Check immediately
+    checkPriceAlerts();
+
+    return () => clearInterval(interval);
+  }, [alerts, addAlert, language]);
+
   const handlePairSelect = (pair: CurrencyPair) => {
     setSelectedPair(pair);
     setSearchQuery(pair.symbol);
