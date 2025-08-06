@@ -23,6 +23,7 @@ export function createServer() {
 
   // API routes with consistent /api prefix
   app.get("/api/ping", (_req, res) => {
+    console.log("Ping endpoint hit!");
     const ping = process.env.PING_MESSAGE ?? "ping";
     res.json({ message: ping });
   });
