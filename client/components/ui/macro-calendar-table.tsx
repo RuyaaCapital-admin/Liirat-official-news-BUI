@@ -379,7 +379,7 @@ export function MacroCalendarTable({
           />
           <Input
             type="text"
-            placeholder={t("Search in events...", "البحث في الأحدا��...")}
+            placeholder={t("Search in events...", "البحث في الأحداث...")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={cn(
@@ -734,7 +734,7 @@ export function MacroCalendarTable({
               </th>
               <th
                 className={cn(
-                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap",
+                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap hidden sm:table-cell",
                   dir === "rtl" ? "text-right" : "text-left",
                 )}
               >
@@ -742,7 +742,7 @@ export function MacroCalendarTable({
               </th>
               <th
                 className={cn(
-                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap",
+                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap hidden sm:table-cell",
                   dir === "rtl" ? "text-right" : "text-left",
                 )}
               >
@@ -836,7 +836,7 @@ export function MacroCalendarTable({
                   </td>
                   <td
                     className={cn(
-                      "p-2 sm:p-3 text-xs sm:text-sm whitespace-nowrap",
+                      "p-2 sm:p-3 text-xs sm:text-sm whitespace-nowrap hidden sm:table-cell",
                       dir === "rtl" ? "text-right" : "text-left",
                     )}
                   >
@@ -846,7 +846,7 @@ export function MacroCalendarTable({
                   </td>
                   <td
                     className={cn(
-                      "p-2 sm:p-3 text-xs sm:text-sm whitespace-nowrap",
+                      "p-2 sm:p-3 text-xs sm:text-sm whitespace-nowrap hidden sm:table-cell",
                       dir === "rtl" ? "text-right" : "text-left",
                     )}
                   >
