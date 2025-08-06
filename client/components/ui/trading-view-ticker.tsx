@@ -111,33 +111,65 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
         }}
       >
         <div className="tradingview-widget-container__widget">
-          {/* Strong logo blocking overlay */}
+          {/* MAXIMUM LOGO BLOCKING - Multiple overlapping layers */}
+
+          {/* Layer 1: Solid background color block */}
           <div
-            className="absolute top-0 right-0 h-full z-[200]"
+            className="absolute top-0 right-0 h-full z-[300]"
             style={{
-              width: "200px",
+              width: "300px",
+              backgroundColor: "hsl(var(--background))",
+              pointerEvents: "auto"
+            }}
+          />
+
+          {/* Layer 2: Card background block */}
+          <div
+            className="absolute top-0 right-0 h-full z-[299]"
+            style={{
+              width: "280px",
+              backgroundColor: "hsl(var(--card))",
+              pointerEvents: "auto"
+            }}
+          />
+
+          {/* Layer 3: White overlay for light mode */}
+          <div
+            className="absolute top-0 right-0 h-full z-[298]"
+            style={{
+              width: "260px",
+              backgroundColor: "#ffffff",
+              pointerEvents: "auto"
+            }}
+          />
+
+          {/* Layer 4: Dark overlay for dark mode */}
+          <div
+            className="absolute top-0 right-0 h-full z-[297]"
+            style={{
+              width: "240px",
+              backgroundColor: "#000000",
+              pointerEvents: "auto"
+            }}
+          />
+
+          {/* Layer 5: CSS variable backgrounds */}
+          <div
+            className="absolute top-0 right-0 h-full z-[296]"
+            style={{
+              width: "220px",
               background: "var(--background)",
               pointerEvents: "auto"
             }}
           />
 
-          {/* Additional overlay for complete coverage */}
+          {/* Layer 6: Additional card background */}
           <div
-            className="absolute top-0 right-0 h-full z-[199]"
+            className="absolute top-0 right-0 h-full z-[295]"
             style={{
-              width: "160px",
+              width: "200px",
               background: "var(--card)",
               pointerEvents: "auto"
-            }}
-          />
-
-          {/* Gradient fade for light/dark theme compatibility */}
-          <div
-            className="absolute top-0 right-0 h-full z-[198]"
-            style={{
-              width: "250px",
-              background: "linear-gradient(to left, var(--background) 0%, var(--background) 70%, transparent 100%)",
-              pointerEvents: "none"
             }}
           />
         </div>
