@@ -9,13 +9,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   if (req.method === "OPTIONS") return res.status(200).end();
-  if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== "GET")
+    return res.status(405).json({ error: "Method not allowed" });
 
   const { symbol } = req.query;
   const apiKey = process.env.POLYGON_API_KEY;
 
   if (!apiKey) return res.status(500).json({ error: "API key not configured" });
-  if (!symbol || typeof symbol !== "string") return res.status(400).json({ error: "Symbol parameter required" });
+  if (!symbol || typeof symbol !== "string")
+    return res.status(400).json({ error: "Symbol parameter required" });
 
   // Rate limiter logic (15 sec)
   const now = Date.now();
@@ -23,7 +25,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (now - lastCallTimestamp < SIXTY_SECONDS) {
     return res.status(429).json({
       error: "Too many requests – wait at least 60 seconds between calls",
-      nextAllowed: new Date(lastCallTimestamp + SIXTY_SECONDS).toISOString()
+      nextAllowed: new Date(lastCallTimestamp + SIXTY_SECONDS).toISOString(),
     });
   }
   lastCallTimestamp = now;
@@ -32,9 +34,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const upperSymbol = symbol.toUpperCase();
     let endpoint = "";
 
-    if (["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "NZD"].some(cur => upperSymbol.includes(cur))) {
+    if (
+      ["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "NZD"].some((cur) =>
+        upperSymbol.includes(cur),
+      )
+    ) {
       endpoint = `https://api.polygon.io/v2/snapshot/locale/global/markets/forex/tickers/C:${upperSymbol}`;
-    } else if (["BTC", "ETH", "LTC", "XRP", "ADA", "DOT"].some(coin => upperSymbol.includes(coin))) {
+    } else if (
+      ["BTC", "ETH", "LTC", "XRP", "ADA", "DOT"].some((coin) =>
+        upperSymbol.includes(coin),
+      )
+    ) {
       endpoint = `https://api.polygon.io/v2/snapshot/locale/global/markets/crypto/tickers/X:${upperSymbol}`;
     } else {
       endpoint = `https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/${upperSymbol}`;
@@ -75,7 +85,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (price === null) {
-      return res.status(404).json({ error: "Price not found for symbol", symbol: upperSymbol, raw: data });
+      return res
+        .status(404)
+        .json({
+          error: "Price not found for symbol",
+          symbol: upperSymbol,
+          raw: data,
+        });
     }
 
     return res.status(200).json({

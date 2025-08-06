@@ -95,9 +95,9 @@ export default function Index() {
 
       // First test basic server connectivity
       try {
-        const pingResponse = await fetch('/api/ping', {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' },
+        const pingResponse = await fetch("/api/ping", {
+          method: "GET",
+          headers: { Accept: "application/json" },
         });
         console.log(`Server ping status: ${pingResponse.status}`);
       } catch (pingError) {
@@ -109,10 +109,10 @@ export default function Index() {
       const response = await fetch(
         `/api/marketaux-news?language=${lang}&limit=3&countries=us,gb,ae`,
         {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
+            Accept: "application/json",
+            "Content-Type": "application/json",
           },
         },
       );

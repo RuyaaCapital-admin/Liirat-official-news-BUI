@@ -5,14 +5,19 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
   console.log(`[Marketaux] Request received: ${req.url}`);
   try {
     const { language = "en", countries = "us,gb,ae", limit = "3" } = req.query;
-    console.log(`[Marketaux] Query params: language=${language}, countries=${countries}, limit=${limit}`);
+    console.log(
+      `[Marketaux] Query params: language=${language}, countries=${countries}, limit=${limit}`,
+    );
 
     // Get API key from environment variable
     const apiKey = process.env.MARKETAUX_API_KEY;
     if (!apiKey || apiKey === "sample_key_for_testing" || apiKey === "") {
-      console.error("MARKETAUX_API_KEY environment variable not set or invalid");
+      console.error(
+        "MARKETAUX_API_KEY environment variable not set or invalid",
+      );
       return res.status(500).json({
-        error: "API key not configured. Please set MARKETAUX_API_KEY environment variable",
+        error:
+          "API key not configured. Please set MARKETAUX_API_KEY environment variable",
         news: [],
       });
     }
@@ -24,7 +29,9 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
     apiUrl.searchParams.append("limit", limit as string);
     apiUrl.searchParams.append("api_token", apiKey);
 
-    console.log(`Fetching news for language: ${language}, URL: ${apiUrl.toString()}`);
+    console.log(
+      `Fetching news for language: ${language}, URL: ${apiUrl.toString()}`,
+    );
 
     // Fetch data from Marketaux API
     const response = await fetch(apiUrl.toString(), {
@@ -35,13 +42,15 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
       },
     });
 
-    console.log(`Marketaux API response status: ${response.status} ${response.statusText}`);
+    console.log(
+      `Marketaux API response status: ${response.status} ${response.statusText}`,
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error(
         `Marketaux API error: ${response.status} - ${response.statusText}`,
-        `Response: ${errorText.substring(0, 200)}...`
+        `Response: ${errorText.substring(0, 200)}...`,
       );
       return res.status(response.status).json({
         error: `Marketaux API Error: ${response.status} - ${response.statusText}`,
@@ -99,7 +108,10 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
 
     // Send proper error response
     const errorResponse = {
-      error: error instanceof Error ? error.message : "Failed to fetch financial news",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch financial news",
       news: [],
       timestamp: new Date().toISOString(),
     };
