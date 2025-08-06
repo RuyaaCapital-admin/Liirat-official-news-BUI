@@ -579,7 +579,7 @@ export function MacroCalendarTable({
             onValueChange={setSelectedImportance}
           >
             <SelectTrigger className={dir === "rtl" ? "text-right" : ""}>
-              <SelectValue placeholder={t("Importance", "الأهمية")} />
+              <SelectValue placeholder={t("calendar.table.importance")} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">
