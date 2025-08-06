@@ -39,7 +39,7 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
 
     if (!response.ok) {
       console.error(
-        `Marketaux API error: ${response.status} - ${response.statusText}`,
+        `News API error: ${response.status} - ${response.statusText}`,
       );
       return res.status(response.status).json({
         error: `API request failed: ${response.statusText}`,
