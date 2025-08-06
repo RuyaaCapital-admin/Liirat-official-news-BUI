@@ -48,7 +48,7 @@ export default function Index() {
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
 
-  // Marketaux News Data State
+  // News Data State
   const [marketauxNews, setMarketauxNews] = useState<MarketauxNewsItem[]>([]);
   const [isLoadingMarketaux, setIsLoadingMarketaux] = useState(true);
   const [marketauxError, setMarketauxError] = useState<string | null>(null);
