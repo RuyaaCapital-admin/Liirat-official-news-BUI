@@ -279,6 +279,13 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
           // Fetch real-time price from our API
           const response = await fetch(`/api/price-alert?symbol=${alert.pair}`);
 
+          // Check if response is HTML (error page) instead of JSON
+          const contentType = response.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            console.warn(`API returned HTML for ${alert.pair}, skipping alert check`);
+            continue;
+          }
+
           if (!response.ok) {
             console.warn(
               `Failed to fetch price for ${alert.pair}:`,
@@ -328,7 +335,12 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
             );
           }
         } catch (error) {
-          console.error(`Error checking price for ${alert.pair}:`, error);
+          // Handle JSON parsing errors gracefully
+          if (error instanceof SyntaxError && error.message.includes('Unexpected token')) {
+            console.warn(`API endpoint returned HTML for ${alert.pair}, likely not available in development mode`);
+          } else {
+            console.warn(`Error checking price for ${alert.pair}:`, error);
+          }
         }
       }
     };
