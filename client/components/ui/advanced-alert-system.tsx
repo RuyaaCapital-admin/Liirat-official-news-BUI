@@ -279,8 +279,16 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
           }),
         );
         setCurrencyPairs(updatedPairs);
+        retryCount = 0; // Reset retry count on successful batch
       } catch (error) {
         console.error("Error fetching real prices:", error);
+        // Implement exponential backoff for general errors
+        if (retryCount < maxRetries) {
+          retryCount++;
+          const delay = baseDelay * Math.pow(2, retryCount - 1);
+          console.warn(`Retrying price fetch in ${delay}ms due to error`);
+          setTimeout(fetchRealPrices, delay);
+        }
       }
     };
 
