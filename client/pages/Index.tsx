@@ -147,7 +147,7 @@ export default function Index() {
 
   return (
     <div
-      className={`min-h-screen bg-background relative ${language === "ar" ? "arabic" : "english"}`}
+      className={`min-h-screen bg-background relative overflow-x-hidden ${language === "ar" ? "arabic" : "english"}`}
     >
       {/* Global Background Image */}
       <div className="fixed inset-0 z-0">
@@ -163,7 +163,7 @@ export default function Index() {
         <main role="main">
           {/* Navigation Header */}
           <header className="neumorphic-sm backdrop-blur-md bg-background/95 sticky top-0 z-[60] border-0">
-            <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="container mx-auto px-2 sm:px-4 py-4 flex items-center justify-between">
               <div className="flex items-center space-x-4 space-x-reverse">
                 <img
                   src="/liirat-logo-new.png"
@@ -179,7 +179,7 @@ export default function Index() {
               </div>
 
               <nav
-                className={`hidden md:flex items-center space-x-6 ${dir === "rtl" ? "space-x-reverse" : ""}`}
+                className={`hidden md:flex items-center space-x-4 lg:space-x-6 ${dir === "rtl" ? "space-x-reverse" : ""}`}
                 role="navigation"
                 aria-label="Main navigation"
               >
@@ -221,31 +221,31 @@ export default function Index() {
           <TradingViewTicker className="sticky top-[72px] z-[40] w-full" />
 
           {/* Hero Section */}
-          <section className="py-20 lg:py-32 relative overflow-hidden">
+          <section className="py-12 sm:py-20 lg:py-32 relative overflow-hidden">
             {/* Official Logo Background Pattern */}
             <div className="absolute inset-0">
               <div className="w-full h-full bg-gradient-to-br from-primary/5 via-background to-primary/10"></div>
               <div className="absolute inset-0 bg-[url('/liirat-logo-new.png')] bg-center bg-no-repeat bg-contain opacity-[0.03]"></div>
             </div>
             <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-primary/5"></div>
-            <div className="container mx-auto px-4 relative">
+            <div className="container mx-auto px-2 sm:px-4 relative">
               <div className="text-center max-w-4xl mx-auto">
-                <div className="neumorphic-lg bg-card/90 rounded-3xl p-12 mb-8">
-                  <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-foreground">
+                <div className="neumorphic-lg bg-card/90 rounded-3xl p-6 sm:p-12 mb-8">
+                  <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6 leading-tight text-foreground">
                     {t("hero.title")}
                     <span className="text-primary block">
                       {t("hero.subtitle")}
                     </span>
                   </h1>
-                  <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
+                  <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-6 sm:mb-8 leading-relaxed">
                     {t("hero.description")}
                   </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
                   <Button
                     variant="outline"
                     size="lg"
-                    className="text-primary px-8 py-6 text-lg font-semibold neumorphic-hover"
+                    className="text-primary px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg font-semibold neumorphic-hover"
                     onClick={() =>
                       document
                         .getElementById("calendar")
@@ -258,7 +258,7 @@ export default function Index() {
                   <Button
                     variant="outline"
                     size="lg"
-                    className="text-primary px-8 py-6 text-lg font-semibold neumorphic-hover"
+                    className="text-primary px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg font-semibold neumorphic-hover"
                     onClick={() =>
                       document
                         .getElementById("alerts")
@@ -274,8 +274,8 @@ export default function Index() {
           </section>
 
           {/* EODHD Economic Calendar Section */}
-          <section id="calendar" className="py-20 bg-muted/30">
-            <div className="container mx-auto px-4">
+          <section id="calendar" className="py-12 sm:py-20 bg-muted/30">
+            <div className="container mx-auto px-2 sm:px-4">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {t("calendar.title")}
@@ -350,8 +350,8 @@ export default function Index() {
           </section>
 
           {/* Market Overview Section */}
-          <section className="py-20 bg-muted/30 hidden">
-            <div className="container mx-auto px-4">
+          <section className="py-12 sm:py-20 bg-muted/30 hidden">
+            <div className="container mx-auto px-2 sm:px-4">
               <div className="text-center mb-16">
                 {/* <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {t("market.title")}
@@ -395,8 +395,8 @@ export default function Index() {
           </section>
 
           {/* Advanced Alert System Section */}
-          <section id="alerts" className="py-20">
-            <div className="container mx-auto px-4">
+          <section id="alerts" className="py-12 sm:py-20">
+            <div className="container mx-auto px-2 sm:px-4">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {language === "ar"
@@ -414,8 +414,8 @@ export default function Index() {
           </section>
 
           {/* About Liirat Section */}
-          <section id="about" className="py-20 bg-muted/30">
-            <div className="container mx-auto px-4">
+          <section id="about" className="py-12 sm:py-20 bg-muted/30">
+            <div className="container mx-auto px-2 sm:px-4">
               <div className="text-center mb-16">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {t("about.title")}
@@ -478,8 +478,8 @@ export default function Index() {
           </section>
 
           {/* Contact Section */}
-          <section id="contact" className="py-20">
-            <div className="container mx-auto px-4">
+          <section id="contact" className="py-12 sm:py-20">
+            <div className="container mx-auto px-2 sm:px-4">
               <div className="max-w-2xl mx-auto text-center">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {t("contact.title")}
@@ -559,8 +559,8 @@ export default function Index() {
           </section>
 
           {/* Footer */}
-          <footer className="bg-muted/50 border-t border-border py-12">
-            <div className="container mx-auto px-4">
+          <footer className="bg-muted/50 border-t border-border py-8 sm:py-12">
+            <div className="container mx-auto px-2 sm:px-4">
               <div className="text-center">
                 <img
                   src="/liirat-logo-new.png"
