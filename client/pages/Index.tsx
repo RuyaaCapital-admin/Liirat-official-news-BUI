@@ -18,6 +18,7 @@ import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
 import { NewsCardsList } from "@/components/ui/news-cards-list";
 import { EconomicEventsResponse, NewsResponse } from "@shared/api";
 import { AdvancedAlertSystem } from "@/components/ui/advanced-alert-system";
+import { NotificationSystem } from "@/components/ui/notification-system";
 
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 
