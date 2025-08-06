@@ -649,7 +649,12 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
               <div className="flex items-end">
                 <Button
                   onClick={handleCreateAlert}
-                  disabled={!selectedPair || !targetPrice || isNaN(parseFloat(targetPrice)) || parseFloat(targetPrice) <= 0}
+                  disabled={
+                    !selectedPair ||
+                    !targetPrice ||
+                    isNaN(parseFloat(targetPrice)) ||
+                    parseFloat(targetPrice) <= 0
+                  }
                   className="w-full gap-2"
                   type="button"
                 >

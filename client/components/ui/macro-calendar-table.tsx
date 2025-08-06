@@ -242,7 +242,9 @@ export function MacroCalendarTable({
   const [searchTerm, setSearchTerm] = useState("");
   const [countrySearchTerm, setCountrySearchTerm] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("all");
-  const [selectedImportances, setSelectedImportances] = useState<string[]>(["3"]);
+  const [selectedImportances, setSelectedImportances] = useState<string[]>([
+    "3",
+  ]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [dateRange, setDateRange] = useState("all");
   const [isCountryOpen, setIsCountryOpen] = useState(false);
@@ -291,8 +293,9 @@ export function MacroCalendarTable({
       const matchesCountry =
         selectedCountry === "all" || event.country === selectedCountry;
 
-      const matchesImportance =
-        selectedImportances.includes(event.importance.toString());
+      const matchesImportance = selectedImportances.includes(
+        event.importance.toString(),
+      );
 
       const matchesDate = (() => {
         if (selectedDate) {
@@ -598,19 +601,39 @@ export function MacroCalendarTable({
                   {t("Select Impact Levels", "اختر مستويات التأثير")}
                 </div>
                 {[
-                  { value: "3", label: t("High Impact", "عالي التأثير"), color: "text-red-600" },
-                  { value: "2", label: t("Medium Impact", "متوسط التأثير"), color: "text-orange-600" },
-                  { value: "1", label: t("Low Impact", "منخفض التأثير"), color: "text-green-600" },
+                  {
+                    value: "3",
+                    label: t("High Impact", "عالي التأثير"),
+                    color: "text-red-600",
+                  },
+                  {
+                    value: "2",
+                    label: t("Medium Impact", "متوسط التأثير"),
+                    color: "text-orange-600",
+                  },
+                  {
+                    value: "1",
+                    label: t("Low Impact", "منخفض التأثير"),
+                    color: "text-green-600",
+                  },
                 ].map((importance) => (
-                  <div key={importance.value} className="flex items-center space-x-2">
+                  <div
+                    key={importance.value}
+                    className="flex items-center space-x-2"
+                  >
                     <Checkbox
                       id={`importance-${importance.value}`}
                       checked={selectedImportances.includes(importance.value)}
                       onCheckedChange={(checked) => {
                         if (checked) {
-                          setSelectedImportances(prev => [...prev, importance.value]);
+                          setSelectedImportances((prev) => [
+                            ...prev,
+                            importance.value,
+                          ]);
                         } else {
-                          setSelectedImportances(prev => prev.filter(i => i !== importance.value));
+                          setSelectedImportances((prev) =>
+                            prev.filter((i) => i !== importance.value),
+                          );
                         }
                       }}
                     />

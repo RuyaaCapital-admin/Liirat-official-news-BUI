@@ -6,21 +6,21 @@ function getMockPriceData(symbol: string, res: Response) {
 
   // Mock price data for common symbols
   const mockPrices: Record<string, number> = {
-    "EURUSD": 1.0856,
-    "GBPUSD": 1.2645,
-    "USDJPY": 148.23,
-    "AAPL": 185.25,
-    "GOOGL": 142.30,
-    "MSFT": 415.50,
-    "TSLA": 248.75,
-    "NVDA": 785.45,
-    "SPY": 485.20,
-    "QQQ": 398.75,
-    "BTCUSD": 43250.75,
-    "ETHUSD": 2650.50,
+    EURUSD: 1.0856,
+    GBPUSD: 1.2645,
+    USDJPY: 148.23,
+    AAPL: 185.25,
+    GOOGL: 142.3,
+    MSFT: 415.5,
+    TSLA: 248.75,
+    NVDA: 785.45,
+    SPY: 485.2,
+    QQQ: 398.75,
+    BTCUSD: 43250.75,
+    ETHUSD: 2650.5,
   };
 
-  const basePrice = mockPrices[upperSymbol] || 100.00;
+  const basePrice = mockPrices[upperSymbol] || 100.0;
   // Add some random variation to simulate price movement
   const variation = (Math.random() - 0.5) * 0.02; // ±1% variation
   const price = basePrice * (1 + variation);
@@ -30,7 +30,7 @@ function getMockPriceData(symbol: string, res: Response) {
     price: parseFloat(price.toFixed(4)),
     timestamp: Date.now(),
     source: "mock_data",
-    note: "This is mock data for development purposes"
+    note: "This is mock data for development purposes",
   });
 }
 
@@ -58,7 +58,9 @@ export async function handlePriceAlert(req: Request, res: Response) {
 
   // If no API key or using mock key, return mock data
   if (!apiKey || apiKey === "mock_key_for_development") {
-    console.log(`Returning mock data for ${symbol} - API key not configured for production`);
+    console.log(
+      `Returning mock data for ${symbol} - API key not configured for production`,
+    );
     return getMockPriceData(symbol, res);
   }
 
@@ -126,7 +128,9 @@ export async function handlePriceAlert(req: Request, res: Response) {
     }
 
     if (price === null) {
-      console.log(`Price not found for ${upperSymbol}, falling back to mock data`);
+      console.log(
+        `Price not found for ${upperSymbol}, falling back to mock data`,
+      );
       return getMockPriceData(symbol as string, res);
     }
 
