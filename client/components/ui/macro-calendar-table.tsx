@@ -176,7 +176,7 @@ const getCountryFlag = (country: string) => {
     LT: "🇱🇹",
     CN: "🇨🇳",
     IN: "🇮🇳",
-    BR: "🇧🇷",
+    BR: "🇧��",
     MX: "🇲🇽",
     RU: "🇷🇺",
     ZA: "🇿🇦",
@@ -582,9 +582,6 @@ export function MacroCalendarTable({
               <SelectValue placeholder={t("calendar.table.importance")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">
-                {t("All Levels", "جميع المستويات")}
-              </SelectItem>
               <SelectItem value="3">
                 ⭐⭐⭐ {t("High Impact", "عالي التأثير")}
               </SelectItem>
