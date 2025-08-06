@@ -213,6 +213,10 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
   // Fetch real-time prices for currency pairs
   useEffect(() => {
+    let retryCount = 0;
+    const maxRetries = 3;
+    const baseDelay = 5000; // 5 seconds
+
     const fetchRealPrices = async () => {
       try {
         const updatedPairs = await Promise.all(
