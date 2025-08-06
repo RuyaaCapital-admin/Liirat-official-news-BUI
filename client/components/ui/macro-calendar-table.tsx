@@ -521,7 +521,7 @@ export function MacroCalendarTable({
                   {/* Top Countries Section */}
                   <div className="mt-2 mb-2">
                     <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">
-                      {t("Top Economic Countries", "أهم البلدان الاقت��ادية")}
+                      {t("Top Economic Countries", "أهم البلدان الاقتصادية")}
                     </div>
                     {TOP_COUNTRIES.filter((country) =>
                       filteredCountries.includes(country),
