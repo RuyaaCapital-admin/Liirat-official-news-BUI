@@ -181,8 +181,9 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             height: 60px !important;
             width: 100% !important;
             display: block !important;
-            -webkit-mask: linear-gradient(to right, black 0%, black 80%, transparent 100%);
-            mask: linear-gradient(to right, black 0%, black 80%, transparent 100%);
+            -webkit-mask: linear-gradient(to right, black 0%, black 75%, transparent 100%);
+            mask: linear-gradient(to right, black 0%, black 75%, transparent 100%);
+            overflow: hidden !important;
           }
 
           .tradingview-widget-container iframe {
