@@ -11,6 +11,7 @@ import {
 } from "./routes/ai-trading";
 import { handleChat } from "./routes/chat";
 import { getEconomicEvents, getNews } from "./routes/eodhd";
+import { handlePriceAlert } from "./routes/price-alert";
 
 export function createServer() {
   const app = express();
