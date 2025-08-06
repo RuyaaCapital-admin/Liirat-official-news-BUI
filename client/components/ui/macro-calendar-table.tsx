@@ -291,7 +291,7 @@ export function MacroCalendarTable({
         selectedCountry === "all" || event.country === selectedCountry;
 
       const matchesImportance =
-        event.importance.toString() === selectedImportance;
+        selectedImportances.includes(event.importance.toString());
 
       const matchesDate = (() => {
         if (selectedDate) {
