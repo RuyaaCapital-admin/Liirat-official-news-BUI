@@ -21,15 +21,15 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
         "symbols": [
           {
             "proName": "FOREXCOM:SPXUSD",
-            "title": "S&P 500 Index"
+            "title": "S&P 500"
           },
           {
             "proName": "FOREXCOM:NSXUSD",
-            "title": "US 100 Cash CFD"
+            "title": "US 100"
           },
           {
             "proName": "FX_IDC:EURUSD",
-            "title": "EUR to USD"
+            "title": "EUR/USD"
           },
           {
             "proName": "BITSTAMP:BTCUSD",
@@ -41,11 +41,11 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
           },
           {
             "proName": "OANDA:GBPUSD",
-            "title": "GBPUSD"
+            "title": "GBP/USD"
           },
           {
             "proName": "OANDA:USDJPY",
-            "title": "USDJPY"
+            "title": "USD/JPY"
           },
           {
             "proName": "CME_MINI:ES1!",
@@ -60,8 +60,8 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
         "locale": "en",
         "largeChartUrl": "",
         "isTransparent": false,
-        "showSymbolLogo": true,
-        "displayMode": "regular"
+        "showSymbolLogo": false,
+        "displayMode": "adaptive"
       }`;
 
     container.current.appendChild(script);
