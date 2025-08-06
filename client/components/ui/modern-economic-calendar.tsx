@@ -413,7 +413,7 @@ export function ModernEconomicCalendar({
             {/* Importance Filter */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">
-                مستوى الأهمية (اختيار متعدد)
+                مستوى الأ��مية (اختيار متعدد)
               </label>
               <div className="flex gap-2">
                 <Button
@@ -440,15 +440,12 @@ export function ModernEconomicCalendar({
                   }
                   size="sm"
                   onClick={() => {
-                    const newSelection = selectedImportance.filter(
-                      (item) => item !== "all",
-                    );
                     if (selectedImportance.includes("2")) {
                       setSelectedImportance(
-                        newSelection.filter((item) => item !== "2"),
+                        selectedImportance.filter((item) => item !== "2"),
                       );
                     } else {
-                      setSelectedImportance([...newSelection, "2"]);
+                      setSelectedImportance([...selectedImportance, "2"]);
                     }
                   }}
                   className="flex-1 text-xs"
