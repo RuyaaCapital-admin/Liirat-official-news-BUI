@@ -210,6 +210,7 @@ export default function Index() {
               </nav>
 
               <div className="flex items-center space-x-2 space-x-reverse">
+                <NotificationDropdown className="sm:h-9 sm:w-9 h-8 w-8" />
                 <SimpleLanguageToggle />
                 <NewLiquidToggle />
               </div>
@@ -297,7 +298,7 @@ export default function Index() {
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "أحداث اقتصادية مهمة ومؤشرات م��لية رئيسية"
+                      ? "أحداث اقتصادية مهمة ومؤشرات مالية رئيسية"
                       : "Important economic events and key financial indicators"}
                   </CardDescription>
                 </CardHeader>
@@ -323,7 +324,7 @@ export default function Index() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-primary" />
-                    {language === "ar" ? "الأخبار المالية" : "Financial News"}
+                    {language === "ar" ? "ا��أخبار المالية" : "Financial News"}
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
