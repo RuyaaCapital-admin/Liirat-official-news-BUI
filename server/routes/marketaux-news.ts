@@ -26,7 +26,7 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
     apiUrl.searchParams.append("limit", limit as string);
     apiUrl.searchParams.append("api_token", apiKey);
 
-    console.log(`Fetching Marketaux news for language: ${language}`);
+    console.log(`Fetching news for language: ${language}`);
 
     // Fetch data from Marketaux API
     const response = await fetch(apiUrl.toString(), {
