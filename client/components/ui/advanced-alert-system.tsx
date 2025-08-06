@@ -219,6 +219,14 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
           currencyPairs.map(async (pair) => {
             try {
               const response = await fetch(`/api/price-alert?symbol=${pair.symbol}`);
+
+              // Check if response is HTML (error page) instead of JSON
+              const contentType = response.headers.get('content-type');
+              if (!contentType || !contentType.includes('application/json')) {
+                console.warn(`API returned non-JSON response for ${pair.symbol}, using mock data`);
+                return pair; // Return original with mock data
+              }
+
               if (response.ok) {
                 const data = await response.json();
                 return {
@@ -227,11 +235,19 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                   change: data.change || pair.change,
                   changePercent: data.changePercent || pair.changePercent,
                 };
+              } else {
+                console.warn(`API request failed for ${pair.symbol}: ${response.status}`);
+                return pair; // Return original with mock data
               }
             } catch (error) {
-              console.warn(`Failed to fetch price for ${pair.symbol}:`, error);
+              // Handle JSON parsing errors and other issues
+              if (error instanceof SyntaxError && error.message.includes('Unexpected token')) {
+                console.warn(`API returned HTML instead of JSON for ${pair.symbol}, likely endpoint not available in dev mode`);
+              } else {
+                console.warn(`Failed to fetch price for ${pair.symbol}:`, error);
+              }
+              return pair; // Return original with mock data
             }
-            return pair; // Return original if fetch fails
           })
         );
         setCurrencyPairs(updatedPairs);
@@ -561,7 +577,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  {language === "ar" ? "السع�� المستهدف" : "Target Price"}
+                  {language === "ar" ? "السعر المستهدف" : "Target Price"}
                 </Label>
                 <Input
                   type="number"
