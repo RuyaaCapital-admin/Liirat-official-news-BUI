@@ -132,6 +132,19 @@
   body {
     @apply bg-background text-foreground;
     font-family: "Cairo", "Inter", sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Prevent horizontal scrolling on mobile */
+  html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* Ensure all containers respect mobile boundaries */
+  .container {
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   /* Arabic typography improvements */
