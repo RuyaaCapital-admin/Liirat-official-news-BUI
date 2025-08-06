@@ -439,41 +439,6 @@ export default function Index() {
                 </CardContent>
               </Card>
 
-              {/* Traditional EODHD Economic Events */}
-              <Card className="mb-8">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-primary" />
-                    {language === "ar"
-                      ? "التقويم الاقتصادي التقليدي"
-                      : "Traditional Economic Calendar"}
-                  </CardTitle>
-                  <CardDescription>
-                    {language === "ar"
-                      ? "أحداث اقتصادية مهمة ومؤشرات مالية رئيسية"
-                      : "Important economic events and key financial indicators"}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {isLoadingEvents ? (
-                    <div className="flex items-center justify-center py-12">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                      <span className="ml-2">
-                        {language === "ar"
-                          ? "جاري تحميل الأحداث الاقتصادية..."
-                          : "Loading economic events..."}
-                      </span>
-                    </div>
-                  ) : (
-                    <MacroCalendarTable
-                      events={economicEvents}
-                      className="rounded-lg overflow-hidden"
-                      language={language}
-                      dir={dir}
-                    />
-                  )}
-                </CardContent>
-              </Card>
 
               {/* Traditional News Cards */}
               <Card>
