@@ -52,6 +52,8 @@ export default function Index() {
   const [news, setNews] = useState<NewsResponse["news"]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [isLoadingNews, setIsLoadingNews] = useState(true);
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   const { theme } = useTheme();
   const { language, t, dir } = useLanguage();
@@ -62,6 +64,29 @@ export default function Index() {
     // TODO: Connect to Supabase
     console.log("Form submitted:", { name, email, whatsapp });
   };
+
+  // Handle navbar scroll behavior
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY < 10) {
+        // Always show navbar at top
+        setIsNavbarVisible(true);
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolling up - show navbar
+        setIsNavbarVisible(true);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down and past threshold - hide navbar
+        setIsNavbarVisible(false);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   // Fetch EODHD data with enhanced error handling and fallback
   useEffect(() => {
@@ -162,7 +187,7 @@ export default function Index() {
       <div className="relative z-10">
         <main role="main">
           {/* Navigation Header */}
-          <header className="neumorphic-sm backdrop-blur-md bg-background/95 sticky top-0 z-[60] border-0">
+          <header className={`neumorphic-sm backdrop-blur-md bg-background/95 fixed top-0 left-0 right-0 z-[60] border-0 transition-transform duration-300 ease-in-out ${isNavbarVisible ? 'translate-y-0' : '-translate-y-full'}`}>
             <div className="container mx-auto px-2 sm:px-4 py-4 flex items-center justify-between">
               <div className="flex items-center space-x-4 space-x-reverse">
                 <img
@@ -218,10 +243,12 @@ export default function Index() {
           </header>
 
           {/* Real-Time Market Ticker */}
-          <TradingViewTicker className="sticky top-[72px] z-[40] w-full" />
+          <div className="sticky top-0 z-[50] w-full">
+            <TradingViewTicker className="w-full" />
+          </div>
 
           {/* Hero Section */}
-          <section className="py-12 sm:py-20 lg:py-32 relative overflow-hidden">
+          <section className="pt-20 pb-12 sm:py-20 lg:py-32 relative overflow-hidden">
             {/* Official Logo Background Pattern */}
             <div className="absolute inset-0">
               <div className="w-full h-full bg-gradient-to-br from-primary/5 via-background to-primary/10"></div>
