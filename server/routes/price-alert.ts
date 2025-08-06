@@ -103,7 +103,16 @@ export async function handlePriceAlert(req: Request, res: Response) {
     const response = await fetch(url);
 
     if (!response.ok) {
-      throw new Error(`Polygon API error: ${response.status}`);
+      // Handle specific error codes
+      if (response.status === 403) {
+        console.error(`Polygon API authentication error: ${response.status} - Check API key validity`);
+        throw new Error(`Authentication failed: Invalid or expired API key`);
+      }
+      if (response.status === 429) {
+        console.error(`Polygon API rate limit exceeded: ${response.status}`);
+        throw new Error(`Rate limit exceeded: Too many requests`);
+      }
+      throw new Error(`Polygon API error: ${response.status} - ${response.statusText}`);
     }
 
     const data = await response.json();
