@@ -163,7 +163,7 @@ const getCountryFlag = (country: string) => {
     BE: "🇧🇪",
     AT: "🇦🇹",
     PT: "🇵🇹",
-    IE: "��🇪",
+    IE: "🇮🇪",
     FI: "🇫🇮",
     GR: "🇬🇷",
     CZ: "🇨🇿",
@@ -183,7 +183,7 @@ const getCountryFlag = (country: string) => {
     KR: "🇰🇷",
     SG: "🇸🇬",
     HK: "🇭🇰",
-    TH: "🇹🇭",
+    TH: "🇹��",
     MY: "🇲🇾",
     ID: "🇮🇩",
     PH: "🇵🇭",
@@ -207,7 +207,7 @@ const getCountryName = (country: string, language: string) => {
     GB: { en: "United Kingdom", ar: "المملكة المتحدة" },
     JP: { en: "Japan", ar: "اليابان" },
     CA: { en: "Canada", ar: "كندا" },
-    AU: { en: "Australia", ar: "أستراليا" },
+    AU: { en: "Australia", ar: "أس��را��يا" },
     CHF: { en: "Switzerland", ar: "سويسرا" },
     DE: { en: "Germany", ar: "ألمانيا" },
     FR: { en: "France", ar: "فرنسا" },
@@ -582,13 +582,13 @@ export function MacroCalendarTable({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="3">
-                ⭐⭐⭐ {t("High Impact", "عالي التأثير")}
+                {t("High Impact", "عالي التأثير")}
               </SelectItem>
               <SelectItem value="2">
-                ⭐⭐ {t("Medium Impact", "متوسط التأثير")}
+                {t("Medium Impact", "متوسط التأثير")}
               </SelectItem>
               <SelectItem value="1">
-                ⭐ {t("Low Impact", "منخفض التأثير")}
+                {t("Low Impact", "منخفض التأثير")}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -702,7 +702,7 @@ export function MacroCalendarTable({
                 >
                   {t(
                     "No events found matching your criteria",
-                    "لا توجد أحداث تطابق معاييرك",
+                    "لا توجد أحداث تطابق معا��يرك",
                   )}
                 </td>
               </tr>
