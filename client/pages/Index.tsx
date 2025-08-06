@@ -15,7 +15,6 @@ import TradingViewTicker from "@/components/ui/trading-view-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
-import { NewsCardsList } from "@/components/ui/news-cards-list";
 import {
   MarketauxNewsResponse,
   MarketauxNewsItem,
