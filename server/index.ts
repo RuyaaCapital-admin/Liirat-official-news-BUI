@@ -12,6 +12,7 @@ import {
 import { handleChat } from "./routes/chat";
 import { getEconomicEvents, getNews } from "./routes/eodhd";
 import { handlePriceAlert } from "./routes/price-alert";
+import { handleMarketauxNews } from "./routes/marketaux-news";
 
 export function createServer() {
   const app = express();
@@ -43,6 +44,9 @@ export function createServer() {
   // EODHD API routes
   app.get("/api/economic-events", getEconomicEvents);
   app.get("/api/news", getNews);
+
+  // Marketaux News API route
+  app.get("/api/marketaux-news", handleMarketauxNews);
 
   // Price alert route
   app.get("/api/price-alert", handlePriceAlert);

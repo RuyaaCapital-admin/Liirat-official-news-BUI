@@ -16,7 +16,12 @@ import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
 import { NewsCardsList } from "@/components/ui/news-cards-list";
-import { EconomicEventsResponse, NewsResponse } from "@shared/api";
+import {
+  EconomicEventsResponse,
+  NewsResponse,
+  MarketauxNewsResponse,
+  MarketauxNewsItem,
+} from "@shared/api";
 import { AdvancedAlertSystem } from "@/components/ui/advanced-alert-system";
 import { NotificationSystem } from "@/components/ui/notification-system";
 import { NotificationDropdown } from "@/components/ui/notification-dropdown";
@@ -35,6 +40,7 @@ import {
   Zap,
   BellRing,
   Bot,
+  AlertTriangle,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTheme } from "@/hooks/use-theme";
@@ -49,9 +55,15 @@ export default function Index() {
   const [economicEvents, setEconomicEvents] = useState<
     EconomicEventsResponse["events"]
   >([]);
+  // Marketaux News Data State
+  const [marketauxNews, setMarketauxNews] = useState<MarketauxNewsItem[]>([]);
+  const [isLoadingMarketaux, setIsLoadingMarketaux] = useState(true);
+  const [marketauxError, setMarketauxError] = useState<string | null>(null);
   const [news, setNews] = useState<NewsResponse["news"]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [isLoadingNews, setIsLoadingNews] = useState(true);
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   const { theme } = useTheme();
   const { language, t, dir } = useLanguage();
@@ -61,6 +73,76 @@ export default function Index() {
     e.preventDefault();
     // TODO: Connect to Supabase
     console.log("Form submitted:", { name, email, whatsapp });
+  };
+
+  // Handle navbar scroll behavior
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY < 10) {
+        // Always show navbar at top
+        setIsNavbarVisible(true);
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolling up - show navbar
+        setIsNavbarVisible(true);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down and past threshold - hide navbar
+        setIsNavbarVisible(false);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
+
+  // Fetch Marketaux news data with language support
+  const fetchMarketauxNews = async (lang: string = language) => {
+    try {
+      setIsLoadingMarketaux(true);
+      setMarketauxError(null);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+      const response = await fetch(
+        `/api/marketaux-news?language=${lang}&limit=50`,
+        {
+          signal: controller.signal,
+        },
+      );
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data: MarketauxNewsResponse = await response.json();
+          if (data.error) {
+            setMarketauxError(data.error);
+            setMarketauxNews([]);
+          } else {
+            setMarketauxNews(data.news || []);
+            setMarketauxError(null);
+          }
+        } else {
+          console.warn("Marketaux API returned non-JSON content:", contentType);
+          setMarketauxError("Invalid response format");
+          setMarketauxNews([]);
+        }
+      } else {
+        console.warn("Marketaux API returned non-OK status:", response.status);
+        setMarketauxError(`API Error: ${response.status}`);
+        setMarketauxNews([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch Marketaux news:", error);
+      setMarketauxError("Failed to fetch financial news");
+      setMarketauxNews([]);
+    } finally {
+      setIsLoadingMarketaux(false);
+    }
   };
 
   // Fetch EODHD data with enhanced error handling and fallback
@@ -141,13 +223,19 @@ export default function Index() {
 
     fetchEconomicEvents();
     fetchNews();
+    fetchMarketauxNews();
   }, []);
+
+  // Fetch Marketaux news when language changes
+  useEffect(() => {
+    fetchMarketauxNews(language);
+  }, [language]);
 
   // Enhanced economic calendar data with mixed language support
 
   return (
     <div
-      className={`min-h-screen bg-background relative ${language === "ar" ? "arabic" : "english"}`}
+      className={`min-h-screen bg-background relative overflow-x-hidden ${language === "ar" ? "arabic" : "english"}`}
     >
       {/* Global Background Image */}
       <div className="fixed inset-0 z-0">
@@ -159,16 +247,23 @@ export default function Index() {
       </div>
 
       {/* All content with relative positioning */}
-      <div className="relative z-10">
+      <div className="relative z-10 pt-[120px]">
         <main role="main">
-          {/* Navigation Header */}
-          <header className="neumorphic-sm backdrop-blur-md bg-background/95 sticky top-0 z-[60] border-0">
-            <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-              <div className="flex items-center space-x-4 space-x-reverse">
+          {/* Real-Time Market Ticker - Always Visible */}
+          <div className="fixed top-0 left-0 right-0 z-[70] w-full">
+            <TradingViewTicker className="w-full" />
+          </div>
+
+          {/* Floating Navigation Header */}
+          <header
+            className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? "translate-y-20" : "-translate-y-20"} top-4`}
+          >
+            <div className="neumorphic-card bg-background/95 backdrop-blur-md rounded-full px-6 py-3 flex items-center justify-between shadow-lg border border-border/50">
+              <div className="flex items-center">
                 <img
                   src="/liirat-logo-new.png"
                   alt="Liirat News"
-                  className="h-14 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                  className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
                   onClick={() =>
                     window.scrollTo({ top: 0, behavior: "smooth" })
                   }
@@ -179,73 +274,74 @@ export default function Index() {
               </div>
 
               <nav
-                className={`hidden md:flex items-center space-x-6 ${dir === "rtl" ? "space-x-reverse" : ""}`}
+                className={`hidden md:flex items-center space-x-1 ${dir === "rtl" ? "space-x-reverse" : ""}`}
                 role="navigation"
                 aria-label="Main navigation"
               >
                 <a
                   href="#calendar"
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="flex items-center space-x-1 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
                 >
-                  {t("nav.calendar")}
+                  <Calendar className="w-3 h-3" />
+                  <span>{t("nav.calendar")}</span>
                 </a>
                 <a
                   href="#alerts"
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="flex items-center space-x-1 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
                 >
-                  {t("nav.alerts")}
+                  <Bell className="w-3 h-3" />
+                  <span>{t("nav.alerts")}</span>
                 </a>
                 <a
                   href="#about"
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="flex items-center space-x-1 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
                 >
-                  {t("nav.about")}
+                  <Globe className="w-3 h-3" />
+                  <span>{t("nav.about")}</span>
                 </a>
                 <a
                   href="#contact"
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="flex items-center space-x-1 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
                 >
-                  {t("nav.contact")}
+                  <Zap className="w-3 h-3" />
+                  <span>{t("nav.contact")}</span>
                 </a>
               </nav>
 
-              <div className="flex items-center space-x-2 space-x-reverse">
-                <NotificationDropdown className="sm:h-9 sm:w-9 h-8 w-8" />
+              <div className="flex items-center space-x-1">
+                <NotificationDropdown className="h-8 w-8" />
                 <SimpleLanguageToggle />
                 <NewLiquidToggle />
               </div>
             </div>
           </header>
 
-          {/* Real-Time Market Ticker */}
-          <TradingViewTicker className="sticky top-[72px] z-[40] w-full" />
-
           {/* Hero Section */}
-          <section className="py-20 lg:py-32 relative overflow-hidden">
+          <section className="pt-20 pb-12 sm:py-20 lg:py-32 relative overflow-hidden">
             {/* Official Logo Background Pattern */}
             <div className="absolute inset-0">
               <div className="w-full h-full bg-gradient-to-br from-primary/5 via-background to-primary/10"></div>
               <div className="absolute inset-0 bg-[url('/liirat-logo-new.png')] bg-center bg-no-repeat bg-contain opacity-[0.03]"></div>
             </div>
             <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-primary/5"></div>
-            <div className="container mx-auto px-4 relative">
+            <div className="container mx-auto px-2 sm:px-4 relative">
               <div className="text-center max-w-4xl mx-auto">
-                <div className="neumorphic-lg bg-card/90 rounded-3xl p-12 mb-8">
-                  <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-foreground">
+                <div className="neumorphic-lg bg-card/90 rounded-3xl p-6 sm:p-12 mb-8">
+                  <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6 leading-tight text-foreground">
                     {t("hero.title")}
                     <span className="text-primary block">
                       {t("hero.subtitle")}
                     </span>
                   </h1>
-                  <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
+                  <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-6 sm:mb-8 leading-relaxed">
                     {t("hero.description")}
                   </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
                   <Button
                     variant="outline"
                     size="lg"
-                    className="text-primary px-8 py-6 text-lg font-semibold neumorphic-hover"
+                    className="text-primary px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg font-semibold neumorphic-hover"
                     onClick={() =>
                       document
                         .getElementById("calendar")
@@ -258,7 +354,7 @@ export default function Index() {
                   <Button
                     variant="outline"
                     size="lg"
-                    className="text-primary px-8 py-6 text-lg font-semibold neumorphic-hover"
+                    className="text-primary px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg font-semibold neumorphic-hover"
                     onClick={() =>
                       document
                         .getElementById("alerts")
@@ -274,27 +370,83 @@ export default function Index() {
           </section>
 
           {/* EODHD Economic Calendar Section */}
-          <section id="calendar" className="py-20 bg-muted/30">
-            <div className="container mx-auto px-4">
+          <section id="calendar" className="py-12 sm:py-20 bg-muted/30">
+            <div className="container mx-auto px-2 sm:px-4">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {t("calendar.title")}
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "تابع الأحداث الاقتصادية المهمة والأخبار المالية في الوقت الفعلي"
+                    ? "تابع الأح��اث الاقتصادية المهمة والأخبار المالية في الوقت الفعلي"
                     : "Track important economic events and real-time financial news"}
                 </p>
               </div>
 
-              {/* Economic Events Table */}
+              {/* Live Financial News Calendar */}
               <Card className="mb-8">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-primary" />
                     {language === "ar"
-                      ? "التقويم الاقتصادي"
-                      : "Economic Calendar"}
+                      ? "الأخبار المالية المباشرة"
+                      : "Live Financial News"}
+                  </CardTitle>
+                  <CardDescription>
+                    {language === "ar"
+                      ? "آخر الأخبار المالية والاقتصادية من Marketaux"
+                      : "Latest financial and economic news from Marketaux"}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {isLoadingMarketaux ? (
+                    <div className="flex items-center justify-center py-12">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      <span className="ml-2">
+                        {language === "ar"
+                          ? "جاري تحميل الأخبار المالية..."
+                          : "Loading financial news..."}
+                      </span>
+                    </div>
+                  ) : marketauxError ? (
+                    <div className="flex items-center justify-center py-12 text-destructive">
+                      <AlertTriangle className="w-5 h-5 mr-2" />
+                      <span>
+                        {language === "ar"
+                          ? "خطأ في تحميل الأخبار:"
+                          : "Error loading news:"}{" "}
+                        {marketauxError}
+                      </span>
+                    </div>
+                  ) : (
+                    <MacroCalendarTable
+                      events={marketauxNews.map((item) => ({
+                        date: item.date,
+                        time: new Date(item.date).toLocaleTimeString(),
+                        country: item.country,
+                        event: item.event,
+                        category: item.source || "Financial News",
+                        importance: item.importance,
+                        actual: item.actual || undefined,
+                        forecast: item.forecast || undefined,
+                        previous: item.previous || undefined,
+                      }))}
+                      className="rounded-lg overflow-hidden"
+                      language={language}
+                      dir={dir}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Traditional EODHD Economic Events */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-primary" />
+                    {language === "ar"
+                      ? "التقويم الاقتصادي التقليدي"
+                      : "Traditional Economic Calendar"}
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
@@ -306,7 +458,11 @@ export default function Index() {
                   {isLoadingEvents ? (
                     <div className="flex items-center justify-center py-12">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                      <span className="ml-2">Loading economic events...</span>
+                      <span className="ml-2">
+                        {language === "ar"
+                          ? "جاري تحميل الأحداث الاقتصادية..."
+                          : "Loading economic events..."}
+                      </span>
                     </div>
                   ) : (
                     <MacroCalendarTable
@@ -319,24 +475,28 @@ export default function Index() {
                 </CardContent>
               </Card>
 
-              {/* News Cards */}
+              {/* Traditional News Cards */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-primary" />
-                    {language === "ar" ? "الأخبار المالية" : "Financial News"}
+                    {language === "ar" ? "أخبار EODHD" : "EODHD News"}
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "آخر الأخبار والتحليلات المالية"
-                      : "Latest financial news and market analysis"}
+                      ? "آخر الأخبار والتحليلات المالية التقليدية"
+                      : "Traditional financial news and market analysis"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   {isLoadingNews ? (
                     <div className="flex items-center justify-center py-12">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                      <span className="ml-2">Loading news...</span>
+                      <span className="ml-2">
+                        {language === "ar"
+                          ? "جاري تحميل الأخبار..."
+                          : "Loading news..."}
+                      </span>
                     </div>
                   ) : (
                     <NewsCardsList
@@ -350,8 +510,8 @@ export default function Index() {
           </section>
 
           {/* Market Overview Section */}
-          <section className="py-20 bg-muted/30 hidden">
-            <div className="container mx-auto px-4">
+          <section className="py-12 sm:py-20 bg-muted/30 hidden">
+            <div className="container mx-auto px-2 sm:px-4">
               <div className="text-center mb-16">
                 {/* <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {t("market.title")}
@@ -395,8 +555,8 @@ export default function Index() {
           </section>
 
           {/* Advanced Alert System Section */}
-          <section id="alerts" className="py-20">
-            <div className="container mx-auto px-4">
+          <section id="alerts" className="py-12 sm:py-20">
+            <div className="container mx-auto px-2 sm:px-4">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {language === "ar"
@@ -414,8 +574,8 @@ export default function Index() {
           </section>
 
           {/* About Liirat Section */}
-          <section id="about" className="py-20 bg-muted/30">
-            <div className="container mx-auto px-4">
+          <section id="about" className="py-12 sm:py-20 bg-muted/30">
+            <div className="container mx-auto px-2 sm:px-4">
               <div className="text-center mb-16">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {t("about.title")}
@@ -478,8 +638,8 @@ export default function Index() {
           </section>
 
           {/* Contact Section */}
-          <section id="contact" className="py-20">
-            <div className="container mx-auto px-4">
+          <section id="contact" className="py-12 sm:py-20">
+            <div className="container mx-auto px-2 sm:px-4">
               <div className="max-w-2xl mx-auto text-center">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {t("contact.title")}
@@ -559,8 +719,8 @@ export default function Index() {
           </section>
 
           {/* Footer */}
-          <footer className="bg-muted/50 border-t border-border py-12">
-            <div className="container mx-auto px-4">
+          <footer className="bg-muted/50 border-t border-border py-8 sm:py-12">
+            <div className="container mx-auto px-2 sm:px-4">
               <div className="text-center">
                 <img
                   src="/liirat-logo-new.png"

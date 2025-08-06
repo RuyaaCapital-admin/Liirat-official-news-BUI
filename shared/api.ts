@@ -37,3 +37,27 @@ export interface NewsArticle {
 export interface NewsResponse {
   news: NewsArticle[];
 }
+
+// Marketaux News API
+export interface MarketauxNewsItem {
+  id: string;
+  date: string;
+  country: string;
+  importance: number; // 1-3 scale
+  event: string;
+  description: string;
+  actual?: string | null;
+  forecast?: string | null;
+  previous?: string | null;
+  url?: string;
+  source?: string;
+  sentiment?: number | null;
+  entities?: any[];
+}
+
+export interface MarketauxNewsResponse {
+  news: MarketauxNewsItem[];
+  total: number;
+  language: string;
+  error?: string;
+}

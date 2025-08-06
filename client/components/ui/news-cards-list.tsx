@@ -66,17 +66,17 @@ export function NewsCardsList({ news, className }: NewsCardsListProps) {
   return (
     <div className={cn("space-y-4", className)}>
       {news.length === 0 ? (
-        <div className="text-center p-8 text-muted-foreground bg-card rounded-lg shadow-sm">
+        <div className="text-center p-6 sm:p-8 text-muted-foreground bg-card rounded-lg border">
           No news articles available
         </div>
       ) : (
         news.map((article, index) => (
           <div
             key={index}
-            className="bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow"
+            className="bg-card border border-border rounded-lg p-4 sm:p-6 transition-all"
           >
-            <div className="flex items-start justify-between gap-4 mb-3">
-              <h3 className="text-lg font-semibold text-foreground leading-tight flex-1">
+            <div className="flex items-start justify-between gap-3 sm:gap-4 mb-3">
+              <h3 className="text-base sm:text-lg font-semibold text-foreground leading-tight flex-1">
                 {article.title}
               </h3>
               {article.link && (
@@ -92,12 +92,12 @@ export function NewsCardsList({ news, className }: NewsCardsListProps) {
               )}
             </div>
 
-            <p className="text-muted-foreground mb-4 leading-relaxed">
-              {truncateContent(article.content)}
+            <p className="text-sm sm:text-base text-muted-foreground mb-3 sm:mb-4 leading-relaxed">
+              {truncateContent(article.content, 120)}
             </p>
 
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between flex-wrap gap-2 sm:gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 {/* Date */}
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <Clock className="w-3 h-3" />
@@ -118,7 +118,7 @@ export function NewsCardsList({ news, className }: NewsCardsListProps) {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
                 {/* Symbols */}
                 {article.symbols && article.symbols.length > 0 && (
                   <div className="flex gap-1">
