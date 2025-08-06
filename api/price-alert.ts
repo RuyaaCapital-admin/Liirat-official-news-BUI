@@ -19,11 +19,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Rate limiter logic (15 sec)
   const now = Date.now();
-  const FIFTEEN_SECONDS = 15 * 1000;
-  if (now - lastCallTimestamp < FIFTEEN_SECONDS) {
+  const SIXTY_SECONDS = 60 * 1000;
+  if (now - lastCallTimestamp < SIXTY_SECONDS) {
     return res.status(429).json({
-      error: "Too many requests – wait a few seconds",
-      nextAllowed: new Date(lastCallTimestamp + FIFTEEN_SECONDS).toISOString()
+      error: "Too many requests – wait at least 60 seconds between calls",
+      nextAllowed: new Date(lastCallTimestamp + SIXTY_SECONDS).toISOString()
     });
   }
   lastCallTimestamp = now;
