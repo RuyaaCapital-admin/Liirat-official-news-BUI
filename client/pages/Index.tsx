@@ -17,8 +17,6 @@ import { ChatWidget } from "@/components/ui/chat-widget";
 import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
 import { NewsCardsList } from "@/components/ui/news-cards-list";
 import {
-  EconomicEventsResponse,
-  NewsResponse,
   MarketauxNewsResponse,
   MarketauxNewsItem,
 } from "@shared/api";
