@@ -174,17 +174,19 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             background: transparent;
           }
           
-          /* Allow natural ticker movement */
+          /* Force ticker movement by constraining width */
           .tradingview-widget-container {
             max-width: 100% !important;
+            width: 100% !important;
             overflow: hidden !important;
             position: relative !important;
           }
 
           .tradingview-widget-container iframe {
-            width: 100% !important;
+            width: 120% !important;
             height: auto !important;
             min-height: 60px !important;
+            margin-left: 0 !important;
           }
 
           /* Ensure ticker visibility during scroll */
