@@ -379,7 +379,7 @@ export function MacroCalendarTable({
           />
           <Input
             type="text"
-            placeholder={t("Search in events...", "البحث في الأحداث...")}
+            placeholder={t("Search in events...", "البحث في الأحدا��...")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={cn(
@@ -590,7 +590,7 @@ export function MacroCalendarTable({
                       : selectedImportances[0] === "2"
                         ? t("Medium Impact", "متوسط التأثير")
                         : t("Low Impact", "منخفض التأثير")
-                    : `${selectedImportances.length} ${t("Impact Levels", "مستويات الت��ثير")}`}
+                    : `${selectedImportances.length} ${t("Impact Levels", "مستويات التأثير")}`}
                 </span>
                 <ChevronDown className="h-4 w-4 opacity-50" />
               </Button>
@@ -689,7 +689,7 @@ export function MacroCalendarTable({
       {/* Events Table */}
       <div className="border rounded-lg">
         <div className="overflow-x-auto">
-        <table className="w-full min-w-[700px] sm:min-w-[800px] border-collapse bg-card">
+        <table className="w-full min-w-[600px] sm:min-w-[800px] border-collapse bg-card">
           <thead className="bg-muted/50">
             <tr>
               <th
@@ -813,7 +813,9 @@ export function MacroCalendarTable({
                       dir === "rtl" ? "text-right" : "text-left",
                     )}
                   >
-                    <div className="font-medium max-w-[150px] sm:max-w-xs truncate" title={event.event}>{event.event}</div>
+                    <div className="font-medium max-w-[120px] sm:max-w-xs text-xs sm:text-sm leading-tight" title={event.event}>
+                      <span className="block truncate">{event.event}</span>
+                    </div>
                   </td>
                   <td
                     className={cn(
