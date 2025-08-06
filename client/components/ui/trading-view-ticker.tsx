@@ -144,6 +144,17 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             height: auto !important;
             min-height: 60px !important;
           }
+
+          /* Mobile responsiveness */
+          @media (max-width: 768px) {
+            .tradingview-widget-container {
+              min-height: 50px !important;
+            }
+
+            .tradingview-widget-container iframe {
+              min-height: 50px !important;
+            }
+          }
           
           .tradingview-widget-container * {
             animation-play-state: running !important;
