@@ -363,30 +363,22 @@ export default function Index() {
                           </div>
                         </div>
                       )}
-                      {marketauxNews.length > 0 ? (
-                        <MacroCalendarTable
-                          events={marketauxNews.map((item) => ({
-                            date: item.date,
-                            time: new Date(item.date).toLocaleTimeString(),
-                            country: item.country,
-                            event: item.event,
-                            category: item.source || "Financial News",
-                            importance: item.importance,
-                            actual: item.actual || undefined,
-                            forecast: item.forecast || undefined,
-                            previous: item.previous || undefined,
-                          }))}
-                          className="rounded-lg overflow-hidden"
-                          language={language}
-                          dir={dir}
-                        />
-                      ) : (
-                        <div className="p-8 text-center text-muted-foreground bg-card rounded-lg border">
-                          {language === "ar"
-                            ? "لا توجد أخبار متاحة حالياً"
-                            : "No news available at the moment"}
-                        </div>
-                      )}
+                      <MacroCalendarTable
+                        events={marketauxNews.length > 0 ? marketauxNews.map((item) => ({
+                          date: item.date,
+                          time: new Date(item.date).toLocaleTimeString(),
+                          country: item.country,
+                          event: item.event,
+                          category: item.source || "Financial News",
+                          importance: item.importance,
+                          actual: item.actual || undefined,
+                          forecast: item.forecast || undefined,
+                          previous: item.previous || undefined,
+                        })) : []}
+                        className="rounded-lg overflow-hidden"
+                        language={language}
+                        dir={dir}
+                      />
                     </div>
                   )}
                 </CardContent>
