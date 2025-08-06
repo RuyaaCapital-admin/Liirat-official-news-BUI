@@ -160,17 +160,39 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             display: block !important;
           }
 
-          /* Hide all TradingView branding and copyright */
+          /* Hide all TradingView branding and copyright - aggressive approach */
           .tradingview-widget-copyright,
           .tradingview-widget-container .tradingview-widget-copyright,
           [class*="copyright"],
           [data-copyright],
-          a[href*="tradingview"] {
+          a[href*="tradingview"],
+          [class*="logo"],
+          [class*="Logo"],
+          [class*="brand"],
+          [class*="Brand"],
+          [class*="tv-"],
+          [data-logo],
+          [data-brand] {
             display: none !important;
             visibility: hidden !important;
             opacity: 0 !important;
             position: absolute !important;
             left: -9999px !important;
+            width: 0 !important;
+            height: 0 !important;
+          }
+
+          /* Block right side completely */
+          .tradingview-widget-container::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 180px;
+            height: 100%;
+            background: var(--background);
+            z-index: 999;
+            pointer-events: auto;
           }
 
           /* Disable click interactions but allow animations */
