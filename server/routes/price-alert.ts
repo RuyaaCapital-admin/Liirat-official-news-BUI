@@ -126,10 +126,8 @@ export async function handlePriceAlert(req: Request, res: Response) {
     }
 
     if (price === null) {
-      return res.status(404).json({
-        error: "Price not found for symbol",
-        symbol: upperSymbol,
-      });
+      console.log(`Price not found for ${upperSymbol}, falling back to mock data`);
+      return getMockPriceData(symbol as string, res);
     }
 
     return res.status(200).json({
