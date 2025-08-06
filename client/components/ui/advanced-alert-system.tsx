@@ -53,6 +53,7 @@ interface AdvancedAlertSystemProps {
 
 export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
   const { language, dir } = useLanguage();
+  const { addAlert } = useAlerts();
   const [alerts, setAlerts] = useState<PriceAlert[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -99,7 +100,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     {
       symbol: "AUDUSD",
       name: "AUD/USD",
-      nameAr: "دولار أست��الي/دولار",
+      nameAr: "دولار أسترالي/دولار",
       currentPrice: 0.6598,
       change: 0.0015,
       changePercent: 0.23,
@@ -155,7 +156,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     {
       symbol: "BTCUSD",
       name: "Bitcoin/USD",
-      nameAr: "بيتكو��ن/دولار",
+      nameAr: "بيتكوين/دولار",
       currentPrice: 43250.75,
       change: -1250.25,
       changePercent: -2.81,
