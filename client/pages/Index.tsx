@@ -15,13 +15,7 @@ import TradingViewTicker from "@/components/ui/trading-view-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
-import { NewsCardsList } from "@/components/ui/news-cards-list";
-import {
-  EconomicEventsResponse,
-  NewsResponse,
-  MarketauxNewsResponse,
-  MarketauxNewsItem,
-} from "@shared/api";
+import { MarketauxNewsResponse, MarketauxNewsItem } from "@shared/api";
 import { AdvancedAlertSystem } from "@/components/ui/advanced-alert-system";
 import { NotificationSystem } from "@/components/ui/notification-system";
 import { NotificationDropdown } from "@/components/ui/notification-dropdown";
@@ -51,17 +45,10 @@ export default function Index() {
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
 
-  // EODHD Data State
-  const [economicEvents, setEconomicEvents] = useState<
-    EconomicEventsResponse["events"]
-  >([]);
-  // Marketaux News Data State
+  // News Data State
   const [marketauxNews, setMarketauxNews] = useState<MarketauxNewsItem[]>([]);
   const [isLoadingMarketaux, setIsLoadingMarketaux] = useState(true);
   const [marketauxError, setMarketauxError] = useState<string | null>(null);
-  const [news, setNews] = useState<NewsResponse["news"]>([]);
-  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
-  const [isLoadingNews, setIsLoadingNews] = useState(true);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -98,7 +85,7 @@ export default function Index() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Fetch Marketaux news data with language support
+  // Fetch news data with language support
   const fetchMarketauxNews = async (lang: string = language) => {
     try {
       setIsLoadingMarketaux(true);
@@ -108,7 +95,7 @@ export default function Index() {
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
       const response = await fetch(
-        `/api/marketaux-news?language=${lang}&limit=50`,
+        `/api/marketaux-news?language=${lang}&limit=3&countries=us,gb,ae`,
         {
           signal: controller.signal,
         },
@@ -127,17 +114,17 @@ export default function Index() {
             setMarketauxError(null);
           }
         } else {
-          console.warn("Marketaux API returned non-JSON content:", contentType);
+          console.warn("News API returned non-JSON content:", contentType);
           setMarketauxError("Invalid response format");
           setMarketauxNews([]);
         }
       } else {
-        console.warn("Marketaux API returned non-OK status:", response.status);
+        console.warn("News API returned non-OK status:", response.status);
         setMarketauxError(`API Error: ${response.status}`);
         setMarketauxNews([]);
       }
     } catch (error) {
-      console.error("Failed to fetch Marketaux news:", error);
+      console.error("Failed to fetch news:", error);
       setMarketauxError("Failed to fetch financial news");
       setMarketauxNews([]);
     } finally {
@@ -145,88 +132,12 @@ export default function Index() {
     }
   };
 
-  // Fetch EODHD data with enhanced error handling and fallback
+  // Fetch news data on component mount
   useEffect(() => {
-    const fetchEconomicEvents = async () => {
-      try {
-        setIsLoadingEvents(true);
-        // Add timeout to prevent hanging
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-        const response = await fetch("/api/economic-events", {
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-
-        if (response.ok) {
-          // Check if response is JSON before parsing
-          const contentType = response.headers.get("content-type");
-          if (contentType && contentType.includes("application/json")) {
-            const data: EconomicEventsResponse = await response.json();
-            setEconomicEvents(data.events || []);
-          } else {
-            console.warn(
-              "Economic events API returned non-JSON content:",
-              contentType,
-            );
-            setEconomicEvents([]);
-          }
-        } else {
-          console.warn(
-            "Economic events API returned non-OK status:",
-            response.status,
-          );
-          setEconomicEvents([]); // Set empty array on failure
-        }
-      } catch (error) {
-        console.error("Failed to fetch economic events:", error);
-        setEconomicEvents([]); // Always set fallback data
-      } finally {
-        setIsLoadingEvents(false);
-      }
-    };
-
-    const fetchNews = async () => {
-      try {
-        setIsLoadingNews(true);
-        // Add timeout to prevent hanging
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-        const response = await fetch("/api/news", {
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-
-        if (response.ok) {
-          // Check if response is JSON before parsing
-          const contentType = response.headers.get("content-type");
-          if (contentType && contentType.includes("application/json")) {
-            const data: NewsResponse = await response.json();
-            setNews(data.news || []);
-          } else {
-            console.warn("News API returned non-JSON content:", contentType);
-            setNews([]);
-          }
-        } else {
-          console.warn("News API returned non-OK status:", response.status);
-          setNews([]); // Set empty array on failure
-        }
-      } catch (error) {
-        console.error("Failed to fetch news:", error);
-        setNews([]); // Always set fallback data
-      } finally {
-        setIsLoadingNews(false);
-      }
-    };
-
-    fetchEconomicEvents();
-    fetchNews();
     fetchMarketauxNews();
   }, []);
 
-  // Fetch Marketaux news when language changes
+  // Fetch news when language changes
   useEffect(() => {
     fetchMarketauxNews(language);
   }, [language]);
@@ -394,8 +305,8 @@ export default function Index() {
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "آخر الأخبار المالية والاقتصادية من Marketaux"
-                      : "Latest financial and economic news from Marketaux"}
+                      ? "آخر الأخبار المالية والاقتصادية"
+                      : "Latest financial and economic news"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -434,74 +345,6 @@ export default function Index() {
                       className="rounded-lg overflow-hidden"
                       language={language}
                       dir={dir}
-                    />
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Traditional EODHD Economic Events */}
-              <Card className="mb-8">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-primary" />
-                    {language === "ar"
-                      ? "التقويم الاقتصادي التقليدي"
-                      : "Traditional Economic Calendar"}
-                  </CardTitle>
-                  <CardDescription>
-                    {language === "ar"
-                      ? "أحداث اقتصادية مهمة ومؤشرات مالية رئيسية"
-                      : "Important economic events and key financial indicators"}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {isLoadingEvents ? (
-                    <div className="flex items-center justify-center py-12">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                      <span className="ml-2">
-                        {language === "ar"
-                          ? "جاري تحميل الأحداث الاقتصادية..."
-                          : "Loading economic events..."}
-                      </span>
-                    </div>
-                  ) : (
-                    <MacroCalendarTable
-                      events={economicEvents}
-                      className="rounded-lg overflow-hidden"
-                      language={language}
-                      dir={dir}
-                    />
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Traditional News Cards */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-primary" />
-                    {language === "ar" ? "أخبار EODHD" : "EODHD News"}
-                  </CardTitle>
-                  <CardDescription>
-                    {language === "ar"
-                      ? "آخر الأخبار والتحليلات المالية التقليدية"
-                      : "Traditional financial news and market analysis"}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {isLoadingNews ? (
-                    <div className="flex items-center justify-center py-12">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                      <span className="ml-2">
-                        {language === "ar"
-                          ? "جاري تحميل الأخبار..."
-                          : "Loading news..."}
-                      </span>
-                    </div>
-                  ) : (
-                    <NewsCardsList
-                      news={news}
-                      className="max-h-[600px] overflow-y-auto"
                     />
                   )}
                 </CardContent>

@@ -3,11 +3,7 @@ import { MarketauxNewsResponse } from "@shared/api";
 
 export const handleMarketauxNews: RequestHandler = async (req, res) => {
   try {
-    const {
-      language = "en",
-      countries = "US,GB,EU,JP,CA,AU,DE,FR",
-      limit = 20,
-    } = req.query;
+    const { language = "en", countries = "us,gb,ae", limit = "3" } = req.query;
 
     // Get API key from environment variable
     const apiKey = process.env.MARKETAUX_API_KEY;
@@ -19,21 +15,14 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
       });
     }
 
-    // Calculate published_after date (last 7 days)
-    const publishedAfter = new Date();
-    publishedAfter.setDate(publishedAfter.getDate() - 7);
-    const publishedAfterISO = publishedAfter.toISOString();
-
-    // Build API URL
+    // Build API URL according to specifications
     const apiUrl = new URL("https://api.marketaux.com/v1/news/all");
     apiUrl.searchParams.append("countries", countries as string);
-    apiUrl.searchParams.append("filter_entities", "true");
-    apiUrl.searchParams.append("limit", limit as string);
-    apiUrl.searchParams.append("published_after", publishedAfterISO);
     apiUrl.searchParams.append("language", language as string);
+    apiUrl.searchParams.append("limit", limit as string);
     apiUrl.searchParams.append("api_token", apiKey);
 
-    console.log(`Fetching Marketaux news for language: ${language}`);
+    console.log(`Fetching news for language: ${language}`);
 
     // Fetch data from Marketaux API
     const response = await fetch(apiUrl.toString(), {
@@ -46,7 +35,7 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
 
     if (!response.ok) {
       console.error(
-        `Marketaux API error: ${response.status} - ${response.statusText}`,
+        `News API error: ${response.status} - ${response.statusText}`,
       );
       return res.status(response.status).json({
         error: `API request failed: ${response.statusText}`,
@@ -85,7 +74,7 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
           forecast: item.forecast || null,
           previous: item.previous || null,
           url: item.url || "",
-          source: item.source || "Marketaux",
+          source: "Liirat",
           sentiment: item.sentiment || null,
           entities: item.entities || [],
         };
@@ -100,7 +89,7 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
 
     res.json(response_data);
   } catch (error) {
-    console.error("Error fetching Marketaux news:", error);
+    console.error("Error fetching news:", error);
     res.status(500).json({
       error: "Failed to fetch financial news",
       news: [],
