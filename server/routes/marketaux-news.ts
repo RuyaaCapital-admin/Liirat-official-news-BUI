@@ -95,10 +95,15 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
 
     res.json(response_data);
   } catch (error) {
-    console.error("Error fetching news:", error);
-    res.status(500).json({
-      error: "Failed to fetch financial news",
+    console.error("[Marketaux] Error fetching news:", error);
+
+    // Send proper error response
+    const errorResponse = {
+      error: error instanceof Error ? error.message : "Failed to fetch financial news",
       news: [],
-    });
+      timestamp: new Date().toISOString(),
+    };
+
+    res.status(500).json(errorResponse);
   }
 };
