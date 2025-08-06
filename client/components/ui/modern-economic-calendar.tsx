@@ -106,7 +106,7 @@ export function ModernEconomicCalendar({
       time: "16:00",
       country: "ألمانيا",
       countryFlag: "🇩🇪",
-      event: "مؤشر أسعار المستهلك",
+      event: "مؤشر أسعار المستهل��",
       importance: 2,
       actual: undefined,
       forecast: "2.1%",
@@ -146,7 +146,7 @@ export function ModernEconomicCalendar({
     {
       id: "5",
       time: "22:30",
-      country: "ك��دا",
+      country: "كندا",
       countryFlag: "🇨🇦",
       event: "معدل البطالة",
       importance: 2,
@@ -332,10 +332,10 @@ export function ModernEconomicCalendar({
               </Select>
             </div>
 
-            {/* Search Bar */}
-            <div className="space-y-2">
+            {/* Smart Search Bar with Suggestions */}
+            <div className="space-y-2 relative">
               <label className="text-sm font-medium text-muted-foreground">
-                البحث
+                البحث الذكي
               </label>
               <div className="relative">
                 <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -343,10 +343,43 @@ export function ModernEconomicCalendar({
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setShowSearchSuggestions(searchQuery.length >= 1)}
+                  onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                   className="pr-10 bg-background/80 border-border/50 hover:border-primary/50 transition-colors"
-                  placeholder="ابحث في الأحداث أو العملات..."
+                  placeholder="ابحث في الأحداث أو العملات... (اكتب حرف أو اثنين)"
                   dir="rtl"
                 />
+
+                {/* Search Suggestions Dropdown */}
+                {showSearchSuggestions && searchSuggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border border-border/50 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    <div className="p-2">
+                      <div className="text-xs text-muted-foreground mb-2 px-2">
+                        اقتراحات البحث:
+                      </div>
+                      {searchSuggestions.map((suggestion, index) => (
+                        <div
+                          key={index}
+                          onClick={() => {
+                            setSearchQuery(suggestion.text);
+                            setShowSearchSuggestions(false);
+                          }}
+                          className="flex items-center gap-3 p-2 hover:bg-muted/50 cursor-pointer rounded text-sm"
+                        >
+                          <span className="text-lg">{suggestion.icon}</span>
+                          <div className="flex-1">
+                            <div className="font-medium">{suggestion.text}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {suggestion.type === 'country' && 'دولة'}
+                              {suggestion.type === 'event' && 'حدث اقتصادي'}
+                              {suggestion.type === 'currency' && 'عملة'}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
