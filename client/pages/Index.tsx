@@ -586,11 +586,6 @@ export default function Index() {
           </footer>
         </main>
 
-        {/* Alert Settings Modal */}
-        <AlertSettingsModal
-          open={showAlertSettings}
-          onOpenChange={setShowAlertSettings}
-        />
 
         {/* Chat Widget */}
         <ChatWidget />
