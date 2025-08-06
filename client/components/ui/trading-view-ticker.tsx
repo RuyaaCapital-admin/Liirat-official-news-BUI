@@ -56,10 +56,10 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
         "largeChartUrl": "",
         "isTransparent": true,
         "showSymbolLogo": true,
-        "displayMode": "adaptive",
-        "autosize": true,
-        "speed": 80,
-        "animationSpeed": "fast"
+        "displayMode": "regular",
+        "autosize": false,
+        "width": "580",
+        "height": "72"
       }`;
 
     container.current.appendChild(script);
@@ -67,7 +67,7 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
 
   return (
     <div className={cn("w-full flex justify-center border-b border-border bg-card", className)}>
-      <div className="tradingview-widget-container relative overflow-hidden" style={{ maxWidth: '580px', width: '580px' }} ref={container}>
+      <div className="tradingview-widget-container relative overflow-hidden" style={{ maxWidth: '580px', width: '580px', height: '72px' }} ref={container}>
       <div className="tradingview-widget-container__widget relative">
         {/* Invisible overlay to completely disable all clicks and interactions */}
         <div
@@ -115,17 +115,18 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
           overflow: hidden;
         }
 
-        /* Hide TradingView logo - multiple overlay blocks */
+        /* Hide TradingView logo - aggressive overlays */
         .tradingview-widget-container::after {
           content: '';
           position: absolute;
           bottom: 0;
           right: 0;
           background: var(--card);
-          width: 250px;
-          height: 50px;
-          z-index: 25;
+          width: 200px;
+          height: 100%;
+          z-index: 999;
           pointer-events: none;
+          display: block;
         }
 
         .tradingview-widget-container::before {
@@ -133,14 +134,15 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
           position: absolute;
           top: 0;
           right: 0;
-          background: var(--card);
-          width: 300px;
+          background: var(--background);
+          width: 180px;
           height: 100%;
-          z-index: 24;
+          z-index: 998;
           pointer-events: none;
+          display: block;
         }
 
-        /* Additional right-side logo hiding - cover entire right area */
+        /* Additional overlay for logo area */
         .tradingview-widget-container .tradingview-widget-container__widget::after {
           content: '';
           position: absolute;
@@ -148,26 +150,37 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
           right: 0;
           bottom: 0;
           background: var(--card);
-          width: 150px;
-          z-index: 30;
+          width: 120px;
+          z-index: 1000;
           pointer-events: none;
+          display: block !important;
         }
 
-        /* Extra aggressive right-side masking */
-        .tradingview-widget-container iframe {
-          mask: linear-gradient(to right, white 0%, white 70%, transparent 100%) !important;
-          -webkit-mask: linear-gradient(to right, white 0%, white 70%, transparent 100%) !important;
+        /* Crop the iframe to hide right side */
+        .tradingview-widget-container {
+          clip-path: inset(0 120px 0 0) !important;
         }
 
-        /* Force continuous scrolling and prevent hover pause */
         .tradingview-widget-container iframe {
+          width: 700px !important;
+          margin-right: -120px !important;
+        }
+
+        /* Force scrolling by constraining width */
+        .tradingview-widget-container {
+          max-width: 580px !important;
+          width: 580px !important;
+          overflow: hidden !important;
+        }
+
+        .tradingview-widget-container iframe {
+          min-width: 700px !important;
           animation: none !important;
           transition: none !important;
         }
 
         .tradingview-widget-container * {
           animation-play-state: running !important;
-          animation-duration: inherit !important;
           pointer-events: none !important;
         }
 
