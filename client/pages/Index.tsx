@@ -230,7 +230,7 @@ export default function Index() {
             <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-primary/5"></div>
             <div className="container mx-auto px-4 relative">
               <div className="text-center max-w-4xl mx-auto">
-                <div className="backdrop-blur-sm bg-card/80 border border-primary/20 rounded-3xl p-12 mb-8 shadow-2xl">
+                <div className="neumorphic-lg bg-card/90 rounded-3xl p-12 mb-8">
                   <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-foreground">
                     {t("hero.title")}
                     <span className="text-primary block">
