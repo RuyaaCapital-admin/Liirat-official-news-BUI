@@ -109,7 +109,10 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
 
             // Run immediately and then every 500ms
             hideLogoElements();
-            setInterval(hideLogoElements, 500);
+            // Reduced polling frequency to avoid excessive API calls
+            const logoInterval = setInterval(hideLogoElements, 5000);
+            // Clear interval after 30 seconds to prevent indefinite polling
+            setTimeout(() => clearInterval(logoInterval), 30000);
           } catch (e) {
             // Cross-origin restrictions prevent iframe access, overlays will handle it
             console.log("Using overlay method for logo hiding");
