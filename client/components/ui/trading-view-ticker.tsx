@@ -88,6 +88,8 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             onMouseDown={(e) => e.preventDefault()}
             onTouchStart={(e) => e.preventDefault()}
           />
+          {/* Light mode overlay for better logo hiding */}
+          <div className="light-mode-overlay" />
         </div>
 
         {/* Global styles to hide branding and disable interactions */}
