@@ -308,8 +308,8 @@ export default function Index() {
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "آخر الأخبار المالية والاقتصادية من Marketaux"
-                      : "Latest financial and economic news from Marketaux"}
+                      ? "آخر الأخبار المالية والاقتصادية"
+                      : "Latest financial and economic news"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
