@@ -90,6 +90,13 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
               WebkitUserSelect: "none",
             }}
           />
+          {/* Additional click blocker for logo area */}
+          <div
+            className="click-blocker"
+            onClick={(e) => e.preventDefault()}
+            onMouseDown={(e) => e.preventDefault()}
+            onTouchStart={(e) => e.preventDefault()}
+          />
         </div>
 
         {/* Global styles to hide branding and disable interactions */}
