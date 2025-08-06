@@ -16,7 +16,7 @@ import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
 import { NewsCardsList } from "@/components/ui/news-cards-list";
-import { EconomicEventsResponse, NewsResponse } from "@shared/api";
+import { EconomicEventsResponse, NewsResponse, MarketauxNewsResponse, MarketauxNewsItem } from "@shared/api";
 import { AdvancedAlertSystem } from "@/components/ui/advanced-alert-system";
 import { NotificationSystem } from "@/components/ui/notification-system";
 import { NotificationDropdown } from "@/components/ui/notification-dropdown";
@@ -49,6 +49,10 @@ export default function Index() {
   const [economicEvents, setEconomicEvents] = useState<
     EconomicEventsResponse["events"]
   >([]);
+  // Marketaux News Data State
+  const [marketauxNews, setMarketauxNews] = useState<MarketauxNewsItem[]>([]);
+  const [isLoadingMarketaux, setIsLoadingMarketaux] = useState(true);
+  const [marketauxError, setMarketauxError] = useState<string | null>(null);
   const [news, setNews] = useState<NewsResponse["news"]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [isLoadingNews, setIsLoadingNews] = useState(true);
@@ -87,6 +91,50 @@ export default function Index() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
+
+  // Fetch Marketaux news data with language support
+  const fetchMarketauxNews = async (lang: string = language) => {
+    try {
+      setIsLoadingMarketaux(true);
+      setMarketauxError(null);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+      const response = await fetch(`/api/marketaux-news?language=${lang}&limit=50`, {
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data: MarketauxNewsResponse = await response.json();
+          if (data.error) {
+            setMarketauxError(data.error);
+            setMarketauxNews([]);
+          } else {
+            setMarketauxNews(data.news || []);
+            setMarketauxError(null);
+          }
+        } else {
+          console.warn("Marketaux API returned non-JSON content:", contentType);
+          setMarketauxError("Invalid response format");
+          setMarketauxNews([]);
+        }
+      } else {
+        console.warn("Marketaux API returned non-OK status:", response.status);
+        setMarketauxError(`API Error: ${response.status}`);
+        setMarketauxNews([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch Marketaux news:", error);
+      setMarketauxError("Failed to fetch financial news");
+      setMarketauxNews([]);
+    } finally {
+      setIsLoadingMarketaux(false);
+    }
+  };
 
   // Fetch EODHD data with enhanced error handling and fallback
   useEffect(() => {
@@ -166,7 +214,13 @@ export default function Index() {
 
     fetchEconomicEvents();
     fetchNews();
+    fetchMarketauxNews();
   }, []);
+
+  // Fetch Marketaux news when language changes
+  useEffect(() => {
+    fetchMarketauxNews(language);
+  }, [language]);
 
   // Enhanced economic calendar data with mixed language support
 
