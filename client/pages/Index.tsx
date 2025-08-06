@@ -166,7 +166,7 @@ export default function Index() {
             <div className="container mx-auto px-4 py-4 flex items-center justify-between">
               <div className="flex items-center space-x-4 space-x-reverse">
                 <img
-                  src="/liirat-logo.png"
+                  src="/liirat-logo-new.png"
                   alt="Liirat News"
                   className="h-14 w-auto cursor-pointer hover:opacity-80 transition-opacity"
                   onClick={() =>
@@ -324,7 +324,7 @@ export default function Index() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-primary" />
-                    {language === "ar" ? "ا��أخبار المالية" : "Financial News"}
+                    {language === "ar" ? "الأخبار المالية" : "Financial News"}
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
