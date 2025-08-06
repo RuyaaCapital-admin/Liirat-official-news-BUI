@@ -49,17 +49,10 @@ export default function Index() {
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
 
-  // EODHD Data State
-  const [economicEvents, setEconomicEvents] = useState<
-    EconomicEventsResponse["events"]
-  >([]);
   // Marketaux News Data State
   const [marketauxNews, setMarketauxNews] = useState<MarketauxNewsItem[]>([]);
   const [isLoadingMarketaux, setIsLoadingMarketaux] = useState(true);
   const [marketauxError, setMarketauxError] = useState<string | null>(null);
-  const [news, setNews] = useState<NewsResponse["news"]>([]);
-  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
-  const [isLoadingNews, setIsLoadingNews] = useState(true);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
