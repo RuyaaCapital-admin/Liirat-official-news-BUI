@@ -395,7 +395,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Pair Search */}
-          <div className="space-y-2 relative z-30">
+          <div className="space-y-2 relative" style={{ zIndex: 10000 }}>
             <Label className="text-sm font-medium">
               {language === "ar"
                 ? "البحث عن زوج العملات"
@@ -561,7 +561,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  {language === "ar" ? "السعر المستهدف" : "Target Price"}
+                  {language === "ar" ? "السع�� المستهدف" : "Target Price"}
                 </Label>
                 <Input
                   type="number"
