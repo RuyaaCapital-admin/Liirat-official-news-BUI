@@ -91,16 +91,31 @@ export default function Index() {
       setIsLoadingMarketaux(true);
       setMarketauxError(null);
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      console.log(`Fetching news for language: ${lang}`);
 
+      // First test basic server connectivity
+      try {
+        const pingResponse = await fetch("/api/ping", {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        });
+        console.log(`Server ping status: ${pingResponse.status}`);
+      } catch (pingError) {
+        console.error("Server ping failed:", pingError);
+        throw new Error("Server not reachable");
+      }
+
+      // Now try the actual news endpoint
       const response = await fetch(
         `/api/marketaux-news?language=${lang}&limit=3&countries=us,gb,ae`,
         {
-          signal: controller.signal,
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
         },
       );
-      clearTimeout(timeoutId);
 
       if (response.ok) {
         const contentType = response.headers.get("content-type");
@@ -125,7 +140,16 @@ export default function Index() {
       }
     } catch (error) {
       console.error("Failed to fetch news:", error);
-      setMarketauxError("Failed to fetch financial news");
+
+      // Provide more specific error messages
+      let errorMessage = "Network error - unable to fetch news";
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        errorMessage = "Connection failed - check network or server status";
+      } else if (error instanceof Error) {
+        errorMessage = `Request failed: ${error.message}`;
+      }
+
+      setMarketauxError(errorMessage);
       setMarketauxNews([]);
     } finally {
       setIsLoadingMarketaux(false);
@@ -319,33 +343,47 @@ export default function Index() {
                           : "Loading financial news..."}
                       </span>
                     </div>
-                  ) : marketauxError ? (
-                    <div className="flex items-center justify-center py-12 text-destructive">
-                      <AlertTriangle className="w-5 h-5 mr-2" />
-                      <span>
-                        {language === "ar"
-                          ? "خطأ في تحميل الأخبار:"
-                          : "Error loading news:"}{" "}
-                        {marketauxError}
-                      </span>
-                    </div>
                   ) : (
-                    <MacroCalendarTable
-                      events={marketauxNews.map((item) => ({
-                        date: item.date,
-                        time: new Date(item.date).toLocaleTimeString(),
-                        country: item.country,
-                        event: item.event,
-                        category: item.source || "Financial News",
-                        importance: item.importance,
-                        actual: item.actual || undefined,
-                        forecast: item.forecast || undefined,
-                        previous: item.previous || undefined,
-                      }))}
-                      className="rounded-lg overflow-hidden"
-                      language={language}
-                      dir={dir}
-                    />
+                    <div>
+                      {marketauxError && (
+                        <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                          <div className="flex items-center text-destructive text-sm">
+                            <AlertTriangle className="w-4 h-4 mr-2" />
+                            <span>
+                              {language === "ar"
+                                ? "خطأ في تحميل الأخبار المباشرة:"
+                                : "Error loading live news:"}{" "}
+                              {marketauxError}
+                            </span>
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {language === "ar"
+                              ? "يتم عرض بيانات تجريبية أدناه"
+                              : "Showing sample data below"}
+                          </div>
+                        </div>
+                      )}
+                      <MacroCalendarTable
+                        events={
+                          marketauxNews.length > 0
+                            ? marketauxNews.map((item) => ({
+                                date: item.date,
+                                time: new Date(item.date).toLocaleTimeString(),
+                                country: item.country,
+                                event: item.event,
+                                category: item.source || "Financial News",
+                                importance: item.importance,
+                                actual: item.actual || undefined,
+                                forecast: item.forecast || undefined,
+                                previous: item.previous || undefined,
+                              }))
+                            : []
+                        }
+                        className="rounded-lg overflow-hidden"
+                        language={language}
+                        dir={dir}
+                      />
+                    </div>
                   )}
                 </CardContent>
               </Card>

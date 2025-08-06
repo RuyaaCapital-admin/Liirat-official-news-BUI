@@ -43,6 +43,20 @@ function expressPlugin(): Plugin {
             console.log("🔍 Request:", req.method, req.url);
             if (req.url?.startsWith("/api")) {
               console.log("🚀 API request intercepted:", req.method, req.url);
+              console.log("🎯 Available routes:", [
+                "/api/ping",
+                "/api/demo",
+                "/api/chat",
+                "/api/ai-chat",
+                "/api/market-data",
+                "/api/news-trading",
+                "/api/chart-indicator",
+                "/api/technical-analysis",
+                "/api/economic-events",
+                "/api/news",
+                "/api/marketaux-news",
+                "/api/price-alert",
+              ]);
               return app(req, res, next);
             } else {
               next();
