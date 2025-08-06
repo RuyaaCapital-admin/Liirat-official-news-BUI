@@ -6,28 +6,28 @@
 
 @layer base {
   /**
-   * Liirat News Brand Colors - Tailwind CSS theme
-   * Based on the Liirat logo green color scheme
+   * Neumorphic Liirat News Theme - Soft, extruded elements
+   * Based on the Liirat logo green color scheme with neumorphic design
    */
   :root {
-    /* Light theme - Official Liirat colors */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 9%;
+    /* Light theme - Neumorphic design with soft gray background */
+    --background: 0 0% 88%;
+    --foreground: 0 0% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 9%;
+    --card: 0 0% 88%;
+    --card-foreground: 0 0% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
+    --popover: 0 0% 88%;
+    --popover-foreground: 0 0% 15%;
 
     --primary: 85 70% 35%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 85 20% 95%;
-    --secondary-foreground: 85 70% 25%;
+    --secondary: 0 0% 85%;
+    --secondary-foreground: 0 0% 25%;
 
-    --muted: 85 15% 96%;
-    --muted-foreground: 85 10% 45%;
+    --muted: 0 0% 85%;
+    --muted-foreground: 0 0% 40%;
 
     --accent: 85 70% 40%;
     --accent-foreground: 0 0% 98%;
@@ -35,19 +35,19 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 85 15% 89%;
-    --input: 85 15% 89%;
+    --border: 0 0% 80%;
+    --input: 0 0% 88%;
     --ring: 85 70% 35%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    --sidebar-background: 85 15% 98%;
-    --sidebar-foreground: 85 15% 26%;
+    --sidebar-background: 0 0% 88%;
+    --sidebar-foreground: 0 0% 20%;
     --sidebar-primary: 85 70% 35%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 85 20% 95%;
-    --sidebar-accent-foreground: 85 70% 25%;
-    --sidebar-border: 85 15% 91%;
+    --sidebar-accent: 0 0% 85%;
+    --sidebar-accent-foreground: 0 0% 25%;
+    --sidebar-border: 0 0% 82%;
     --sidebar-ring: 85 70% 35%;
 
     /* Official Liirat brand colors from logo */
@@ -55,6 +55,12 @@
     --liirat-dark-green: 85 80% 25%;
     --liirat-light-green: 85 50% 65%;
     --liirat-accent: 85 60% 45%;
+
+    /* Neumorphic shadows */
+    --neumorphic-shadow-light: rgba(255, 255, 255, 0.9);
+    --neumorphic-shadow-dark: rgba(0, 0, 0, 0.15);
+    --neumorphic-inset-light: rgba(255, 255, 255, 0.8);
+    --neumorphic-inset-dark: rgba(0, 0, 0, 0.1);
   }
 
   .dark {
