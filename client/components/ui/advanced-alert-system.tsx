@@ -516,7 +516,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
       </Card>
 
       {/* Active Alerts */}
-      <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+      <Card className="bg-card/50 backdrop-blur-sm border-border/50 relative z-10">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -532,7 +532,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
               <Bell className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p>
                 {language === "ar"
-                  ? "لا توجد تنبيهات نش��ة"
+                  ? "لا توجد تنبيهات نشطة"
                   : "No active alerts"}
               </p>
             </div>
