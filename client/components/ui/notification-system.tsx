@@ -19,15 +19,17 @@ export function NotificationSystem({ className }: NotificationSystemProps) {
   const [notifications, setNotifications] = useState<PriceNotification[]>([]);
 
   // Function to add new notification
-  const addNotification = (notification: Omit<PriceNotification, "id" | "timestamp">) => {
+  const addNotification = (
+    notification: Omit<PriceNotification, "id" | "timestamp">,
+  ) => {
     const newNotification: PriceNotification = {
       ...notification,
       id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       timestamp: new Date(),
     };
-    
-    setNotifications(prev => [newNotification, ...prev.slice(0, 4)]); // Keep max 5
-    
+
+    setNotifications((prev) => [newNotification, ...prev.slice(0, 4)]); // Keep max 5
+
     // Auto-remove after 10 seconds
     setTimeout(() => {
       removeNotification(newNotification.id);
@@ -44,7 +46,7 @@ export function NotificationSystem({ className }: NotificationSystemProps) {
   };
 
   const removeNotification = (id: string) => {
-    setNotifications(prev => prev.filter(notif => notif.id !== id));
+    setNotifications((prev) => prev.filter((notif) => notif.id !== id));
   };
 
   // Request notification permission on mount
@@ -79,7 +81,7 @@ export function NotificationSystem({ className }: NotificationSystemProps) {
                 <TrendingDown className="w-5 h-5 text-red-500" />
               )}
             </div>
-            
+
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
                 <h4 className="font-semibold text-sm">
@@ -92,19 +94,21 @@ export function NotificationSystem({ className }: NotificationSystemProps) {
                   <X className="w-4 h-4" />
                 </button>
               </div>
-              
+
               <p className="text-sm text-muted-foreground mt-1">
-                Current price: <span className="font-mono font-medium">
+                Current price:{" "}
+                <span className="font-mono font-medium">
                   {notification.currentPrice.toFixed(4)}
                 </span>
               </p>
-              
+
               <p className="text-sm text-muted-foreground">
-                Target was: <span className="font-mono">
+                Target was:{" "}
+                <span className="font-mono">
                   {notification.condition} {notification.targetPrice.toFixed(4)}
                 </span>
               </p>
-              
+
               <p className="text-xs text-muted-foreground mt-2">
                 {notification.timestamp.toLocaleTimeString()}
               </p>

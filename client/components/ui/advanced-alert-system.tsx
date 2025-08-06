@@ -101,7 +101,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
       symbol: "GOOGL",
       name: "Alphabet Inc",
       nameAr: "ألفابت",
-      currentPrice: 142.30,
+      currentPrice: 142.3,
       change: -1.85,
       changePercent: -1.28,
     },
@@ -109,7 +109,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
       symbol: "MSFT",
       name: "Microsoft Corp",
       nameAr: "مايكروسوفت",
-      currentPrice: 415.50,
+      currentPrice: 415.5,
       change: 5.25,
       changePercent: 1.28,
     },
@@ -118,7 +118,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
       name: "Tesla Inc",
       nameAr: "تيسلا",
       currentPrice: 248.75,
-      change: -8.50,
+      change: -8.5,
       changePercent: -3.31,
     },
     {
@@ -126,14 +126,14 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
       name: "NVIDIA Corp",
       nameAr: "إنفيديا",
       currentPrice: 785.45,
-      change: 12.30,
+      change: 12.3,
       changePercent: 1.59,
     },
     {
       symbol: "SPY",
       name: "S&P 500 ETF",
       nameAr: "صندوق إس&بي 500",
-      currentPrice: 485.20,
+      currentPrice: 485.2,
       change: 3.15,
       changePercent: 0.65,
     },
@@ -157,7 +157,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
       symbol: "ETHUSD",
       name: "Ethereum/USD",
       nameAr: "إيثريوم/دولار",
-      currentPrice: 2650.50,
+      currentPrice: 2650.5,
       change: 85.25,
       changePercent: 3.33,
     },
@@ -227,7 +227,10 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
           const response = await fetch(`/api/price-alert?symbol=${alert.pair}`);
 
           if (!response.ok) {
-            console.warn(`Failed to fetch price for ${alert.pair}:`, response.statusText);
+            console.warn(
+              `Failed to fetch price for ${alert.pair}:`,
+              response.statusText,
+            );
             continue;
           }
 
@@ -237,7 +240,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
           if (!currentPrice) continue;
 
           const isTriggered =
-            (alert.condition === "above" && currentPrice >= alert.targetPrice) ||
+            (alert.condition === "above" &&
+              currentPrice >= alert.targetPrice) ||
             (alert.condition === "below" && currentPrice <= alert.targetPrice);
 
           if (isTriggered) {
@@ -252,9 +256,10 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
             }
 
             // Also add to alert context for legacy compatibility
-            const message = language === "ar"
-              ? `تنبيه سعر: ${alert.name} ${alert.condition === "above" ? "فوق" : "تحت"} ${alert.targetPrice.toFixed(4)}`
-              : `Price Alert: ${alert.name} ${alert.condition === "above" ? "above" : "below"} ${alert.targetPrice.toFixed(4)}`;
+            const message =
+              language === "ar"
+                ? `تنبيه سعر: ${alert.name} ${alert.condition === "above" ? "فوق" : "تحت"} ${alert.targetPrice.toFixed(4)}`
+                : `Price Alert: ${alert.name} ${alert.condition === "above" ? "above" : "below"} ${alert.targetPrice.toFixed(4)}`;
 
             addAlert({
               eventName: `${alert.pair} ${language === "ar" ? "تنبيه سعر" : "Price Alert"}`,
@@ -263,8 +268,10 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
             });
 
             // Deactivate the alert to prevent spam
-            setAlerts(prev =>
-              prev.map(a => a.id === alert.id ? { ...a, isActive: false } : a)
+            setAlerts((prev) =>
+              prev.map((a) =>
+                a.id === alert.id ? { ...a, isActive: false } : a,
+              ),
             );
           }
         } catch (error) {

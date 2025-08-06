@@ -587,7 +587,6 @@ export default function Index() {
           </footer>
         </main>
 
-
         {/* Chat Widget */}
         <ChatWidget />
 
