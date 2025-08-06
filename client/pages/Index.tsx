@@ -214,6 +214,7 @@ export default function Index() {
                 {/* Notification Dropdown */}
                 <NotificationDropdown
                   onSettingsClick={() => setShowAlertSettings(true)}
+                  className="sm:h-9 sm:w-9 h-8 w-8"
                 />
 
                 <SimpleLanguageToggle />
@@ -303,7 +304,7 @@ export default function Index() {
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "أح��اث اقتصادية مهمة ومؤشرات مالية رئيسية"
+                      ? "أحداث اقتصادية مهمة ومؤشرات مالية رئيسية"
                       : "Important economic events and key financial indicators"}
                   </CardDescription>
                 </CardHeader>
