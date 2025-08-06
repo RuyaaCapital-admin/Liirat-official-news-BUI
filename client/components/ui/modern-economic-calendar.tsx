@@ -413,7 +413,7 @@ export function ModernEconomicCalendar({
             {/* Importance Filter */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">
-                مستوى الأ��مية (اختيار متعدد)
+                مستوى الأه��ية (اختيار متعدد)
               </label>
               <div className="flex gap-2">
                 <Button
@@ -458,15 +458,12 @@ export function ModernEconomicCalendar({
                   }
                   size="sm"
                   onClick={() => {
-                    const newSelection = selectedImportance.filter(
-                      (item) => item !== "all",
-                    );
                     if (selectedImportance.includes("3")) {
                       setSelectedImportance(
-                        newSelection.filter((item) => item !== "3"),
+                        selectedImportance.filter((item) => item !== "3"),
                       );
                     } else {
-                      setSelectedImportance([...newSelection, "3"]);
+                      setSelectedImportance([...selectedImportance, "3"]);
                     }
                   }}
                   className="flex-1 text-xs"
@@ -670,7 +667,7 @@ export function ModernEconomicCalendar({
             {filteredEvents.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>لا توجد أحداث اقتصادية تطابق المرشحات المحددة</p>
+                <p>لا توجد أحداث اقتصادية تطابق ا��مرشحات المحددة</p>
               </div>
             )}
           </div>
