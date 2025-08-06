@@ -649,8 +649,9 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
               <div className="flex items-end">
                 <Button
                   onClick={handleCreateAlert}
-                  disabled={!targetPrice}
+                  disabled={!selectedPair || !targetPrice || isNaN(parseFloat(targetPrice)) || parseFloat(targetPrice) <= 0}
                   className="w-full gap-2"
+                  type="button"
                 >
                   <Bell className="w-4 h-4" />
                   {language === "ar" ? "إنشاء التنبيه" : "Create Alert"}
