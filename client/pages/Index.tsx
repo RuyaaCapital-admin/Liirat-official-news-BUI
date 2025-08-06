@@ -128,7 +128,16 @@ export default function Index() {
       }
     } catch (error) {
       console.error("Failed to fetch news:", error);
-      setMarketauxError("Failed to fetch financial news");
+
+      // Provide more specific error messages
+      let errorMessage = "Network error - unable to fetch news";
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        errorMessage = "Connection failed - check network or server status";
+      } else if (error instanceof Error) {
+        errorMessage = `Request failed: ${error.message}`;
+      }
+
+      setMarketauxError(errorMessage);
       setMarketauxNews([]);
     } finally {
       setIsLoadingMarketaux(false);
