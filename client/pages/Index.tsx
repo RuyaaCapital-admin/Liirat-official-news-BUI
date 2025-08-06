@@ -245,7 +245,7 @@ export default function Index() {
                   <Button
                     variant="outline"
                     size="lg"
-                    className="border-primary/50 text-primary hover:bg-primary/10 hover:border-primary px-8 py-6 text-lg font-semibold rounded-2xl"
+                    className="text-primary px-8 py-6 text-lg font-semibold neumorphic-hover"
                     onClick={() =>
                       document
                         .getElementById("calendar")
@@ -258,7 +258,7 @@ export default function Index() {
                   <Button
                     variant="outline"
                     size="lg"
-                    className="border-primary/50 text-primary hover:bg-primary/10 hover:border-primary px-8 py-6 text-lg font-semibold rounded-2xl"
+                    className="text-primary px-8 py-6 text-lg font-semibold neumorphic-hover"
                     onClick={() =>
                       document
                         .getElementById("alerts")
@@ -282,7 +282,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "تابع الأحداث الاقتصادية المهمة والأخبار المالية في الوقت الفعلي"
+                    ? "تابع الأحداث الاقتصادية المهمة والأخب��ر المالية في الوقت الفعلي"
                     : "Track important economic events and real-time financial news"}
                 </p>
               </div>
