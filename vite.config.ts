@@ -29,21 +29,30 @@ function expressPlugin(): Plugin {
     name: "express-plugin",
     apply: "serve", // only during dev
     configureServer(server) {
-      // Lazy import to avoid unresolved path in production
+      // This runs immediately when configuring server
+      console.log("🔧 Configuring Express plugin...");
+
       import("./server/index.ts")
         .then(({ createServer }) => {
+          console.log("✅ Successfully imported server module");
           const app = createServer();
+          console.log("✅ Express app created");
 
-          // Debug middleware
-          server.middlewares.use("/api", (req: any, res: any, next: any) => {
-            console.log("API request received:", req.method, req.url);
-            app(req, res, next);
+          // Add middleware immediately to handle API requests
+          server.middlewares.use((req, res, next) => {
+            console.log("🔍 Request:", req.method, req.url);
+            if (req.url?.startsWith("/api")) {
+              console.log("🚀 API request intercepted:", req.method, req.url);
+              return app(req, res, next);
+            } else {
+              next();
+            }
           });
 
-          console.log("Express server integrated with Vite dev server");
+          console.log("✅ Express server integrated with Vite dev server");
         })
         .catch((error) => {
-          console.warn("Dev-only server not available:", error.message);
+          console.error("❌ Failed to setup Express server:", error);
         });
     },
   };

@@ -213,6 +213,10 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
   // Fetch real-time prices for currency pairs
   useEffect(() => {
+    let retryCount = 0;
+    const maxRetries = 3;
+    const baseDelay = 5000; // 5 seconds
+
     const fetchRealPrices = async () => {
       try {
         const updatedPairs = await Promise.all(
@@ -240,6 +244,16 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                   changePercent: data.changePercent || pair.changePercent,
                 };
               } else {
+                // Handle rate limiting with exponential backoff
+                if (response.status === 429 && retryCount < maxRetries) {
+                  retryCount++;
+                  const delay = baseDelay * Math.pow(2, retryCount - 1);
+                  console.warn(
+                    `Rate limited for ${pair.symbol}, retrying in ${delay}ms (attempt ${retryCount}/${maxRetries})`,
+                  );
+                  await new Promise((resolve) => setTimeout(resolve, delay));
+                  // Don't retry here to avoid infinite loops, just log and continue
+                }
                 console.warn(
                   `API request failed for ${pair.symbol}: ${response.status}`,
                 );
@@ -265,16 +279,24 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
           }),
         );
         setCurrencyPairs(updatedPairs);
+        retryCount = 0; // Reset retry count on successful batch
       } catch (error) {
         console.error("Error fetching real prices:", error);
+        // Implement exponential backoff for general errors
+        if (retryCount < maxRetries) {
+          retryCount++;
+          const delay = baseDelay * Math.pow(2, retryCount - 1);
+          console.warn(`Retrying price fetch in ${delay}ms due to error`);
+          setTimeout(fetchRealPrices, delay);
+        }
       }
     };
 
     // Initial fetch
     fetchRealPrices();
 
-    // Update prices every 30 seconds
-    const interval = setInterval(fetchRealPrices, 30000);
+    // Update prices every 60 seconds to respect rate limits
+    const interval = setInterval(fetchRealPrices, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -372,7 +394,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     checkPriceAlerts();
 
     // Set up interval - respecting Polygon.io rate limits (5 calls/minute = 12 seconds)
-    const interval = setInterval(checkPriceAlerts, 15000); // 15 seconds to be safe
+    // Increased to 45 seconds to reduce total API calls and avoid rate limiting
+    const interval = setInterval(checkPriceAlerts, 45000); // 45 seconds to be safe
 
     return () => clearInterval(interval);
   }, [alerts, addAlert, language]);
