@@ -372,7 +372,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     checkPriceAlerts();
 
     // Set up interval - respecting Polygon.io rate limits (5 calls/minute = 12 seconds)
-    const interval = setInterval(checkPriceAlerts, 15000); // 15 seconds to be safe
+    // Increased to 45 seconds to reduce total API calls and avoid rate limiting
+    const interval = setInterval(checkPriceAlerts, 45000); // 45 seconds to be safe
 
     return () => clearInterval(interval);
   }, [alerts, addAlert, language]);
