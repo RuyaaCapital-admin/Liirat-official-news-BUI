@@ -20,8 +20,6 @@ import { EconomicEventsResponse, NewsResponse } from "@shared/api";
 import { AdvancedAlertSystem } from "@/components/ui/advanced-alert-system";
 
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
-import { NotificationDropdown } from "@/components/ui/notification-dropdown";
-import { AlertSettingsModal } from "@/components/ui/alert-settings-modal";
 
 import { useLanguage } from "@/contexts/language-context";
 import { useAlerts } from "@/contexts/alert-context";
