@@ -160,7 +160,7 @@ const getCountryFlag = (country: string) => {
     IT: "🇮🇹",
     ES: "🇪🇸",
     NL: "🇳🇱",
-    BE: "🇧🇪",
+    BE: "���🇪",
     AT: "🇦🇹",
     PT: "🇵🇹",
     IE: "🇮🇪",
@@ -702,7 +702,7 @@ export function MacroCalendarTable({
                 >
                   {t(
                     "No events found matching your criteria",
-                    "لا توجد أحداث تطابق معا��يرك",
+                    "لا توجد أحداث تطابق معاييرك",
                   )}
                 </td>
               </tr>
