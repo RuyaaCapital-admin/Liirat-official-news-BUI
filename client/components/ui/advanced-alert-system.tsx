@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useLanguage } from "@/contexts/language-context";
+import { useAlerts } from "@/contexts/alert-context";
 import {
   Plus,
   Trash2,
@@ -52,6 +53,7 @@ interface AdvancedAlertSystemProps {
 
 export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
   const { language, dir } = useLanguage();
+  const { addAlert } = useAlerts();
   const [alerts, setAlerts] = useState<PriceAlert[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -61,8 +63,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
   const searchRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
-  // Mock currency pairs data with real-time prices
-  const currencyPairs: CurrencyPair[] = [
+  // Real symbols compatible with Polygon.io API - will be updated with real prices
+  const [currencyPairs, setCurrencyPairs] = useState<CurrencyPair[]>([
     {
       symbol: "EURUSD",
       name: "EUR/USD",
@@ -88,68 +90,60 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
       changePercent: 0.3,
     },
     {
-      symbol: "USDCAD",
-      name: "USD/CAD",
-      nameAr: "دولار/دولار كندي",
-      currentPrice: 1.3542,
-      change: -0.0012,
-      changePercent: -0.09,
+      symbol: "AAPL",
+      name: "Apple Inc",
+      nameAr: "أبل",
+      currentPrice: 185.25,
+      change: 2.15,
+      changePercent: 1.17,
     },
     {
-      symbol: "AUDUSD",
-      name: "AUD/USD",
-      nameAr: "دولار أسترالي/دولار",
-      currentPrice: 0.6598,
-      change: 0.0015,
-      changePercent: 0.23,
+      symbol: "GOOGL",
+      name: "Alphabet Inc",
+      nameAr: "ألفابت",
+      currentPrice: 142.3,
+      change: -1.85,
+      changePercent: -1.28,
     },
     {
-      symbol: "NZDUSD",
-      name: "NZD/USD",
-      nameAr: "دولار نيوزيلندي/دولار",
-      currentPrice: 0.6123,
-      change: 0.0008,
-      changePercent: 0.13,
+      symbol: "MSFT",
+      name: "Microsoft Corp",
+      nameAr: "مايكروسوفت",
+      currentPrice: 415.5,
+      change: 5.25,
+      changePercent: 1.28,
     },
     {
-      symbol: "USDCHF",
-      name: "USD/CHF",
-      nameAr: "دولار/فرنك سويسري",
-      currentPrice: 0.8756,
-      change: -0.0034,
-      changePercent: -0.39,
+      symbol: "TSLA",
+      name: "Tesla Inc",
+      nameAr: "تيسلا",
+      currentPrice: 248.75,
+      change: -8.5,
+      changePercent: -3.31,
     },
     {
-      symbol: "EURGBP",
-      name: "EUR/GBP",
-      nameAr: "يورو/جنيه",
-      currentPrice: 0.8587,
-      change: 0.0012,
-      changePercent: 0.14,
-    },
-    {
-      symbol: "EURJPY",
-      name: "EUR/JPY",
-      nameAr: "يورو/ين",
-      currentPrice: 160.85,
-      change: 1.23,
-      changePercent: 0.77,
-    },
-    {
-      symbol: "GBPJPY",
-      name: "GBP/JPY",
-      nameAr: "جنيه/ين",
-      currentPrice: 187.45,
-      change: -0.56,
-      changePercent: -0.3,
-    },
-    {
-      symbol: "XAUUSD",
-      name: "Gold/USD",
-      nameAr: "ذهب/دولار",
-      currentPrice: 2034.5,
+      symbol: "NVDA",
+      name: "NVIDIA Corp",
+      nameAr: "إنفيديا",
+      currentPrice: 785.45,
       change: 12.3,
-      changePercent: 0.61,
+      changePercent: 1.59,
+    },
+    {
+      symbol: "SPY",
+      name: "S&P 500 ETF",
+      nameAr: "صندوق إس&بي 500",
+      currentPrice: 485.2,
+      change: 3.15,
+      changePercent: 0.65,
+    },
+    {
+      symbol: "QQQ",
+      name: "Nasdaq ETF",
+      nameAr: "صندوق ناسداك",
+      currentPrice: 398.75,
+      change: -2.45,
+      changePercent: -0.61,
     },
     {
       symbol: "BTCUSD",
@@ -159,7 +153,15 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
       change: -1250.25,
       changePercent: -2.81,
     },
-  ];
+    {
+      symbol: "ETHUSD",
+      name: "Ethereum/USD",
+      nameAr: "إيثريوم/دولار",
+      currentPrice: 2650.5,
+      change: 85.25,
+      changePercent: 3.33,
+    },
+  ]);
 
   // Filter pairs based on search query
   const filteredPairs = currencyPairs.filter(
@@ -209,10 +211,171 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     }
   }, []);
 
+  // Fetch real-time prices for currency pairs
+  useEffect(() => {
+    const fetchRealPrices = async () => {
+      try {
+        const updatedPairs = await Promise.all(
+          currencyPairs.map(async (pair) => {
+            try {
+              const response = await fetch(
+                `/api/price-alert?symbol=${pair.symbol}`,
+              );
+
+              // Check if response is HTML (error page) instead of JSON
+              const contentType = response.headers.get("content-type");
+              if (!contentType || !contentType.includes("application/json")) {
+                console.warn(
+                  `API returned non-JSON response for ${pair.symbol}, using mock data`,
+                );
+                return pair; // Return original with mock data
+              }
+
+              if (response.ok) {
+                const data = await response.json();
+                return {
+                  ...pair,
+                  currentPrice: data.price || pair.currentPrice,
+                  change: data.change || pair.change,
+                  changePercent: data.changePercent || pair.changePercent,
+                };
+              } else {
+                console.warn(
+                  `API request failed for ${pair.symbol}: ${response.status}`,
+                );
+                return pair; // Return original with mock data
+              }
+            } catch (error) {
+              // Handle JSON parsing errors and other issues
+              if (
+                error instanceof SyntaxError &&
+                error.message.includes("Unexpected token")
+              ) {
+                console.warn(
+                  `API returned HTML instead of JSON for ${pair.symbol}, likely endpoint not available in dev mode`,
+                );
+              } else {
+                console.warn(
+                  `Failed to fetch price for ${pair.symbol}:`,
+                  error,
+                );
+              }
+              return pair; // Return original with mock data
+            }
+          }),
+        );
+        setCurrencyPairs(updatedPairs);
+      } catch (error) {
+        console.error("Error fetching real prices:", error);
+      }
+    };
+
+    // Initial fetch
+    fetchRealPrices();
+
+    // Update prices every 30 seconds
+    const interval = setInterval(fetchRealPrices, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Save alerts to localStorage whenever alerts change
   useEffect(() => {
     localStorage.setItem("price-alerts", JSON.stringify(alerts));
   }, [alerts]);
+
+  // Monitor price alerts using Polygon.io API
+  useEffect(() => {
+    const checkPriceAlerts = async () => {
+      for (const alert of alerts) {
+        if (!alert.isActive) continue;
+
+        try {
+          // Fetch real-time price from our API
+          const response = await fetch(`/api/price-alert?symbol=${alert.pair}`);
+
+          // Check if response is HTML (error page) instead of JSON
+          const contentType = response.headers.get("content-type");
+          if (!contentType || !contentType.includes("application/json")) {
+            console.warn(
+              `API returned HTML for ${alert.pair}, skipping alert check`,
+            );
+            continue;
+          }
+
+          if (!response.ok) {
+            console.warn(
+              `Failed to fetch price for ${alert.pair}:`,
+              response.statusText,
+            );
+            continue;
+          }
+
+          const data = await response.json();
+          const currentPrice = data.price;
+
+          if (!currentPrice) continue;
+
+          const isTriggered =
+            (alert.condition === "above" &&
+              currentPrice >= alert.targetPrice) ||
+            (alert.condition === "below" && currentPrice <= alert.targetPrice);
+
+          if (isTriggered) {
+            // Trigger notification using the global notification system
+            if ((window as any).addPriceNotification) {
+              (window as any).addPriceNotification({
+                symbol: alert.pair,
+                currentPrice,
+                targetPrice: alert.targetPrice,
+                condition: alert.condition,
+              });
+            }
+
+            // Also add to alert context for legacy compatibility
+            const message =
+              language === "ar"
+                ? `تنبيه سعر: ${alert.name} ${alert.condition === "above" ? "فوق" : "تحت"} ${alert.targetPrice.toFixed(4)}`
+                : `Price Alert: ${alert.name} ${alert.condition === "above" ? "above" : "below"} ${alert.targetPrice.toFixed(4)}`;
+
+            addAlert({
+              eventName: `${alert.pair} ${language === "ar" ? "تنبيه سعر" : "Price Alert"}`,
+              message,
+              importance: 3,
+            });
+
+            // Deactivate the alert to prevent spam
+            setAlerts((prev) =>
+              prev.map((a) =>
+                a.id === alert.id ? { ...a, isActive: false } : a,
+              ),
+            );
+          }
+        } catch (error) {
+          // Handle JSON parsing errors gracefully
+          if (
+            error instanceof SyntaxError &&
+            error.message.includes("Unexpected token")
+          ) {
+            console.warn(
+              `API endpoint returned HTML for ${alert.pair}, likely not available in development mode`,
+            );
+          } else {
+            console.warn(`Error checking price for ${alert.pair}:`, error);
+          }
+        }
+      }
+    };
+
+    if (alerts.length === 0) return;
+
+    // Initial check
+    checkPriceAlerts();
+
+    // Set up interval - respecting Polygon.io rate limits (5 calls/minute = 12 seconds)
+    const interval = setInterval(checkPriceAlerts, 15000); // 15 seconds to be safe
+
+    return () => clearInterval(interval);
+  }, [alerts, addAlert, language]);
 
   const handlePairSelect = (pair: CurrencyPair) => {
     setSelectedPair(pair);
@@ -281,7 +444,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Pair Search */}
-          <div className="space-y-2 relative">
+          <div className="space-y-2 relative" style={{ zIndex: 10000 }}>
             <Label className="text-sm font-medium">
               {language === "ar"
                 ? "البحث عن زوج العملات"
@@ -318,7 +481,13 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
               {showSuggestions && filteredPairs.length > 0 && (
                 <div
                   ref={suggestionsRef}
-                  className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border border-border/50 rounded-lg shadow-lg max-h-60 overflow-hidden"
+                  className="absolute top-full left-0 right-0 mt-1 bg-background border border-border/50 rounded-lg shadow-xl max-h-60 overflow-hidden"
+                  style={{
+                    zIndex: 9999,
+                    position: "absolute",
+                    boxShadow:
+                      "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                  }}
                 >
                   <ScrollArea className="max-h-60">
                     {filteredPairs.slice(0, 8).map((pair) => (
@@ -471,7 +640,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
       </Card>
 
       {/* Active Alerts */}
-      <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+      <Card className="bg-card/50 backdrop-blur-sm border-border/50 relative z-1">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">

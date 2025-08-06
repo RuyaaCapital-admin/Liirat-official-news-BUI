@@ -11,6 +11,7 @@ import {
 } from "./routes/ai-trading";
 import { handleChat } from "./routes/chat";
 import { getEconomicEvents, getNews } from "./routes/eodhd";
+import { handlePriceAlert } from "./routes/price-alert";
 
 export function createServer() {
   const app = express();
@@ -41,6 +42,9 @@ export function createServer() {
   // EODHD API routes
   app.get("/api/economic-events", getEconomicEvents);
   app.get("/api/news", getNews);
+
+  // Price alert route
+  app.get("/api/price-alert", handlePriceAlert);
 
   return app;
 }

@@ -33,7 +33,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
     {
       id: "1",
       content:
-        "مرحباً! أنا مساعد ليرات للتحديثات المباشرة، مصمم لتقديم أحداث التقويم الاقتصادي والأخبار المباشر�� والأسعار في الوقت الفعلي. كيف يمكنني مساعدتك اليوم؟",
+        "مرحباً! أنا مساعد ليرات للتحديثات المباشرة، مصمم لتقديم أحداث التقويم الاقتصادي والأخبار المباشرة والأسعار في الوقت الفعلي. كيف يمكنني مساعدتك اليوم؟",
       role: "assistant",
       timestamp: new Date(),
     },
@@ -142,7 +142,11 @@ export function ChatWidget({ className }: ChatWidgetProps) {
         <Button
           onClick={() => setIsOpen(true)}
           size="lg"
-          className="h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-primary/20"
+          className="h-12 w-12 sm:h-14 sm:w-14 rounded-full neumorphic-button transition-all duration-300"
+          style={{
+            background: "var(--neumorphic-gradient)",
+            color: "var(--foreground)",
+          }}
         >
           <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6" />
         </Button>
@@ -158,7 +162,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
         className,
       )}
     >
-      <Card className="bg-background/95 backdrop-blur-sm border-border/50 shadow-2xl">
+      <Card className="neumorphic-card bg-background/95 backdrop-blur-sm border-border/50">
         <CardHeader
           className="flex flex-row items-center justify-between space-y-0 pb-2 text-primary-foreground rounded-t-lg"
           style={{
@@ -178,7 +182,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
               variant="ghost"
               size="sm"
               onClick={() => setIsMinimized(!isMinimized)}
-              className="h-6 w-6 p-0 hover:bg-primary-foreground/20 bg-black/30 backdrop-blur-sm border border-white/20"
+              className="h-6 w-6 p-0 neumorphic-button-small"
             >
               {isMinimized ? (
                 <Maximize2 className="h-3 w-3 text-white drop-shadow-lg" />
@@ -190,7 +194,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
               variant="ghost"
               size="sm"
               onClick={() => setIsOpen(false)}
-              className="h-6 w-6 p-0 hover:bg-primary-foreground/20 bg-black/30 backdrop-blur-sm border border-white/20"
+              className="h-6 w-6 p-0 neumorphic-button-small"
             >
               <X className="h-3 w-3 text-white drop-shadow-lg" />
             </Button>
@@ -288,8 +292,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
                   onClick={sendMessage}
                   disabled={!inputValue.trim() || isLoading}
                   size="sm"
-                  className="px-3"
-                  style={{ backgroundColor: "rgba(173, 251, 70, 1)" }}
+                  className="px-3 neumorphic-button"
                 >
                   <Send className="h-4 w-4" />
                 </Button>

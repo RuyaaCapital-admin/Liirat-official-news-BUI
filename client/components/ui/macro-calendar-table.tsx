@@ -166,7 +166,7 @@ const getCountryFlag = (country: string) => {
     IE: "🇮🇪",
     FI: "🇫🇮",
     GR: "🇬🇷",
-    CZ: "🇨🇿",
+    CZ: "����🇿",
     PL: "🇵🇱",
     HU: "🇭🇺",
     SK: "🇸🇰",
@@ -241,7 +241,7 @@ export function MacroCalendarTable({
   const [searchTerm, setSearchTerm] = useState("");
   const [countrySearchTerm, setCountrySearchTerm] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("all");
-  const [selectedImportance, setSelectedImportance] = useState("all");
+  const [selectedImportance, setSelectedImportance] = useState("3");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [dateRange, setDateRange] = useState("all");
   const [isCountryOpen, setIsCountryOpen] = useState(false);
@@ -291,7 +291,6 @@ export function MacroCalendarTable({
         selectedCountry === "all" || event.country === selectedCountry;
 
       const matchesImportance =
-        selectedImportance === "all" ||
         event.importance.toString() === selectedImportance;
 
       const matchesDate = (() => {
@@ -350,7 +349,7 @@ export function MacroCalendarTable({
     setSearchTerm("");
     setCountrySearchTerm("");
     setSelectedCountry("all");
-    setSelectedImportance("all");
+    setSelectedImportance("3");
     setSelectedDate(undefined);
     setDateRange("all");
   };
@@ -579,20 +578,17 @@ export function MacroCalendarTable({
             onValueChange={setSelectedImportance}
           >
             <SelectTrigger className={dir === "rtl" ? "text-right" : ""}>
-              <SelectValue placeholder={t("Importance", "الأهمية")} />
+              <SelectValue placeholder={t("calendar.table.importance")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">
-                {t("All Levels", "جميع المستويات")}
-              </SelectItem>
               <SelectItem value="3">
-                ⭐⭐⭐ {t("High Impact", "عالي التأثير")}
+                {t("High Impact", "عالي التأثير")}
               </SelectItem>
               <SelectItem value="2">
-                ⭐⭐ {t("Medium Impact", "متوسط التأثير")}
+                {t("Medium Impact", "متوسط التأثير")}
               </SelectItem>
               <SelectItem value="1">
-                ⭐ {t("Low Impact", "منخفض التأثير")}
+                {t("Low Impact", "منخفض التأثير")}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -661,7 +657,7 @@ export function MacroCalendarTable({
                   dir === "rtl" ? "text-right" : "text-left",
                 )}
               >
-                {t("Importance", "الأهم��ة")}
+                {t("calendar.table.importance")}
               </th>
               <th
                 className={cn(
@@ -751,7 +747,6 @@ export function MacroCalendarTable({
                         getImportanceColor(event.importance),
                       )}
                     >
-                      {"⭐".repeat(event.importance)}{" "}
                       {getImportanceLabel(event.importance, language)}
                     </Badge>
                   </td>

@@ -94,7 +94,9 @@ export function NotificationDropdown({
 
       <DropdownMenuContent
         align={dir === "rtl" ? "start" : "end"}
-        className="w-80 max-h-[500px] overflow-hidden"
+        className="w-80 sm:w-96 max-w-[95vw] max-h-[70vh] sm:max-h-[500px] overflow-hidden z-[100]"
+        sideOffset={5}
+        avoidCollisions={true}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
@@ -119,14 +121,6 @@ export function NotificationDropdown({
                 {t("notifications.mark_read")}
               </Button>
             )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onSettingsClick}
-              className="h-7 w-7 p-0"
-            >
-              <Settings className="w-3 h-3" />
-            </Button>
           </div>
         </div>
 

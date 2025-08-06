@@ -6,28 +6,28 @@
 
 @layer base {
   /**
-   * Liirat News Brand Colors - Tailwind CSS theme
-   * Based on the Liirat logo green color scheme
+   * Neumorphic Liirat News Theme - Soft, extruded elements
+   * Based on the Liirat logo green color scheme with neumorphic design
    */
   :root {
-    /* Light theme - Official Liirat colors */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 9%;
+    /* Light theme - Neumorphic design with soft gray background */
+    --background: 0 0% 88%;
+    --foreground: 0 0% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 9%;
+    --card: 0 0% 88%;
+    --card-foreground: 0 0% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
+    --popover: 0 0% 88%;
+    --popover-foreground: 0 0% 15%;
 
     --primary: 85 70% 35%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 85 20% 95%;
-    --secondary-foreground: 85 70% 25%;
+    --secondary: 0 0% 85%;
+    --secondary-foreground: 0 0% 25%;
 
-    --muted: 85 15% 96%;
-    --muted-foreground: 85 10% 45%;
+    --muted: 0 0% 85%;
+    --muted-foreground: 0 0% 40%;
 
     --accent: 85 70% 40%;
     --accent-foreground: 0 0% 98%;
@@ -35,19 +35,19 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 85 15% 89%;
-    --input: 85 15% 89%;
+    --border: 0 0% 80%;
+    --input: 0 0% 88%;
     --ring: 85 70% 35%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    --sidebar-background: 85 15% 98%;
-    --sidebar-foreground: 85 15% 26%;
+    --sidebar-background: 0 0% 88%;
+    --sidebar-foreground: 0 0% 20%;
     --sidebar-primary: 85 70% 35%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 85 20% 95%;
-    --sidebar-accent-foreground: 85 70% 25%;
-    --sidebar-border: 85 15% 91%;
+    --sidebar-accent: 0 0% 85%;
+    --sidebar-accent-foreground: 0 0% 25%;
+    --sidebar-border: 0 0% 82%;
     --sidebar-ring: 85 70% 35%;
 
     /* Official Liirat brand colors from logo */
@@ -55,27 +55,33 @@
     --liirat-dark-green: 85 80% 25%;
     --liirat-light-green: 85 50% 65%;
     --liirat-accent: 85 60% 45%;
+
+    /* Neumorphic shadows */
+    --neumorphic-shadow-light: rgba(255, 255, 255, 0.9);
+    --neumorphic-shadow-dark: rgba(0, 0, 0, 0.15);
+    --neumorphic-inset-light: rgba(255, 255, 255, 0.8);
+    --neumorphic-inset-dark: rgba(0, 0, 0, 0.1);
   }
 
   .dark {
-    /* Dark theme - Official Liirat colors */
-    --background: 0 0% 4%;
-    --foreground: 0 0% 98%;
+    /* Dark theme - Neumorphic dark design */
+    --background: 0 0% 12%;
+    --foreground: 0 0% 88%;
 
-    --card: 0 0% 8%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 88%;
 
-    --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 88%;
 
     --primary: 85 70% 50%;
     --primary-foreground: 0 0% 9%;
 
-    --secondary: 85 15% 14%;
-    --secondary-foreground: 85 70% 85%;
+    --secondary: 0 0% 18%;
+    --secondary-foreground: 0 0% 85%;
 
-    --muted: 85 10% 14%;
-    --muted-foreground: 85 15% 63%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 60%;
 
     --accent: 85 70% 55%;
     --accent-foreground: 0 0% 9%;
@@ -83,17 +89,17 @@
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 85 10% 14%;
-    --input: 85 10% 14%;
+    --border: 0 0% 20%;
+    --input: 0 0% 12%;
     --ring: 85 70% 50%;
 
-    --sidebar-background: 85 15% 10%;
-    --sidebar-foreground: 85 15% 95%;
+    --sidebar-background: 0 0% 12%;
+    --sidebar-foreground: 0 0% 88%;
     --sidebar-primary: 85 70% 50%;
     --sidebar-primary-foreground: 0 0% 9%;
-    --sidebar-accent: 85 10% 15%;
-    --sidebar-accent-foreground: 85 15% 95%;
-    --sidebar-border: 85 10% 15%;
+    --sidebar-accent: 0 0% 18%;
+    --sidebar-accent-foreground: 0 0% 85%;
+    --sidebar-border: 0 0% 20%;
     --sidebar-ring: 85 70% 50%;
 
     /* Dark theme Official Liirat colors */
@@ -101,6 +107,12 @@
     --liirat-dark-green: 85 80% 30%;
     --liirat-light-green: 85 50% 75%;
     --liirat-accent: 85 60% 55%;
+
+    /* Neumorphic shadows for dark theme */
+    --neumorphic-shadow-light: rgba(255, 255, 255, 0.05);
+    --neumorphic-shadow-dark: rgba(0, 0, 0, 0.4);
+    --neumorphic-inset-light: rgba(255, 255, 255, 0.03);
+    --neumorphic-inset-dark: rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -148,5 +160,118 @@
 
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-muted-foreground/50;
+  }
+}
+
+/* Neumorphic utility classes */
+@layer utilities {
+  .neumorphic {
+    box-shadow:
+      8px 8px 16px var(--neumorphic-shadow-dark),
+      -8px -8px 16px var(--neumorphic-shadow-light);
+  }
+
+  .neumorphic-sm {
+    box-shadow:
+      4px 4px 8px var(--neumorphic-shadow-dark),
+      -4px -4px 8px var(--neumorphic-shadow-light);
+  }
+
+  .neumorphic-lg {
+    box-shadow:
+      12px 12px 24px var(--neumorphic-shadow-dark),
+      -12px -12px 24px var(--neumorphic-shadow-light);
+  }
+
+  .neumorphic-inset {
+    box-shadow:
+      inset 4px 4px 8px var(--neumorphic-inset-dark),
+      inset -4px -4px 8px var(--neumorphic-inset-light);
+  }
+
+  .neumorphic-pressed {
+    box-shadow:
+      inset 6px 6px 12px var(--neumorphic-inset-dark),
+      inset -6px -6px 12px var(--neumorphic-inset-light);
+  }
+
+  .neumorphic-hover:hover {
+    box-shadow:
+      10px 10px 20px var(--neumorphic-shadow-dark),
+      -10px -10px 20px var(--neumorphic-shadow-light);
+    transform: translateY(-1px);
+  }
+
+  .neumorphic-card {
+    background: hsl(var(--background));
+    border: none;
+    border-radius: 1rem;
+    box-shadow:
+      8px 8px 16px var(--neumorphic-shadow-dark),
+      -8px -8px 16px var(--neumorphic-shadow-light);
+  }
+
+  .neumorphic-button {
+    background: hsl(var(--background));
+    border: none;
+    border-radius: 1rem;
+    box-shadow:
+      6px 6px 12px var(--neumorphic-shadow-dark),
+      -6px -6px 12px var(--neumorphic-shadow-light);
+    transition: all 0.2s ease;
+  }
+
+  .neumorphic-button:hover {
+    box-shadow:
+      8px 8px 16px var(--neumorphic-shadow-dark),
+      -8px -8px 16px var(--neumorphic-shadow-light);
+    transform: translateY(-1px);
+  }
+
+  .neumorphic-button:active {
+    box-shadow:
+      inset 4px 4px 8px var(--neumorphic-inset-dark),
+      inset -4px -4px 8px var(--neumorphic-inset-light);
+    transform: translateY(0);
+  }
+
+  .neumorphic-input {
+    background: hsl(var(--background));
+    border: none;
+    border-radius: 1rem;
+    box-shadow:
+      inset 4px 4px 8px var(--neumorphic-inset-dark),
+      inset -4px -4px 8px var(--neumorphic-inset-light);
+  }
+
+  .neumorphic-input:focus {
+    box-shadow:
+      inset 4px 4px 8px var(--neumorphic-inset-dark),
+      inset -4px -4px 8px var(--neumorphic-inset-light),
+      0 0 0 2px hsl(var(--primary));
+  }
+
+  .neumorphic-button-small {
+    background: hsl(var(--background));
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow:
+      3px 3px 6px var(--neumorphic-shadow-dark),
+      -3px -3px 6px var(--neumorphic-shadow-light);
+    transition: all 0.2s ease;
+  }
+
+  .neumorphic-button-small:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      4px 4px 8px var(--neumorphic-shadow-dark),
+      -4px -4px 8px var(--neumorphic-shadow-light);
+  }
+
+  .neumorphic-button-small:active {
+    box-shadow:
+      inset 2px 2px 4px var(--neumorphic-inset-dark),
+      inset -2px -2px 4px var(--neumorphic-inset-light);
+    transform: translateY(0);
   }
 }

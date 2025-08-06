@@ -12,8 +12,8 @@ export function NewLiquidToggle() {
   // Prevent hydration mismatch
   if (!mounted) {
     return (
-      <div className="w-12 h-6 bg-gray-300 rounded-full relative">
-        <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5"></div>
+      <div className="w-8 h-4 bg-gray-300 rounded-full relative">
+        <div className="w-3 h-3 bg-white rounded-full absolute top-0.5 left-0.5"></div>
       </div>
     );
   }
@@ -40,9 +40,9 @@ export function NewLiquidToggle() {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 8px;
+          padding: 4px;
           background: rgba(255, 255, 255, 0.9);
-          border-radius: 24px;
+          border-radius: 16px;
           backdrop-filter: blur(10px);
           border: 1px solid rgba(255, 255, 255, 0.2);
         }
@@ -55,14 +55,14 @@ export function NewLiquidToggle() {
           appearance: none;
           position: relative;
           cursor: pointer;
-          width: 3em;
+          width: 2.2em;
           aspect-ratio: 2 / 1;
           background: var(--primary);
           border-radius: 20em;
-          box-shadow: 0 0 0 0.3em var(--secondary);
+          box-shadow: 0 0 0 0.2em var(--secondary);
           transform: translateX(0.5px);
           transition: transform var(--time) cubic-bezier(0.75, 0, 0.75, 1);
-          filter: blur(0.2em) contrast(20);
+          filter: blur(0.15em) contrast(20);
           mix-blend-mode: darken;
           overflow: hidden;
           margin: 0;
@@ -106,9 +106,14 @@ export function NewLiquidToggle() {
 
         @media (max-width: 768px) {
           .liquid-toggle-input {
-            width: 2.5em;
-            box-shadow: 0 0 0 0.25em var(--secondary);
-            filter: blur(0.17em) contrast(20);
+            width: 1.8em;
+            box-shadow: 0 0 0 0.15em var(--secondary);
+            filter: blur(0.12em) contrast(20);
+          }
+
+          .liquid-toggle-container {
+            padding: 3px;
+            border-radius: 12px;
           }
         }
       `}</style>

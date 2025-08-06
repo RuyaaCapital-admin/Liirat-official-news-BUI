@@ -11,17 +11,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
-import { PriceTicker } from "@/components/ui/price-ticker";
+import TradingViewTicker from "@/components/ui/trading-view-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
 import { NewsCardsList } from "@/components/ui/news-cards-list";
 import { EconomicEventsResponse, NewsResponse } from "@shared/api";
 import { AdvancedAlertSystem } from "@/components/ui/advanced-alert-system";
+import { NotificationSystem } from "@/components/ui/notification-system";
+import { NotificationDropdown } from "@/components/ui/notification-dropdown";
 
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
-import { NotificationDropdown } from "@/components/ui/notification-dropdown";
-import { AlertSettingsModal } from "@/components/ui/alert-settings-modal";
 
 import { useLanguage } from "@/contexts/language-context";
 import { useAlerts } from "@/contexts/alert-context";
@@ -53,7 +53,6 @@ export default function Index() {
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [isLoadingNews, setIsLoadingNews] = useState(true);
 
-  const [showAlertSettings, setShowAlertSettings] = useState(false);
   const { theme } = useTheme();
   const { language, t, dir } = useLanguage();
   const { checkEventAlerts } = useAlerts();
@@ -163,11 +162,11 @@ export default function Index() {
       <div className="relative z-10">
         <main role="main">
           {/* Navigation Header */}
-          <header className="border-b border-border/40 backdrop-blur-md bg-background/95 sticky top-0 z-50">
+          <header className="neumorphic-sm backdrop-blur-md bg-background/95 sticky top-0 z-[60] border-0">
             <div className="container mx-auto px-4 py-4 flex items-center justify-between">
               <div className="flex items-center space-x-4 space-x-reverse">
                 <img
-                  src="/liirat-logo.png"
+                  src="/liirat-logo-new.png"
                   alt="Liirat News"
                   className="h-14 w-auto cursor-pointer hover:opacity-80 transition-opacity"
                   onClick={() =>
@@ -211,11 +210,7 @@ export default function Index() {
               </nav>
 
               <div className="flex items-center space-x-2 space-x-reverse">
-                {/* Notification Dropdown */}
-                <NotificationDropdown
-                  onSettingsClick={() => setShowAlertSettings(true)}
-                />
-
+                <NotificationDropdown className="sm:h-9 sm:w-9 h-8 w-8" />
                 <SimpleLanguageToggle />
                 <NewLiquidToggle />
               </div>
@@ -223,23 +218,19 @@ export default function Index() {
           </header>
 
           {/* Real-Time Market Ticker */}
-          <PriceTicker
-            className="sticky top-[72px] z-40"
-            pauseOnHover={true}
-            speed={60}
-          />
+          <TradingViewTicker className="sticky top-[72px] z-[40] w-full" />
 
           {/* Hero Section */}
           <section className="py-20 lg:py-32 relative overflow-hidden">
             {/* Official Logo Background Pattern */}
             <div className="absolute inset-0">
               <div className="w-full h-full bg-gradient-to-br from-primary/5 via-background to-primary/10"></div>
-              <div className="absolute inset-0 bg-[url('/liirat-logo.png')] bg-center bg-no-repeat bg-contain opacity-[0.03]"></div>
+              <div className="absolute inset-0 bg-[url('/liirat-logo-new.png')] bg-center bg-no-repeat bg-contain opacity-[0.03]"></div>
             </div>
             <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-primary/5"></div>
             <div className="container mx-auto px-4 relative">
               <div className="text-center max-w-4xl mx-auto">
-                <div className="backdrop-blur-sm bg-card/80 border border-primary/20 rounded-3xl p-12 mb-8 shadow-2xl">
+                <div className="neumorphic-lg bg-card/90 rounded-3xl p-12 mb-8">
                   <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-foreground">
                     {t("hero.title")}
                     <span className="text-primary block">
@@ -254,7 +245,7 @@ export default function Index() {
                   <Button
                     variant="outline"
                     size="lg"
-                    className="border-primary/50 text-primary hover:bg-primary/10 hover:border-primary px-8 py-6 text-lg font-semibold rounded-2xl"
+                    className="text-primary px-8 py-6 text-lg font-semibold neumorphic-hover"
                     onClick={() =>
                       document
                         .getElementById("calendar")
@@ -267,7 +258,7 @@ export default function Index() {
                   <Button
                     variant="outline"
                     size="lg"
-                    className="border-primary/50 text-primary hover:bg-primary/10 hover:border-primary px-8 py-6 text-lg font-semibold rounded-2xl"
+                    className="text-primary px-8 py-6 text-lg font-semibold neumorphic-hover"
                     onClick={() =>
                       document
                         .getElementById("alerts")
@@ -572,7 +563,7 @@ export default function Index() {
             <div className="container mx-auto px-4">
               <div className="text-center">
                 <img
-                  src="/liirat-logo.png"
+                  src="/liirat-logo-new.png"
                   alt="Liirat News"
                   className="h-8 w-auto mx-auto mb-4"
                 />
@@ -598,14 +589,11 @@ export default function Index() {
           </footer>
         </main>
 
-        {/* Alert Settings Modal */}
-        <AlertSettingsModal
-          open={showAlertSettings}
-          onOpenChange={setShowAlertSettings}
-        />
-
         {/* Chat Widget */}
         <ChatWidget />
+
+        {/* Notification System */}
+        <NotificationSystem />
 
         {/* Neumorphic CSS Styles */}
         <style>{`
