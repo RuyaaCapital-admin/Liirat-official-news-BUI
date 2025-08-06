@@ -93,6 +93,19 @@ export default function Index() {
 
       console.log(`Fetching news for language: ${lang}`);
 
+      // First test basic server connectivity
+      try {
+        const pingResponse = await fetch('/api/ping', {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+        });
+        console.log(`Server ping status: ${pingResponse.status}`);
+      } catch (pingError) {
+        console.error("Server ping failed:", pingError);
+        throw new Error("Server not reachable");
+      }
+
+      // Now try the actual news endpoint
       const response = await fetch(
         `/api/marketaux-news?language=${lang}&limit=3&countries=us,gb,ae`,
         {
@@ -101,7 +114,6 @@ export default function Index() {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
           },
-          cache: 'no-cache',
         },
       );
 
