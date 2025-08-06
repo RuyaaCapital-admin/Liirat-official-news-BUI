@@ -184,7 +184,7 @@ export default function Index() {
       </div>
 
       {/* All content with relative positioning */}
-      <div className="relative z-10">
+      <div className="relative z-10 pt-[72px]">
         <main role="main">
           {/* Navigation Header */}
           <header className={`neumorphic-sm backdrop-blur-md bg-background/95 fixed top-0 left-0 right-0 z-[60] border-0 transition-transform duration-300 ease-in-out ${isNavbarVisible ? 'translate-y-0' : '-translate-y-full'}`}>
