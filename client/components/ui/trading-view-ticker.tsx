@@ -56,47 +56,50 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
         "largeChartUrl": "",
         "isTransparent": true,
         "showSymbolLogo": true,
-        "displayMode": "regular"
+        "displayMode": "adaptive",
+        "autosize": true
       }`;
-    
+
     container.current.appendChild(script);
-    
-    // Disable clicking on symbols by preventing default click behavior
-    const disableClicks = (e: Event) => {
-      const target = e.target as HTMLElement;
-      if (target.closest('.tradingview-widget-container')) {
-        // Allow the copyright link to work but disable symbol clicks
-        if (!target.closest('.tradingview-widget-copyright')) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      }
-    };
-
-    // Add click prevention after a short delay to ensure TradingView widget is loaded
-    const timeoutId = setTimeout(() => {
-      document.addEventListener('click', disableClicks, true);
-    }, 2000);
-
-    return () => {
-      document.removeEventListener('click', disableClicks, true);
-      clearTimeout(timeoutId);
-    };
   }, []);
 
   return (
-    <div className={cn("tradingview-widget-container border-b border-border bg-card", className)} ref={container}>
-      <div className="tradingview-widget-container__widget"></div>
-      <div className="tradingview-widget-copyright">
-        <a 
-          href="https://www.tradingview.com/" 
-          rel="noopener nofollow" 
-          target="_blank"
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <span className="blue-text">Ticker tape by TradingView</span>
-        </a>
+    <div className={cn("tradingview-widget-container border-b border-border bg-card relative overflow-hidden", className)} ref={container}>
+      <div className="tradingview-widget-container__widget relative">
+        {/* Invisible overlay to disable all clicks */}
+        <div className="absolute inset-0 z-10 cursor-default"
+             onClick={(e) => e.preventDefault()}
+             onMouseDown={(e) => e.preventDefault()}
+             style={{ pointerEvents: 'auto' }}
+        />
       </div>
+
+      {/* Custom styling to hide branding and enable smooth scrolling */}
+      <style jsx>{`
+        .tradingview-widget-container iframe {
+          pointer-events: none !important;
+        }
+
+        /* Hide the copyright text completely */
+        .tradingview-widget-copyright {
+          display: none !important;
+          visibility: hidden !important;
+          height: 0 !important;
+          overflow: hidden !important;
+        }
+
+        /* Hide TradingView branding inside iframe */
+        .tradingview-widget-container iframe::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          background: var(--card);
+          width: 100px;
+          height: 20px;
+          z-index: 1000;
+        }
+      `}</style>
     </div>
   );
 }
