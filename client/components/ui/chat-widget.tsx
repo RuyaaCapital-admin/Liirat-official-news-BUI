@@ -33,7 +33,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
     {
       id: "1",
       content:
-        "مرحباً! أنا مساعد ليرات للتحديثات المباشرة، مصمم لتقديم أحداث التقويم الاقتصادي والأخبار المباشرة والأسعار في الوقت الفعلي. كيف يمكنني مساعدتك اليوم؟",
+        "مرحباً! أنا مساعد ليرات للتحديثات المباشرة، مصمم لتقديم أحداث التقويم الاقتصادي والأخب��ر المباشرة والأسعار في الوقت الفعلي. كيف يمكنني مساعدتك اليوم؟",
       role: "assistant",
       timestamp: new Date(),
     },
@@ -142,7 +142,11 @@ export function ChatWidget({ className }: ChatWidgetProps) {
         <Button
           onClick={() => setIsOpen(true)}
           size="lg"
-          className="h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-primary/20"
+          className="h-12 w-12 sm:h-14 sm:w-14 rounded-full neumorphic-button transition-all duration-300"
+          style={{
+            background: 'var(--neumorphic-gradient)',
+            color: 'var(--foreground)'
+          }}
         >
           <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6" />
         </Button>
