@@ -119,17 +119,35 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             overflow: hidden;
           }
           
-          /* Hide TradingView logo - minimal overlay */
+          /* Hide TradingView logo - enhanced coverage */
           .tradingview-widget-container::after {
             content: '';
             position: absolute;
             bottom: 0;
             right: 0;
             background: var(--card);
-            width: 100px;
-            height: 20px;
-            z-index: 10;
+            width: 200px;
+            height: 100%;
+            z-index: 15;
             pointer-events: none;
+          }
+
+          .tradingview-widget-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--background);
+            width: 150px;
+            height: 100%;
+            z-index: 14;
+            pointer-events: none;
+          }
+
+          /* Use masking to fade out the right side */
+          .tradingview-widget-container {
+            -webkit-mask: linear-gradient(to right, black 0%, black 85%, transparent 100%);
+            mask: linear-gradient(to right, black 0%, black 85%, transparent 100%);
           }
           
           /* Allow natural ticker movement */
