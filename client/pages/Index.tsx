@@ -328,7 +328,7 @@ export default function Index() {
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "آخر الأخبار وا��تحليلات المالية"
+                      ? "آخر الأخبار والتحليلات المالية"
                       : "Latest financial news and market analysis"}
                   </CardDescription>
                 </CardHeader>
