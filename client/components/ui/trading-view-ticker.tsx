@@ -147,9 +147,21 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
 
           /* Use masking to fade out the right side completely */
           .tradingview-widget-container {
-            -webkit-mask: linear-gradient(to right, black 0%, black 80%, transparent 100%);
-            mask: linear-gradient(to right, black 0%, black 80%, transparent 100%);
+            -webkit-mask: linear-gradient(to right, black 0%, black 85%, transparent 100%);
+            mask: linear-gradient(to right, black 0%, black 85%, transparent 100%);
             overflow: hidden !important;
+          }
+
+          /* Additional background overlay for light mode */
+          .tradingview-widget-container .light-mode-overlay {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 15%;
+            height: 100%;
+            background: linear-gradient(to left, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 50%, transparent 100%);
+            z-index: 25;
+            pointer-events: none;
           }
 
           /* Block all interactions in the right area */
