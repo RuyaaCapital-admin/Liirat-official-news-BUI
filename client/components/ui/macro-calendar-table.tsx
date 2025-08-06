@@ -183,7 +183,7 @@ const getCountryFlag = (country: string) => {
     KR: "🇰🇷",
     SG: "🇸🇬",
     HK: "🇭🇰",
-    TH: "🇹��",
+    TH: "🇹🇭",
     MY: "🇲🇾",
     ID: "🇮🇩",
     PH: "🇵🇭",
@@ -747,7 +747,6 @@ export function MacroCalendarTable({
                         getImportanceColor(event.importance),
                       )}
                     >
-                      {"⭐".repeat(event.importance)}{" "}
                       {getImportanceLabel(event.importance, language)}
                     </Badge>
                   </td>
