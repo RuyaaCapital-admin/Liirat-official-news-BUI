@@ -108,7 +108,7 @@ export default function Index() {
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
       const response = await fetch(
-        `/api/marketaux-news?language=${lang}&limit=50`,
+        `/api/marketaux-news?language=${lang}&limit=3&countries=us,gb,ae`,
         {
           signal: controller.signal,
         },
