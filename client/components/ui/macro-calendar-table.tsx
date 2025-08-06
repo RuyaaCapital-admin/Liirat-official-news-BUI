@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -178,7 +179,7 @@ const getCountryFlag = (country: string) => {
     IN: "🇮🇳",
     BR: "🇧🇷",
     MX: "🇲🇽",
-    RU: "🇷🇺",
+    RU: "🇷���",
     ZA: "🇿🇦",
     KR: "🇰🇷",
     SG: "🇸🇬",
@@ -241,7 +242,9 @@ export function MacroCalendarTable({
   const [searchTerm, setSearchTerm] = useState("");
   const [countrySearchTerm, setCountrySearchTerm] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("all");
-  const [selectedImportance, setSelectedImportance] = useState("3");
+  const [selectedImportances, setSelectedImportances] = useState<string[]>([
+    "3",
+  ]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [dateRange, setDateRange] = useState("all");
   const [isCountryOpen, setIsCountryOpen] = useState(false);
@@ -290,8 +293,9 @@ export function MacroCalendarTable({
       const matchesCountry =
         selectedCountry === "all" || event.country === selectedCountry;
 
-      const matchesImportance =
-        event.importance.toString() === selectedImportance;
+      const matchesImportance = selectedImportances.includes(
+        event.importance.toString(),
+      );
 
       const matchesDate = (() => {
         if (selectedDate) {
@@ -332,7 +336,7 @@ export function MacroCalendarTable({
     events,
     searchTerm,
     selectedCountry,
-    selectedImportance,
+    selectedImportances,
     selectedDate,
     dateRange,
   ]);
@@ -349,7 +353,7 @@ export function MacroCalendarTable({
     setSearchTerm("");
     setCountrySearchTerm("");
     setSelectedCountry("all");
-    setSelectedImportance("3");
+    setSelectedImportances(["3"]);
     setSelectedDate(undefined);
     setDateRange("all");
   };
@@ -403,7 +407,7 @@ export function MacroCalendarTable({
                         ? t("This Week", "هذا الأسبوع")
                         : dateRange === "nextweek"
                           ? t("Next Week", "الأسبوع القادم")
-                          : t("Date", "التاريخ")}
+                          : t("Date", "الت��ريخ")}
                 </span>
                 <CalendarIcon className="h-4 w-4 opacity-50" />
               </Button>
@@ -572,26 +576,78 @@ export function MacroCalendarTable({
             </PopoverContent>
           </Popover>
 
-          {/* Importance Filter */}
-          <Select
-            value={selectedImportance}
-            onValueChange={setSelectedImportance}
-          >
-            <SelectTrigger className={dir === "rtl" ? "text-right" : ""}>
-              <SelectValue placeholder={t("calendar.table.importance")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="3">
-                {t("High Impact", "عالي التأثير")}
-              </SelectItem>
-              <SelectItem value="2">
-                {t("Medium Impact", "متوسط التأثير")}
-              </SelectItem>
-              <SelectItem value="1">
-                {t("Low Impact", "منخفض التأثير")}
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          {/* Importance Filter - Multi-select */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn("justify-between", dir === "rtl" && "text-right")}
+              >
+                <span>
+                  {selectedImportances.length === 1
+                    ? selectedImportances[0] === "3"
+                      ? t("High Impact", "عالي التأثير")
+                      : selectedImportances[0] === "2"
+                        ? t("Medium Impact", "متوسط التأثير")
+                        : t("Low Impact", "منخفض التأثير")
+                    : `${selectedImportances.length} ${t("Impact Levels", "مستويات التأثير")}`}
+                </span>
+                <ChevronDown className="h-4 w-4 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-56 p-3">
+              <div className="space-y-3">
+                <div className="text-sm font-medium">
+                  {t("Select Impact Levels", "اختر مستويات التأثير")}
+                </div>
+                {[
+                  {
+                    value: "3",
+                    label: t("High Impact", "عالي التأثير"),
+                    color: "text-red-600",
+                  },
+                  {
+                    value: "2",
+                    label: t("Medium Impact", "متوسط التأثير"),
+                    color: "text-orange-600",
+                  },
+                  {
+                    value: "1",
+                    label: t("Low Impact", "منخفض التأثير"),
+                    color: "text-green-600",
+                  },
+                ].map((importance) => (
+                  <div
+                    key={importance.value}
+                    className="flex items-center space-x-2"
+                  >
+                    <Checkbox
+                      id={`importance-${importance.value}`}
+                      checked={selectedImportances.includes(importance.value)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedImportances((prev) => [
+                            ...prev,
+                            importance.value,
+                          ]);
+                        } else {
+                          setSelectedImportances((prev) =>
+                            prev.filter((i) => i !== importance.value),
+                          );
+                        }
+                      }}
+                    />
+                    <label
+                      htmlFor={`importance-${importance.value}`}
+                      className={cn("text-sm cursor-pointer", importance.color)}
+                    >
+                      {importance.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
 
           {/* Update Button with Status */}
           <Button
