@@ -51,7 +51,6 @@ export default function Index() {
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [isLoadingNews, setIsLoadingNews] = useState(true);
 
-  const [showAlertSettings, setShowAlertSettings] = useState(false);
   const { theme } = useTheme();
   const { language, t, dir } = useLanguage();
   const { checkEventAlerts } = useAlerts();
