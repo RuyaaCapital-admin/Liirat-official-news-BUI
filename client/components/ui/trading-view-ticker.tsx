@@ -79,16 +79,10 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
         ref={container}
       >
         <div className="tradingview-widget-container__widget relative">
-          {/* Invisible overlay to completely disable all clicks and interactions */}
+          {/* Minimal click prevention - only prevent clicks, allow animation */}
           <div
-            className="absolute inset-0 z-50 cursor-default bg-transparent"
-            onPointerDown={(e) => e.preventDefault()}
-            onPointerUp={(e) => e.preventDefault()}
+            className="absolute inset-0 z-20 cursor-default bg-transparent"
             onClick={(e) => e.preventDefault()}
-            onMouseDown={(e) => e.preventDefault()}
-            onMouseUp={(e) => e.preventDefault()}
-            onTouchStart={(e) => e.preventDefault()}
-            onTouchEnd={(e) => e.preventDefault()}
             style={{
               pointerEvents: "auto",
               userSelect: "none",
