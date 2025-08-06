@@ -12,8 +12,8 @@ export function NewLiquidToggle() {
   // Prevent hydration mismatch
   if (!mounted) {
     return (
-      <div className="w-12 h-6 bg-gray-300 rounded-full relative">
-        <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5"></div>
+      <div className="w-8 h-4 bg-gray-300 rounded-full relative">
+        <div className="w-3 h-3 bg-white rounded-full absolute top-0.5 left-0.5"></div>
       </div>
     );
   }
