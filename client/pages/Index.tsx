@@ -215,7 +215,7 @@ export default function Index() {
           </header>
 
           {/* Real-Time Market Ticker */}
-          <TradingViewTicker className="sticky top-[72px] z-[30]" />
+          <TradingViewTicker className="sticky top-[72px] z-[40] w-full" />
 
           {/* Hero Section */}
           <section className="py-20 lg:py-32 relative overflow-hidden">
