@@ -57,7 +57,9 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
         "isTransparent": true,
         "showSymbolLogo": true,
         "displayMode": "adaptive",
-        "autosize": true
+        "autosize": true,
+        "speed": 80,
+        "animationSpeed": "fast"
       }`;
 
     container.current.appendChild(script);
