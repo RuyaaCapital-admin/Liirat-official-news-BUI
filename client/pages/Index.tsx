@@ -35,6 +35,7 @@ import {
   Zap,
   BellRing,
   Bot,
+  AlertTriangle,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTheme } from "@/hooks/use-theme";
@@ -435,7 +436,7 @@ export default function Index() {
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "أحداث اقتصادية ��همة ومؤشرات مالية رئيسية"
+                      ? "أحداث اقتصادية مهمة ومؤشرات مالية رئيسية"
                       : "Important economic events and key financial indicators"}
                   </CardDescription>
                 </CardHeader>
