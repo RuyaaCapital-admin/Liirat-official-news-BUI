@@ -52,7 +52,8 @@ export function NotificationSystem({ className }: NotificationSystemProps) {
   const playAlertSound = () => {
     try {
       // Create audio context for better cross-browser support
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
 
       // Create oscillator for alert sound
       const oscillator = audioContext.createOscillator();
@@ -67,22 +68,26 @@ export function NotificationSystem({ className }: NotificationSystemProps) {
 
       // Volume control
       gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        audioContext.currentTime + 0.4,
+      );
 
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.4);
-
     } catch (error) {
       // Fallback: Try to use simple audio element
       try {
         // Create a simple beep sound using data URL
-        const audio = new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMeCSGF0fPTgjMGHm7A7+OZYA0PVanm8bllHgg2jdj20Ic1BypnvOnvpVITC0ml4PK8aB4GM47V9M2SOAUfcsnw3I1FBxho0/LZfD4JIGq+8OOYXg4QT6/k8LdnHQo3k9Xzz44uBSJ4y+3akUcDCjePzPDLCCMKImms6+6nUhcCTpzt9L9nJwoaM47Z992fSgoJXa3h6rdaFhJSvOPvxmfE");
+        const audio = new Audio(
+          "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMeCSGF0fPTgjMGHm7A7+OZYA0PVanm8bllHgg2jdj20Ic1BypnvOnvpVITC0ml4PK8aB4GM47V9M2SOAUfcsnw3I1FBxho0/LZfD4JIGq+8OOYXg4QT6/k8LdnHQo3k9Xzz44uBSJ4y+3akUcDCjePzPDLCCMKImms6+6nUhcCTpzt9L9nJwoaM47Z992fSgoJXa3h6rdaFhJSvOPvxmfE",
+        );
         audio.volume = 0.3;
         audio.play().catch(() => {
-          console.warn('Could not play alert sound');
+          console.warn("Could not play alert sound");
         });
       } catch (fallbackError) {
-        console.warn('Alert sound not available');
+        console.warn("Alert sound not available");
       }
     }
   };

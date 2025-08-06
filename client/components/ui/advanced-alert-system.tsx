@@ -218,12 +218,16 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
         const updatedPairs = await Promise.all(
           currencyPairs.map(async (pair) => {
             try {
-              const response = await fetch(`/api/price-alert?symbol=${pair.symbol}`);
+              const response = await fetch(
+                `/api/price-alert?symbol=${pair.symbol}`,
+              );
 
               // Check if response is HTML (error page) instead of JSON
-              const contentType = response.headers.get('content-type');
-              if (!contentType || !contentType.includes('application/json')) {
-                console.warn(`API returned non-JSON response for ${pair.symbol}, using mock data`);
+              const contentType = response.headers.get("content-type");
+              if (!contentType || !contentType.includes("application/json")) {
+                console.warn(
+                  `API returned non-JSON response for ${pair.symbol}, using mock data`,
+                );
                 return pair; // Return original with mock data
               }
 
@@ -236,19 +240,29 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                   changePercent: data.changePercent || pair.changePercent,
                 };
               } else {
-                console.warn(`API request failed for ${pair.symbol}: ${response.status}`);
+                console.warn(
+                  `API request failed for ${pair.symbol}: ${response.status}`,
+                );
                 return pair; // Return original with mock data
               }
             } catch (error) {
               // Handle JSON parsing errors and other issues
-              if (error instanceof SyntaxError && error.message.includes('Unexpected token')) {
-                console.warn(`API returned HTML instead of JSON for ${pair.symbol}, likely endpoint not available in dev mode`);
+              if (
+                error instanceof SyntaxError &&
+                error.message.includes("Unexpected token")
+              ) {
+                console.warn(
+                  `API returned HTML instead of JSON for ${pair.symbol}, likely endpoint not available in dev mode`,
+                );
               } else {
-                console.warn(`Failed to fetch price for ${pair.symbol}:`, error);
+                console.warn(
+                  `Failed to fetch price for ${pair.symbol}:`,
+                  error,
+                );
               }
               return pair; // Return original with mock data
             }
-          })
+          }),
         );
         setCurrencyPairs(updatedPairs);
       } catch (error) {
@@ -280,9 +294,11 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
           const response = await fetch(`/api/price-alert?symbol=${alert.pair}`);
 
           // Check if response is HTML (error page) instead of JSON
-          const contentType = response.headers.get('content-type');
-          if (!contentType || !contentType.includes('application/json')) {
-            console.warn(`API returned HTML for ${alert.pair}, skipping alert check`);
+          const contentType = response.headers.get("content-type");
+          if (!contentType || !contentType.includes("application/json")) {
+            console.warn(
+              `API returned HTML for ${alert.pair}, skipping alert check`,
+            );
             continue;
           }
 
@@ -336,8 +352,13 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
           }
         } catch (error) {
           // Handle JSON parsing errors gracefully
-          if (error instanceof SyntaxError && error.message.includes('Unexpected token')) {
-            console.warn(`API endpoint returned HTML for ${alert.pair}, likely not available in development mode`);
+          if (
+            error instanceof SyntaxError &&
+            error.message.includes("Unexpected token")
+          ) {
+            console.warn(
+              `API endpoint returned HTML for ${alert.pair}, likely not available in development mode`,
+            );
           } else {
             console.warn(`Error checking price for ${alert.pair}:`, error);
           }
@@ -464,7 +485,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                   style={{
                     zIndex: 9999,
                     position: "absolute",
-                    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+                    boxShadow:
+                      "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
                   }}
                 >
                   <ScrollArea className="max-h-60">
@@ -618,7 +640,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
       </Card>
 
       {/* Active Alerts */}
-<Card className="bg-card/50 backdrop-blur-sm border-border/50 relative z-1">
+      <Card className="bg-card/50 backdrop-blur-sm border-border/50 relative z-1">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">

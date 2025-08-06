@@ -144,8 +144,8 @@ export function ChatWidget({ className }: ChatWidgetProps) {
           size="lg"
           className="h-12 w-12 sm:h-14 sm:w-14 rounded-full neumorphic-button transition-all duration-300"
           style={{
-            background: 'var(--neumorphic-gradient)',
-            color: 'var(--foreground)'
+            background: "var(--neumorphic-gradient)",
+            color: "var(--foreground)",
           }}
         >
           <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6" />

@@ -55,9 +55,7 @@ export function ModernEconomicCalendar({
   const [selectedWeek, setSelectedWeek] = useState("this-week");
   const [selectedDay, setSelectedDay] = useState("all");
   const [selectedCurrency, setSelectedCurrency] = useState("all");
-  const [selectedImportance, setSelectedImportance] = useState<string[]>([
-    "3",
-  ]);
+  const [selectedImportance, setSelectedImportance] = useState<string[]>(["3"]);
   const [events, setEvents] = useState<EconomicEvent[]>([]);
   const [isLoadingAI, setIsLoadingAI] = useState<string | null>(null);
 
@@ -65,40 +63,51 @@ export function ModernEconomicCalendar({
   const searchSuggestions = React.useMemo(() => {
     if (searchQuery.length < 1) return [];
 
-    const countries = [...new Set(sampleEvents.map(e => e.country))];
-    const eventTerms = [...new Set(sampleEvents.map(e => e.event))];
-    const currencies = [...new Set(sampleEvents.map(e => e.currency))];
+    const countries = [...new Set(sampleEvents.map((e) => e.country))];
+    const eventTerms = [...new Set(sampleEvents.map((e) => e.event))];
+    const currencies = [...new Set(sampleEvents.map((e) => e.currency))];
 
     // Add common English translations for better search
     const countryTranslations = [
-      { ar: 'الولايات المتحدة', en: 'United States', currency: 'USD' },
-      { ar: 'ألمانيا', en: 'Germany', currency: 'EUR' },
-      { ar: 'المملكة المتحدة', en: 'United Kingdom', currency: 'GBP' },
-      { ar: 'اليابان', en: 'Japan', currency: 'JPY' },
-      { ar: 'كندا', en: 'Canada', currency: 'CAD' },
+      { ar: "الولايات المتحدة", en: "United States", currency: "USD" },
+      { ar: "ألمانيا", en: "Germany", currency: "EUR" },
+      { ar: "المملكة المتحدة", en: "United Kingdom", currency: "GBP" },
+      { ar: "اليابان", en: "Japan", currency: "JPY" },
+      { ar: "كندا", en: "Canada", currency: "CAD" },
     ];
 
     const allSuggestions = [
-      ...countries.map(c => ({ type: 'country', text: c, icon: '🏛️' })),
-      ...eventTerms.map(e => ({ type: 'event', text: e, icon: '📊' })),
-      ...currencies.map(c => ({ type: 'currency', text: c, icon: '💱' })),
+      ...countries.map((c) => ({ type: "country", text: c, icon: "🏛️" })),
+      ...eventTerms.map((e) => ({ type: "event", text: e, icon: "📊" })),
+      ...currencies.map((c) => ({ type: "currency", text: c, icon: "💱" })),
       // Add English translations for countries
-      ...countryTranslations.map(t => ({ type: 'country', text: t.en, icon: '🏛️' })),
-      ...countryTranslations.map(t => ({ type: 'currency', text: `${t.currency} (${t.en})`, icon: '💱' }))
+      ...countryTranslations.map((t) => ({
+        type: "country",
+        text: t.en,
+        icon: "🏛️",
+      })),
+      ...countryTranslations.map((t) => ({
+        type: "currency",
+        text: `${t.currency} (${t.en})`,
+        icon: "💱",
+      })),
     ];
 
     return allSuggestions
-      .filter(s =>
-        s.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        // Support Arabic search terms
-        (searchQuery.length >= 1 && s.text.includes(searchQuery))
+      .filter(
+        (s) =>
+          s.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          // Support Arabic search terms
+          (searchQuery.length >= 1 && s.text.includes(searchQuery)),
       )
       .slice(0, 8);
   }, [searchQuery]);
 
   // Show suggestions when user types 1+ characters
   React.useEffect(() => {
-    setShowSearchSuggestions(searchQuery.length >= 1 && searchSuggestions.length > 0);
+    setShowSearchSuggestions(
+      searchQuery.length >= 1 && searchSuggestions.length > 0,
+    );
   }, [searchQuery, searchSuggestions]);
 
   // Sample economic events data
@@ -291,8 +300,7 @@ export function ModernEconomicCalendar({
       return false;
     if (selectedCurrency !== "all" && event.currency !== selectedCurrency)
       return false;
-    if (!selectedImportance.includes(event.importance.toString()))
-      return false;
+    if (!selectedImportance.includes(event.importance.toString())) return false;
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       const matchesArabic =
@@ -366,8 +374,12 @@ export function ModernEconomicCalendar({
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => setShowSearchSuggestions(searchQuery.length >= 1)}
-                  onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
+                  onFocus={() =>
+                    setShowSearchSuggestions(searchQuery.length >= 1)
+                  }
+                  onBlur={() =>
+                    setTimeout(() => setShowSearchSuggestions(false), 200)
+                  }
                   className="pr-10 bg-background/80 border-border/50 hover:border-primary/50 transition-colors"
                   placeholder="ابحث في الأحداث أو العملات... (اكتب حرف أو اثنين)"
                   dir="rtl"
@@ -393,9 +405,9 @@ export function ModernEconomicCalendar({
                           <div className="flex-1">
                             <div className="font-medium">{suggestion.text}</div>
                             <div className="text-xs text-muted-foreground">
-                              {suggestion.type === 'country' && 'دولة'}
-                              {suggestion.type === 'event' && 'حدث اقتصادي'}
-                              {suggestion.type === 'currency' && 'عملة'}
+                              {suggestion.type === "country" && "دولة"}
+                              {suggestion.type === "event" && "حدث اقتصادي"}
+                              {suggestion.type === "currency" && "عملة"}
                             </div>
                           </div>
                         </div>

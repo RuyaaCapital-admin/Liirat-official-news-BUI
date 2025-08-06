@@ -12,7 +12,7 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
     if (!container.current) return;
 
     // Clear any existing content
-    container.current.innerHTML = '';
+    container.current.innerHTML = "";
 
     const script = document.createElement("script");
     script.src =
@@ -71,16 +71,17 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
       // Allow some time for the widget to initialize
       setTimeout(() => {
         // Ensure iframe allows animations
-        const iframe = container.current?.querySelector('iframe');
+        const iframe = container.current?.querySelector("iframe");
         if (iframe) {
-          iframe.style.pointerEvents = 'none';
-          iframe.style.overflow = 'hidden';
+          iframe.style.pointerEvents = "none";
+          iframe.style.overflow = "hidden";
 
           // Try to access iframe content and hide logo elements
           try {
             // Continuously monitor for logo elements
             const hideLogoElements = () => {
-              const doc = iframe.contentDocument || iframe.contentWindow?.document;
+              const doc =
+                iframe.contentDocument || iframe.contentWindow?.document;
               if (doc) {
                 // Hide all potential logo elements
                 const logoSelectors = [
@@ -91,16 +92,16 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
                   '[class*="copyright"]',
                   '[class*="tv-"]',
                   'a[href*="tradingview"]',
-                  '[data-logo]',
-                  '[data-brand]'
+                  "[data-logo]",
+                  "[data-brand]",
                 ];
 
-                logoSelectors.forEach(selector => {
+                logoSelectors.forEach((selector) => {
                   const elements = doc.querySelectorAll(selector);
                   elements.forEach((el: any) => {
-                    el.style.display = 'none';
-                    el.style.visibility = 'hidden';
-                    el.style.opacity = '0';
+                    el.style.display = "none";
+                    el.style.visibility = "hidden";
+                    el.style.opacity = "0";
                   });
                 });
               }
@@ -111,14 +112,14 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             setInterval(hideLogoElements, 500);
           } catch (e) {
             // Cross-origin restrictions prevent iframe access, overlays will handle it
-            console.log('Using overlay method for logo hiding');
+            console.log("Using overlay method for logo hiding");
           }
         }
       }, 1000);
     };
 
     script.onerror = () => {
-      console.warn('TradingView widget failed to load');
+      console.warn("TradingView widget failed to load");
     };
 
     container.current.appendChild(script);
@@ -126,7 +127,7 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
     // Clean up function
     return () => {
       if (container.current) {
-        container.current.innerHTML = '';
+        container.current.innerHTML = "";
       }
     };
   }, []);
@@ -142,10 +143,10 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
       <div
         className="tradingview-widget-container w-full"
         ref={container}
-        style={{ 
-          height: "60px", 
+        style={{
+          height: "60px",
           width: "100%",
-          position: "relative"
+          position: "relative",
         }}
       >
         <div className="tradingview-widget-container__widget">
@@ -157,7 +158,7 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             style={{
               width: "300px",
               backgroundColor: "hsl(var(--background))",
-              pointerEvents: "auto"
+              pointerEvents: "auto",
             }}
           />
 
@@ -167,7 +168,7 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             style={{
               width: "280px",
               backgroundColor: "hsl(var(--card))",
-              pointerEvents: "auto"
+              pointerEvents: "auto",
             }}
           />
 
@@ -177,7 +178,7 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             style={{
               width: "260px",
               backgroundColor: "#ffffff",
-              pointerEvents: "auto"
+              pointerEvents: "auto",
             }}
           />
 
@@ -187,7 +188,7 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             style={{
               width: "240px",
               backgroundColor: "#000000",
-              pointerEvents: "auto"
+              pointerEvents: "auto",
             }}
           />
 
@@ -197,7 +198,7 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             style={{
               width: "220px",
               background: "var(--background)",
-              pointerEvents: "auto"
+              pointerEvents: "auto",
             }}
           />
 
@@ -207,7 +208,7 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             style={{
               width: "200px",
               background: "var(--card)",
-              pointerEvents: "auto"
+              pointerEvents: "auto",
             }}
           />
         </div>
@@ -219,8 +220,18 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             height: 60px !important;
             width: 100% !important;
             display: block !important;
-            -webkit-mask: linear-gradient(to right, black 0%, black 75%, transparent 100%);
-            mask: linear-gradient(to right, black 0%, black 75%, transparent 100%);
+            -webkit-mask: linear-gradient(
+              to right,
+              black 0%,
+              black 75%,
+              transparent 100%
+            );
+            mask: linear-gradient(
+              to right,
+              black 0%,
+              black 75%,
+              transparent 100%
+            );
             overflow: hidden !important;
           }
 
