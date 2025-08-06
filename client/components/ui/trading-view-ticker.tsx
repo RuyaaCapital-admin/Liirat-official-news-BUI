@@ -66,38 +66,66 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
   return (
     <div className={cn("tradingview-widget-container border-b border-border bg-card relative overflow-hidden", className)} ref={container}>
       <div className="tradingview-widget-container__widget relative">
-        {/* Invisible overlay to disable all clicks */}
-        <div className="absolute inset-0 z-10 cursor-default"
-             onClick={(e) => e.preventDefault()}
-             onMouseDown={(e) => e.preventDefault()}
-             style={{ pointerEvents: 'auto' }}
+        {/* Invisible overlay to completely disable all clicks and interactions */}
+        <div
+          className="absolute inset-0 z-50 cursor-default bg-transparent"
+          onPointerDown={(e) => e.preventDefault()}
+          onPointerUp={(e) => e.preventDefault()}
+          onClick={(e) => e.preventDefault()}
+          onMouseDown={(e) => e.preventDefault()}
+          onMouseUp={(e) => e.preventDefault()}
+          onTouchStart={(e) => e.preventDefault()}
+          onTouchEnd={(e) => e.preventDefault()}
+          style={{
+            pointerEvents: 'auto',
+            userSelect: 'none',
+            WebkitUserSelect: 'none'
+          }}
         />
       </div>
 
-      {/* Custom styling to hide branding and enable smooth scrolling */}
-      <style jsx>{`
+      {/* Global styles to hide branding and disable interactions */}
+      <style>{`
+        /* Completely disable iframe interactions */
         .tradingview-widget-container iframe {
           pointer-events: none !important;
+          user-select: none !important;
+          -webkit-user-select: none !important;
         }
 
-        /* Hide the copyright text completely */
-        .tradingview-widget-copyright {
+        /* Hide copyright text completely - never show it */
+        .tradingview-widget-copyright,
+        .tradingview-widget-container .tradingview-widget-copyright {
           display: none !important;
           visibility: hidden !important;
           height: 0 !important;
+          width: 0 !important;
           overflow: hidden !important;
+          position: absolute !important;
+          left: -9999px !important;
+          opacity: 0 !important;
         }
 
-        /* Hide TradingView branding inside iframe */
-        .tradingview-widget-container iframe::after {
+        /* Hide any branding inside the iframe content */
+        .tradingview-widget-container {
+          position: relative;
+        }
+
+        .tradingview-widget-container::after {
           content: '';
           position: absolute;
           bottom: 0;
           right: 0;
           background: var(--card);
-          width: 100px;
-          height: 20px;
-          z-index: 1000;
+          width: 120px;
+          height: 25px;
+          z-index: 10;
+          pointer-events: none;
+        }
+
+        /* Ensure ticker moves/scrolls */
+        .tradingview-widget-container iframe {
+          animation: none !important;
         }
       `}</style>
     </div>
