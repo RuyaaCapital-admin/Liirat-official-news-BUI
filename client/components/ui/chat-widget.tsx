@@ -33,7 +33,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
     {
       id: "1",
       content:
-        "مرحباً! أنا مساعد ليرات للتحديثات المباشرة، مصمم لتقديم أحداث التقويم الاقتصادي والأخب��ر المباشرة والأسعار في الوقت الفعلي. كيف يمكنني مساعدتك اليوم؟",
+        "مرحباً! أنا مساعد ليرات للتحديثات المباشرة، مصمم لتقديم أحداث التقويم الاقتصادي والأخبار المباشرة والأسعار في الوقت الفعلي. كيف يمكنني مساعدتك اليوم؟",
       role: "assistant",
       timestamp: new Date(),
     },
@@ -162,7 +162,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
         className,
       )}
     >
-      <Card className="bg-background/95 backdrop-blur-sm border-border/50 shadow-2xl">
+      <Card className="neumorphic-card bg-background/95 backdrop-blur-sm border-border/50">
         <CardHeader
           className="flex flex-row items-center justify-between space-y-0 pb-2 text-primary-foreground rounded-t-lg"
           style={{
