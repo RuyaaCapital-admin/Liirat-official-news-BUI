@@ -121,14 +121,6 @@ export function NotificationDropdown({
                 {t("notifications.mark_read")}
               </Button>
             )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onSettingsClick}
-              className="h-7 w-7 p-0"
-            >
-              <Settings className="w-3 h-3" />
-            </Button>
           </div>
         </div>
 
