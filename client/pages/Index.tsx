@@ -591,6 +591,9 @@ export default function Index() {
         {/* Chat Widget */}
         <ChatWidget />
 
+        {/* Notification System */}
+        <NotificationSystem />
+
         {/* Neumorphic CSS Styles */}
         <style>{`
           .neumorphic-nav-button {
