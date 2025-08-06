@@ -55,7 +55,7 @@ export function ModernEconomicCalendar({
   const [selectedDay, setSelectedDay] = useState("all");
   const [selectedCurrency, setSelectedCurrency] = useState("all");
   const [selectedImportance, setSelectedImportance] = useState<string[]>([
-    "all",
+    "3",
   ]);
   const [events, setEvents] = useState<EconomicEvent[]>([]);
   const [isLoadingAI, setIsLoadingAI] = useState<string | null>(null);
@@ -269,7 +269,7 @@ export function ModernEconomicCalendar({
       {/* Header */}
       <div className="text-center space-y-2 mb-8">
         <h1 className="text-4xl md:text-5xl font-bold text-primary mb-2">
-          التقويم الاقتصادي المباشر
+          التقو��م الاقتصادي المباشر
         </h1>
         <p className="text-lg text-muted-foreground">
           تابع أهم الأحداث الاقتصادية والمؤشرات المالية مع تحليلات الذكاء
