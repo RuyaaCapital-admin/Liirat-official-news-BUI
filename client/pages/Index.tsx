@@ -211,12 +211,6 @@ export default function Index() {
               </nav>
 
               <div className="flex items-center space-x-2 space-x-reverse">
-                {/* Notification Dropdown */}
-                <NotificationDropdown
-                  onSettingsClick={() => setShowAlertSettings(true)}
-                  className="sm:h-9 sm:w-9 h-8 w-8"
-                />
-
                 <SimpleLanguageToggle />
                 <NewLiquidToggle />
               </div>
