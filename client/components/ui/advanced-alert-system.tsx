@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useLanguage } from "@/contexts/language-context";
+import { useAlerts } from "@/contexts/alert-context";
 import {
   Plus,
   Trash2,
@@ -98,7 +99,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     {
       symbol: "AUDUSD",
       name: "AUD/USD",
-      nameAr: "دولار أسترالي/دولار",
+      nameAr: "دولار أست��الي/دولار",
       currentPrice: 0.6598,
       change: 0.0015,
       changePercent: 0.23,
@@ -154,7 +155,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     {
       symbol: "BTCUSD",
       name: "Bitcoin/USD",
-      nameAr: "بيتكوين/دولار",
+      nameAr: "بيتكو��ن/دولار",
       currentPrice: 43250.75,
       change: -1250.25,
       changePercent: -2.81,
