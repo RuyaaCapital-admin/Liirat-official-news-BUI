@@ -16,7 +16,12 @@ import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
 import { NewsCardsList } from "@/components/ui/news-cards-list";
-import { EconomicEventsResponse, NewsResponse, MarketauxNewsResponse, MarketauxNewsItem } from "@shared/api";
+import {
+  EconomicEventsResponse,
+  NewsResponse,
+  MarketauxNewsResponse,
+  MarketauxNewsItem,
+} from "@shared/api";
 import { AdvancedAlertSystem } from "@/components/ui/advanced-alert-system";
 import { NotificationSystem } from "@/components/ui/notification-system";
 import { NotificationDropdown } from "@/components/ui/notification-dropdown";
@@ -89,8 +94,8 @@ export default function Index() {
       setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
   // Fetch Marketaux news data with language support
@@ -102,9 +107,12 @@ export default function Index() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
-      const response = await fetch(`/api/marketaux-news?language=${lang}&limit=50`, {
-        signal: controller.signal,
-      });
+      const response = await fetch(
+        `/api/marketaux-news?language=${lang}&limit=50`,
+        {
+          signal: controller.signal,
+        },
+      );
       clearTimeout(timeoutId);
 
       if (response.ok) {
@@ -247,7 +255,9 @@ export default function Index() {
           </div>
 
           {/* Floating Navigation Header */}
-          <header className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? 'translate-y-20' : '-translate-y-20'} top-4`}>
+          <header
+            className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? "translate-y-20" : "-translate-y-20"} top-4`}
+          >
             <div className="neumorphic-card bg-background/95 backdrop-blur-md rounded-full px-6 py-3 flex items-center justify-between shadow-lg border border-border/50">
               <div className="flex items-center">
                 <img
@@ -305,7 +315,6 @@ export default function Index() {
               </div>
             </div>
           </header>
-
 
           {/* Hero Section */}
           <section className="pt-20 pb-12 sm:py-20 lg:py-32 relative overflow-hidden">
@@ -394,28 +403,33 @@ export default function Index() {
                     <div className="flex items-center justify-center py-12">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                       <span className="ml-2">
-                        {language === "ar" ? "جاري تحميل الأخبار المالية..." : "Loading financial news..."}
+                        {language === "ar"
+                          ? "جاري تحميل الأخبار المالية..."
+                          : "Loading financial news..."}
                       </span>
                     </div>
                   ) : marketauxError ? (
                     <div className="flex items-center justify-center py-12 text-destructive">
                       <AlertTriangle className="w-5 h-5 mr-2" />
                       <span>
-                        {language === "ar" ? "خطأ في تحميل الأخبار:" : "Error loading news:"} {marketauxError}
+                        {language === "ar"
+                          ? "خطأ في تحميل الأخبار:"
+                          : "Error loading news:"}{" "}
+                        {marketauxError}
                       </span>
                     </div>
                   ) : (
                     <MacroCalendarTable
-                      events={marketauxNews.map(item => ({
+                      events={marketauxNews.map((item) => ({
                         date: item.date,
                         time: new Date(item.date).toLocaleTimeString(),
                         country: item.country,
                         event: item.event,
-                        category: item.source || 'Financial News',
+                        category: item.source || "Financial News",
                         importance: item.importance,
                         actual: item.actual || undefined,
                         forecast: item.forecast || undefined,
-                        previous: item.previous || undefined
+                        previous: item.previous || undefined,
                       }))}
                       className="rounded-lg overflow-hidden"
                       language={language}
@@ -445,7 +459,9 @@ export default function Index() {
                     <div className="flex items-center justify-center py-12">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                       <span className="ml-2">
-                        {language === "ar" ? "جاري تحميل الأحداث الاقتصادية..." : "Loading economic events..."}
+                        {language === "ar"
+                          ? "جاري تحميل الأحداث الاقتصادية..."
+                          : "Loading economic events..."}
                       </span>
                     </div>
                   ) : (
@@ -477,7 +493,9 @@ export default function Index() {
                     <div className="flex items-center justify-center py-12">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                       <span className="ml-2">
-                        {language === "ar" ? "جاري تحميل الأخبار..." : "Loading news..."}
+                        {language === "ar"
+                          ? "جاري تحميل الأخبار..."
+                          : "Loading news..."}
                       </span>
                     </div>
                   ) : (
