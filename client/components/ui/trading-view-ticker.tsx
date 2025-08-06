@@ -70,9 +70,10 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
   return (
     <div
       className={cn(
-        "w-full border-b border-border bg-card relative",
+        "w-full border-b border-border bg-card relative block",
         className,
       )}
+      style={{ minHeight: '60px' }}
     >
       <div
         className="tradingview-widget-container relative overflow-hidden"
