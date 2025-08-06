@@ -111,21 +111,33 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
         }}
       >
         <div className="tradingview-widget-container__widget">
-          {/* Logo blocking overlay - positioned precisely */}
-          <div 
-            className="absolute top-0 right-0 h-full bg-card z-[100]"
-            style={{ 
-              width: "120px",
-              background: "var(--card)"
+          {/* Strong logo blocking overlay */}
+          <div
+            className="absolute top-0 right-0 h-full z-[200]"
+            style={{
+              width: "200px",
+              background: "var(--background)",
+              pointerEvents: "auto"
             }}
           />
-          
-          {/* Gradient fade overlay for seamless blending */}
-          <div 
-            className="absolute top-0 right-0 h-full z-[99]"
-            style={{ 
-              width: "180px",
-              background: "linear-gradient(to left, var(--card) 0%, var(--card) 60%, transparent 100%)"
+
+          {/* Additional overlay for complete coverage */}
+          <div
+            className="absolute top-0 right-0 h-full z-[199]"
+            style={{
+              width: "160px",
+              background: "var(--card)",
+              pointerEvents: "auto"
+            }}
+          />
+
+          {/* Gradient fade for light/dark theme compatibility */}
+          <div
+            className="absolute top-0 right-0 h-full z-[198]"
+            style={{
+              width: "250px",
+              background: "linear-gradient(to left, var(--background) 0%, var(--background) 70%, transparent 100%)",
+              pointerEvents: "none"
             }}
           />
         </div>
