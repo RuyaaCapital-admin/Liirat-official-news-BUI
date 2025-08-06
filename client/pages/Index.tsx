@@ -91,16 +91,19 @@ export default function Index() {
       setIsLoadingMarketaux(true);
       setMarketauxError(null);
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      console.log(`Fetching news for language: ${lang}`);
 
       const response = await fetch(
         `/api/marketaux-news?language=${lang}&limit=3&countries=us,gb,ae`,
         {
-          signal: controller.signal,
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          cache: 'no-cache',
         },
       );
-      clearTimeout(timeoutId);
 
       if (response.ok) {
         const contentType = response.headers.get("content-type");
