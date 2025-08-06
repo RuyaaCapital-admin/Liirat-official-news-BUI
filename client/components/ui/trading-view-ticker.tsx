@@ -120,17 +120,18 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             overflow: hidden;
           }
           
-          /* Hide TradingView logo - enhanced coverage */
+          /* Hide TradingView logo - aggressive coverage */
           .tradingview-widget-container::after {
             content: '';
             position: absolute;
             bottom: 0;
             right: 0;
             background: var(--card);
-            width: 200px;
+            width: 250px;
             height: 100%;
-            z-index: 15;
-            pointer-events: none;
+            z-index: 50;
+            pointer-events: auto;
+            cursor: default;
           }
 
           .tradingview-widget-container::before {
@@ -139,16 +140,30 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             top: 0;
             right: 0;
             background: var(--background);
-            width: 150px;
+            width: 200px;
             height: 100%;
-            z-index: 14;
-            pointer-events: none;
+            z-index: 49;
+            pointer-events: auto;
+            cursor: default;
           }
 
-          /* Use masking to fade out the right side */
+          /* Use masking to fade out the right side completely */
           .tradingview-widget-container {
-            -webkit-mask: linear-gradient(to right, black 0%, black 85%, transparent 100%);
-            mask: linear-gradient(to right, black 0%, black 85%, transparent 100%);
+            -webkit-mask: linear-gradient(to right, black 0%, black 80%, transparent 100%);
+            mask: linear-gradient(to right, black 0%, black 80%, transparent 100%);
+            overflow: hidden !important;
+          }
+
+          /* Block all interactions in the right area */
+          .tradingview-widget-container .click-blocker {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            z-index: 60;
+            pointer-events: auto;
+            background: transparent;
           }
           
           /* Allow natural ticker movement */
