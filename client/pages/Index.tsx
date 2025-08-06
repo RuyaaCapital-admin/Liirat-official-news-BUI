@@ -440,37 +440,6 @@ export default function Index() {
               </Card>
 
 
-              {/* Traditional News Cards */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-primary" />
-                    {language === "ar" ? "أخبار EODHD" : "EODHD News"}
-                  </CardTitle>
-                  <CardDescription>
-                    {language === "ar"
-                      ? "آخر الأخبار والتحليلات المالية التقليدية"
-                      : "Traditional financial news and market analysis"}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {isLoadingNews ? (
-                    <div className="flex items-center justify-center py-12">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                      <span className="ml-2">
-                        {language === "ar"
-                          ? "جاري تحميل الأخبار..."
-                          : "Loading news..."}
-                      </span>
-                    </div>
-                  ) : (
-                    <NewsCardsList
-                      news={news}
-                      className="max-h-[600px] overflow-y-auto"
-                    />
-                  )}
-                </CardContent>
-              </Card>
             </div>
           </section>
 
