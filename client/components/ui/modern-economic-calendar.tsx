@@ -269,7 +269,7 @@ export function ModernEconomicCalendar({
           التقويم الاقتصادي المباشر
         </h1>
         <p className="text-lg text-muted-foreground">
-          تابع أهم الأحداث الاقتصادية والمؤشرات ال��الية مع تحليلات الذكاء
+          تابع أهم الأحداث الاقتصادية والمؤشرات المالية مع تحليلات الذكاء
           الاصطناعي
         </p>
       </div>
@@ -319,7 +319,7 @@ export function ModernEconomicCalendar({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pr-10 bg-background/80 border-border/50 hover:border-primary/50 transition-colors"
-                  placeholder="ابحث في الأحداث أو العملات..."
+                  placeholder="ابحث في ال��حداث أو العملات..."
                   dir="rtl"
                 />
               </div>
@@ -416,22 +416,6 @@ export function ModernEconomicCalendar({
                 مستوى الأهمية (اختيار متعدد)
               </label>
               <div className="flex gap-2">
-                <Button
-                  variant={
-                    selectedImportance.includes("all") ? "default" : "outline"
-                  }
-                  size="sm"
-                  onClick={() => {
-                    if (selectedImportance.includes("all")) {
-                      setSelectedImportance([]);
-                    } else {
-                      setSelectedImportance(["all"]);
-                    }
-                  }}
-                  className="flex-1 text-xs"
-                >
-                  ا��كل
-                </Button>
                 <Button
                   variant={
                     selectedImportance.includes("1") ? "default" : "outline"
@@ -654,7 +638,7 @@ export function ModernEconomicCalendar({
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
                         <div className="text-muted-foreground text-xs">
-                          ا��فعلي
+                          الفعلي
                         </div>
                         <div className="flex items-center gap-1 mt-1">
                           {event.actual ? (
