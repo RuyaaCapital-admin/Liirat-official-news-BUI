@@ -7,10 +7,10 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
 
     // Get API key from environment variable
     const apiKey = process.env.MARKETAUX_API_KEY;
-    if (!apiKey) {
-      console.error("MARKETAUX_API_KEY environment variable not set");
+    if (!apiKey || apiKey === "sample_key_for_testing" || apiKey === "") {
+      console.error("MARKETAUX_API_KEY environment variable not set or invalid");
       return res.status(500).json({
-        error: "API configuration error",
+        error: "API key not configured. Please set MARKETAUX_API_KEY environment variable",
         news: [],
       });
     }
