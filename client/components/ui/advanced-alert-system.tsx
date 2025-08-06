@@ -295,8 +295,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     // Initial fetch
     fetchRealPrices();
 
-    // Update prices every 3 minutes to respect rate limits and reduce API calls
-    const interval = setInterval(fetchRealPrices, 180000);
+    // Update prices every 10 minutes to prevent rate limiting completely
+    const interval = setInterval(fetchRealPrices, 600000);
     return () => clearInterval(interval);
   }, []);
 
