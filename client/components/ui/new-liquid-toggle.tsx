@@ -55,14 +55,14 @@ export function NewLiquidToggle() {
           appearance: none;
           position: relative;
           cursor: pointer;
-          width: 3em;
+          width: 2.2em;
           aspect-ratio: 2 / 1;
           background: var(--primary);
           border-radius: 20em;
-          box-shadow: 0 0 0 0.3em var(--secondary);
+          box-shadow: 0 0 0 0.2em var(--secondary);
           transform: translateX(0.5px);
           transition: transform var(--time) cubic-bezier(0.75, 0, 0.75, 1);
-          filter: blur(0.2em) contrast(20);
+          filter: blur(0.15em) contrast(20);
           mix-blend-mode: darken;
           overflow: hidden;
           margin: 0;
