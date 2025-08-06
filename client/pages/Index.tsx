@@ -184,16 +184,21 @@ export default function Index() {
       </div>
 
       {/* All content with relative positioning */}
-      <div className="relative z-10 pt-[72px]">
+      <div className="relative z-10 pt-[120px]">
         <main role="main">
-          {/* Navigation Header */}
-          <header className={`neumorphic-sm backdrop-blur-md bg-background/95 fixed top-0 left-0 right-0 z-[60] border-0 transition-transform duration-300 ease-in-out ${isNavbarVisible ? 'translate-y-0' : '-translate-y-full'}`}>
-            <div className="container mx-auto px-2 sm:px-4 py-4 flex items-center justify-between">
-              <div className="flex items-center space-x-4 space-x-reverse">
+          {/* Real-Time Market Ticker - Always Visible */}
+          <div className="fixed top-0 left-0 right-0 z-[70] w-full">
+            <TradingViewTicker className="w-full" />
+          </div>
+
+          {/* Floating Navigation Header */}
+          <header className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? 'translate-y-20' : '-translate-y-20'} top-4`}>
+            <div className="neumorphic-card bg-background/95 backdrop-blur-md rounded-full px-6 py-3 flex items-center justify-between shadow-lg border border-border/50">
+              <div className="flex items-center">
                 <img
                   src="/liirat-logo-new.png"
                   alt="Liirat News"
-                  className="h-14 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                  className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
                   onClick={() =>
                     window.scrollTo({ top: 0, behavior: "smooth" })
                   }
@@ -204,48 +209,48 @@ export default function Index() {
               </div>
 
               <nav
-                className={`hidden md:flex items-center space-x-4 lg:space-x-6 ${dir === "rtl" ? "space-x-reverse" : ""}`}
+                className={`hidden md:flex items-center space-x-1 ${dir === "rtl" ? "space-x-reverse" : ""}`}
                 role="navigation"
                 aria-label="Main navigation"
               >
                 <a
                   href="#calendar"
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="flex items-center space-x-1 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
                 >
-                  {t("nav.calendar")}
+                  <Calendar className="w-3 h-3" />
+                  <span>{t("nav.calendar")}</span>
                 </a>
                 <a
                   href="#alerts"
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="flex items-center space-x-1 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
                 >
-                  {t("nav.alerts")}
+                  <Bell className="w-3 h-3" />
+                  <span>{t("nav.alerts")}</span>
                 </a>
                 <a
                   href="#about"
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="flex items-center space-x-1 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
                 >
-                  {t("nav.about")}
+                  <Globe className="w-3 h-3" />
+                  <span>{t("nav.about")}</span>
                 </a>
                 <a
                   href="#contact"
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="flex items-center space-x-1 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
                 >
-                  {t("nav.contact")}
+                  <Zap className="w-3 h-3" />
+                  <span>{t("nav.contact")}</span>
                 </a>
               </nav>
 
-              <div className="flex items-center space-x-2 space-x-reverse">
-                <NotificationDropdown className="sm:h-9 sm:w-9 h-8 w-8" />
+              <div className="flex items-center space-x-1">
+                <NotificationDropdown className="h-8 w-8" />
                 <SimpleLanguageToggle />
                 <NewLiquidToggle />
               </div>
             </div>
           </header>
 
-          {/* Real-Time Market Ticker */}
-          <div className="sticky top-0 z-[50] w-full">
-            <TradingViewTicker className="w-full" />
-          </div>
 
           {/* Hero Section */}
           <section className="pt-20 pb-12 sm:py-20 lg:py-32 relative overflow-hidden">
@@ -309,7 +314,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "تابع الأحداث الاقتصادية المهمة والأخبار المالية في الوقت الفعلي"
+                    ? "تابع الأح��اث الاقتصادية المهمة والأخبار المالية في الوقت الفعلي"
                     : "Track important economic events and real-time financial news"}
                 </p>
               </div>
