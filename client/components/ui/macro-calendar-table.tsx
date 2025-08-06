@@ -349,7 +349,7 @@ export function MacroCalendarTable({
     setSearchTerm("");
     setCountrySearchTerm("");
     setSelectedCountry("all");
-    setSelectedImportance("3");
+    setSelectedImportances(["3"]);
     setSelectedDate(undefined);
     setDateRange("all");
   };
