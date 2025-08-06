@@ -19,6 +19,7 @@ import { NewsCardsList } from "@/components/ui/news-cards-list";
 import { EconomicEventsResponse, NewsResponse } from "@shared/api";
 import { AdvancedAlertSystem } from "@/components/ui/advanced-alert-system";
 import { NotificationSystem } from "@/components/ui/notification-system";
+import { NotificationDropdown } from "@/components/ui/notification-dropdown";
 
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 
@@ -296,7 +297,7 @@ export default function Index() {
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "أحداث اقتصادية مهمة ومؤشرات مالية رئيسية"
+                      ? "أحداث اقتصادية مهمة ومؤشرات م��لية رئيسية"
                       : "Important economic events and key financial indicators"}
                   </CardDescription>
                 </CardHeader>
