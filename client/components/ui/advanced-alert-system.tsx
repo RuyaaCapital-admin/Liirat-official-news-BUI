@@ -393,9 +393,9 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     // Initial check
     checkPriceAlerts();
 
-    // Set up interval - increased to 5 minutes to drastically reduce API calls
-    // This prevents rate limiting and reduces server load
-    const interval = setInterval(checkPriceAlerts, 300000); // 5 minutes
+    // Set up interval - increased to 15 minutes to completely prevent rate limiting
+    // This prevents 429/403 errors and reduces server load significantly
+    const interval = setInterval(checkPriceAlerts, 900000); // 15 minutes
 
     return () => clearInterval(interval);
   }, [alerts, addAlert, language]);
