@@ -61,6 +61,30 @@ export function ModernEconomicCalendar({
   const [events, setEvents] = useState<EconomicEvent[]>([]);
   const [isLoadingAI, setIsLoadingAI] = useState<string | null>(null);
 
+  // Search suggestions based on countries, events, and currencies
+  const searchSuggestions = React.useMemo(() => {
+    if (searchQuery.length < 1) return [];
+
+    const countries = [...new Set(sampleEvents.map(e => e.country))];
+    const eventTerms = [...new Set(sampleEvents.map(e => e.event))];
+    const currencies = [...new Set(sampleEvents.map(e => e.currency))];
+
+    const allSuggestions = [
+      ...countries.map(c => ({ type: 'country', text: c, icon: '🏛️' })),
+      ...eventTerms.map(e => ({ type: 'event', text: e, icon: '📊' })),
+      ...currencies.map(c => ({ type: 'currency', text: c, icon: '💱' }))
+    ];
+
+    return allSuggestions
+      .filter(s => s.text.toLowerCase().includes(searchQuery.toLowerCase()))
+      .slice(0, 6);
+  }, [searchQuery]);
+
+  // Show suggestions when user types 1+ characters
+  React.useEffect(() => {
+    setShowSearchSuggestions(searchQuery.length >= 1 && searchSuggestions.length > 0);
+  }, [searchQuery, searchSuggestions]);
+
   // Sample economic events data
   const sampleEvents: EconomicEvent[] = [
     {
@@ -122,9 +146,9 @@ export function ModernEconomicCalendar({
     {
       id: "5",
       time: "22:30",
-      country: "كندا",
+      country: "ك��دا",
       countryFlag: "🇨🇦",
-      event: "معد�� البطالة",
+      event: "معدل البطالة",
       importance: 2,
       actual: undefined,
       forecast: "5.2%",
@@ -451,7 +475,7 @@ export function ModernEconomicCalendar({
                   }}
                   className="flex-1 text-xs"
                 >
-                  ��توسط
+                  متوسط
                 </Button>
                 <Button
                   variant={
