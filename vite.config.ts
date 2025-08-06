@@ -39,13 +39,12 @@ function expressPlugin(): Plugin {
             const app = createServer();
             console.log("✅ Express app created");
 
-            // Add global middleware to catch API requests
+            // Add middleware to handle all requests and pass API requests to Express
             server.middlewares.use((req, res, next) => {
+              console.log("🔍 Request:", req.method, req.url);
               if (req.url?.startsWith('/api')) {
                 console.log("🚀 API request intercepted:", req.method, req.url);
-                // Strip /api from the URL for Express routing
-                req.url = req.url.replace('/api', '') || '/';
-                app(req, res, next);
+                return app(req, res, next);
               } else {
                 next();
               }
