@@ -225,7 +225,7 @@ export default function Index() {
             {/* Official Logo Background Pattern */}
             <div className="absolute inset-0">
               <div className="w-full h-full bg-gradient-to-br from-primary/5 via-background to-primary/10"></div>
-              <div className="absolute inset-0 bg-[url('/liirat-logo.png')] bg-center bg-no-repeat bg-contain opacity-[0.03]"></div>
+              <div className="absolute inset-0 bg-[url('/liirat-logo-new.png')] bg-center bg-no-repeat bg-contain opacity-[0.03]"></div>
             </div>
             <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-primary/5"></div>
             <div className="container mx-auto px-4 relative">
