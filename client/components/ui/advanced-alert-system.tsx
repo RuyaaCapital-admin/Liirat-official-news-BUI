@@ -432,8 +432,12 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
               {showSuggestions && filteredPairs.length > 0 && (
                 <div
                   ref={suggestionsRef}
-                  className="absolute top-full left-0 right-0 z-[200] mt-1 bg-background border border-border/50 rounded-lg shadow-lg max-h-60 overflow-hidden"
-                  style={{ zIndex: 2000 }}
+                  className="absolute top-full left-0 right-0 mt-1 bg-background border border-border/50 rounded-lg shadow-xl max-h-60 overflow-hidden"
+                  style={{
+                    zIndex: 9999,
+                    position: "absolute",
+                    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+                  }}
                 >
                   <ScrollArea className="max-h-60">
                     {filteredPairs.slice(0, 8).map((pair) => (
