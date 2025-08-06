@@ -250,10 +250,7 @@ export function ModernEconomicCalendar({
       return false;
     if (selectedCurrency !== "all" && event.currency !== selectedCurrency)
       return false;
-    if (
-      !selectedImportance.includes("all") &&
-      !selectedImportance.includes(event.importance.toString())
-    )
+    if (!selectedImportance.includes(event.importance.toString()))
       return false;
     if (
       searchQuery &&
@@ -269,10 +266,10 @@ export function ModernEconomicCalendar({
       {/* Header */}
       <div className="text-center space-y-2 mb-8">
         <h1 className="text-4xl md:text-5xl font-bold text-primary mb-2">
-          التقو��م الاقتصادي المباشر
+          التقويم الاقتصادي المباشر
         </h1>
         <p className="text-lg text-muted-foreground">
-          تابع أهم الأحداث الاقتصادية والمؤشرات المالية مع تحليلات الذكاء
+          تابع أهم الأحداث الاقتصادية والمؤشرات ال��الية مع تحليلات الذكاء
           الاصطناعي
         </p>
       </div>
@@ -433,7 +430,7 @@ export function ModernEconomicCalendar({
                   }}
                   className="flex-1 text-xs"
                 >
-                  الكل
+                  ا��كل
                 </Button>
                 <Button
                   variant={
@@ -657,7 +654,7 @@ export function ModernEconomicCalendar({
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
                         <div className="text-muted-foreground text-xs">
-                          الفعلي
+                          ا��فعلي
                         </div>
                         <div className="flex items-center gap-1 mt-1">
                           {event.actual ? (
