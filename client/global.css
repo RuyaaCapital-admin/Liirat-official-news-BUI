@@ -162,3 +162,92 @@
     @apply bg-muted-foreground/50;
   }
 }
+
+/* Neumorphic utility classes */
+@layer utilities {
+  .neumorphic {
+    box-shadow:
+      8px 8px 16px var(--neumorphic-shadow-dark),
+      -8px -8px 16px var(--neumorphic-shadow-light);
+  }
+
+  .neumorphic-sm {
+    box-shadow:
+      4px 4px 8px var(--neumorphic-shadow-dark),
+      -4px -4px 8px var(--neumorphic-shadow-light);
+  }
+
+  .neumorphic-lg {
+    box-shadow:
+      12px 12px 24px var(--neumorphic-shadow-dark),
+      -12px -12px 24px var(--neumorphic-shadow-light);
+  }
+
+  .neumorphic-inset {
+    box-shadow:
+      inset 4px 4px 8px var(--neumorphic-inset-dark),
+      inset -4px -4px 8px var(--neumorphic-inset-light);
+  }
+
+  .neumorphic-pressed {
+    box-shadow:
+      inset 6px 6px 12px var(--neumorphic-inset-dark),
+      inset -6px -6px 12px var(--neumorphic-inset-light);
+  }
+
+  .neumorphic-hover:hover {
+    box-shadow:
+      10px 10px 20px var(--neumorphic-shadow-dark),
+      -10px -10px 20px var(--neumorphic-shadow-light);
+    transform: translateY(-1px);
+  }
+
+  .neumorphic-card {
+    background: hsl(var(--background));
+    border: none;
+    border-radius: 1rem;
+    box-shadow:
+      8px 8px 16px var(--neumorphic-shadow-dark),
+      -8px -8px 16px var(--neumorphic-shadow-light);
+  }
+
+  .neumorphic-button {
+    background: hsl(var(--background));
+    border: none;
+    border-radius: 1rem;
+    box-shadow:
+      6px 6px 12px var(--neumorphic-shadow-dark),
+      -6px -6px 12px var(--neumorphic-shadow-light);
+    transition: all 0.2s ease;
+  }
+
+  .neumorphic-button:hover {
+    box-shadow:
+      8px 8px 16px var(--neumorphic-shadow-dark),
+      -8px -8px 16px var(--neumorphic-shadow-light);
+    transform: translateY(-1px);
+  }
+
+  .neumorphic-button:active {
+    box-shadow:
+      inset 4px 4px 8px var(--neumorphic-inset-dark),
+      inset -4px -4px 8px var(--neumorphic-inset-light);
+    transform: translateY(0);
+  }
+
+  .neumorphic-input {
+    background: hsl(var(--background));
+    border: none;
+    border-radius: 1rem;
+    box-shadow:
+      inset 4px 4px 8px var(--neumorphic-inset-dark),
+      inset -4px -4px 8px var(--neumorphic-inset-light);
+  }
+
+  .neumorphic-input:focus {
+    box-shadow:
+      inset 4px 4px 8px var(--neumorphic-inset-dark),
+      inset -4px -4px 8px var(--neumorphic-inset-light),
+      0 0 0 2px hsl(var(--primary));
+  }
+}
