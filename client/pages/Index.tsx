@@ -135,12 +135,12 @@ export default function Index() {
     }
   };
 
-  // Fetch Marketaux news data on component mount
+  // Fetch news data on component mount
   useEffect(() => {
     fetchMarketauxNews();
   }, []);
 
-  // Fetch Marketaux news when language changes
+  // Fetch news when language changes
   useEffect(() => {
     fetchMarketauxNews(language);
   }, [language]);
