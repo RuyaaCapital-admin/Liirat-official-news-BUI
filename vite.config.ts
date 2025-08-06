@@ -31,17 +31,24 @@ function expressPlugin(): Plugin {
     configureServer(server) {
       return () => {
         // This runs after Vite's internal middlewares
+        console.log("🔧 Configuring Express plugin...");
+
         import("./server/index.ts")
           .then(({ createServer }) => {
+            console.log("✅ Successfully imported server module");
             const app = createServer();
+            console.log("✅ Express app created");
 
-            // Add the Express app middleware to handle API routes
-            server.middlewares.use('/api', app);
+            // Add debug middleware first
+            server.middlewares.use('/api', (req, res, next) => {
+              console.log("🚀 API request intercepted:", req.method, req.url);
+              app(req, res, next);
+            });
 
-            console.log("Express server integrated with Vite dev server");
+            console.log("✅ Express server integrated with Vite dev server");
           })
           .catch((error) => {
-            console.warn("Dev-only server not available:", error.message);
+            console.error("❌ Failed to setup Express server:", error);
           });
       };
     },
