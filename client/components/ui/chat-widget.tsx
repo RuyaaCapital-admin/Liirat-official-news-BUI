@@ -238,7 +238,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
                         "rounded-lg p-3 text-sm break-words",
                         message.role === "user"
                           ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground",
+                          : "bg-muted text-foreground",
                       )}
                     >
                       <p className="whitespace-pre-wrap">{message.content}</p>
