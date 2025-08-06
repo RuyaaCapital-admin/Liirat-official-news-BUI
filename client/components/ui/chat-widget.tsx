@@ -264,7 +264,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
                     <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted text-muted-foreground flex items-center justify-center">
                       <Bot className="h-4 w-4" />
                     </div>
-                    <div className="rounded-lg p-3 text-sm bg-muted text-muted-foreground">
+                    <div className="rounded-lg p-3 text-sm bg-muted text-foreground">
                       <div className="flex space-x-1">
                         <div className="w-2 h-2 bg-current rounded-full animate-bounce [animation-delay:-0.3s]"></div>
                         <div className="w-2 h-2 bg-current rounded-full animate-bounce [animation-delay:-0.15s]"></div>
