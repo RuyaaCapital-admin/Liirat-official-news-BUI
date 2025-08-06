@@ -373,18 +373,69 @@ export default function Index() {
                 </p>
               </div>
 
-              {/* Economic Events Table */}
+              {/* Live Financial News Calendar */}
               <Card className="mb-8">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-primary" />
                     {language === "ar"
-                      ? "التقويم الاقتصادي"
-                      : "Economic Calendar"}
+                      ? "الأخبار المالية المباشرة"
+                      : "Live Financial News"}
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "أحداث اقتصادية مهمة ومؤشرات مالية رئيسية"
+                      ? "آخر الأخبار المالية والاقتصادية من Marketaux"
+                      : "Latest financial and economic news from Marketaux"}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {isLoadingMarketaux ? (
+                    <div className="flex items-center justify-center py-12">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      <span className="ml-2">
+                        {language === "ar" ? "جاري تحميل الأخبار المالية..." : "Loading financial news..."}
+                      </span>
+                    </div>
+                  ) : marketauxError ? (
+                    <div className="flex items-center justify-center py-12 text-destructive">
+                      <AlertTriangle className="w-5 h-5 mr-2" />
+                      <span>
+                        {language === "ar" ? "خطأ في تحميل الأخبار:" : "Error loading news:"} {marketauxError}
+                      </span>
+                    </div>
+                  ) : (
+                    <MacroCalendarTable
+                      events={marketauxNews.map(item => ({
+                        date: item.date,
+                        time: new Date(item.date).toLocaleTimeString(),
+                        country: item.country,
+                        event: item.event,
+                        category: item.source || 'Financial News',
+                        importance: item.importance,
+                        actual: item.actual || undefined,
+                        forecast: item.forecast || undefined,
+                        previous: item.previous || undefined
+                      }))}
+                      className="rounded-lg overflow-hidden"
+                      language={language}
+                      dir={dir}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Traditional EODHD Economic Events */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-primary" />
+                    {language === "ar"
+                      ? "التقويم الاقتصادي التقليدي"
+                      : "Traditional Economic Calendar"}
+                  </CardTitle>
+                  <CardDescription>
+                    {language === "ar"
+                      ? "أحداث اقتصادية ��همة ومؤشرات مالية رئيسية"
                       : "Important economic events and key financial indicators"}
                   </CardDescription>
                 </CardHeader>
@@ -392,7 +443,9 @@ export default function Index() {
                   {isLoadingEvents ? (
                     <div className="flex items-center justify-center py-12">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                      <span className="ml-2">Loading economic events...</span>
+                      <span className="ml-2">
+                        {language === "ar" ? "جاري تحميل الأحداث الاقتصادية..." : "Loading economic events..."}
+                      </span>
                     </div>
                   ) : (
                     <MacroCalendarTable
@@ -405,24 +458,26 @@ export default function Index() {
                 </CardContent>
               </Card>
 
-              {/* News Cards */}
+              {/* Traditional News Cards */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-primary" />
-                    {language === "ar" ? "الأخبار المالية" : "Financial News"}
+                    {language === "ar" ? "أخبار EODHD" : "EODHD News"}
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "آخر الأخبار والتحليلات المالية"
-                      : "Latest financial news and market analysis"}
+                      ? "آخر الأخبار والتحليلات المالية التقليدية"
+                      : "Traditional financial news and market analysis"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   {isLoadingNews ? (
                     <div className="flex items-center justify-center py-12">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                      <span className="ml-2">Loading news...</span>
+                      <span className="ml-2">
+                        {language === "ar" ? "جاري تحميل الأخبار..." : "Loading news..."}
+                      </span>
                     </div>
                   ) : (
                     <NewsCardsList
