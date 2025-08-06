@@ -189,7 +189,7 @@ const getCountryFlag = (country: string) => {
     ID: "🇮🇩",
     PH: "🇵🇭",
     VN: "🇻🇳",
-    NO: "🇳🇴",
+    NO: "���🇴",
     SE: "🇸🇪",
     DK: "🇩🇰",
     IS: "🇮🇸",
@@ -390,7 +390,7 @@ export function MacroCalendarTable({
         </div>
 
         {/* Filter Dropdowns */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           {/* Date Filter with Calendar */}
           <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
             <PopoverTrigger asChild>
@@ -688,12 +688,13 @@ export function MacroCalendarTable({
 
       {/* Events Table */}
       <div className="overflow-x-auto border rounded-lg">
-        <table className="w-full border-collapse bg-card">
+        <div className="min-w-full">
+        <table className="w-full min-w-[800px] border-collapse bg-card">
           <thead className="bg-muted/50">
             <tr>
               <th
                 className={cn(
-                  "p-3 font-semibold text-sm border-b",
+                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap",
                   dir === "rtl" ? "text-right" : "text-left",
                 )}
               >
@@ -701,7 +702,7 @@ export function MacroCalendarTable({
               </th>
               <th
                 className={cn(
-                  "p-3 font-semibold text-sm border-b",
+                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap",
                   dir === "rtl" ? "text-right" : "text-left",
                 )}
               >
@@ -709,15 +710,15 @@ export function MacroCalendarTable({
               </th>
               <th
                 className={cn(
-                  "p-3 font-semibold text-sm border-b",
+                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap",
                   dir === "rtl" ? "text-right" : "text-left",
                 )}
               >
-                {t("calendar.table.importance")}
+                {t("Impact", "التأثير")}
               </th>
               <th
                 className={cn(
-                  "p-3 font-semibold text-sm border-b",
+                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap",
                   dir === "rtl" ? "text-right" : "text-left",
                 )}
               >
@@ -725,7 +726,7 @@ export function MacroCalendarTable({
               </th>
               <th
                 className={cn(
-                  "p-3 font-semibold text-sm border-b",
+                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap",
                   dir === "rtl" ? "text-right" : "text-left",
                 )}
               >
@@ -733,7 +734,7 @@ export function MacroCalendarTable({
               </th>
               <th
                 className={cn(
-                  "p-3 font-semibold text-sm border-b",
+                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap",
                   dir === "rtl" ? "text-right" : "text-left",
                 )}
               >
@@ -741,7 +742,7 @@ export function MacroCalendarTable({
               </th>
               <th
                 className={cn(
-                  "p-3 font-semibold text-sm border-b",
+                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap",
                   dir === "rtl" ? "text-right" : "text-left",
                 )}
               >
@@ -770,7 +771,7 @@ export function MacroCalendarTable({
                 >
                   <td
                     className={cn(
-                      "p-3 text-sm",
+                      "p-2 sm:p-3 text-xs sm:text-sm whitespace-nowrap",
                       dir === "rtl" ? "text-right" : "text-left",
                     )}
                   >
@@ -780,12 +781,12 @@ export function MacroCalendarTable({
                   </td>
                   <td
                     className={cn(
-                      "p-3 text-sm",
+                      "p-2 sm:p-3 text-xs sm:text-sm whitespace-nowrap",
                       dir === "rtl" ? "text-right" : "text-left",
                     )}
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <span className="text-sm sm:text-lg">
                         {getCountryFlag(event.country)}
                       </span>
                       <span className="font-medium">{event.country}</span>
@@ -793,13 +794,13 @@ export function MacroCalendarTable({
                   </td>
                   <td
                     className={cn(
-                      "p-3",
+                      "p-2 sm:p-3",
                       dir === "rtl" ? "text-right" : "text-left",
                     )}
                   >
                     <Badge
                       className={cn(
-                        "text-xs px-2 py-1",
+                        "text-xs px-1 sm:px-2 py-1",
                         getImportanceColor(event.importance),
                       )}
                     >
@@ -808,21 +809,21 @@ export function MacroCalendarTable({
                   </td>
                   <td
                     className={cn(
-                      "p-3 text-sm",
+                      "p-2 sm:p-3 text-xs sm:text-sm",
                       dir === "rtl" ? "text-right" : "text-left",
                     )}
                   >
-                    <div className="font-medium max-w-xs">{event.event}</div>
+                    <div className="font-medium max-w-[150px] sm:max-w-xs truncate" title={event.event}>{event.event}</div>
                   </td>
                   <td
                     className={cn(
-                      "p-3 text-sm font-medium",
+                      "p-2 sm:p-3 text-xs sm:text-sm font-medium whitespace-nowrap",
                       dir === "rtl" ? "text-right" : "text-left",
                     )}
                   >
                     <span
                       className={cn(
-                        "px-2 py-1 rounded text-xs",
+                        "px-1 sm:px-2 py-1 rounded text-xs",
                         event.actual
                           ? "bg-primary/10 text-primary"
                           : "text-muted-foreground",
@@ -833,7 +834,7 @@ export function MacroCalendarTable({
                   </td>
                   <td
                     className={cn(
-                      "p-3 text-sm",
+                      "p-2 sm:p-3 text-xs sm:text-sm whitespace-nowrap",
                       dir === "rtl" ? "text-right" : "text-left",
                     )}
                   >
@@ -843,7 +844,7 @@ export function MacroCalendarTable({
                   </td>
                   <td
                     className={cn(
-                      "p-3 text-sm",
+                      "p-2 sm:p-3 text-xs sm:text-sm whitespace-nowrap",
                       dir === "rtl" ? "text-right" : "text-left",
                     )}
                   >
@@ -856,6 +857,7 @@ export function MacroCalendarTable({
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );
