@@ -363,57 +363,30 @@ export default function Index() {
                           </div>
                         </div>
                       )}
-                      <MacroCalendarTable
-                        events={marketauxNews.length > 0 ? marketauxNews.map((item) => ({
-                          date: item.date,
-                          time: new Date(item.date).toLocaleTimeString(),
-                          country: item.country,
-                          event: item.event,
-                          category: item.source || "Financial News",
-                          importance: item.importance,
-                          actual: item.actual || undefined,
-                          forecast: item.forecast || undefined,
-                          previous: item.previous || undefined,
-                        })) : [
-                          // Fallback sample data to always show the table structure
-                          {
-                            date: new Date().toISOString(),
-                            time: new Date().toLocaleTimeString(),
-                            country: "US",
-                            event: language === "ar" ? "بيانات نموذجية - معدل الفائدة الفيدرالية" : "Sample Data - Federal Interest Rate",
-                            category: "Economic",
-                            importance: 3,
-                            actual: undefined,
-                            forecast: "5.25%",
-                            previous: "5.00%",
-                          },
-                          {
-                            date: new Date(Date.now() + 3600000).toISOString(),
-                            time: new Date(Date.now() + 3600000).toLocaleTimeString(),
-                            country: "EUR",
-                            event: language === "ar" ? "بيانات نموذجية - مؤشر أسعار المستهلك" : "Sample Data - Consumer Price Index",
-                            category: "Economic",
-                            importance: 2,
-                            actual: undefined,
-                            forecast: "2.1%",
-                            previous: "2.0%",
-                          },
-                          {
-                            date: new Date(Date.now() + 7200000).toISOString(),
-                            time: new Date(Date.now() + 7200000).toLocaleTimeString(),
-                            country: "GB",
-                            event: language === "ar" ? "بيانات نموذجية - قرار بنك إنجلترا" : "Sample Data - Bank of England Decision",
-                            category: "Monetary Policy",
-                            importance: 3,
-                            actual: undefined,
-                            forecast: "5.25%",
-                            previous: "5.25%",
-                          }
-                        ]}
-                        className="rounded-lg overflow-hidden"
-                        language={language}
-                        dir={dir}
-                      />
+                      {marketauxNews.length > 0 ? (
+                        <MacroCalendarTable
+                          events={marketauxNews.map((item) => ({
+                            date: item.date,
+                            time: new Date(item.date).toLocaleTimeString(),
+                            country: item.country,
+                            event: item.event,
+                            category: item.source || "Financial News",
+                            importance: item.importance,
+                            actual: item.actual || undefined,
+                            forecast: item.forecast || undefined,
+                            previous: item.previous || undefined,
+                          }))}
+                          className="rounded-lg overflow-hidden"
+                          language={language}
+                          dir={dir}
+                        />
+                      ) : (
+                        <div className="p-8 text-center text-muted-foreground bg-card rounded-lg border">
+                          {language === "ar"
+                            ? "لا توجد أخبار متاحة حالياً"
+                            : "No news available at the moment"}
+                        </div>
+                      )}
                     </div>
                   )}
                 </CardContent>
