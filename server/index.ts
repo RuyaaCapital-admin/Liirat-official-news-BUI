@@ -43,5 +43,8 @@ export function createServer() {
   app.get("/api/economic-events", getEconomicEvents);
   app.get("/api/news", getNews);
 
+  // Price alert route
+  app.get("/api/price-alert", handlePriceAlert);
+
   return app;
 }
