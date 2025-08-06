@@ -5,8 +5,8 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
   try {
     const {
       language = "en",
-      countries = "US,GB,EU,JP,CA,AU,DE,FR",
-      limit = 20,
+      countries = "us,gb,ae",
+      limit = "3",
     } = req.query;
 
     // Get API key from environment variable
