@@ -78,7 +78,7 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
           forecast: item.forecast || null,
           previous: item.previous || null,
           url: item.url || "",
-          source: item.source || "Marketaux",
+          source: "Liirat",
           sentiment: item.sentiment || null,
           entities: item.entities || [],
         };
