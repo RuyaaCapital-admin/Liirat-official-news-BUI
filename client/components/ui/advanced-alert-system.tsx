@@ -362,7 +362,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
               {showSuggestions && filteredPairs.length > 0 && (
                 <div
                   ref={suggestionsRef}
-                  className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border border-border/50 rounded-lg shadow-lg max-h-60 overflow-hidden"
+                  className="absolute top-full left-0 right-0 z-[100] mt-1 bg-background border border-border/50 rounded-lg shadow-lg max-h-60 overflow-hidden"
+                  style={{ zIndex: 1000 }}
                 >
                   <ScrollArea className="max-h-60">
                     {filteredPairs.slice(0, 8).map((pair) => (
@@ -531,7 +532,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
               <Bell className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p>
                 {language === "ar"
-                  ? "لا توجد تنبيهات نشطة"
+                  ? "لا توجد تنبيهات نش��ة"
                   : "No active alerts"}
               </p>
             </div>
