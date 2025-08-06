@@ -241,7 +241,7 @@ export function MacroCalendarTable({
   const [searchTerm, setSearchTerm] = useState("");
   const [countrySearchTerm, setCountrySearchTerm] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("all");
-  const [selectedImportance, setSelectedImportance] = useState("3");
+  const [selectedImportances, setSelectedImportances] = useState<string[]>(["3"]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [dateRange, setDateRange] = useState("all");
   const [isCountryOpen, setIsCountryOpen] = useState(false);
