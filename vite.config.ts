@@ -39,10 +39,16 @@ function expressPlugin(): Plugin {
             const app = createServer();
             console.log("✅ Express app created");
 
-            // Add debug middleware first
-            server.middlewares.use('/api', (req, res, next) => {
-              console.log("🚀 API request intercepted:", req.method, req.url);
-              app(req, res, next);
+            // Add global middleware to catch API requests
+            server.middlewares.use((req, res, next) => {
+              if (req.url?.startsWith('/api')) {
+                console.log("🚀 API request intercepted:", req.method, req.url);
+                // Strip /api from the URL for Express routing
+                req.url = req.url.replace('/api', '') || '/';
+                app(req, res, next);
+              } else {
+                next();
+              }
             });
 
             console.log("✅ Express server integrated with Vite dev server");
