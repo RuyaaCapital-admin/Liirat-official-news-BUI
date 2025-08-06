@@ -244,6 +244,16 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                   changePercent: data.changePercent || pair.changePercent,
                 };
               } else {
+                // Handle rate limiting with exponential backoff
+                if (response.status === 429 && retryCount < maxRetries) {
+                  retryCount++;
+                  const delay = baseDelay * Math.pow(2, retryCount - 1);
+                  console.warn(
+                    `Rate limited for ${pair.symbol}, retrying in ${delay}ms (attempt ${retryCount}/${maxRetries})`,
+                  );
+                  await new Promise(resolve => setTimeout(resolve, delay));
+                  // Don't retry here to avoid infinite loops, just log and continue
+                }
                 console.warn(
                   `API request failed for ${pair.symbol}: ${response.status}`,
                 );
