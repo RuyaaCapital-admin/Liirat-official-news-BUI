@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, memo } from 'react';
+import React, { useEffect, useRef, memo } from "react";
 import { cn } from "@/lib/utils";
 
 interface TradingViewTickerProps {
@@ -12,7 +12,8 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
     if (!container.current) return;
 
     const script = document.createElement("script");
-    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js";
+    script.src =
+      "https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js";
     script.type = "text/javascript";
     script.async = true;
     script.innerHTML = `
@@ -62,17 +63,25 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
         "showSymbolLogo": true,
         "displayMode": "adaptive"
       }`;
-    
+
     container.current.appendChild(script);
   }, []);
 
   return (
-    <div className={cn("w-full border-b border-border bg-card relative", className)}>
-      <div className="tradingview-widget-container relative overflow-hidden" ref={container}>
+    <div
+      className={cn(
+        "w-full border-b border-border bg-card relative",
+        className,
+      )}
+    >
+      <div
+        className="tradingview-widget-container relative overflow-hidden"
+        ref={container}
+      >
         <div className="tradingview-widget-container__widget relative">
           {/* Invisible overlay to completely disable all clicks and interactions */}
-          <div 
-            className="absolute inset-0 z-50 cursor-default bg-transparent" 
+          <div
+            className="absolute inset-0 z-50 cursor-default bg-transparent"
             onPointerDown={(e) => e.preventDefault()}
             onPointerUp={(e) => e.preventDefault()}
             onClick={(e) => e.preventDefault()}
@@ -80,14 +89,14 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             onMouseUp={(e) => e.preventDefault()}
             onTouchStart={(e) => e.preventDefault()}
             onTouchEnd={(e) => e.preventDefault()}
-            style={{ 
-              pointerEvents: 'auto',
-              userSelect: 'none',
-              WebkitUserSelect: 'none'
+            style={{
+              pointerEvents: "auto",
+              userSelect: "none",
+              WebkitUserSelect: "none",
             }}
           />
         </div>
-        
+
         {/* Global styles to hide branding and disable interactions */}
         <style>{`
           /* Completely disable iframe interactions */
