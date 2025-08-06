@@ -88,7 +88,7 @@ export default function Index() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Fetch Marketaux news data with language support
+  // Fetch news data with language support
   const fetchMarketauxNews = async (lang: string = language) => {
     try {
       setIsLoadingMarketaux(true);
