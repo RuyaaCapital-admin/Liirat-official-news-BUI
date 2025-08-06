@@ -35,6 +35,8 @@ function getMockPriceData(symbol: string, res: Response) {
 }
 
 export async function handlePriceAlert(req: Request, res: Response) {
+  console.log("Price alert endpoint hit with symbol:", req.query.symbol);
+
   // Enable CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
