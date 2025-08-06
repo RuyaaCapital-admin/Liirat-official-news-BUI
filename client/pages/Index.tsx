@@ -15,10 +15,7 @@ import TradingViewTicker from "@/components/ui/trading-view-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
-import {
-  MarketauxNewsResponse,
-  MarketauxNewsItem,
-} from "@shared/api";
+import { MarketauxNewsResponse, MarketauxNewsItem } from "@shared/api";
 import { AdvancedAlertSystem } from "@/components/ui/advanced-alert-system";
 import { NotificationSystem } from "@/components/ui/notification-system";
 import { NotificationDropdown } from "@/components/ui/notification-dropdown";
@@ -352,8 +349,6 @@ export default function Index() {
                   )}
                 </CardContent>
               </Card>
-
-
             </div>
           </section>
 
