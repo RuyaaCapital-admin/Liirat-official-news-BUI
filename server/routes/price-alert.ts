@@ -18,12 +18,14 @@ export async function handlePriceAlert(req: Request, res: Response) {
   const { symbol } = req.query;
   const apiKey = process.env.POLYGON_API_KEY;
 
-  if (!apiKey) {
-    return res.status(500).json({ error: "API key not configured" });
-  }
-
   if (!symbol || typeof symbol !== "string") {
     return res.status(400).json({ error: "Symbol parameter required" });
+  }
+
+  // If no API key or using mock key, return mock data
+  if (!apiKey || apiKey === "mock_key_for_development") {
+    console.log(`Returning mock data for ${symbol} - API key not configured for production`);
+    return getMockPriceData(symbol, res);
   }
 
   try {
