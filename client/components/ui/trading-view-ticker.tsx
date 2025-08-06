@@ -111,23 +111,67 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
         /* Hide any branding inside the iframe content */
         .tradingview-widget-container {
           position: relative;
+          overflow: hidden;
         }
 
+        /* Hide TradingView logo - multiple overlay blocks */
         .tradingview-widget-container::after {
           content: '';
           position: absolute;
           bottom: 0;
           right: 0;
           background: var(--card);
-          width: 120px;
-          height: 25px;
-          z-index: 10;
+          width: 150px;
+          height: 30px;
+          z-index: 15;
           pointer-events: none;
         }
 
-        /* Ensure ticker moves/scrolls */
+        .tradingview-widget-container::before {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          background: var(--background);
+          width: 200px;
+          height: 35px;
+          z-index: 14;
+          pointer-events: none;
+        }
+
+        /* Additional right-side logo hiding */
+        .tradingview-widget-container .tradingview-widget-container__widget::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          background: var(--card);
+          width: 100px;
+          z-index: 20;
+          pointer-events: none;
+        }
+
+        /* Force continuous scrolling and prevent hover pause */
         .tradingview-widget-container iframe {
           animation: none !important;
+          transition: none !important;
+        }
+
+        .tradingview-widget-container * {
+          animation-play-state: running !important;
+          animation-duration: inherit !important;
+          pointer-events: none !important;
+        }
+
+        /* Hide any potential branding elements */
+        .tradingview-widget-container [class*="logo"],
+        .tradingview-widget-container [class*="brand"],
+        .tradingview-widget-container [class*="attribution"],
+        .tradingview-widget-container a[href*="tradingview"] {
+          display: none !important;
+          visibility: hidden !important;
+          opacity: 0 !important;
         }
       `}</style>
     </div>
