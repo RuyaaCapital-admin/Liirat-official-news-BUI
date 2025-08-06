@@ -157,13 +157,13 @@ const getCountryFlag = (country: string) => {
     CHF: "🇨🇭",
     DE: "🇩🇪",
     FR: "🇫🇷",
-    IT: "���🇹",
+    IT: "🇮🇹",
     ES: "🇪🇸",
     NL: "🇳🇱",
     BE: "🇧🇪",
     AT: "🇦🇹",
     PT: "🇵🇹",
-    IE: "🇮🇪",
+    IE: "��🇪",
     FI: "🇫🇮",
     GR: "🇬🇷",
     CZ: "🇨🇿",
@@ -349,7 +349,7 @@ export function MacroCalendarTable({
     setSearchTerm("");
     setCountrySearchTerm("");
     setSelectedCountry("all");
-    setSelectedImportance("all");
+    setSelectedImportance("3");
     setSelectedDate(undefined);
     setDateRange("all");
   };
