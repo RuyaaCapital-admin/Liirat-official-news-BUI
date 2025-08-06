@@ -50,6 +50,7 @@ export function ModernEconomicCalendar({
   const { language, dir } = useLanguage();
   const [selectedTimezone, setSelectedTimezone] = useState("Dubai (GST)");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedWeek, setSelectedWeek] = useState("this-week");
   const [selectedDay, setSelectedDay] = useState("all");
@@ -123,7 +124,7 @@ export function ModernEconomicCalendar({
       time: "22:30",
       country: "كندا",
       countryFlag: "🇨🇦",
-      event: "معدل البطالة",
+      event: "معد�� البطالة",
       importance: 2,
       actual: undefined,
       forecast: "5.2%",
@@ -413,7 +414,7 @@ export function ModernEconomicCalendar({
             {/* Importance Filter */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">
-                مستوى الأه��ية (اختيار متعدد)
+                مستوى الأهمية (اختيار متعدد)
               </label>
               <div className="flex gap-2">
                 <Button
@@ -450,7 +451,7 @@ export function ModernEconomicCalendar({
                   }}
                   className="flex-1 text-xs"
                 >
-                  متوسط
+                  ��توسط
                 </Button>
                 <Button
                   variant={
@@ -667,7 +668,7 @@ export function ModernEconomicCalendar({
             {filteredEvents.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>لا توجد أحداث اقتصادية تطابق ا��مرشحات المحددة</p>
+                <p>لا توجد أحداث اقتصادية تطابق المرشحات المحددة</p>
               </div>
             )}
           </div>
