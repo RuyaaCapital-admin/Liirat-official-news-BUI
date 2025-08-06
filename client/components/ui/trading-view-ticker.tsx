@@ -77,6 +77,7 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
     >
       <div
         className="tradingview-widget-container relative overflow-hidden"
+        style={{ width: '100%', maxWidth: '100vw' }}
         ref={container}
       >
         <div className="tradingview-widget-container__widget relative">
