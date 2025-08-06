@@ -41,7 +41,7 @@ function expressPlugin(): Plugin {
           // Add middleware immediately to handle API requests
           server.middlewares.use((req, res, next) => {
             console.log("🔍 Request:", req.method, req.url);
-            if (req.url?.startsWith('/api')) {
+            if (req.url?.startsWith("/api")) {
               console.log("🚀 API request intercepted:", req.method, req.url);
               return app(req, res, next);
             } else {

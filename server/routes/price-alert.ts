@@ -59,10 +59,14 @@ export async function handlePriceAlert(req: Request, res: Response) {
   }
 
   // If no API key or using mock key, return mock data
-  if (!apiKey || apiKey === "mock_key_for_development" || apiKey === "your_polygon_api_key_here") {
+  if (
+    !apiKey ||
+    apiKey === "mock_key_for_development" ||
+    apiKey === "your_polygon_api_key_here"
+  ) {
     console.log(
       `Returning mock data for ${symbol} - API key not configured for production.`,
-      `Set POLYGON_API_KEY environment variable to a valid Polygon.io API key.`
+      `Set POLYGON_API_KEY environment variable to a valid Polygon.io API key.`,
     );
     return getMockPriceData(symbol, res);
   }
@@ -108,14 +112,18 @@ export async function handlePriceAlert(req: Request, res: Response) {
     if (!response.ok) {
       // Handle specific error codes
       if (response.status === 403) {
-        console.error(`Polygon API authentication error: ${response.status} - Check API key validity`);
+        console.error(
+          `Polygon API authentication error: ${response.status} - Check API key validity`,
+        );
         throw new Error(`Authentication failed: Invalid or expired API key`);
       }
       if (response.status === 429) {
         console.error(`Polygon API rate limit exceeded: ${response.status}`);
         throw new Error(`Rate limit exceeded: Too many requests`);
       }
-      throw new Error(`Polygon API error: ${response.status} - ${response.statusText}`);
+      throw new Error(
+        `Polygon API error: ${response.status} - ${response.statusText}`,
+      );
     }
 
     const data = await response.json();

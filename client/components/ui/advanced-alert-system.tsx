@@ -251,7 +251,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                   console.warn(
                     `Rate limited for ${pair.symbol}, retrying in ${delay}ms (attempt ${retryCount}/${maxRetries})`,
                   );
-                  await new Promise(resolve => setTimeout(resolve, delay));
+                  await new Promise((resolve) => setTimeout(resolve, delay));
                   // Don't retry here to avoid infinite loops, just log and continue
                 }
                 console.warn(
