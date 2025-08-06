@@ -364,17 +364,21 @@ export default function Index() {
                         </div>
                       )}
                       <MacroCalendarTable
-                        events={marketauxNews.length > 0 ? marketauxNews.map((item) => ({
-                          date: item.date,
-                          time: new Date(item.date).toLocaleTimeString(),
-                          country: item.country,
-                          event: item.event,
-                          category: item.source || "Financial News",
-                          importance: item.importance,
-                          actual: item.actual || undefined,
-                          forecast: item.forecast || undefined,
-                          previous: item.previous || undefined,
-                        })) : []}
+                        events={
+                          marketauxNews.length > 0
+                            ? marketauxNews.map((item) => ({
+                                date: item.date,
+                                time: new Date(item.date).toLocaleTimeString(),
+                                country: item.country,
+                                event: item.event,
+                                category: item.source || "Financial News",
+                                importance: item.importance,
+                                actual: item.actual || undefined,
+                                forecast: item.forecast || undefined,
+                                previous: item.previous || undefined,
+                              }))
+                            : []
+                        }
                         className="rounded-lg overflow-hidden"
                         language={language}
                         dir={dir}
