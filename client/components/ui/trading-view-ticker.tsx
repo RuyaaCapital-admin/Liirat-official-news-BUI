@@ -164,6 +164,15 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             min-height: 60px !important;
           }
 
+          /* Ensure ticker visibility during scroll */
+          .tradingview-widget-container {
+            position: relative !important;
+            z-index: 1 !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+          }
+
           /* Mobile responsiveness */
           @media (max-width: 768px) {
             .tradingview-widget-container {
