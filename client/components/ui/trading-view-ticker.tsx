@@ -92,18 +92,33 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
           <div className="light-mode-overlay" />
         </div>
 
-        {/* Global styles to hide branding and disable interactions */}
+        {/* Global styles to hide branding and enable smooth ticker movement */}
         <style>{`
-          /* Completely disable iframe interactions */
+          /* Ensure ticker container allows scrolling */
+          .tradingview-widget-container {
+            position: relative !important;
+            overflow: hidden !important;
+            width: 100% !important;
+            height: 60px !important;
+            display: block !important;
+          }
+
+          /* Configure iframe for proper display */
           .tradingview-widget-container iframe {
+            width: 100% !important;
+            height: 60px !important;
+            border: none !important;
+            display: block !important;
             pointer-events: none !important;
             user-select: none !important;
             -webkit-user-select: none !important;
           }
-          
-          /* Hide copyright text completely - never show it */
+
+          /* Hide copyright text completely */
           .tradingview-widget-copyright,
-          .tradingview-widget-container .tradingview-widget-copyright {
+          .tradingview-widget-container .tradingview-widget-copyright,
+          [class*="copyright"],
+          [data-copyright] {
             display: none !important;
             visibility: hidden !important;
             height: 0 !important;
@@ -113,118 +128,120 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             left: -9999px !important;
             opacity: 0 !important;
           }
-          
-          /* Hide any branding inside the iframe content */
-          .tradingview-widget-container {
-            position: relative;
-            overflow: hidden;
+
+          /* Aggressive symbol and logo hiding */
+          .tradingview-widget-container [class*="logo"],
+          .tradingview-widget-container [class*="brand"],
+          .tradingview-widget-container [class*="attribution"],
+          .tradingview-widget-container [class*="symbol"],
+          .tradingview-widget-container [class*="Symbol"],
+          .tradingview-widget-container [class*="tv-"],
+          .tradingview-widget-container a[href*="tradingview"],
+          .tradingview-widget-container a[href*="tradingview.com"] {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            position: absolute !important;
+            left: -9999px !important;
           }
-          
-          /* Hide TradingView logo - aggressive coverage */
+
+          /* Complete right-side coverage for logo hiding */
           .tradingview-widget-container::after {
             content: '';
             position: absolute;
-            bottom: 0;
+            top: 0;
             right: 0;
-            background: var(--card);
-            width: 250px;
+            width: 180px;
             height: 100%;
-            z-index: 50;
+            background: linear-gradient(to left, var(--background) 0%, var(--background) 80%, transparent 100%);
+            z-index: 100;
             pointer-events: auto;
-            cursor: default;
           }
 
+          /* Additional overlay in both themes */
           .tradingview-widget-container::before {
             content: '';
             position: absolute;
             top: 0;
             right: 0;
-            background: var(--background);
-            width: 200px;
+            width: 120px;
             height: 100%;
-            z-index: 49;
+            background: var(--card);
+            z-index: 99;
             pointer-events: auto;
-            cursor: default;
           }
 
-          /* Use masking to fade out the right side completely */
+          /* Masking for smooth fade */
           .tradingview-widget-container {
-            -webkit-mask: linear-gradient(to right, black 0%, black 85%, transparent 100%);
-            mask: linear-gradient(to right, black 0%, black 85%, transparent 100%);
-            overflow: hidden !important;
+            -webkit-mask: linear-gradient(to right, black 0%, black 82%, transparent 100%);
+            mask: linear-gradient(to right, black 0%, black 82%, transparent 100%);
           }
 
-          /* Additional background overlay for light mode */
+          /* Light mode specific overlay */
           .tradingview-widget-container .light-mode-overlay {
             position: absolute;
             top: 0;
             right: 0;
-            width: 15%;
+            width: 200px;
             height: 100%;
-            background: linear-gradient(to left, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 50%, transparent 100%);
-            z-index: 25;
+            background: linear-gradient(to left,
+              rgba(255,255,255,1) 0%,
+              rgba(255,255,255,0.95) 30%,
+              rgba(255,255,255,0.8) 60%,
+              transparent 100%);
+            z-index: 98;
             pointer-events: none;
           }
 
-          /* Block all interactions in the right area */
+          /* Click prevention overlay */
           .tradingview-widget-container .click-blocker {
             position: absolute;
             top: 0;
             right: 0;
-            width: 300px;
+            width: 250px;
             height: 100%;
-            z-index: 60;
+            z-index: 101;
             pointer-events: auto;
             background: transparent;
-          }
-          
-          /* Allow natural ticker scrolling */
-          .tradingview-widget-container {
-            width: 100% !important;
-            overflow: hidden !important;
-            position: relative !important;
+            cursor: default;
           }
 
-          .tradingview-widget-container iframe {
-            width: 100% !important;
-            height: auto !important;
-            min-height: 60px !important;
-            border: none !important;
-          }
-
-          /* Ensure ticker visibility during scroll */
-          .tradingview-widget-container {
-            position: relative !important;
-            z-index: 1 !important;
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
+          /* Enable animations and scrolling */
+          .tradingview-widget-container * {
+            animation-play-state: running !important;
           }
 
           /* Mobile responsiveness */
           @media (max-width: 768px) {
             .tradingview-widget-container {
-              min-height: 50px !important;
+              height: 50px !important;
             }
-
             .tradingview-widget-container iframe {
-              min-height: 50px !important;
+              height: 50px !important;
+            }
+            .tradingview-widget-container::after {
+              width: 150px;
+            }
+            .tradingview-widget-container::before {
+              width: 100px;
+            }
+            .tradingview-widget-container .light-mode-overlay {
+              width: 160px;
+            }
+            .tradingview-widget-container .click-blocker {
+              width: 180px;
             }
           }
-          
-          .tradingview-widget-container * {
-            animation-play-state: running !important;
-            pointer-events: none !important;
-          }
-          
-          /* Hide any potential branding elements */
-          .tradingview-widget-container [class*="logo"],
-          .tradingview-widget-container [class*="brand"],
-          .tradingview-widget-container [class*="attribution"],
-          .tradingview-widget-container a[href*="tradingview"] {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
+
+          /* Dark mode specific adjustments */
+          @media (prefers-color-scheme: dark) {
+            .tradingview-widget-container .light-mode-overlay {
+              background: linear-gradient(to left,
+                rgba(0,0,0,1) 0%,
+                rgba(0,0,0,0.95) 30%,
+                rgba(0,0,0,0.8) 60%,
+                transparent 100%);
+            }
           }
         `}</style>
       </div>
