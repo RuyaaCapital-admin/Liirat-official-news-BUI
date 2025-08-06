@@ -134,16 +134,16 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
         <style jsx>{`
           .tradingview-widget-container {
             position: relative !important;
-            overflow: hidden !important;
             height: 60px !important;
             width: 100% !important;
+            display: block !important;
           }
 
           .tradingview-widget-container iframe {
             width: 100% !important;
             height: 60px !important;
             border: none !important;
-            overflow: hidden !important;
+            display: block !important;
           }
 
           /* Hide all TradingView branding and copyright */
@@ -159,7 +159,7 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             left: -9999px !important;
           }
 
-          /* Disable interactions on iframe */
+          /* Disable click interactions but allow animations */
           .tradingview-widget-container iframe {
             pointer-events: none !important;
             user-select: none !important;
