@@ -223,7 +223,7 @@ export default function Index() {
           </header>
 
           {/* Real-Time Market Ticker */}
-          <TradingViewTicker className="sticky top-[72px] z-40" />
+          <TradingViewTicker className="sticky top-[72px] z-[30]" />
 
           {/* Hero Section */}
           <section className="py-20 lg:py-32 relative overflow-hidden">
@@ -303,7 +303,7 @@ export default function Index() {
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "أحداث اقتصادية مهمة ومؤشرات مالية رئيسية"
+                      ? "أح��اث اقتصادية مهمة ومؤشرات مالية رئيسية"
                       : "Important economic events and key financial indicators"}
                   </CardDescription>
                 </CardHeader>
