@@ -157,7 +157,7 @@ const getCountryFlag = (country: string) => {
     CHF: "🇨🇭",
     DE: "🇩🇪",
     FR: "🇫🇷",
-    IT: "🇮🇹",
+    IT: "���🇹",
     ES: "🇪🇸",
     NL: "🇳🇱",
     BE: "🇧🇪",
@@ -291,7 +291,6 @@ export function MacroCalendarTable({
         selectedCountry === "all" || event.country === selectedCountry;
 
       const matchesImportance =
-        selectedImportance === "all" ||
         event.importance.toString() === selectedImportance;
 
       const matchesDate = (() => {
