@@ -34,8 +34,14 @@ function expressPlugin(): Plugin {
         .then(({ createServer }) => {
           const app = createServer();
 
-          // Mount Express app for API routes
-          server.middlewares.use("/api", app);
+          // Use connect middleware syntax to mount Express app
+          server.middlewares.use((req, res, next) => {
+            if (req.url?.startsWith('/api')) {
+              app(req, res, next);
+            } else {
+              next();
+            }
+          });
 
           console.log("Express server integrated with Vite dev server");
         })
