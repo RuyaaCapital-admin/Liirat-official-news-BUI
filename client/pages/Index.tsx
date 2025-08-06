@@ -136,84 +136,8 @@ export default function Index() {
     }
   };
 
-  // Fetch EODHD data with enhanced error handling and fallback
+  // Fetch Marketaux news data on component mount
   useEffect(() => {
-    const fetchEconomicEvents = async () => {
-      try {
-        setIsLoadingEvents(true);
-        // Add timeout to prevent hanging
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-        const response = await fetch("/api/economic-events", {
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-
-        if (response.ok) {
-          // Check if response is JSON before parsing
-          const contentType = response.headers.get("content-type");
-          if (contentType && contentType.includes("application/json")) {
-            const data: EconomicEventsResponse = await response.json();
-            setEconomicEvents(data.events || []);
-          } else {
-            console.warn(
-              "Economic events API returned non-JSON content:",
-              contentType,
-            );
-            setEconomicEvents([]);
-          }
-        } else {
-          console.warn(
-            "Economic events API returned non-OK status:",
-            response.status,
-          );
-          setEconomicEvents([]); // Set empty array on failure
-        }
-      } catch (error) {
-        console.error("Failed to fetch economic events:", error);
-        setEconomicEvents([]); // Always set fallback data
-      } finally {
-        setIsLoadingEvents(false);
-      }
-    };
-
-    const fetchNews = async () => {
-      try {
-        setIsLoadingNews(true);
-        // Add timeout to prevent hanging
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-        const response = await fetch("/api/news", {
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-
-        if (response.ok) {
-          // Check if response is JSON before parsing
-          const contentType = response.headers.get("content-type");
-          if (contentType && contentType.includes("application/json")) {
-            const data: NewsResponse = await response.json();
-            setNews(data.news || []);
-          } else {
-            console.warn("News API returned non-JSON content:", contentType);
-            setNews([]);
-          }
-        } else {
-          console.warn("News API returned non-OK status:", response.status);
-          setNews([]); // Set empty array on failure
-        }
-      } catch (error) {
-        console.error("Failed to fetch news:", error);
-        setNews([]); // Always set fallback data
-      } finally {
-        setIsLoadingNews(false);
-      }
-    };
-
-    fetchEconomicEvents();
-    fetchNews();
     fetchMarketauxNews();
   }, []);
 
