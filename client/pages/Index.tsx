@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
-import { PriceTicker } from "@/components/ui/price-ticker";
+import TradingViewTicker from "@/components/ui/trading-view-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
@@ -223,10 +223,8 @@ export default function Index() {
           </header>
 
           {/* Real-Time Market Ticker */}
-          <PriceTicker
+          <TradingViewTicker
             className="sticky top-[72px] z-40"
-            pauseOnHover={true}
-            speed={60}
           />
 
           {/* Hero Section */}
