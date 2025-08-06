@@ -211,6 +211,43 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     }
   }, []);
 
+  // Fetch real-time prices for currency pairs
+  useEffect(() => {
+    const fetchRealPrices = async () => {
+      try {
+        const updatedPairs = await Promise.all(
+          currencyPairs.map(async (pair) => {
+            try {
+              const response = await fetch(`/api/price-alert?symbol=${pair.symbol}`);
+              if (response.ok) {
+                const data = await response.json();
+                return {
+                  ...pair,
+                  currentPrice: data.price || pair.currentPrice,
+                  change: data.change || pair.change,
+                  changePercent: data.changePercent || pair.changePercent,
+                };
+              }
+            } catch (error) {
+              console.warn(`Failed to fetch price for ${pair.symbol}:`, error);
+            }
+            return pair; // Return original if fetch fails
+          })
+        );
+        setCurrencyPairs(updatedPairs);
+      } catch (error) {
+        console.error("Error fetching real prices:", error);
+      }
+    };
+
+    // Initial fetch
+    fetchRealPrices();
+
+    // Update prices every 30 seconds
+    const interval = setInterval(fetchRealPrices, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Save alerts to localStorage whenever alerts change
   useEffect(() => {
     localStorage.setItem("price-alerts", JSON.stringify(alerts));
