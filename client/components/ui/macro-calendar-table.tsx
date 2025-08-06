@@ -689,7 +689,7 @@ export function MacroCalendarTable({
       {/* Events Table */}
       <div className="border rounded-lg">
         <div className="overflow-x-auto">
-        <table className="w-full min-w-[600px] sm:min-w-[800px] border-collapse bg-card">
+        <table className="w-full min-w-[480px] sm:min-w-[800px] border-collapse bg-card">
           <thead className="bg-muted/50">
             <tr>
               <th
