@@ -292,8 +292,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
                   onClick={sendMessage}
                   disabled={!inputValue.trim() || isLoading}
                   size="sm"
-                  className="px-3"
-                  style={{ backgroundColor: "rgba(173, 251, 70, 1)" }}
+                  className="px-3 neumorphic-button"
                 >
                   <Send className="h-4 w-4" />
                 </Button>
