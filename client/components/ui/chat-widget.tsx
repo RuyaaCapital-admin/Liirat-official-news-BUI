@@ -194,7 +194,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
               variant="ghost"
               size="sm"
               onClick={() => setIsOpen(false)}
-              className="h-6 w-6 p-0 hover:bg-primary-foreground/20 bg-black/30 backdrop-blur-sm border border-white/20"
+              className="h-6 w-6 p-0 neumorphic-button-small"
             >
               <X className="h-3 w-3 text-white drop-shadow-lg" />
             </Button>
