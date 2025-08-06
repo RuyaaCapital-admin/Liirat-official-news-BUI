@@ -121,7 +121,7 @@ export function PriceTicker({
   // Initialize data on mount and set up interval for updates
   useEffect(() => {
     fetchAssetData();
-    const interval = setInterval(fetchAssetData, 30000); // Update every 30 seconds
+    const interval = setInterval(fetchAssetData, 120000); // Update every 2 minutes to reduce API load
     return () => clearInterval(interval);
   }, []);
 
