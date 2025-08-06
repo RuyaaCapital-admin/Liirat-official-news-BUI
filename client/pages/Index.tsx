@@ -563,7 +563,7 @@ export default function Index() {
             <div className="container mx-auto px-4">
               <div className="text-center">
                 <img
-                  src="/liirat-logo.png"
+                  src="/liirat-logo-new.png"
                   alt="Liirat News"
                   className="h-8 w-auto mx-auto mb-4"
                 />
