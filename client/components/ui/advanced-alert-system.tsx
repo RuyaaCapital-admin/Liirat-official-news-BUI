@@ -295,8 +295,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     // Initial fetch
     fetchRealPrices();
 
-    // Update prices every 60 seconds to respect rate limits
-    const interval = setInterval(fetchRealPrices, 60000);
+    // Update prices every 3 minutes to respect rate limits and reduce API calls
+    const interval = setInterval(fetchRealPrices, 180000);
     return () => clearInterval(interval);
   }, []);
 
@@ -393,9 +393,9 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     // Initial check
     checkPriceAlerts();
 
-    // Set up interval - respecting Polygon.io rate limits (5 calls/minute = 12 seconds)
-    // Increased to 45 seconds to reduce total API calls and avoid rate limiting
-    const interval = setInterval(checkPriceAlerts, 45000); // 45 seconds to be safe
+    // Set up interval - increased to 5 minutes to drastically reduce API calls
+    // This prevents rate limiting and reduces server load
+    const interval = setInterval(checkPriceAlerts, 300000); // 5 minutes
 
     return () => clearInterval(interval);
   }, [alerts, addAlert, language]);
