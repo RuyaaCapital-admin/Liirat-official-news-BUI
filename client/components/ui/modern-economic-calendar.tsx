@@ -319,7 +319,7 @@ export function ModernEconomicCalendar({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pr-10 bg-background/80 border-border/50 hover:border-primary/50 transition-colors"
-                  placeholder="ابحث في ال��حداث أو العملات..."
+                  placeholder="ابحث في الأحداث أو العملات..."
                   dir="rtl"
                 />
               </div>
@@ -422,15 +422,12 @@ export function ModernEconomicCalendar({
                   }
                   size="sm"
                   onClick={() => {
-                    const newSelection = selectedImportance.filter(
-                      (item) => item !== "all",
-                    );
                     if (selectedImportance.includes("1")) {
                       setSelectedImportance(
-                        newSelection.filter((item) => item !== "1"),
+                        selectedImportance.filter((item) => item !== "1"),
                       );
                     } else {
-                      setSelectedImportance([...newSelection, "1"]);
+                      setSelectedImportance([...selectedImportance, "1"]);
                     }
                   }}
                   className="flex-1 text-xs"
