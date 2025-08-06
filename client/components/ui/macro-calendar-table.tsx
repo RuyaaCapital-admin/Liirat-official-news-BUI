@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -515,7 +516,7 @@ export function MacroCalendarTable({
                       setIsCountryOpen(false);
                     }}
                   >
-                    {t("All Countries", "جميع البلدان")}
+                    {t("All Countries", "جميع ال��لدان")}
                   </div>
 
                   {/* Top Countries Section */}
