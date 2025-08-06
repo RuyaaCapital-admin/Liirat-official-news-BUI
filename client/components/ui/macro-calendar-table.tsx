@@ -686,179 +686,233 @@ export function MacroCalendarTable({
         </div>
       </div>
 
-      {/* Events Table */}
-      <div className="border rounded-lg">
-        <div className="overflow-x-auto">
-        <table className="w-full min-w-[480px] sm:min-w-[800px] border-collapse bg-card">
-          <thead className="bg-muted/50">
-            <tr>
-              <th
-                className={cn(
-                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap",
-                  dir === "rtl" ? "text-right" : "text-left",
-                )}
+      {/* Events Display - Mobile Cards + Desktop Table */}
+      <div>
+        {/* Mobile Card Layout */}
+        <div className="sm:hidden space-y-3">
+          {filteredEvents.length === 0 ? (
+            <div className="p-6 text-center text-muted-foreground bg-card rounded-lg border">
+              {t(
+                "No events found matching your criteria",
+                "لا توجد أحداث تطابق معاييرك",
+              )}
+            </div>
+          ) : (
+            filteredEvents.map((event, index) => (
+              <div
+                key={index}
+                className="bg-card rounded-lg border p-4 space-y-3"
               >
-                {t("Date & Time", "التاريخ والوقت")}
-              </th>
-              <th
-                className={cn(
-                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap",
-                  dir === "rtl" ? "text-right" : "text-left",
-                )}
-              >
-                {t("Currency/Country", "العملة/البلد")}
-              </th>
-              <th
-                className={cn(
-                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap",
-                  dir === "rtl" ? "text-right" : "text-left",
-                )}
-              >
-                {t("Impact", "التأثير")}
-              </th>
-              <th
-                className={cn(
-                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap",
-                  dir === "rtl" ? "text-right" : "text-left",
-                )}
-              >
-                {t("Event", "الحدث")}
-              </th>
-              <th
-                className={cn(
-                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap",
-                  dir === "rtl" ? "text-right" : "text-left",
-                )}
-              >
-                {t("Actual", "الفعلي")}
-              </th>
-              <th
-                className={cn(
-                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap hidden sm:table-cell",
-                  dir === "rtl" ? "text-right" : "text-left",
-                )}
-              >
-                {t("Forecast", "التوقع")}
-              </th>
-              <th
-                className={cn(
-                  "p-2 sm:p-3 font-semibold text-xs sm:text-sm border-b whitespace-nowrap hidden sm:table-cell",
-                  dir === "rtl" ? "text-right" : "text-left",
-                )}
-              >
-                {t("Previous", "السابق")}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredEvents.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={7}
-                  className="p-4 sm:p-8 text-center text-muted-foreground"
-                >
-                  {t(
-                    "No events found matching your criteria",
-                    "لا توجد أحداث تطابق معاييرك",
-                  )}
-                </td>
-              </tr>
-            ) : (
-              filteredEvents.map((event, index) => (
-                <tr
-                  key={index}
-                  className="border-b hover:bg-muted/30 transition-colors"
-                >
-                  <td
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{getCountryFlag(event.country)}</span>
+                    <span className="font-medium text-sm">{event.country}</span>
+                  </div>
+                  <Badge
                     className={cn(
-                      "p-2 sm:p-3 text-xs sm:text-sm whitespace-nowrap",
-                      dir === "rtl" ? "text-right" : "text-left",
+                      "text-xs px-2 py-1",
+                      getImportanceColor(event.importance),
                     )}
                   >
-                    <div className="font-medium">
-                      {formatDate(event.date, language)}
-                    </div>
-                  </td>
-                  <td
-                    className={cn(
-                      "p-2 sm:p-3 text-xs sm:text-sm whitespace-nowrap",
-                      dir === "rtl" ? "text-right" : "text-left",
-                    )}
-                  >
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <span className="text-sm sm:text-lg">
-                        {getCountryFlag(event.country)}
+                    {getImportanceLabel(event.importance, language)}
+                  </Badge>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="font-medium text-sm leading-tight">
+                    {event.event}
+                  </div>
+
+                  <div className="text-xs text-muted-foreground">
+                    {formatDate(event.date, language)}
+                  </div>
+
+                  {event.actual && (
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="text-muted-foreground">
+                        {t("Actual", "الفعلي")}:
                       </span>
-                      <span className="font-medium">{event.country}</span>
+                      <span className="px-2 py-1 rounded bg-primary/10 text-primary font-medium">
+                        {event.actual}
+                      </span>
                     </div>
-                  </td>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop Table Layout */}
+        <div className="hidden sm:block border rounded-lg overflow-x-auto">
+          <table className="w-full border-collapse bg-card">
+            <thead className="bg-muted/50">
+              <tr>
+                <th
+                  className={cn(
+                    "p-3 font-semibold text-sm border-b",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
+                  {t("Date & Time", "التاريخ والوقت")}
+                </th>
+                <th
+                  className={cn(
+                    "p-3 font-semibold text-sm border-b",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
+                  {t("Currency/Country", "العملة/البلد")}
+                </th>
+                <th
+                  className={cn(
+                    "p-3 font-semibold text-sm border-b",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
+                  {t("Impact", "التأثير")}
+                </th>
+                <th
+                  className={cn(
+                    "p-3 font-semibold text-sm border-b",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
+                  {t("Event", "الحدث")}
+                </th>
+                <th
+                  className={cn(
+                    "p-3 font-semibold text-sm border-b",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
+                  {t("Actual", "الفعلي")}
+                </th>
+                <th
+                  className={cn(
+                    "p-3 font-semibold text-sm border-b",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
+                  {t("Forecast", "التوقع")}
+                </th>
+                <th
+                  className={cn(
+                    "p-3 font-semibold text-sm border-b",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
+                  {t("Previous", "السابق")}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredEvents.length === 0 ? (
+                <tr>
                   <td
-                    className={cn(
-                      "p-2 sm:p-3",
-                      dir === "rtl" ? "text-right" : "text-left",
-                    )}
+                    colSpan={7}
+                    className="p-8 text-center text-muted-foreground"
                   >
-                    <Badge
-                      className={cn(
-                        "text-xs px-1 sm:px-2 py-1",
-                        getImportanceColor(event.importance),
-                      )}
-                    >
-                      {getImportanceLabel(event.importance, language)}
-                    </Badge>
-                  </td>
-                  <td
-                    className={cn(
-                      "p-2 sm:p-3 text-xs sm:text-sm",
-                      dir === "rtl" ? "text-right" : "text-left",
+                    {t(
+                      "No events found matching your criteria",
+                      "لا توجد أحداث تطابق معاييرك",
                     )}
-                  >
-                    <div className="font-medium max-w-[120px] sm:max-w-xs text-xs sm:text-sm leading-tight" title={event.event}>
-                      <span className="block truncate">{event.event}</span>
-                    </div>
-                  </td>
-                  <td
-                    className={cn(
-                      "p-2 sm:p-3 text-xs sm:text-sm font-medium whitespace-nowrap",
-                      dir === "rtl" ? "text-right" : "text-left",
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "px-1 sm:px-2 py-1 rounded text-xs",
-                        event.actual
-                          ? "bg-primary/10 text-primary"
-                          : "text-muted-foreground",
-                      )}
-                    >
-                      {event.actual || "-"}
-                    </span>
-                  </td>
-                  <td
-                    className={cn(
-                      "p-2 sm:p-3 text-xs sm:text-sm whitespace-nowrap hidden sm:table-cell",
-                      dir === "rtl" ? "text-right" : "text-left",
-                    )}
-                  >
-                    <span className="text-muted-foreground">
-                      {event.forecast || "-"}
-                    </span>
-                  </td>
-                  <td
-                    className={cn(
-                      "p-2 sm:p-3 text-xs sm:text-sm whitespace-nowrap hidden sm:table-cell",
-                      dir === "rtl" ? "text-right" : "text-left",
-                    )}
-                  >
-                    <span className="text-muted-foreground">
-                      {event.previous || "-"}
-                    </span>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                filteredEvents.map((event, index) => (
+                  <tr
+                    key={index}
+                    className="border-b hover:bg-muted/30 transition-colors"
+                  >
+                    <td
+                      className={cn(
+                        "p-3 text-sm",
+                        dir === "rtl" ? "text-right" : "text-left",
+                      )}
+                    >
+                      <div className="font-medium">
+                        {formatDate(event.date, language)}
+                      </div>
+                    </td>
+                    <td
+                      className={cn(
+                        "p-3 text-sm",
+                        dir === "rtl" ? "text-right" : "text-left",
+                      )}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">
+                          {getCountryFlag(event.country)}
+                        </span>
+                        <span className="font-medium">{event.country}</span>
+                      </div>
+                    </td>
+                    <td
+                      className={cn(
+                        "p-3",
+                        dir === "rtl" ? "text-right" : "text-left",
+                      )}
+                    >
+                      <Badge
+                        className={cn(
+                          "text-xs px-2 py-1",
+                          getImportanceColor(event.importance),
+                        )}
+                      >
+                        {getImportanceLabel(event.importance, language)}
+                      </Badge>
+                    </td>
+                    <td
+                      className={cn(
+                        "p-3 text-sm",
+                        dir === "rtl" ? "text-right" : "text-left",
+                      )}
+                    >
+                      <div className="font-medium max-w-xs">{event.event}</div>
+                    </td>
+                    <td
+                      className={cn(
+                        "p-3 text-sm font-medium",
+                        dir === "rtl" ? "text-right" : "text-left",
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "px-2 py-1 rounded text-xs",
+                          event.actual
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted-foreground",
+                        )}
+                      >
+                        {event.actual || "-"}
+                      </span>
+                    </td>
+                    <td
+                      className={cn(
+                        "p-3 text-sm",
+                        dir === "rtl" ? "text-right" : "text-left",
+                      )}
+                    >
+                      <span className="text-muted-foreground">
+                        {event.forecast || "-"}
+                      </span>
+                    </td>
+                    <td
+                      className={cn(
+                        "p-3 text-sm",
+                        dir === "rtl" ? "text-right" : "text-left",
+                      )}
+                    >
+                      <span className="text-muted-foreground">
+                        {event.previous || "-"}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
