@@ -328,7 +328,7 @@ export default function Index() {
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "آخر الأخبار والتحليلات المالية"
+                      ? "آخر الأخبار وا��تحليلات المالية"
                       : "Latest financial news and market analysis"}
                   </CardDescription>
                 </CardHeader>
@@ -405,7 +405,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيهات ذكية لأزواج العملات مع مراقبة الأسعار في الوقت ��لفعلي"
+                    ? "قم بإنشاء تنبيهات ذكية لأزواج العملات مع مراقبة الأسعار في الوقت الفعلي"
                     : "Create intelligent alerts for currency pairs with real-time price monitoring"}
                 </p>
               </div>
