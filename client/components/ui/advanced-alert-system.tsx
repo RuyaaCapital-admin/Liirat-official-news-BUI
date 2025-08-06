@@ -108,7 +108,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     {
       symbol: "NZDUSD",
       name: "NZD/USD",
-      nameAr: "دولار نيوزيلندي/دو��ار",
+      nameAr: "دولار نيوزيلندي/دولار",
       currentPrice: 0.6123,
       change: 0.0008,
       changePercent: 0.13,
@@ -216,44 +216,70 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     localStorage.setItem("price-alerts", JSON.stringify(alerts));
   }, [alerts]);
 
-  // Monitor price alerts and trigger notifications
+  // Monitor price alerts using Polygon.io API
   useEffect(() => {
-    const checkPriceAlerts = () => {
-      alerts.forEach((alert) => {
-        if (!alert.isActive) return;
+    const checkPriceAlerts = async () => {
+      for (const alert of alerts) {
+        if (!alert.isActive) continue;
 
-        const pair = currencyPairs.find((p) => p.symbol === alert.pair);
-        if (!pair) return;
+        try {
+          // Fetch real-time price from our API
+          const response = await fetch(`/api/price-alert?symbol=${alert.pair}`);
 
-        const isTriggered =
-          (alert.condition === "above" && pair.currentPrice >= alert.targetPrice) ||
-          (alert.condition === "below" && pair.currentPrice <= alert.targetPrice);
+          if (!response.ok) {
+            console.warn(`Failed to fetch price for ${alert.pair}:`, response.statusText);
+            continue;
+          }
 
-        if (isTriggered) {
-          // Add notification to alert context
-          const message = language === "ar"
-            ? `تنبيه سعر: ${alert.name} ${alert.condition === "above" ? "فوق" : "تحت"} ${alert.targetPrice.toFixed(4)}`
-            : `Price Alert: ${alert.name} ${alert.condition === "above" ? "above" : "below"} ${alert.targetPrice.toFixed(4)}`;
+          const data = await response.json();
+          const currentPrice = data.price;
 
-          addAlert({
-            eventName: `${alert.pair} ${language === "ar" ? "تنبيه سعر" : "Price Alert"}`,
-            message,
-            importance: 3, // High importance for price alerts
-          });
+          if (!currentPrice) continue;
 
-          // Deactivate the alert to prevent spam
-          setAlerts(prev =>
-            prev.map(a => a.id === alert.id ? { ...a, isActive: false } : a)
-          );
+          const isTriggered =
+            (alert.condition === "above" && currentPrice >= alert.targetPrice) ||
+            (alert.condition === "below" && currentPrice <= alert.targetPrice);
+
+          if (isTriggered) {
+            // Trigger notification using the global notification system
+            if ((window as any).addPriceNotification) {
+              (window as any).addPriceNotification({
+                symbol: alert.pair,
+                currentPrice,
+                targetPrice: alert.targetPrice,
+                condition: alert.condition,
+              });
+            }
+
+            // Also add to alert context for legacy compatibility
+            const message = language === "ar"
+              ? `تنبيه سعر: ${alert.name} ${alert.condition === "above" ? "فوق" : "تحت"} ${alert.targetPrice.toFixed(4)}`
+              : `Price Alert: ${alert.name} ${alert.condition === "above" ? "above" : "below"} ${alert.targetPrice.toFixed(4)}`;
+
+            addAlert({
+              eventName: `${alert.pair} ${language === "ar" ? "تنبيه سعر" : "Price Alert"}`,
+              message,
+              importance: 3,
+            });
+
+            // Deactivate the alert to prevent spam
+            setAlerts(prev =>
+              prev.map(a => a.id === alert.id ? { ...a, isActive: false } : a)
+            );
+          }
+        } catch (error) {
+          console.error(`Error checking price for ${alert.pair}:`, error);
         }
-      });
+      }
     };
 
-    // Check alerts every 30 seconds
-    const interval = setInterval(checkPriceAlerts, 30000);
+    if (alerts.length === 0) return;
 
-    // Check immediately
+    // Initial check
     checkPriceAlerts();
+
+    // Set up interval - respecting Polygon.io rate limits (5 calls/minute = 12 seconds)
+    const interval = setInterval(checkPriceAlerts, 15000); // 15 seconds to be safe
 
     return () => clearInterval(interval);
   }, [alerts, addAlert, language]);
