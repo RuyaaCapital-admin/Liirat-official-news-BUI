@@ -384,12 +384,22 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
   };
 
   const handleCreateAlert = () => {
-    if (!selectedPair || !targetPrice) return;
+    if (!selectedPair || !targetPrice || isNaN(parseFloat(targetPrice))) {
+      // Show error feedback if validation fails
+      console.warn("Invalid alert data:", { selectedPair, targetPrice });
+      return;
+    }
+
+    const targetPriceNum = parseFloat(targetPrice);
+    if (targetPriceNum <= 0) {
+      console.warn("Target price must be positive");
+      return;
+    }
 
     const newAlert: PriceAlert = {
       id: Date.now().toString(),
       pair: selectedPair.symbol,
-      targetPrice: parseFloat(targetPrice),
+      targetPrice: targetPriceNum,
       condition,
       isActive: true,
       createdAt: new Date(),
@@ -397,6 +407,18 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     };
 
     setAlerts((prev) => [...prev, newAlert]);
+
+    // Show success feedback via notification system
+    const message =
+      language === "ar"
+        ? `تم إنشاء تنبيه لـ ${selectedPair.symbol} عند ${targetPriceNum.toFixed(4)}`
+        : `Alert created for ${selectedPair.symbol} at ${targetPriceNum.toFixed(4)}`;
+
+    addAlert({
+      eventName: language === "ar" ? "تنبيه جديد" : "New Alert Created",
+      message,
+      importance: 1,
+    });
 
     // Reset form
     setSelectedPair(null);
