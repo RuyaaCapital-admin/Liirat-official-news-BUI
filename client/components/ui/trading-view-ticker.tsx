@@ -215,16 +215,29 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
             height: 0 !important;
           }
 
-          /* Block right side completely */
+          /* Block right side completely - MAXIMUM WIDTH */
           .tradingview-widget-container::after {
             content: "";
             position: absolute;
             top: 0;
             right: 0;
-            width: 180px;
+            width: 350px;
             height: 100%;
-            background: var(--background);
-            z-index: 999;
+            background: hsl(var(--background));
+            z-index: 9999;
+            pointer-events: auto;
+          }
+
+          /* Additional before element for double protection */
+          .tradingview-widget-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 320px;
+            height: 100%;
+            background: hsl(var(--card));
+            z-index: 9998;
             pointer-events: auto;
           }
 
