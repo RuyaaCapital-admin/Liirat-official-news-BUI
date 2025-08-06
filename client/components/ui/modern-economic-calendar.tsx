@@ -265,7 +265,7 @@ export function ModernEconomicCalendar({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message: `قم بتحليل هذا الحدث الاقتصادي: ${event.event} في ${event.country}. ��لقيم: فعلي: ${event.actual || "غير متوفر"}, متوقع: ${event.forecast || "غير متوفر"}, سابق: ${event.previous || "غير متوفر"}`,
+          message: `قم بتحليل هذا الحدث الاقتصادي: ${event.event} في ${event.country}. القيم: فعلي: ${event.actual || "غير متوفر"}, متوقع: ${event.forecast || "غير متوفر"}, سابق: ${event.previous || "غير متوفر"}`,
           language: "ar",
         }),
       });
