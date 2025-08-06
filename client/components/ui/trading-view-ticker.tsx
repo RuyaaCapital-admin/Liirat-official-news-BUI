@@ -59,7 +59,7 @@ function TradingViewTicker({ className }: TradingViewTickerProps) {
         "colorTheme": "dark",
         "locale": "en",
         "largeChartUrl": "",
-        "isTransparent": true,
+        "isTransparent": false,
         "showSymbolLogo": true,
         "displayMode": "adaptive"
       }`;
