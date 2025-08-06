@@ -407,7 +407,7 @@ export function MacroCalendarTable({
                         ? t("This Week", "هذا الأسبوع")
                         : dateRange === "nextweek"
                           ? t("Next Week", "الأسبوع القادم")
-                          : t("Date", "الت��ريخ")}
+                          : t("Date", "التاريخ")}
                 </span>
                 <CalendarIcon className="h-4 w-4 opacity-50" />
               </Button>
