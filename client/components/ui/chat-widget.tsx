@@ -142,13 +142,13 @@ export function ChatWidget({ className }: ChatWidgetProps) {
         <Button
           onClick={() => setIsOpen(true)}
           size="lg"
-          className="h-12 w-12 sm:h-14 sm:w-14 rounded-full neumorphic-button transition-all duration-300"
+          className="h-16 w-16 sm:h-14 sm:w-14 rounded-full neumorphic-button transition-all duration-300"
           style={{
             background: "var(--neumorphic-gradient)",
             color: "var(--foreground)",
           }}
         >
-          <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6" />
+          <MessageCircle className="h-7 w-7 sm:h-6 sm:w-6" />
         </Button>
       </div>
     );
@@ -157,8 +157,8 @@ export function ChatWidget({ className }: ChatWidgetProps) {
   return (
     <div
       className={cn(
-        "fixed bottom-4 z-50 w-[calc(100vw-2rem)] max-w-80 sm:w-80 md:w-96",
-        dir === "rtl" ? "left-4 sm:left-6" : "right-4 sm:right-6",
+        "fixed bottom-4 z-50 w-[calc(100vw-1rem)] max-w-[24rem] sm:w-80 md:w-96",
+        dir === "rtl" ? "left-2 sm:left-6" : "right-2 sm:right-6",
         className,
       )}
     >
@@ -203,7 +203,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
 
         {!isMinimized && (
           <CardContent className="p-0">
-            <ScrollArea className="h-64 sm:h-80 p-3 sm:p-4">
+            <ScrollArea className="h-80 sm:h-80 p-3 sm:p-4">
               <div className="space-y-4">
                 {messages.map((message) => (
                   <div
