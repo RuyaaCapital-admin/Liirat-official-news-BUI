@@ -590,7 +590,7 @@ export function MacroCalendarTable({
                       : selectedImportances[0] === "2"
                         ? t("Medium Impact", "متوسط التأثير")
                         : t("Low Impact", "منخفض التأثير")
-                    : `${selectedImportances.length} ${t("Impact Levels", "مستويات التأثير")}`}
+                    : `${selectedImportances.length} ${t("Impact Levels", "مستويات الت��ثير")}`}
                 </span>
                 <ChevronDown className="h-4 w-4 opacity-50" />
               </Button>
@@ -687,9 +687,9 @@ export function MacroCalendarTable({
       </div>
 
       {/* Events Table */}
-      <div className="overflow-x-auto border rounded-lg">
-        <div className="min-w-full">
-        <table className="w-full min-w-[800px] border-collapse bg-card">
+      <div className="border rounded-lg">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[700px] sm:min-w-[800px] border-collapse bg-card">
           <thead className="bg-muted/50">
             <tr>
               <th
@@ -755,7 +755,7 @@ export function MacroCalendarTable({
               <tr>
                 <td
                   colSpan={7}
-                  className="p-8 text-center text-muted-foreground"
+                  className="p-4 sm:p-8 text-center text-muted-foreground"
                 >
                   {t(
                     "No events found matching your criteria",
