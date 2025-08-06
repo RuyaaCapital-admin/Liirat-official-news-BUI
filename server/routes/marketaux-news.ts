@@ -22,7 +22,7 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
     apiUrl.searchParams.append("limit", limit as string);
     apiUrl.searchParams.append("api_token", apiKey);
 
-    console.log(`Fetching news for language: ${language}`);
+    console.log(`Fetching news for language: ${language}, URL: ${apiUrl.toString()}`);
 
     // Fetch data from Marketaux API
     const response = await fetch(apiUrl.toString(), {
@@ -33,12 +33,16 @@ export const handleMarketauxNews: RequestHandler = async (req, res) => {
       },
     });
 
+    console.log(`Marketaux API response status: ${response.status} ${response.statusText}`);
+
     if (!response.ok) {
+      const errorText = await response.text();
       console.error(
-        `News API error: ${response.status} - ${response.statusText}`,
+        `Marketaux API error: ${response.status} - ${response.statusText}`,
+        `Response: ${errorText.substring(0, 200)}...`
       );
       return res.status(response.status).json({
-        error: `API request failed: ${response.statusText}`,
+        error: `Marketaux API Error: ${response.status} - ${response.statusText}`,
         news: [],
       });
     }
