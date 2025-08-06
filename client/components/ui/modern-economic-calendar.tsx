@@ -61,7 +61,7 @@ export function ModernEconomicCalendar({
   const [events, setEvents] = useState<EconomicEvent[]>([]);
   const [isLoadingAI, setIsLoadingAI] = useState<string | null>(null);
 
-  // Search suggestions based on countries, events, and currencies
+  // Search suggestions based on countries, events, and currencies (Arabic and English)
   const searchSuggestions = React.useMemo(() => {
     if (searchQuery.length < 1) return [];
 
@@ -69,15 +69,31 @@ export function ModernEconomicCalendar({
     const eventTerms = [...new Set(sampleEvents.map(e => e.event))];
     const currencies = [...new Set(sampleEvents.map(e => e.currency))];
 
+    // Add common English translations for better search
+    const countryTranslations = [
+      { ar: 'الولايات المتحدة', en: 'United States', currency: 'USD' },
+      { ar: 'ألمانيا', en: 'Germany', currency: 'EUR' },
+      { ar: 'المملكة المتحدة', en: 'United Kingdom', currency: 'GBP' },
+      { ar: 'اليابان', en: 'Japan', currency: 'JPY' },
+      { ar: 'كندا', en: 'Canada', currency: 'CAD' },
+    ];
+
     const allSuggestions = [
       ...countries.map(c => ({ type: 'country', text: c, icon: '🏛️' })),
       ...eventTerms.map(e => ({ type: 'event', text: e, icon: '📊' })),
-      ...currencies.map(c => ({ type: 'currency', text: c, icon: '💱' }))
+      ...currencies.map(c => ({ type: 'currency', text: c, icon: '💱' })),
+      // Add English translations for countries
+      ...countryTranslations.map(t => ({ type: 'country', text: t.en, icon: '🏛️' })),
+      ...countryTranslations.map(t => ({ type: 'currency', text: `${t.currency} (${t.en})`, icon: '💱' }))
     ];
 
     return allSuggestions
-      .filter(s => s.text.toLowerCase().includes(searchQuery.toLowerCase()))
-      .slice(0, 6);
+      .filter(s =>
+        s.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        // Support Arabic search terms
+        (searchQuery.length >= 1 && s.text.includes(searchQuery))
+      )
+      .slice(0, 8);
   }, [searchQuery]);
 
   // Show suggestions when user types 1+ characters
@@ -106,7 +122,7 @@ export function ModernEconomicCalendar({
       time: "16:00",
       country: "ألمانيا",
       countryFlag: "🇩🇪",
-      event: "مؤشر أسعار المستهل��",
+      event: "مؤشر أسعار المستهلك",
       importance: 2,
       actual: undefined,
       forecast: "2.1%",
