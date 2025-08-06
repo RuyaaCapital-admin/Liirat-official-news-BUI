@@ -117,17 +117,17 @@ export default function Index() {
             setMarketauxError(null);
           }
         } else {
-          console.warn("Marketaux API returned non-JSON content:", contentType);
+          console.warn("News API returned non-JSON content:", contentType);
           setMarketauxError("Invalid response format");
           setMarketauxNews([]);
         }
       } else {
-        console.warn("Marketaux API returned non-OK status:", response.status);
+        console.warn("News API returned non-OK status:", response.status);
         setMarketauxError(`API Error: ${response.status}`);
         setMarketauxNews([]);
       }
     } catch (error) {
-      console.error("Failed to fetch Marketaux news:", error);
+      console.error("Failed to fetch news:", error);
       setMarketauxError("Failed to fetch financial news");
       setMarketauxNews([]);
     } finally {
