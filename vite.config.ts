@@ -29,25 +29,21 @@ function expressPlugin(): Plugin {
     name: "express-plugin",
     apply: "serve", // only during dev
     configureServer(server) {
-      // Lazy import to avoid unresolved path in production
-      import("./server/index.ts")
-        .then(({ createServer }) => {
-          const app = createServer();
+      return () => {
+        // This runs after Vite's internal middlewares
+        import("./server/index.ts")
+          .then(({ createServer }) => {
+            const app = createServer();
 
-          // Use connect middleware syntax to mount Express app
-          server.middlewares.use((req, res, next) => {
-            if (req.url?.startsWith('/api')) {
-              app(req, res, next);
-            } else {
-              next();
-            }
+            // Add the Express app middleware to handle API routes
+            server.middlewares.use('/api', app);
+
+            console.log("Express server integrated with Vite dev server");
+          })
+          .catch((error) => {
+            console.warn("Dev-only server not available:", error.message);
           });
-
-          console.log("Express server integrated with Vite dev server");
-        })
-        .catch((error) => {
-          console.warn("Dev-only server not available:", error.message);
-        });
+      };
     },
   };
 }
