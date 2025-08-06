@@ -549,7 +549,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
       </Card>
 
       {/* Active Alerts */}
-      <Card className="bg-card/50 backdrop-blur-sm border-border/50 relative z-10">
+<Card className="bg-card/50 backdrop-blur-sm border-border/50 relative z-1">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
