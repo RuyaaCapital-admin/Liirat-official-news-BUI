@@ -332,7 +332,7 @@ export function MacroCalendarTable({
     events,
     searchTerm,
     selectedCountry,
-    selectedImportance,
+    selectedImportances,
     selectedDate,
     dateRange,
   ]);
