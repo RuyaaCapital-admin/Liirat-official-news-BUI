@@ -63,8 +63,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
   const searchRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
-  // Real symbols compatible with Polygon.io API
-  const currencyPairs: CurrencyPair[] = [
+  // Real symbols compatible with Polygon.io API - will be updated with real prices
+  const [currencyPairs, setCurrencyPairs] = useState<CurrencyPair[]>([
     {
       symbol: "EURUSD",
       name: "EUR/USD",
@@ -161,7 +161,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
       change: 85.25,
       changePercent: 3.33,
     },
-  ];
+  ]);
 
   // Filter pairs based on search query
   const filteredPairs = currencyPairs.filter(
