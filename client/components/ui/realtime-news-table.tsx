@@ -418,7 +418,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                 {language === "ar" ? "آخر أسبوع" : "Last week"}
               </SelectItem>
               <SelectItem value="1m">
-                {language === "ar" ? "آخر شهر" : "Last month"}
+                {language === "ar" ? "آخر ش��ر" : "Last month"}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -585,6 +585,24 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                           {language === "ar" ? "تحليل" : "AI"}
                         </span>
                       </Button>
+
+                      {/* Manual Translation Button (only in Arabic mode) */}
+                      {language === "ar" && !translatedTitles[article.id] && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => translateTitle(article)}
+                          disabled={loadingTranslation[article.id]}
+                          className="flex items-center gap-1"
+                        >
+                          <span className={cn(
+                            "text-xs",
+                            loadingTranslation[article.id] && "animate-pulse"
+                          )}>
+                            {loadingTranslation[article.id] ? "جاري..." : "ترجمة"}
+                          </span>
+                        </Button>
+                      )}
 
                       {/* Read More Dialog */}
                       <Dialog>
