@@ -31,6 +31,28 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       });
     }
 
+    // Get client ID for rate limiting
+    const clientId = getClientId(req);
+
+    // Check rate limit
+    if (!apiOptimizer.checkRateLimit(clientId, 'prices')) {
+      return res.status(429).json({
+        error: "Rate limit exceeded. Please try again later.",
+        prices: [],
+        retryAfter: 60
+      });
+    }
+
+    // Generate cache key
+    const symbolStr = (symbol || symbols) as string;
+    const cacheKey = generateCacheKey('price', { symbol: symbolStr, fmt, filter });
+
+    // Check cache first
+    const cachedData = apiOptimizer.getCached(cacheKey, 'prices');
+    if (cachedData) {
+      return res.json(cachedData);
+    }
+
     // Determine symbol type and format correctly for EODHD
     const symbolStr = (symbol || symbols) as string;
     const isCrypto =
