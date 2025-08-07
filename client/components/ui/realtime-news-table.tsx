@@ -34,13 +34,13 @@ import { useLanguage } from "@/contexts/language-context";
 
 interface NewsArticle {
   id: string;
-  date: string;
+  datetimeIso: string | null;
   title: string;
   content: string;
   category: string;
   symbols: string[];
   tags: string[];
-  link?: string;
+  url?: string;
   source: string;
   importance: number;
   country?: string;
@@ -517,7 +517,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                   "Central Banks":
                     language === "ar" ? "البنوك المركزية" : "Central Banks",
                   Inflation: language === "ar" ? "التضخم" : "Inflation",
-                  Forex: language === "ar" ? "تداول العملات" : "Forex",
+                  Forex: language === "ar" ? "تداو�� العملات" : "Forex",
                   Economic: language === "ar" ? "اقتصادي" : "Economic",
                   Employment: language === "ar" ? "التوظيف" : "Employment",
                   Trade: language === "ar" ? "التجارة" : "Trade",
