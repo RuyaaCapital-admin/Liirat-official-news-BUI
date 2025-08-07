@@ -219,6 +219,20 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     setItemsToShow(10); // Reset pagination when filters change
   }, [articles, searchTerm]);
 
+  // Network connectivity check for translations
+  const checkNetworkStatus = async (): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/status', {
+        method: 'GET',
+        cache: 'no-cache',
+        signal: AbortSignal.timeout(3000),
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  };
+
   // Handle translation request with better error handling
   const translateTitle = async (article: NewsArticle) => {
     if (translatedTitles[article.id] || loadingTranslation[article.id]) {
