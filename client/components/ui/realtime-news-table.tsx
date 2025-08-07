@@ -462,11 +462,29 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
               <SelectItem value="all">
                 {language === "ar" ? "جميع الفئات" : "All Categories"}
               </SelectItem>
-              {availableCategories.map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
-                </SelectItem>
-              ))}
+              {availableCategories.map((category) => {
+                // Translate category names to Arabic when needed
+                const categoryTranslations: Record<string, string> = {
+                  "Financial": language === "ar" ? "مالي" : "Financial",
+                  "Earnings": language === "ar" ? "الأرباح" : "Earnings",
+                  "Central Banks": language === "ar" ? "البنوك المركزية" : "Central Banks",
+                  "Inflation": language === "ar" ? "التضخم" : "Inflation",
+                  "Forex": language === "ar" ? "تداول العملات" : "Forex",
+                  "Economic": language === "ar" ? "اقتصادي" : "Economic",
+                  "Employment": language === "ar" ? "التوظيف" : "Employment",
+                  "Trade": language === "ar" ? "التجارة" : "Trade",
+                  "Manufacturing": language === "ar" ? "التصنيع" : "Manufacturing",
+                  "Services": language === "ar" ? "الخدمات" : "Services",
+                  "Housing": language === "ar" ? "الإسكان" : "Housing",
+                  "Consumer": language === "ar" ? "المستهلك" : "Consumer",
+                };
+
+                return (
+                  <SelectItem key={category} value={category}>
+                    {categoryTranslations[category] || category}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
 
