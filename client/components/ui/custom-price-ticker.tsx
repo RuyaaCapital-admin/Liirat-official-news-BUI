@@ -132,7 +132,7 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
         )}
       >
         <div className="text-xs sm:text-sm text-muted-foreground">
-          EODHD API access restricted - no market data available
+          Connection error - no market data available
         </div>
       </div>
     );
