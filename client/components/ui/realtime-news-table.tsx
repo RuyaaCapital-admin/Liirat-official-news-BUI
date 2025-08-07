@@ -169,12 +169,20 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     return () => clearInterval(interval);
   }, [selectedTimeframe, selectedCategory, selectedSymbol]);
 
-  // Auto-translate articles when language changes to Arabic
+  // Auto-translate articles when language changes to Arabic (with debouncing)
   useEffect(() => {
     if (language === "ar" && filteredArticles.length > 0) {
-      filteredArticles.slice(0, itemsToShow).forEach((article) => {
-        translateTitle(article);
-      });
+      // Debounce translation requests to avoid overwhelming the API
+      const timer = setTimeout(() => {
+        filteredArticles.slice(0, Math.min(3, itemsToShow)).forEach((article, index) => {
+          // Stagger requests to avoid rate limiting
+          setTimeout(() => {
+            translateTitle(article);
+          }, index * 300);
+        });
+      }, 500);
+
+      return () => clearTimeout(timer);
     }
   }, [language, filteredArticles, itemsToShow]);
 
@@ -200,7 +208,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     setItemsToShow(10); // Reset pagination when filters change
   }, [articles, searchTerm]);
 
-  // Handle translation request
+  // Handle translation request with better error handling
   const translateTitle = async (article: NewsArticle) => {
     if (translatedTitles[article.id] || loadingTranslation[article.id]) {
       return translatedTitles[article.id];
@@ -213,6 +221,9 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     setLoadingTranslation((prev) => ({ ...prev, [article.id]: true }));
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
       const response = await fetch("/api/translate", {
         method: "POST",
         headers: {
@@ -222,16 +233,25 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
           text: article.title,
           targetLanguage: "ar",
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const data = await response.json();
         const translated = data.translatedText || article.title;
         setTranslatedTitles((prev) => ({ ...prev, [article.id]: translated }));
         return translated;
+      } else {
+        console.warn(`Translation failed with status: ${response.status}`);
       }
     } catch (error) {
-      console.error("Translation error:", error);
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.warn('Translation request timed out');
+      } else {
+        console.error("Translation error:", error);
+      }
     } finally {
       setLoadingTranslation((prev) => ({ ...prev, [article.id]: false }));
     }
@@ -439,7 +459,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary/20 border-t-primary"></div>
             <span className="ml-2">
-              {language === "ar" ? "جاري تحميل الأخبار..." : "Loading news..."}
+              {language === "ar" ? "ج��ري تحميل الأخبار..." : "Loading news..."}
             </span>
           </div>
         ) : filteredArticles.length === 0 ? (
