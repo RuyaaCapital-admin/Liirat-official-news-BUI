@@ -75,6 +75,9 @@ function expressPlugin(): Plugin {
             "/api/price-alert",
             "/api/eodhd-calendar",
             "/api/eodhd-price",
+            "/api/ai-analysis",
+            "/api/translate",
+            "/api/realtime-news",
           ]);
 
           // Strip /api prefix and handle the request
