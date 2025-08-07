@@ -60,10 +60,8 @@ const AI_API_CONFIG = {
   model: "gpt-3.5-turbo",
   maxTokens: 500,
 
-  // Demo mode - set to true to show demo analysis without API calls
-  demoMode:
-    !import.meta.env.VITE_OPENAI_API_KEY ||
-    import.meta.env.VITE_OPENAI_API_KEY === "your-api-key-here",
+  // API available when key is configured
+  apiAvailable: !!import.meta.env.VITE_OPENAI_API_KEY && import.meta.env.VITE_OPENAI_API_KEY !== "your-api-key-here",
 };
 
 export function AIEventInsight({ event, className }: AIEventInsightProps) {
@@ -97,7 +95,7 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
         : `${eventData.event} أقل من المتوقع، ضغط محتمل على ${eventData.country}.`;
 
       return {
-        summary: `${analysis}\n\n⚠️ هذا تحليل تجريبي. للحصول على تحليل حقيقي من الذكاء الاصطناعي، يرجى إعداد مفتاح OpenAI API في متغيرات البيئة.`,
+        summary: `${analysis}\n\n⚠️ هذا تحليل تجريبي. للحصول على تحليل حقيقي من الذكاء الاصطناعي، يرجى إعداد مفتاح OpenAI API في ��تغيرات البيئة.`,
         whatHappened: analysis,
         whyImportant: analysis,
         marketImpact: analysis,
