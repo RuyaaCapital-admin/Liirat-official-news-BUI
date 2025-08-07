@@ -154,9 +154,23 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         setError(data.error);
         setArticles([]);
       } else {
-        setArticles(data.items || []);
-        setAvailableCategories(data.availableCategories || []);
-        setAvailableSymbols(data.availableTags || []);
+        // Transform server response to match client interface
+        const transformedArticles = (data.items || []).map((item: any, index: number) => ({
+          id: `news-${index}`,
+          datetimeIso: item.datetimeIso,
+          title: item.title || '',
+          content: item.title || '', // Use title as content for now
+          category: 'financial',
+          symbols: item.symbols || [],
+          tags: item.symbols || [],
+          url: item.url,
+          source: item.source || '',
+          importance: 2, // Default importance
+          country: ''
+        }));
+        setArticles(transformedArticles);
+        setAvailableCategories(['financial']);
+        setAvailableSymbols(item.symbols || []);
       }
     } catch (err) {
       console.error("Error fetching news:", err);
