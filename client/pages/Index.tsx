@@ -254,7 +254,7 @@ export default function Index() {
       } else {
         errorMessage =
           language === "ar"
-            ? "خط�� غير معروف. يرجى المحاولة مرة أخرى."
+            ? "خطأ غير معروف. يرجى المحاولة مرة أخرى."
             : "Unknown error. Please try again.";
       }
 
@@ -517,7 +517,7 @@ export default function Index() {
                               <Bell className="w-4 h-4 mr-2" />
                               <span>
                                 {language === "ar"
-                                  ? "عرض بيانات تجريبية - سيتم التحديث عند استعادة الاتصال"
+                                  ? "عرض بيانات تجريبية - سيتم التحديث عن�� استعادة الاتصال"
                                   : "Showing demo data - will update when connection is restored"}
                               </span>
                             </div>
