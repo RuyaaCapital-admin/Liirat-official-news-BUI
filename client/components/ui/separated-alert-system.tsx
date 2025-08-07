@@ -217,6 +217,71 @@ export default function SeparatedAlertSystem({
     fetchRealTimePrice(symbol.symbol);
   };
 
+  // Monitor price alerts - check every 30 seconds
+  React.useEffect(() => {
+    if (priceAlerts.length === 0) return;
+
+    const checkAlerts = async () => {
+      for (const alert of priceAlerts.filter(a => a.isActive)) {
+        try {
+          const response = await fetch(`/api/eodhd-price?symbol=${encodeURIComponent(alert.symbol)}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data.length > 0 && data[0].price) {
+              const currentPrice = data[0].price;
+              const targetPrice = parseFloat(alert.targetPrice);
+
+              let shouldTrigger = false;
+
+              if (alert.condition === 'above' && currentPrice >= targetPrice) {
+                shouldTrigger = true;
+              } else if (alert.condition === 'below' && currentPrice <= targetPrice) {
+                shouldTrigger = true;
+              } else if (alert.condition === 'change_percent') {
+                // Calculate percentage change - would need previous price stored
+                // For now, skip this condition until we store previous prices
+              }
+
+              if (shouldTrigger) {
+                // Trigger alert notification
+                if ('Notification' in window && Notification.permission === 'granted') {
+                  new Notification(`Price Alert: ${alert.symbol}`, {
+                    body: `${alert.symbol} is now ${currentPrice.toFixed(5)}. ${alert.message || ''}`,
+                    icon: '/favicon.ico'
+                  });
+                }
+
+                // Deactivate the alert since it triggered
+                setPriceAlerts(prev =>
+                  prev.map(a =>
+                    a.id === alert.id ? { ...a, isActive: false } : a
+                  )
+                );
+
+                console.log(`Alert triggered for ${alert.symbol}: ${currentPrice}`);
+              }
+            }
+          }
+        } catch (error) {
+          console.error(`Error checking alert for ${alert.symbol}:`, error);
+        }
+      }
+    };
+
+    // Check immediately and then every 30 seconds
+    checkAlerts();
+    const interval = setInterval(checkAlerts, 30000);
+
+    return () => clearInterval(interval);
+  }, [priceAlerts]);
+
+  // Request notification permission on component mount
+  React.useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }, []);
+
   // Create news/event alert
   const createNewsEventAlert = () => {
     const alert: NewsEventAlert = {
@@ -552,7 +617,7 @@ export default function SeparatedAlertSystem({
                   <Bell className="w-12 h-12 mx-auto mb-4 opacity-50" />
                   <p>
                     {language === "ar"
-                      ? "لا توجد تنبيهات أخبار أو ��حداث"
+                      ? "لا توجد تنبيهات أخبار أو أحداث"
                       : "No news or event alerts"}
                   </p>
                 </div>
@@ -888,7 +953,7 @@ export default function SeparatedAlertSystem({
                             >
                               {alert.isActive
                                 ? language === "ar"
-                                  ? "نش��"
+                                  ? "نشط"
                                   : "Active"
                                 : language === "ar"
                                   ? "معطل"
