@@ -154,7 +154,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         setError(data.error);
         setArticles([]);
       } else {
-        setArticles(data.articles || []);
+        setArticles(data.items || []);
         setAvailableCategories(data.availableCategories || []);
         setAvailableSymbols(data.availableTags || []);
       }
