@@ -18,13 +18,15 @@ export const handleChat = async (req: Request, res: Response) => {
     }
 
     if (!openai) {
-      console.error("OpenAI API key not found");
-      return res.status(500).json({
-        error: "OpenAI API key not configured",
-        response:
-          language === "ar"
-            ? "عذراً، الخدمة غير متوفرة حالياً. يرجى المحاولة لاحقاً."
-            : "Sorry, the service is not available right now. Please try again later.",
+      console.log("OpenAI API key not found, using fallback responses");
+
+      // Provide useful fallback responses
+      const fallbackResponse = generateFallbackResponse(message, language);
+
+      return res.json({
+        response: fallbackResponse,
+        timestamp: new Date().toISOString(),
+        fallback: true
       });
     }
 
