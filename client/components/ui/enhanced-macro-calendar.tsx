@@ -183,16 +183,28 @@ export default function EnhancedMacroCalendar({
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return dateString;
 
-      // Force Gregorian calendar and proper locale
-      return new Intl.DateTimeFormat(language === "ar" ? "ar-SA-u-ca-gregory" : "en-US", {
-        timeZone: selectedTimezone,
-        month: "short",
-        day: "numeric",
-        hour: timeString ? "2-digit" : undefined,
-        minute: timeString ? "2-digit" : undefined,
-        hour12: false,
-        calendar: "gregory", // Force Gregorian calendar
-      }).format(date);
+      // Force Gregorian calendar and Arabic numerals
+      if (language === "ar") {
+        // Use English locale with Arabic labels to avoid hijri calendar
+        const englishFormat = new Intl.DateTimeFormat("en-US", {
+          timeZone: selectedTimezone,
+          month: "short",
+          day: "numeric",
+          hour: timeString ? "2-digit" : undefined,
+          minute: timeString ? "2-digit" : undefined,
+          hour12: false,
+        }).format(date);
+        return englishFormat; // Return English format even in Arabic mode
+      } else {
+        return new Intl.DateTimeFormat("en-US", {
+          timeZone: selectedTimezone,
+          month: "short",
+          day: "numeric",
+          hour: timeString ? "2-digit" : undefined,
+          minute: timeString ? "2-digit" : undefined,
+          hour12: false,
+        }).format(date);
+      }
     } catch (error) {
       return dateString;
     }
