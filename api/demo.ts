@@ -18,7 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    await handleDemo(req as any, res as any);
+    await handleDemo(req as any, res as any, () => {});
   } catch (error) {
     console.error("Demo API error:", error);
     res.status(500).json({

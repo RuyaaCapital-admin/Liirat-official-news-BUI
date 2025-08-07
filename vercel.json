@@ -4,7 +4,11 @@
   "framework": "vite",
   "functions": {
     "api/**/*.ts": {
+ codex/confirm-api-connections-and-fix-vercel-build
+      "runtime": "@vercel/node@5.3.11"
+
       "runtime": "nodejs20"
+ main
     }
   },
   "rewrites": [

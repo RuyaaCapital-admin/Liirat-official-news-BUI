@@ -390,22 +390,11 @@ export const handleChat = async (req: Request, res: Response) => {
     const dubaiTime = getDubaiTime();
 
     if (!openai) {
-      console.log(
-        "OpenAI API key not found, using smart fallback responses with real data",
-      );
-      const fallbackResponse = await generateSmartFallbackResponse(
-        message,
-        language,
-      );
-
-      return res.json({
-        response: fallbackResponse,
-        timestamp: dubaiTime.date.toISOString(),
-        dubaiTime: dubaiTime.formatted,
-        marketData,
-        newsData,
-        realTime: true,
-        fallback: true,
+      return res.status(500).json({
+        error:
+          language === "ar"
+            ? "خدمة الذكاء الاصطناعي غير متاحة"
+            : "AI service unavailable",
       });
     }
 
@@ -491,7 +480,7 @@ USER MESSAGE: ${message}`;
     console.log("Sending request to OpenAI with real market data context");
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: message },
