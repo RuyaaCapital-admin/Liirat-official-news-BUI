@@ -336,11 +336,14 @@ export default function EnhancedMacroCalendar({
     if (language === "ar" && displayedEvents.length > 0) {
       // Debounce translation requests to avoid overwhelming the API
       const timer = setTimeout(() => {
-        displayedEvents.slice(0, 10).forEach((event, index) => {
-          // Stagger requests to avoid rate limiting
+        displayedEvents.slice(0, 5).forEach((event, index) => {
+          // Stagger requests to avoid rate limiting and reduce API load
           setTimeout(() => {
-            translateContent(event);
-          }, index * 500);
+            translateContent(event).catch((error) => {
+              // Silently handle translation failures, fallback already handled in translateContent
+              console.debug('Translation failed for:', event.event);
+            });
+          }, index * 2000); // 2 second delay between requests to reduce load
         });
       }, 1000);
 
@@ -409,7 +412,7 @@ export default function EnhancedMacroCalendar({
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
 
       const response = await fetch("/api/translate", {
         method: "POST",
@@ -432,13 +435,19 @@ export default function EnhancedMacroCalendar({
         return translated;
       } else {
         console.warn(`Translation failed with status: ${response.status}`);
+        // Return original text as fallback
+        setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
+        return event.event;
       }
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
-        console.warn('Translation request timed out');
+        console.warn('Translation request timed out for:', event.event);
       } else {
-        console.error("Translation error:", error);
+        console.warn("Translation error for event:", event.event, error);
       }
+      // Always return original text as fallback
+      setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
+      return event.event;
     } finally {
       setLoadingTranslation((prev) => ({ ...prev, [eventKey]: false }));
     }
@@ -491,7 +500,7 @@ export default function EnhancedMacroCalendar({
         ...prev,
         [event.event]:
           language === "ar"
-            ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
+            ? "تحليل الذكاء ��لاصطناعي غير متاح حاليًا"
             : "AI analysis currently unavailable",
       }));
     } finally {
