@@ -154,9 +154,22 @@ RESPONSE FORMAT:
       response.substring(0, 100) + "...",
     );
 
+    // Get real Dubai time
+    const dubaiTime = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Dubai"}));
+
     res.json({
       response,
-      timestamp: new Date().toISOString(),
+      timestamp: dubaiTime.toISOString(),
+      dubaiTime: dubaiTime.toLocaleString('en-US', {
+        timeZone: 'Asia/Dubai',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      }),
+      realTime: true
     });
   } catch (error) {
     console.error("Chat Error:", error);
