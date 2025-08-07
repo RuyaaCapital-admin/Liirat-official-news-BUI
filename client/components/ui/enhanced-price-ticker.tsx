@@ -138,36 +138,9 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
     data => data.price > 0 && data.status === "connected"
   );
 
-  // Auto-scroll effect
-  useEffect(() => {
-    if (!isScrolling || !scrollRef.current) return;
-
-    const scrollContainer = scrollRef.current;
-    let scrollPosition = 0;
-    const scrollSpeed = 1; // pixels per frame
-    
-    const scroll = () => {
-      if (!scrollContainer) return;
-      
-      scrollPosition += scrollSpeed;
-      
-      // Reset position when we've scrolled past the content width
-      if (scrollPosition >= scrollContainer.scrollWidth / 2) {
-        scrollPosition = 0;
-      }
-      
-      scrollContainer.scrollLeft = scrollPosition;
-      
-      if (isScrolling) {
-        requestAnimationFrame(scroll);
-      }
-    };
-
-    // Start scrolling
-    const animationFrame = requestAnimationFrame(scroll);
-    
-    return () => cancelAnimationFrame(animationFrame);
-  }, [isScrolling, validPrices.length]);
+  // Handle scroll pause on hover
+  const handleMouseEnter = () => setIsScrolling(false);
+  const handleMouseLeave = () => setIsScrolling(true);
 
   const formatPrice = (price: number, symbol: string) => {
     if (symbol.includes("BTC") || symbol.includes("ETH")) {
