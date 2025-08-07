@@ -164,8 +164,8 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
           "flex items-center whitespace-nowrap overflow-hidden",
           isScrolling && "animate-scroll"
         )}
-        onMouseEnter={() => setIsScrolling(false)}
-        onMouseLeave={() => setIsScrolling(true)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         {/* Duplicate the content for seamless scrolling */}
         {[...Array(2)].map((_, duplicateIndex) => (
