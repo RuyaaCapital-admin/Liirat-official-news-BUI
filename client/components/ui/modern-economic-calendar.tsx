@@ -85,7 +85,7 @@ export function ModernEconomicCalendar({
     const countryTranslations = [
       { ar: "الولايات المتحدة", en: "United States", currency: "USD" },
       { ar: "ألمانيا", en: "Germany", currency: "EUR" },
-      { ar: "المملكة المتحدة", en: "United Kingdom", currency: "GBP" },
+      { ar: "المملكة ال��تحدة", en: "United Kingdom", currency: "GBP" },
       { ar: "اليابان", en: "Japan", currency: "JPY" },
       { ar: "كندا", en: "Canada", currency: "CAD" },
     ];
@@ -167,7 +167,7 @@ export function ModernEconomicCalendar({
 
   const weekOptions = [
     { value: "this-week", label: "هذا الأسبوع" },
-    { value: "next-week", label: "الأسبوع ال��ادم" },
+    { value: "next-week", label: "الأسبوع القادم" },
   ];
 
   const dayOptions = [
