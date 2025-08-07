@@ -705,9 +705,9 @@ export default function EnhancedMacroCalendar({
 
 
       {/* Events Table */}
-      <div className="border border-border rounded-lg overflow-hidden" dir={dir}>
+      <div className="border border-border rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full table-fixed">
+          <table className="w-full min-w-[800px]">
             <thead className="bg-muted/30">
               <tr>
                 <th className={cn(
