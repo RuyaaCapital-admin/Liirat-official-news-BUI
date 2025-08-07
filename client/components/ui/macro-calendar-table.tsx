@@ -211,7 +211,7 @@ const getCountryFlag = (country: string) => {
     IL: "🇮🇱",
     SA: "🇸🇦",
     AE: "🇦🇪",
-    NZ: "🇳🇿",
+    NZ: "🇳���",
     // Additional mappings for common variations
     "United States": "🇺🇸",
     "Eurozone": "🇪🇺",
@@ -277,6 +277,7 @@ export function MacroCalendarTable({
   className,
   language = "en",
   dir = "ltr",
+  onRefresh,
 }: MacroCalendarTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [countrySearchTerm, setCountrySearchTerm] = useState("");
