@@ -484,20 +484,21 @@ export function MacroCalendarTable({
 
   // Auto-refresh when filters change (with debounce)
   React.useEffect(() => {
+    // Only refresh if onRefresh is available and we're not on initial load
+    if (!onRefresh) return;
+
     const timeoutId = setTimeout(() => {
-      if (onRefresh) {
-        const filters = {
-          country: selectedCountry === "all" ? undefined : selectedCountry,
-          importance: selectedImportances,
-          from: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
-          to: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
-        };
-        onRefresh(filters);
-      }
-    }, 500); // 500ms debounce
+      const filters = {
+        country: selectedCountry === "all" ? undefined : selectedCountry,
+        importance: selectedImportances,
+        from: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
+        to: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
+      };
+      onRefresh(filters);
+    }, 800); // Increased debounce to 800ms to reduce calls
 
     return () => clearTimeout(timeoutId);
-  }, [selectedCountry, selectedImportances, selectedDate, onRefresh]);
+  }, [selectedCountry, selectedImportances, selectedDate]); // Removed onRefresh from dependencies to prevent infinite loops
 
   const clearFilters = () => {
     setSearchTerm("");
@@ -515,7 +516,7 @@ export function MacroCalendarTable({
         <div className="flex items-center gap-2 mb-3">
           <Filter className="h-4 w-4 text-primary" />
           <h3 className="font-semibold text-sm">
-            {t("Economic Calendar Filters", "فلاتر التقويم الاقتصادي")}
+            {t("Economic Calendar Filters", "فلاتر التقوي�� الاقتصادي")}
           </h3>
         </div>
 
