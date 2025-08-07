@@ -60,8 +60,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Determine if it's crypto, forex, or regular stock
     const symbolStr = (symbol || symbols) as string;
     const isMultiple = !!symbols;
-    const isCrypto = symbolStr.includes("-USD") || symbolStr.includes("BTC") || symbolStr.includes("ETH");
-    const isForex = symbolStr.includes("USD") || symbolStr.includes("EUR") || symbolStr.includes("GBP") || symbolStr.includes("JPY") || symbolStr.includes("CHF") || symbolStr.includes("CAD") || symbolStr.includes("AUD") || symbolStr.includes("XAU");
+    const isCrypto =
+      symbolStr.includes("-USD") ||
+      symbolStr.includes("BTC") ||
+      symbolStr.includes("ETH");
+    const isForex =
+      symbolStr.includes("USD") ||
+      symbolStr.includes("EUR") ||
+      symbolStr.includes("GBP") ||
+      symbolStr.includes("JPY") ||
+      symbolStr.includes("CHF") ||
+      symbolStr.includes("CAD") ||
+      symbolStr.includes("AUD") ||
+      symbolStr.includes("XAU");
     const isIndex = symbolStr.includes(".INDX") || symbolStr === "GSPC";
 
     let apiUrl: URL;
@@ -117,8 +128,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.error(`EODHD Price API error: ${response.status} - ${response.statusText}`);
-      
+      console.error(
+        `EODHD Price API error: ${response.status} - ${response.statusText}`,
+      );
+
       // Log response body for debugging
       try {
         const errorBody = await response.text();
@@ -137,7 +150,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Check if response is JSON
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
-      console.error(`EODHD Price API returned non-JSON content: ${contentType}`);
+      console.error(
+        `EODHD Price API returned non-JSON content: ${contentType}`,
+      );
       return res.status(500).json({
         error: "Invalid response format from EODHD Price API",
         prices: [],
@@ -188,10 +203,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 function transformPriceData(item: any): PriceData {
   const symbol = item.code || item.symbol || "Unknown";
-  const price = parseFloat(item.close || item.price || item.last || item.value || 0);
+  const price = parseFloat(
+    item.close || item.price || item.last || item.value || 0,
+  );
   const change = parseFloat(item.change || item.change_price || item.diff || 0);
-  const change_percent = parseFloat(item.change_p || item.change_percent || item.chg_percent || 0);
-  
+  const change_percent = parseFloat(
+    item.change_p || item.change_percent || item.chg_percent || 0,
+  );
+
   return {
     symbol: symbol,
     name: item.name || undefined,
@@ -205,6 +224,7 @@ function transformPriceData(item: any): PriceData {
     high: parseFloat(item.high || 0) || undefined,
     low: parseFloat(item.low || 0) || undefined,
     open: parseFloat(item.open || 0) || undefined,
-    previous_close: parseFloat(item.previous_close || item.previousClose || 0) || undefined,
+    previous_close:
+      parseFloat(item.previous_close || item.previousClose || 0) || undefined,
   };
 }

@@ -58,7 +58,9 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
         reconnectAttempts.current = 0;
 
         // Subscribe to all forex symbols
-        const forexSymbols = SYMBOLS.filter(s => s.endpoint === "forex").map(s => s.symbol);
+        const forexSymbols = SYMBOLS.filter((s) => s.endpoint === "forex").map(
+          (s) => s.symbol,
+        );
         const subscribeMessage = {
           action: "subscribe",
           symbols: forexSymbols,
@@ -71,20 +73,23 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
         try {
           const data = JSON.parse(event.data);
           console.log("WebSocket data received:", data);
-          
+
           if (data.s && data.p !== undefined) {
             // Find matching symbol
-            const matchingSymbol = SYMBOLS.find((sym) => 
-              sym.symbol === data.s || 
-              data.s.includes(sym.symbol) ||
-              sym.symbol.includes(data.s)
+            const matchingSymbol = SYMBOLS.find(
+              (sym) =>
+                sym.symbol === data.s ||
+                data.s.includes(sym.symbol) ||
+                sym.symbol.includes(data.s),
             );
 
             if (matchingSymbol) {
               const change = parseFloat(data.c || data.change || "0");
               const changePercent = parseFloat(data.cp || data.change_p || "0");
 
-              console.log(`Price update for ${matchingSymbol.symbol}: ${data.p}, change: ${change}`);
+              console.log(
+                `Price update for ${matchingSymbol.symbol}: ${data.p}, change: ${change}`,
+              );
 
               setPrices((prev) => ({
                 ...prev,
@@ -129,45 +134,51 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
 
   const fetchInitialPrices = async () => {
     console.log("Fetching initial prices via REST API fallback...");
-    
+
     try {
       // Fetch prices for all symbols using EODHD REST API
-      const pricePromises = SYMBOLS.map(async ({ symbol, display, endpoint }) => {
-        try {
-          let apiSymbol = symbol;
-          // Format symbol for EODHD API based on endpoint type
-          if (endpoint === "forex") {
-            // Keep as is for forex
-          } else if (endpoint === "crypto") {
-            // Keep as is for crypto
-          } else if (endpoint === "index") {
-            apiSymbol = symbol + ".INDX"; // Add index suffix
-          }
-
-          console.log(`Fetching price for ${symbol} (API symbol: ${apiSymbol})`);
-          const response = await fetch(`/api/eodhd-price?symbol=${apiSymbol}`);
-          
-          if (response.ok) {
-            const result = await response.json();
-            console.log(`Price response for ${symbol}:`, result);
-            
-            if (result.prices && result.prices.length > 0) {
-              const data = result.prices[0];
-              return {
-                symbol,
-                display,
-                price: parseFloat(data.price) || 0,
-                change: parseFloat(data.change || 0),
-                changePercent: parseFloat(data.change_percent || 0),
-                lastUpdate: new Date(),
-              };
+      const pricePromises = SYMBOLS.map(
+        async ({ symbol, display, endpoint }) => {
+          try {
+            let apiSymbol = symbol;
+            // Format symbol for EODHD API based on endpoint type
+            if (endpoint === "forex") {
+              // Keep as is for forex
+            } else if (endpoint === "crypto") {
+              // Keep as is for crypto
+            } else if (endpoint === "index") {
+              apiSymbol = symbol + ".INDX"; // Add index suffix
             }
+
+            console.log(
+              `Fetching price for ${symbol} (API symbol: ${apiSymbol})`,
+            );
+            const response = await fetch(
+              `/api/eodhd-price?symbol=${apiSymbol}`,
+            );
+
+            if (response.ok) {
+              const result = await response.json();
+              console.log(`Price response for ${symbol}:`, result);
+
+              if (result.prices && result.prices.length > 0) {
+                const data = result.prices[0];
+                return {
+                  symbol,
+                  display,
+                  price: parseFloat(data.price) || 0,
+                  change: parseFloat(data.change || 0),
+                  changePercent: parseFloat(data.change_percent || 0),
+                  lastUpdate: new Date(),
+                };
+              }
+            }
+          } catch (error) {
+            console.warn(`Failed to fetch price for ${symbol}:`, error);
           }
-        } catch (error) {
-          console.warn(`Failed to fetch price for ${symbol}:`, error);
-        }
-        return null;
-      });
+          return null;
+        },
+      );
 
       const results = await Promise.allSettled(pricePromises);
       const newPrices: Record<string, PriceData> = {};
@@ -218,7 +229,9 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
       30000,
     ); // Exponential backoff, max 30s
 
-    console.log(`Scheduling reconnect attempt ${reconnectAttempts.current} in ${delay}ms`);
+    console.log(
+      `Scheduling reconnect attempt ${reconnectAttempts.current} in ${delay}ms`,
+    );
 
     reconnectTimeoutRef.current = setTimeout(() => {
       connectWebSocket();

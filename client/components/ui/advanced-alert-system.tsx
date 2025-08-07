@@ -105,7 +105,9 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
               // Forex symbols - keep as is, API will handle
             }
 
-            console.log(`Fetching price for ${symbol.symbol} (API symbol: ${apiSymbol})`);
+            console.log(
+              `Fetching price for ${symbol.symbol} (API symbol: ${apiSymbol})`,
+            );
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
@@ -134,7 +136,10 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
               }
             }
 
-            console.warn(`Failed to fetch price for ${symbol.symbol}, API response:`, response.status);
+            console.warn(
+              `Failed to fetch price for ${symbol.symbol}, API response:`,
+              response.status,
+            );
             return null;
           } catch (error) {
             console.warn(`Error fetching price for ${symbol.symbol}:`, error);
@@ -143,11 +148,15 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
         });
 
         const results = await Promise.all(pricePromises);
-        const validPairs = results.filter((pair): pair is CurrencyPair => pair !== null);
-        
-        console.log(`Successfully fetched ${validPairs.length} of ${supportedSymbols.length} symbols`);
+        const validPairs = results.filter(
+          (pair): pair is CurrencyPair => pair !== null,
+        );
+
+        console.log(
+          `Successfully fetched ${validPairs.length} of ${supportedSymbols.length} symbols`,
+        );
         setCurrencyPairs(validPairs);
-        
+
         if (validPairs.length > 0) {
           setIsConnected(true);
           setLastPriceUpdate(new Date());
@@ -194,14 +203,15 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                   setIsConnected(true);
                   return {
                     ...pair,
-                    currentPrice: parseFloat(priceData.price) || pair.currentPrice,
+                    currentPrice:
+                      parseFloat(priceData.price) || pair.currentPrice,
                     change: parseFloat(priceData.change || 0),
                     changePercent: parseFloat(priceData.change_percent || 0),
                     lastUpdate: new Date(),
                   };
                 }
               }
-              
+
               console.warn(`Failed to update price for ${pair.symbol}`);
               return pair; // Return original if update fails
             } catch (error) {
@@ -210,7 +220,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
             }
           }),
         );
-        
+
         setCurrencyPairs(updatedPairs);
         setLastPriceUpdate(new Date());
         console.log("Price update completed successfully");
@@ -265,7 +275,9 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
           parsed.map((alert: any) => ({
             ...alert,
             createdAt: new Date(alert.createdAt),
-            lastTriggered: alert.lastTriggered ? new Date(alert.lastTriggered) : undefined,
+            lastTriggered: alert.lastTriggered
+              ? new Date(alert.lastTriggered)
+              : undefined,
           })),
         );
       } catch (error) {
@@ -285,11 +297,11 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
     const checkPriceAlerts = () => {
       console.log("Checking price alerts...");
-      
+
       for (const alert of alerts) {
         if (!alert.isActive) continue;
 
-        const pair = currencyPairs.find(p => p.symbol === alert.pair);
+        const pair = currencyPairs.find((p) => p.symbol === alert.pair);
         if (!pair) continue;
 
         const currentPrice = pair.currentPrice;
@@ -298,8 +310,10 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
           (alert.condition === "below" && currentPrice <= alert.targetPrice);
 
         if (isTriggered) {
-          console.log(`Alert triggered for ${alert.pair}: ${currentPrice} ${alert.condition} ${alert.targetPrice}`);
-          
+          console.log(
+            `Alert triggered for ${alert.pair}: ${currentPrice} ${alert.condition} ${alert.targetPrice}`,
+          );
+
           // Trigger notification
           const message =
             language === "ar"
@@ -315,14 +329,17 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
           // Update alert as triggered and deactivate to prevent spam
           setAlerts((prev) =>
             prev.map((a) =>
-              a.id === alert.id 
-                ? { ...a, isActive: false, lastTriggered: new Date() } 
+              a.id === alert.id
+                ? { ...a, isActive: false, lastTriggered: new Date() }
                 : a,
             ),
           );
 
           // Browser notification if supported
-          if ("Notification" in window && Notification.permission === "granted") {
+          if (
+            "Notification" in window &&
+            Notification.permission === "granted"
+          ) {
             new Notification(`EODHD Price Alert: ${alert.pair}`, {
               body: message,
               icon: "/liirat-logo-new.png",
@@ -482,14 +499,18 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
           <WifiOff className="h-4 w-4 text-red-500" />
         )}
         <span>
-          {isConnected 
-            ? (language === "ar" ? "متصل بـ EODHD" : "Connected to EODHD")
-            : (language === "ar" ? "غير متصل" : "Disconnected")
-          }
+          {isConnected
+            ? language === "ar"
+              ? "متصل بـ EODHD"
+              : "Connected to EODHD"
+            : language === "ar"
+              ? "غير متصل"
+              : "Disconnected"}
         </span>
         {lastPriceUpdate && (
           <span className="text-xs">
-            • {language === "ar" ? "آخر تحديث:" : "Last update:"} {lastPriceUpdate.toLocaleTimeString()}
+            • {language === "ar" ? "آخر تحديث:" : "Last update:"}{" "}
+            {lastPriceUpdate.toLocaleTimeString()}
           </span>
         )}
       </div>
@@ -499,7 +520,9 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <Plus className="w-5 h-5 text-primary" />
-            {language === "ar" ? "إنشاء تنبيه سعر جديد" : "Create New Price Alert"}
+            {language === "ar"
+              ? "إنشاء تنبيه سعر جديد"
+              : "Create New Price Alert"}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -714,9 +737,10 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
               {language === "ar" ? "التنبيهات النشطة" : "Active Price Alerts"} (
               {alerts.length})
             </div>
-            {alerts.some(a => a.isActive) && (
+            {alerts.some((a) => a.isActive) && (
               <Badge variant="secondary" className="text-xs">
-                {alerts.filter(a => a.isActive).length} {language === "ar" ? "نشط" : "active"}
+                {alerts.filter((a) => a.isActive).length}{" "}
+                {language === "ar" ? "نشط" : "active"}
               </Badge>
             )}
           </CardTitle>
@@ -787,17 +811,25 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
                         <Badge
                           variant={
-                            status === "triggered" ? "destructive" : 
-                            alert.isActive ? "outline" : "secondary"
+                            status === "triggered"
+                              ? "destructive"
+                              : alert.isActive
+                                ? "outline"
+                                : "secondary"
                           }
                           className="text-xs whitespace-nowrap"
                         >
                           {status === "triggered"
-                            ? language === "ar" ? "تم التنشيط" : "Triggered"
-                            : alert.isActive 
-                              ? language === "ar" ? "في الانتظار" : "Waiting"
-                              : language === "ar" ? "متوقف" : "Inactive"
-                          }
+                            ? language === "ar"
+                              ? "تم التنشيط"
+                              : "Triggered"
+                            : alert.isActive
+                              ? language === "ar"
+                                ? "في الانتظار"
+                                : "Waiting"
+                              : language === "ar"
+                                ? "متوقف"
+                                : "Inactive"}
                         </Badge>
                       </div>
 
@@ -807,9 +839,14 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                           size="sm"
                           onClick={() => toggleAlert(alert.id)}
                           className="h-8 w-8 p-0"
-                          title={alert.isActive 
-                            ? (language === "ar" ? "إيقاف التنبيه" : "Deactivate alert")
-                            : (language === "ar" ? "تنشيط التنبيه" : "Activate alert")
+                          title={
+                            alert.isActive
+                              ? language === "ar"
+                                ? "إيقاف التنبيه"
+                                : "Deactivate alert"
+                              : language === "ar"
+                                ? "تنشيط التنبيه"
+                                : "Activate alert"
                           }
                         >
                           {alert.isActive ? (
@@ -823,7 +860,9 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                           size="sm"
                           onClick={() => deleteAlert(alert.id)}
                           className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
-                          title={language === "ar" ? "حذف التنبيه" : "Delete alert"}
+                          title={
+                            language === "ar" ? "حذف التنبيه" : "Delete alert"
+                          }
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -832,7 +871,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
                     {alert.lastTriggered && (
                       <div className="text-xs text-muted-foreground mt-2 pt-2 border-t border-border/30">
-                        {language === "ar" ? "آخر تنشيط:" : "Last triggered:"} {alert.lastTriggered.toLocaleString()}
+                        {language === "ar" ? "آخر تنشيط:" : "Last triggered:"}{" "}
+                        {alert.lastTriggered.toLocaleString()}
                       </div>
                     )}
                   </div>

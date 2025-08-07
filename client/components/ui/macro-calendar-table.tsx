@@ -59,7 +59,7 @@ interface MacroCalendarTableProps {
 // Top economic countries that frequently affect markets
 const TOP_COUNTRIES = [
   "US",
-  "EUR", 
+  "EUR",
   "GB",
   "JP",
   "CA",
@@ -71,11 +71,56 @@ const TOP_COUNTRIES = [
 ];
 
 const ALL_COUNTRIES = [
-  "US", "EUR", "GB", "JP", "CA", "AU", "CHF", "DE", "FR", "IT", "ES", "NL",
-  "BE", "AT", "PT", "IE", "FI", "GR", "CZ", "PL", "HU", "SK", "SI", "EE",
-  "LV", "LT", "CN", "IN", "BR", "MX", "RU", "ZA", "KR", "SG", "HK", "TH",
-  "MY", "ID", "PH", "VN", "NO", "SE", "DK", "IS", "TR", "IL", "SA", "AE",
-  "NZ", "NZD"
+  "US",
+  "EUR",
+  "GB",
+  "JP",
+  "CA",
+  "AU",
+  "CHF",
+  "DE",
+  "FR",
+  "IT",
+  "ES",
+  "NL",
+  "BE",
+  "AT",
+  "PT",
+  "IE",
+  "FI",
+  "GR",
+  "CZ",
+  "PL",
+  "HU",
+  "SK",
+  "SI",
+  "EE",
+  "LV",
+  "LT",
+  "CN",
+  "IN",
+  "BR",
+  "MX",
+  "RU",
+  "ZA",
+  "KR",
+  "SG",
+  "HK",
+  "TH",
+  "MY",
+  "ID",
+  "PH",
+  "VN",
+  "NO",
+  "SE",
+  "DK",
+  "IS",
+  "TR",
+  "IL",
+  "SA",
+  "AE",
+  "NZ",
+  "NZD",
 ];
 
 const getImportanceColor = (importance: number) => {
@@ -83,7 +128,7 @@ const getImportanceColor = (importance: number) => {
     case 3:
       return "bg-red-500 text-white"; // HIGH impact
     case 2:
-      return "bg-yellow-500 text-white"; // MEDIUM impact  
+      return "bg-yellow-500 text-white"; // MEDIUM impact
     case 1:
       return "bg-green-500 text-white"; // LOW impact
     default:
@@ -94,74 +139,149 @@ const getImportanceColor = (importance: number) => {
 const getImportanceLabel = (importance: number, language: string) => {
   if (language === "ar") {
     switch (importance) {
-      case 3: return "عالي";
-      case 2: return "متوسط";
-      case 1: return "منخفض";
-      default: return "غير محدد";
+      case 3:
+        return "عالي";
+      case 2:
+        return "متوسط";
+      case 1:
+        return "منخفض";
+      default:
+        return "غير محدد";
     }
   }
   switch (importance) {
-    case 3: return "HIGH";
-    case 2: return "MEDIUM";
-    case 1: return "LOW";
-    default: return "Unknown";
+    case 3:
+      return "HIGH";
+    case 2:
+      return "MEDIUM";
+    case 1:
+      return "LOW";
+    default:
+      return "Unknown";
   }
 };
 
 const getCountryCode = (country: string): string => {
   const countryCodeMap: Record<string, string> = {
-    US: "US", USA: "US", "United States": "US",
-    EUR: "EU", EU: "EU", Eurozone: "EU",
-    GB: "GB", UK: "GB", "United Kingdom": "GB",
-    JP: "JP", JPY: "JP", Japan: "JP",
-    CA: "CA", CAD: "CA", Canada: "CA",
-    AU: "AU", AUD: "AU", Australia: "AU",
-    CHF: "CH", CH: "CH", Switzerland: "CH",
-    DE: "DE", GER: "DE", Germany: "DE",
-    FR: "FR", France: "FR",
-    IT: "IT", Italy: "IT",
-    ES: "ES", Spain: "ES",
-    NL: "NL", Netherlands: "NL",
-    BE: "BE", Belgium: "BE",
-    AT: "AT", Austria: "AT",
-    PT: "PT", Portugal: "PT",
-    IE: "IE", Ireland: "IE",
-    FI: "FI", Finland: "FI",
-    GR: "GR", Greece: "GR",
-    CZ: "CZ", "Czech Republic": "CZ",
-    PL: "PL", Poland: "PL",
-    HU: "HU", Hungary: "HU",
-    SK: "SK", Slovakia: "SK",
-    SI: "SI", Slovenia: "SI",
-    EE: "EE", Estonia: "EE",
-    LV: "LV", Latvia: "LV",
-    LT: "LT", Lithuania: "LT",
-    CN: "CN", CHN: "CN", China: "CN",
-    IN: "IN", IND: "IN", India: "IN",
-    BR: "BR", BRA: "BR", Brazil: "BR",
-    MX: "MX", MEX: "MX", Mexico: "MX",
-    RU: "RU", RUS: "RU", Russia: "RU",
-    ZA: "ZA", "South Africa": "ZA",
-    KR: "KR", "South Korea": "KR",
-    SG: "SG", SGP: "SG", Singapore: "SG",
-    HK: "HK", "Hong Kong": "HK",
-    TH: "TH", Thailand: "TH",
-    MY: "MY", Malaysia: "MY",
-    ID: "ID", Indonesia: "ID",
-    PH: "PH", Philippines: "PH",
-    VN: "VN", Vietnam: "VN",
-    NO: "NO", Norway: "NO",
-    SE: "SE", Sweden: "SE",
-    DK: "DK", Denmark: "DK",
-    IS: "IS", Iceland: "IS",
-    TR: "TR", Turkey: "TR",
-    IL: "IL", Israel: "IL",
-    SA: "SA", "Saudi Arabia": "SA",
-    AE: "AE", UAE: "AE", "United Arab Emirates": "AE",
-    NZ: "NZ", NZD: "NZ", "New Zealand": "NZ",
+    US: "US",
+    USA: "US",
+    "United States": "US",
+    EUR: "EU",
+    EU: "EU",
+    Eurozone: "EU",
+    GB: "GB",
+    UK: "GB",
+    "United Kingdom": "GB",
+    JP: "JP",
+    JPY: "JP",
+    Japan: "JP",
+    CA: "CA",
+    CAD: "CA",
+    Canada: "CA",
+    AU: "AU",
+    AUD: "AU",
+    Australia: "AU",
+    CHF: "CH",
+    CH: "CH",
+    Switzerland: "CH",
+    DE: "DE",
+    GER: "DE",
+    Germany: "DE",
+    FR: "FR",
+    France: "FR",
+    IT: "IT",
+    Italy: "IT",
+    ES: "ES",
+    Spain: "ES",
+    NL: "NL",
+    Netherlands: "NL",
+    BE: "BE",
+    Belgium: "BE",
+    AT: "AT",
+    Austria: "AT",
+    PT: "PT",
+    Portugal: "PT",
+    IE: "IE",
+    Ireland: "IE",
+    FI: "FI",
+    Finland: "FI",
+    GR: "GR",
+    Greece: "GR",
+    CZ: "CZ",
+    "Czech Republic": "CZ",
+    PL: "PL",
+    Poland: "PL",
+    HU: "HU",
+    Hungary: "HU",
+    SK: "SK",
+    Slovakia: "SK",
+    SI: "SI",
+    Slovenia: "SI",
+    EE: "EE",
+    Estonia: "EE",
+    LV: "LV",
+    Latvia: "LV",
+    LT: "LT",
+    Lithuania: "LT",
+    CN: "CN",
+    CHN: "CN",
+    China: "CN",
+    IN: "IN",
+    IND: "IN",
+    India: "IN",
+    BR: "BR",
+    BRA: "BR",
+    Brazil: "BR",
+    MX: "MX",
+    MEX: "MX",
+    Mexico: "MX",
+    RU: "RU",
+    RUS: "RU",
+    Russia: "RU",
+    ZA: "ZA",
+    "South Africa": "ZA",
+    KR: "KR",
+    "South Korea": "KR",
+    SG: "SG",
+    SGP: "SG",
+    Singapore: "SG",
+    HK: "HK",
+    "Hong Kong": "HK",
+    TH: "TH",
+    Thailand: "TH",
+    MY: "MY",
+    Malaysia: "MY",
+    ID: "ID",
+    Indonesia: "ID",
+    PH: "PH",
+    Philippines: "PH",
+    VN: "VN",
+    Vietnam: "VN",
+    NO: "NO",
+    Norway: "NO",
+    SE: "SE",
+    Sweden: "SE",
+    DK: "DK",
+    Denmark: "DK",
+    IS: "IS",
+    Iceland: "IS",
+    TR: "TR",
+    Turkey: "TR",
+    IL: "IL",
+    Israel: "IL",
+    SA: "SA",
+    "Saudi Arabia": "SA",
+    AE: "AE",
+    UAE: "AE",
+    "United Arab Emirates": "AE",
+    NZ: "NZ",
+    NZD: "NZ",
+    "New Zealand": "NZ",
   };
 
-  return countryCodeMap[country] || countryCodeMap[country?.toUpperCase()] || "";
+  return (
+    countryCodeMap[country] || countryCodeMap[country?.toUpperCase()] || ""
+  );
 };
 
 const getCountryFlag = (country: string) => {
@@ -217,12 +337,12 @@ const formatDateTimeWithTimezone = (dateStr: string, language: string) => {
 
     // Get user's timezone
     const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    
+
     if (language === "ar") {
       return date.toLocaleDateString("ar-SA-u-ca-gregory", {
         timeZone: userTimezone,
         weekday: "short",
-        month: "short", 
+        month: "short",
         day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
@@ -233,7 +353,7 @@ const formatDateTimeWithTimezone = (dateStr: string, language: string) => {
         timeZone: userTimezone,
         weekday: "short",
         month: "short",
-        day: "numeric", 
+        day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
         hour12: true,
@@ -256,7 +376,11 @@ export function MacroCalendarTable({
   const [searchTerm, setSearchTerm] = useState("");
   const [countrySearchTerm, setCountrySearchTerm] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("all");
-  const [selectedImportances, setSelectedImportances] = useState<string[]>(["3", "2", "1"]);
+  const [selectedImportances, setSelectedImportances] = useState<string[]>([
+    "3",
+    "2",
+    "1",
+  ]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [dateRange, setDateRange] = useState("all");
   const [isCountryOpen, setIsCountryOpen] = useState(false);
@@ -265,7 +389,8 @@ export function MacroCalendarTable({
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const t = (enText: string, arText: string) => language === "ar" ? arText : enText;
+  const t = (enText: string, arText: string) =>
+    language === "ar" ? arText : enText;
 
   // Listen for online/offline changes
   React.useEffect(() => {
@@ -341,7 +466,9 @@ export function MacroCalendarTable({
         }
       })();
 
-      return matchesSearch && matchesCountry && matchesImportance && matchesDate;
+      return (
+        matchesSearch && matchesCountry && matchesImportance && matchesDate
+      );
     });
 
     // Sort events by date - soonest first
@@ -362,22 +489,33 @@ export function MacroCalendarTable({
     });
 
     return sorted;
-  }, [events, searchTerm, selectedCountry, selectedImportances, selectedDate, dateRange]);
+  }, [
+    events,
+    searchTerm,
+    selectedCountry,
+    selectedImportances,
+    selectedDate,
+    dateRange,
+  ]);
 
   // Display logic - show first 10 by default, expand to show all
-  const displayedEvents = isExpanded ? filteredEvents : filteredEvents.slice(0, 10);
+  const displayedEvents = isExpanded
+    ? filteredEvents
+    : filteredEvents.slice(0, 10);
 
   const handleUpdate = () => {
     // Update online status from navigator
     setIsOnline(navigator.onLine);
-    // Set last updated timestamp  
+    // Set last updated timestamp
     setLastUpdated(new Date());
     // Call refresh callback with current filters
     if (onRefresh) {
       const filters = {
         country: selectedCountry === "all" ? undefined : selectedCountry,
         importance: selectedImportances,
-        from: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
+        from: selectedDate
+          ? selectedDate.toISOString().split("T")[0]
+          : undefined,
         to: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
       };
       onRefresh(filters);
@@ -470,7 +608,9 @@ export function MacroCalendarTable({
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
-                        variant={dateRange.includes("week") ? "default" : "outline"}
+                        variant={
+                          dateRange.includes("week") ? "default" : "outline"
+                        }
                         size="sm"
                         className="justify-between"
                       >
@@ -546,7 +686,10 @@ export function MacroCalendarTable({
                     )}
                   />
                   <Input
-                    placeholder={t("Search countries...", "البحث في البلدان...")}
+                    placeholder={t(
+                      "Search countries...",
+                      "البحث في البلدان...",
+                    )}
                     value={countrySearchTerm}
                     onChange={(e) => setCountrySearchTerm(e.target.value)}
                     className={cn(dir === "rtl" ? "pr-10 text-right" : "pl-10")}
@@ -766,10 +909,16 @@ export function MacroCalendarTable({
             <div className="p-6 text-center text-muted-foreground bg-card rounded-lg border">
               <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
               <p className="font-medium">
-                {t("No events found matching your criteria", "لا توجد أحداث تطابق معاييرك")}
+                {t(
+                  "No events found matching your criteria",
+                  "لا توجد أحداث تطابق معاييرك",
+                )}
               </p>
               <p className="text-sm mt-1">
-                {t("Try adjusting your filters or check back later", "جرب تعديل فلاترك أو تحقق مرة أخرى لاحقاً")}
+                {t(
+                  "Try adjusting your filters or check back later",
+                  "جرب تعديل فلاترك أو تحقق مرة أخرى لاحقاً",
+                )}
               </p>
             </div>
           ) : (
@@ -929,10 +1078,16 @@ export function MacroCalendarTable({
                     >
                       <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                       <p className="font-medium">
-                        {t("No events found matching your criteria", "لا توجد أحداث تطابق معاييرك")}
+                        {t(
+                          "No events found matching your criteria",
+                          "لا توجد أحداث تطابق معاييرك",
+                        )}
                       </p>
                       <p className="text-sm mt-1">
-                        {t("Try adjusting your filters or check back later", "جرب تعديل فلاترك أو تحقق مرة أخرى لاحقاً")}
+                        {t(
+                          "Try adjusting your filters or check back later",
+                          "جرب تعديل فلاترك أو تحقق مرة أخرى لاحقاً",
+                        )}
                       </p>
                     </td>
                   </tr>
@@ -1005,7 +1160,9 @@ export function MacroCalendarTable({
                               : "text-muted-foreground",
                           )}
                         >
-                          {event.actual && event.actual !== "-" ? event.actual : "-"}
+                          {event.actual && event.actual !== "-"
+                            ? event.actual
+                            : "-"}
                         </span>
                       </td>
                       <td
@@ -1015,7 +1172,9 @@ export function MacroCalendarTable({
                         )}
                       >
                         <span className="text-muted-foreground">
-                          {event.forecast && event.forecast !== "-" ? event.forecast : "-"}
+                          {event.forecast && event.forecast !== "-"
+                            ? event.forecast
+                            : "-"}
                         </span>
                       </td>
                       <td
@@ -1025,7 +1184,9 @@ export function MacroCalendarTable({
                         )}
                       >
                         <span className="text-muted-foreground">
-                          {event.previous && event.previous !== "-" ? event.previous : "-"}
+                          {event.previous && event.previous !== "-"
+                            ? event.previous
+                            : "-"}
                         </span>
                       </td>
                       <td
