@@ -144,7 +144,7 @@ PROFESSIONAL STANDARDS:
 GREETING RESPONSE (always the same):
 ${
   language === "ar"
-    ? "مرحباً، أنا مساعد ليرات الافت��اضي. كيف يمكنني مساعدتك اليوم؟"
+    ? "مرحباً، أنا مساعد ليرات الافتراضي. كيف يمكنني مساعدتك اليوم؟"
     : "Hi, I'm Liirat News AI Assistant. How can I help you today?"
 }
 
@@ -171,9 +171,8 @@ ${
 }
 
 RESPONSE FORMAT:
-• Present EODHD data clearly with timestamps
+• Present market data clearly with timestamps
 • Keep responses concise and actionable—no lengthy explanations unless specifically requested
-• Always mention EODHD as the data source
 • This is for educational and informational purposes only, not investment advice`;
 
     console.log("Sending request to OpenAI with message:", message);
