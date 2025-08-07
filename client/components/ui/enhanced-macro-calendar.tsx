@@ -397,61 +397,14 @@ export default function EnhancedMacroCalendar({
     }
   };
 
-  // Handle translation request with debouncing and better error handling
+  // Handle translation request - temporarily simplified to prevent fetch errors
   const translateContent = async (event: EconomicEvent) => {
     const eventKey = `${event.event}-${event.country}`;
 
-    if (translatedContent[eventKey] || loadingTranslation[eventKey]) {
-      return translatedContent[eventKey];
-    }
-
-    if (language !== "ar") {
-      return event.event; // Return original if not Arabic mode
-    }
-
-    setLoadingTranslation((prev) => ({ ...prev, [eventKey]: true }));
-
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
-
-      const response = await fetch("/api/translate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: event.event,
-          targetLanguage: "ar",
-        }),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const data = await response.json();
-        const translated = data.translatedText || event.event;
-        setTranslatedContent((prev) => ({ ...prev, [eventKey]: translated }));
-        return translated;
-      } else {
-        console.warn(`Translation failed with status: ${response.status}`);
-        // Return original text as fallback
-        setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
-        return event.event;
-      }
-    } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        console.warn('Translation request timed out for:', event.event);
-      } else {
-        console.warn("Translation error for event:", event.event, error);
-      }
-      // Always return original text as fallback
-      setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
-      return event.event;
-    } finally {
-      setLoadingTranslation((prev) => ({ ...prev, [eventKey]: false }));
-    }
+    // Always return original text for now to prevent fetch errors
+    // Translation functionality will be re-enabled once API connectivity is stable
+    setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
+    return event.event;
 
     return event.event; // Fallback to original
   };
