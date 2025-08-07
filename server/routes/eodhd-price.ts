@@ -161,12 +161,17 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
 
     console.log("Transformed prices:", JSON.stringify(prices, null, 2));
 
-    res.json({
+    const responseData = {
       prices,
       total: prices.length,
       symbol: symbolStr,
       timestamp: new Date().toISOString(),
-    });
+    };
+
+    // Cache the successful response
+    apiOptimizer.setCache(cacheKey, responseData, 'prices');
+
+    res.json(responseData);
   } catch (error) {
     console.error("Error fetching EODHD price data:", error);
 
