@@ -17,7 +17,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/components/ui/use-toast";
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 import { NewLiquidToggle } from "@/components/ui/new-liquid-toggle";
-import TradingViewWidget from "@/components/ui/tradingview-widget";
+// TradingView removed - using EODHD data only
 import {
   Send,
   Bot,
@@ -135,7 +135,7 @@ const AITradingAssistant: React.FC = () => {
                 id: "2",
                 title: "متوقع موافقة على صناديق بيتكوين المتداولة هذا الأسبوع",
                 summary:
-                  "من المتوقع أن تحصل صناديق العملات المشفرة الرئيسية على الموافقة التنظيمية، مما قد يعزز الاعتماد المؤسسي.",
+                  "من المتوقع أن تحصل صناديق ا��عملات المشفرة الرئيسية على الموافقة التنظيمية، مما قد يعزز الاعتماد المؤسسي.",
                 source: "بلومبرغ",
                 publishedAt: "2024-01-15T09:15:00Z",
                 impact: "high",
