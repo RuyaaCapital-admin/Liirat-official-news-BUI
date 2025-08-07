@@ -210,14 +210,14 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
             id: `news-${Date.now()}-${index}`, // Unique ID with timestamp
             datetimeIso: item.datetimeIso,
             title: title,
-            content: title, // EODHD news API only provides title
-            category: 'financial',
+            content: item.content || title, // Use API content if available, fallback to title
+            category: item.category || 'financial',
             symbols: symbols,
-            tags: symbols,
+            tags: item.tags || symbols,
             url: item.url,
             source: source,
             importance: importance, // Real importance based on content analysis
-            country: ''
+            country: item.country || ''
           };
         });
         setArticles(transformedArticles);
