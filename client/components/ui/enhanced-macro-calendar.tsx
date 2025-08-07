@@ -183,13 +183,15 @@ export default function EnhancedMacroCalendar({
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return dateString;
 
-      return new Intl.DateTimeFormat(language === "ar" ? "ar-SA" : "en-US", {
+      // Force Gregorian calendar and proper locale
+      return new Intl.DateTimeFormat(language === "ar" ? "ar-SA-u-ca-gregory" : "en-US", {
         timeZone: selectedTimezone,
         month: "short",
         day: "numeric",
         hour: timeString ? "2-digit" : undefined,
         minute: timeString ? "2-digit" : undefined,
         hour12: false,
+        calendar: "gregory", // Force Gregorian calendar
       }).format(date);
     } catch (error) {
       return dateString;
