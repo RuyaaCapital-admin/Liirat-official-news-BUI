@@ -29,7 +29,7 @@ const TradingViewTicker: React.FC<TradingViewTickerProps> = ({ className = '' })
               title: "S&P 500"
             },
             {
-              proName: "FOREXCOM:NSXUSD", 
+              proName: "FOREXCOM:NSXUSD",
               title: "US 100"
             },
             {
@@ -73,11 +73,12 @@ const TradingViewTicker: React.FC<TradingViewTickerProps> = ({ className = '' })
               title: "Oil"
             }
           ],
-          showSymbolLogo: true,
+          showSymbolLogo: false,
           isTransparent: theme === 'dark',
           displayMode: "adaptive",
           colorTheme: theme === 'dark' ? 'dark' : 'light',
-          locale: "en"
+          locale: "en",
+          largeChartUrl: ""
         };
 
         script.innerHTML = JSON.stringify(config);
