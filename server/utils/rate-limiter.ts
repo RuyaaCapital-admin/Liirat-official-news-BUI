@@ -24,10 +24,10 @@ class APIOptimizer {
 
   // Rate limit settings (requests per minute)
   private readonly RATE_LIMITS = {
-    prices: 60, // 60 price requests per minute (1 per second)
-    news: 12, // 12 news requests per minute (1 per 5 seconds)
-    calendar: 6, // 6 calendar requests per minute (1 per 10 seconds)
-    analysis: 20, // 20 AI analysis requests per minute
+    prices: 100, // 100 price requests per minute
+    news: 20, // 20 news requests per minute
+    calendar: 15, // 15 calendar requests per minute
+    analysis: 30, // 30 AI analysis requests per minute
   };
 
   // Get cached data if available and not expired
