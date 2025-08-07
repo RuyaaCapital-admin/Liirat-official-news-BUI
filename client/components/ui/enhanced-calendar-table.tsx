@@ -203,21 +203,37 @@ export default function EnhancedCalendarTable({
     try {
       let date: Date;
 
+      // Handle different date formats
       if (dateStr.includes("T")) {
-        date = parseISO(dateStr);
-      } else {
+        date = new Date(dateStr);
+      } else if (dateStr.includes("-")) {
+        // Handle YYYY-MM-DD format
         const fullDateTime = timeStr
-          ? `${dateStr}T${timeStr}:00`
-          : `${dateStr}T00:00:00`;
-        date = parseISO(fullDateTime);
+          ? `${dateStr}T${timeStr}:00.000Z`
+          : `${dateStr}T12:00:00.000Z`;
+        date = new Date(fullDateTime);
+      } else {
+        // Try to parse as-is
+        date = new Date(dateStr);
       }
 
-      if (!isValid(date)) {
+      if (!date || isNaN(date.getTime())) {
         return language === "ar" ? "تاريخ غير صالح" : "Invalid date";
       }
 
-      const dateFormatted = format(date, "MMM dd");
-      const timeFormatted = timeStr || format(date, "HH:mm");
+      // Format with Arabic locale support
+      const locale = language === "ar" ? "ar-AE" : "en-US";
+      const dateFormatted = date.toLocaleDateString(locale, {
+        month: "short",
+        day: "numeric",
+        timeZone: "Asia/Dubai"
+      });
+      const timeFormatted = timeStr || date.toLocaleTimeString(locale, {
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "Asia/Dubai",
+        hour12: false
+      });
 
       return (
         <div

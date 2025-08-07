@@ -171,11 +171,9 @@ async function fetchRealNews(): Promise<any[]> {
 // Get accurate Dubai time
 function getDubaiTime(): { date: Date; formatted: string; timeString: string } {
   const now = new Date();
-  const dubaiTime = new Date(
-    now.toLocaleString("en-US", { timeZone: "Asia/Dubai" }),
-  );
 
-  const formatted = dubaiTime.toLocaleString("en-US", {
+  // Get current Dubai time correctly
+  const formatted = now.toLocaleString("en-US", {
     timeZone: "Asia/Dubai",
     weekday: "long",
     year: "numeric",
@@ -186,7 +184,7 @@ function getDubaiTime(): { date: Date; formatted: string; timeString: string } {
     hour12: true,
   });
 
-  const timeString = dubaiTime.toLocaleString("en-US", {
+  const timeString = now.toLocaleString("en-US", {
     timeZone: "Asia/Dubai",
     hour: "2-digit",
     minute: "2-digit",
