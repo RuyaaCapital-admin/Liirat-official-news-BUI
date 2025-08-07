@@ -19,8 +19,8 @@ interface TickerProps {
 
 // Configuration for ONLY the most reliable symbols that work 100% in production
 const TICKER_CONFIG = [
-  // Gold (XAU) - FIRST as user specifically requested - RELIABLE
-  { symbol: "XAUUSD.FOREX", displayName: "GOLD" },
+  // Gold (XAU) - FIRST as user specifically requested - try different symbol
+  { symbol: "XAUUSD", displayName: "GOLD" },
   // Crypto (BTC and ETH only) - MOST RELIABLE, always work
   { symbol: "BTC-USD.CC", displayName: "BTC/USD" },
   { symbol: "ETH-USD.CC", displayName: "ETH/USD" },
