@@ -543,7 +543,7 @@ export function MacroCalendarTable({
             </h3>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Clock className="h-3 w-3" />
-              <span>{t("Live from EODHD", "مباشر من EODHD")}</span>
+              <span>{t("Live Data", "بيانات مباشرة")}</span>
             </div>
           </div>
         </div>
