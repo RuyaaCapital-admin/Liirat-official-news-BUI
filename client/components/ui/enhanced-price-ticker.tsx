@@ -200,11 +200,16 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         return;
       }
 
-      // Final failure - set disconnected status
+      // Final failure - set disconnected status but keep symbol visible
+      const config = TICKER_CONFIG.find((c) => c.symbol === symbol);
       setPriceData((prev) => ({
         ...prev,
         [symbol]: {
-          ...prev[symbol],
+          symbol,
+          displayName: config?.displayName || symbol,
+          price: 0,
+          change: 0,
+          changePercent: 0,
           status: "disconnected",
           lastUpdate: new Date(),
         },
@@ -324,6 +329,8 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
                   <div className="font-mono text-sm font-bold">
                     {data.status === "connecting"
                       ? "..."
+                      : data.status === "disconnected"
+                      ? "Loading..."
                       : formatPrice(data.price, data.symbol)}
                   </div>
                   <div
