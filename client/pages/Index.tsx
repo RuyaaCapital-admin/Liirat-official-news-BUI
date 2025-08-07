@@ -368,6 +368,7 @@ export default function Index() {
                         className="rounded-lg overflow-hidden"
                         language={language}
                         dir={dir}
+                        onRefresh={() => fetchEconomicEvents(language)}
                       />
                     </div>
                   )}
