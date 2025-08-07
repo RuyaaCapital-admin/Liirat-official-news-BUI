@@ -44,6 +44,7 @@ const getMockNews = () => [
 ];
 
 const EODHD_API_TOKEN =
+  process.env.EODHD_API_KEY ||
   process.env.NEXT_PUBLIC_EODHD_API_KEY ||
   process.env.EODHD_API_TOKEN ||
   "demo"; // Use demo token as fallback
