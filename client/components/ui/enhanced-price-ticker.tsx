@@ -30,7 +30,8 @@ const TICKER_CONFIG = [
   { symbol: "GSPC.INDX", displayName: "S&P 500", wsType: "us" },
 ];
 
-const EODHD_API_KEY = "6891e3b89ee5e1.29062933";
+// Note: API key should be handled on backend only
+// WebSocket connections will use public endpoints or backend proxy
 
 export default function EnhancedPriceTicker({ className }: TickerProps) {
   const [priceData, setPriceData] = useState<Record<string, PriceData>>({});
