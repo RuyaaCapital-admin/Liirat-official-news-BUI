@@ -67,7 +67,7 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       symbolStr.includes("BTC") ||
       symbolStr.includes("ETH");
     const isIndex = symbolStr === "GSPC" || symbolStr.includes(".INDX");
-    const isGold = symbolStr.includes("XAUUSD") || symbolStr.includes("XAU");
+    const isGold = symbolStr.includes("XAUUSD") || symbolStr.includes("XAU") || symbolStr.includes("GC=F");
 
     let apiUrl: URL;
     let finalSymbol = symbolStr;
