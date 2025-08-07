@@ -583,7 +583,7 @@ export default function EnhancedMacroCalendar({
         ...prev,
         [event.event]:
           language === "ar"
-            ? "❌ تحليل الذكاء الاصطناعي غير متاح حاليًا. يرج�� التحقق من إعدادات API."
+            ? "❌ تحليل الذكاء الاصطناعي غير متاح حاليًا. يرجى التحقق من إعدادات API."
             : "❌ AI analysis currently unavailable. Please check API configuration.",
       }));
     } finally {
