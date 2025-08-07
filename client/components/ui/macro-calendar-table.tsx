@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
+import ReactCountryFlag from "react-country-flag";
 import {
   Select,
   SelectContent,
@@ -34,6 +35,8 @@ import {
   Filter,
   RefreshCw,
   ChevronDown,
+  Bell,
+  Plus,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -42,7 +45,13 @@ interface MacroCalendarTableProps {
   className?: string;
   language?: "ar" | "en";
   dir?: "rtl" | "ltr";
-  onRefresh?: () => void;
+  onRefresh?: (filters?: {
+    country?: string;
+    importance?: string[];
+    from?: string;
+    to?: string;
+  }) => void;
+  onCreateAlert?: (event: EconomicEvent) => void;
 }
 
 // Top economic countries that frequently affect markets
@@ -148,85 +157,153 @@ const getImportanceLabel = (importance: number, language: string) => {
   }
 };
 
-const getCountryFlag = (country: string) => {
-  const flagMap: Record<string, string> = {
-    US: "🇺🇸",
-    USA: "🇺🇸",
-    EUR: "🇪🇺",
-    EU: "🇪🇺",
-    GB: "🇬🇧",
-    UK: "🇬🇧",
-    JP: "🇯🇵",
-    JPY: "🇯🇵",
-    CA: "🇨🇦",
-    CAD: "🇨🇦",
-    AU: "🇦🇺",
-    AUD: "🇦🇺",
-    CHF: "🇨🇭",
-    CH: "🇨🇭",
-    DE: "🇩🇪",
-    GER: "🇩🇪",
-    FR: "🇫🇷",
-    IT: "🇮🇹",
-    ES: "🇪🇸",
-    NL: "🇳🇱",
-    BE: "🇧🇪",
-    AT: "🇦🇹",
-    PT: "🇵🇹",
-    IE: "🇮🇪",
-    FI: "🇫🇮",
-    GR: "🇬🇷",
-    CZ: "🇨🇿",
-    PL: "🇵🇱",
-    HU: "🇭🇺",
-    SK: "🇸🇰",
-    SI: "🇸🇮",
-    EE: "🇪🇪",
-    LV: "🇱🇻",
-    LT: "🇱🇹",
-    CN: "🇨🇳",
-    CHN: "🇨🇳",
-    IN: "🇮🇳",
-    IND: "🇮🇳",
-    BR: "🇧🇷",
-    BRA: "🇧🇷",
-    MX: "🇲🇽",
-    MEX: "🇲🇽",
-    RU: "🇷🇺",
-    RUS: "🇷🇺",
-    ZA: "🇿🇦",
-    KR: "🇰🇷",
-    SG: "🇸🇬",
-    HK: "🇭🇰",
-    TH: "🇹🇭",
-    MY: "🇲🇾",
-    ID: "🇮🇩",
-    PH: "🇵🇭",
-    VN: "🇻🇳",
-    NO: "🇳🇴",
-    SE: "🇸🇪",
-    DK: "🇩🇰",
-    IS: "🇮🇸",
-    TR: "🇹🇷",
-    IL: "🇮🇱",
-    SA: "🇸🇦",
-    AE: "🇦🇪",
-    NZ: "🇳🇿",
-    // Additional mappings for common variations
-    "United States": "🇺🇸",
-    Eurozone: "🇪🇺",
-    "United Kingdom": "🇬🇧",
-    Japan: "🇯🇵",
-    Canada: "🇨🇦",
-    Australia: "🇦🇺",
-    Switzerland: "🇨🇭",
-    Germany: "🇩🇪",
-    France: "🇫🇷",
-    China: "🇨🇳",
+const getCountryCode = (country: string): string => {
+  const countryCodeMap: Record<string, string> = {
+    US: "US",
+    USA: "US",
+    "United States": "US",
+    EUR: "EU",
+    EU: "EU",
+    Eurozone: "EU",
+    GB: "GB",
+    UK: "GB",
+    "United Kingdom": "GB",
+    JP: "JP",
+    JPY: "JP",
+    Japan: "JP",
+    CA: "CA",
+    CAD: "CA",
+    Canada: "CA",
+    AU: "AU",
+    AUD: "AU",
+    Australia: "AU",
+    CHF: "CH",
+    CH: "CH",
+    Switzerland: "CH",
+    DE: "DE",
+    GER: "DE",
+    Germany: "DE",
+    FR: "FR",
+    France: "FR",
+    IT: "IT",
+    Italy: "IT",
+    ES: "ES",
+    Spain: "ES",
+    NL: "NL",
+    Netherlands: "NL",
+    BE: "BE",
+    Belgium: "BE",
+    AT: "AT",
+    Austria: "AT",
+    PT: "PT",
+    Portugal: "PT",
+    IE: "IE",
+    Ireland: "IE",
+    FI: "FI",
+    Finland: "FI",
+    GR: "GR",
+    Greece: "GR",
+    CZ: "CZ",
+    "Czech Republic": "CZ",
+    PL: "PL",
+    Poland: "PL",
+    HU: "HU",
+    Hungary: "HU",
+    SK: "SK",
+    Slovakia: "SK",
+    SI: "SI",
+    Slovenia: "SI",
+    EE: "EE",
+    Estonia: "EE",
+    LV: "LV",
+    Latvia: "LV",
+    LT: "LT",
+    Lithuania: "LT",
+    CN: "CN",
+    CHN: "CN",
+    China: "CN",
+    IN: "IN",
+    IND: "IN",
+    India: "IN",
+    BR: "BR",
+    BRA: "BR",
+    Brazil: "BR",
+    MX: "MX",
+    MEX: "MX",
+    Mexico: "MX",
+    RU: "RU",
+    RUS: "RU",
+    Russia: "RU",
+    ZA: "ZA",
+    "South Africa": "ZA",
+    KR: "KR",
+    "South Korea": "KR",
+    SG: "SG",
+    SGP: "SG",
+    Singapore: "SG",
+    HK: "HK",
+    "Hong Kong": "HK",
+    TH: "TH",
+    Thailand: "TH",
+    MY: "MY",
+    Malaysia: "MY",
+    ID: "ID",
+    Indonesia: "ID",
+    PH: "PH",
+    Philippines: "PH",
+    VN: "VN",
+    Vietnam: "VN",
+    NO: "NO",
+    Norway: "NO",
+    SE: "SE",
+    Sweden: "SE",
+    DK: "DK",
+    Denmark: "DK",
+    IS: "IS",
+    Iceland: "IS",
+    TR: "TR",
+    Turkey: "TR",
+    IL: "IL",
+    Israel: "IL",
+    SA: "SA",
+    "Saudi Arabia": "SA",
+    AE: "AE",
+    UAE: "AE",
+    "United Arab Emirates": "AE",
+    NZ: "NZ",
+    "New Zealand": "NZ",
   };
 
   // Try direct match first, then uppercase
-  return flagMap[country] || flagMap[country?.toUpperCase()] || "🌍";
+  return (
+    countryCodeMap[country] || countryCodeMap[country?.toUpperCase()] || ""
+  );
+};
+
+const getCountryFlag = (country: string) => {
+  const countryCode = getCountryCode(country);
+
+  if (countryCode) {
+    return (
+      <ReactCountryFlag
+        countryCode={countryCode}
+        svg
+        style={{
+          width: "1.2em",
+          height: "1.2em",
+          borderRadius: "2px",
+        }}
+        title={country}
+      />
+    );
+  }
+
+  // Fallback to world icon for unknown countries
+  return (
+    <span className="text-muted-foreground inline-flex items-center justify-center w-5 h-4 rounded text-xs border">
+      {country}
+    </span>
+  );
 };
 
 const getCountryName = (country: string, language: string) => {
@@ -236,7 +313,7 @@ const getCountryName = (country: string, language: string) => {
     GB: { en: "United Kingdom", ar: "المملكة المتحدة" },
     JP: { en: "Japan", ar: "اليابان" },
     CA: { en: "Canada", ar: "كندا" },
-    AU: { en: "Australia", ar: "��ستراليا" },
+    AU: { en: "Australia", ar: "أستراليا" },
     CHF: { en: "Switzerland", ar: "سويسرا" },
     DE: { en: "Germany", ar: "ألمانيا" },
     FR: { en: "France", ar: "فرنسا" },
@@ -249,9 +326,14 @@ const getCountryName = (country: string, language: string) => {
 const formatDate = (dateStr: string, language: string) => {
   try {
     const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      return dateStr; // Return original if invalid date
+    }
+
     if (language === "ar") {
-      // Use Gregorian calendar for Arabic to avoid Islamic calendar months like "صفر"
+      // Use Gregorian calendar for Arabic with full date display
       return date.toLocaleDateString("ar-SA-u-ca-gregory", {
+        weekday: "short",
         month: "short",
         day: "numeric",
         hour: "2-digit",
@@ -260,6 +342,7 @@ const formatDate = (dateStr: string, language: string) => {
       });
     } else {
       return date.toLocaleDateString("en-US", {
+        weekday: "short",
         month: "short",
         day: "numeric",
         hour: "2-digit",
@@ -267,7 +350,8 @@ const formatDate = (dateStr: string, language: string) => {
         hour12: true,
       });
     }
-  } catch {
+  } catch (error) {
+    console.warn("Date formatting error:", error, "for date:", dateStr);
     return dateStr;
   }
 };
@@ -278,6 +362,7 @@ export function MacroCalendarTable({
   language = "en",
   dir = "ltr",
   onRefresh,
+  onCreateAlert,
 }: MacroCalendarTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [countrySearchTerm, setCountrySearchTerm] = useState("");
@@ -290,6 +375,8 @@ export function MacroCalendarTable({
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const t = (enText: string, arText: string) =>
     language === "ar" ? arText : enText;
@@ -322,9 +409,9 @@ export function MacroCalendarTable({
     });
   }, [countrySearchTerm, language]);
 
-  // Filter events based on search criteria
+  // Filter and sort events based on search criteria
   const filteredEvents = useMemo(() => {
-    return events.filter((event) => {
+    const filtered = events.filter((event) => {
       const matchesSearch =
         searchTerm === "" ||
         event.event.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -372,6 +459,25 @@ export function MacroCalendarTable({
         matchesSearch && matchesCountry && matchesImportance && matchesDate
       );
     });
+
+    // Sort events by date - soonest first
+    const sorted = filtered.sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      const now = Date.now();
+
+      // Prioritize upcoming events over past events
+      const aIsUpcoming = dateA >= now;
+      const bIsUpcoming = dateB >= now;
+
+      if (aIsUpcoming && !bIsUpcoming) return -1;
+      if (!aIsUpcoming && bIsUpcoming) return 1;
+
+      // Within the same category (upcoming or past), sort by date
+      return dateA - dateB;
+    });
+
+    return sorted;
   }, [
     events,
     searchTerm,
@@ -381,14 +487,32 @@ export function MacroCalendarTable({
     dateRange,
   ]);
 
+  // Display logic - show first 10 by default, expand to show all
+  const displayedEvents = isExpanded
+    ? filteredEvents
+    : filteredEvents.slice(0, 10);
+
   const handleUpdate = () => {
     // Update online status from navigator
     setIsOnline(navigator.onLine);
-    // Call refresh callback if provided
+    // Set last updated timestamp
+    setLastUpdated(new Date());
+    // Call refresh callback with current filters
     if (onRefresh) {
-      onRefresh();
+      const filters = {
+        country: selectedCountry === "all" ? undefined : selectedCountry,
+        importance: selectedImportances,
+        from: selectedDate
+          ? selectedDate.toISOString().split("T")[0]
+          : undefined,
+        to: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
+      };
+      onRefresh(filters);
     }
   };
+
+  // REMOVED auto-refresh to prevent infinite API calls
+  // Refresh only happens manually via Update button
 
   const clearFilters = () => {
     setSearchTerm("");
@@ -405,9 +529,14 @@ export function MacroCalendarTable({
       <div className="bg-card border rounded-lg p-4 space-y-4">
         <div className="flex items-center gap-2 mb-3">
           <Filter className="h-4 w-4 text-primary" />
-          <h3 className="font-semibold text-sm">
-            {t("Economic Calendar Filters", "فلاتر التقويم الاقتصادي")}
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-sm">
+              {t("Economic Calendar Filters", "فلاتر التقويم الاقتصادي")}
+            </h3>
+            <span className="text-xs text-muted-foreground">
+              {t("Auto-refresh: 15min", "تحديث تلقائي: 15 دقيقة")}
+            </span>
+          </div>
         </div>
 
         {/* Search Input */}
@@ -497,7 +626,7 @@ export function MacroCalendarTable({
                           setIsCalendarOpen(false);
                         }}
                       >
-                        {t("Next Week", "الأس��وع القادم")}
+                        {t("Next Week", "الأسبوع القادم")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -523,10 +652,17 @@ export function MacroCalendarTable({
                 variant="outline"
                 className={cn("justify-between", dir === "rtl" && "text-right")}
               >
-                <span>
-                  {selectedCountry === "all"
-                    ? t("Currency/Country", "العملة/البلد")
-                    : `${getCountryFlag(selectedCountry)} ${selectedCountry}`}
+                <span className="flex items-center gap-2">
+                  {selectedCountry === "all" ? (
+                    t("Currency/Country", "العملة/البلد")
+                  ) : (
+                    <>
+                      <div className="flex items-center">
+                        {getCountryFlag(selectedCountry)}
+                      </div>
+                      <span>{selectedCountry}</span>
+                    </>
+                  )}
                 </span>
                 <ChevronDown className="h-4 w-4 opacity-50" />
               </Button>
@@ -560,7 +696,7 @@ export function MacroCalendarTable({
                       setIsCountryOpen(false);
                     }}
                   >
-                    {t("All Countries", "جم��ع البلدان")}
+                    {t("All Countries", "جميع البلدان")}
                   </div>
 
                   {/* Top Countries Section */}
@@ -579,7 +715,9 @@ export function MacroCalendarTable({
                           setIsCountryOpen(false);
                         }}
                       >
-                        <span>{getCountryFlag(country)}</span>
+                        <div className="flex items-center">
+                          {getCountryFlag(country)}
+                        </div>
                         <span>{country}</span>
                         <span className="text-muted-foreground text-xs">
                           {getCountryName(country, language)}
@@ -604,7 +742,9 @@ export function MacroCalendarTable({
                             setIsCountryOpen(false);
                           }}
                         >
-                          <span>{getCountryFlag(country)}</span>
+                          <div className="flex items-center">
+                            {getCountryFlag(country)}
+                          </div>
                           <span>{country}</span>
                           <span className="text-muted-foreground text-xs">
                             {getCountryName(country, language)}
@@ -690,17 +830,17 @@ export function MacroCalendarTable({
             </PopoverContent>
           </Popover>
 
-          {/* Update Button with Status */}
+          {/* Manual Update Button */}
           <Button
-            variant="outline"
+            variant="default"
             onClick={handleUpdate}
-            className="flex items-center gap-2 relative"
+            className="flex items-center gap-2 relative bg-primary hover:bg-primary/90"
           >
             <RefreshCw className="h-4 w-4" />
-            {t("Update", "تحديث")}
+            {t("Refresh Data", "تحديث البيانات")}
             <div
               className={cn(
-                "absolute top-1 right-1 w-2 h-2 rounded-full",
+                "absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-background",
                 isOnline ? "bg-green-500" : "bg-red-500",
               )}
             />
@@ -718,12 +858,35 @@ export function MacroCalendarTable({
 
         {/* Results Count */}
         <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>
-            {t(
-              `Showing ${filteredEvents.length} of ${events.length} events`,
-              `عرض ${filteredEvents.length} من ${events.length} حدث`,
+          <div className="flex items-center gap-4">
+            <span>
+              {t(
+                `Showing ${displayedEvents.length} of ${filteredEvents.length} events`,
+                `عرض ${displayedEvents.length} من ${filteredEvents.length} حدث`,
+              )}
+            </span>
+            {filteredEvents.length > 10 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-xs h-auto p-1 hover:bg-muted"
+              >
+                {isExpanded
+                  ? t("Show Less", "عرض أقل")
+                  : t(
+                      `Show All ${filteredEvents.length}`,
+                      `عرض جميع ${filteredEvents.length}`,
+                    )}
+              </Button>
             )}
-          </span>
+          </div>
+          {lastUpdated && (
+            <span className="text-xs">
+              {t("Last updated", "آخر تحديث")}:{" "}
+              {lastUpdated.toLocaleTimeString()}
+            </span>
+          )}
         </div>
       </div>
 
@@ -731,7 +894,7 @@ export function MacroCalendarTable({
       <div>
         {/* Mobile Card Layout */}
         <div className="sm:hidden space-y-3">
-          {filteredEvents.length === 0 ? (
+          {displayedEvents.length === 0 ? (
             <div className="p-6 text-center text-muted-foreground bg-card rounded-lg border">
               {t(
                 "No events found matching your criteria",
@@ -739,26 +902,37 @@ export function MacroCalendarTable({
               )}
             </div>
           ) : (
-            filteredEvents.map((event, index) => (
+            displayedEvents.map((event, index) => (
               <div
                 key={index}
                 className="bg-card rounded-lg border p-4 space-y-3"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">
+                    <div className="text-lg flex items-center">
                       {getCountryFlag(event.country)}
-                    </span>
+                    </div>
                     <span className="font-medium text-sm">{event.country}</span>
                   </div>
-                  <Badge
-                    className={cn(
-                      "text-xs px-2 py-1",
-                      getImportanceColor(event.importance),
-                    )}
-                  >
-                    {getImportanceLabel(event.importance, language)}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      className={cn(
+                        "text-xs px-2 py-1",
+                        getImportanceColor(event.importance),
+                      )}
+                    >
+                      {getImportanceLabel(event.importance, language)}
+                    </Badge>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 hover:bg-primary/10"
+                      onClick={() => onCreateAlert?.(event)}
+                      title={t("Create Alert", "إنشاء تنبيه")}
+                    >
+                      <Bell className="h-3 w-3" />
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -788,174 +962,205 @@ export function MacroCalendarTable({
 
         {/* Desktop Table Layout */}
         <div className="hidden sm:block border rounded-lg overflow-x-auto">
-          <table className="w-full border-collapse bg-card">
-            <thead className="bg-muted/50">
-              <tr>
-                <th
-                  className={cn(
-                    "p-3 font-semibold text-sm border-b",
-                    dir === "rtl" ? "text-right" : "text-left",
-                  )}
-                >
-                  {t("Date & Time", "التاريخ والوقت")}
-                </th>
-                <th
-                  className={cn(
-                    "p-3 font-semibold text-sm border-b",
-                    dir === "rtl" ? "text-right" : "text-left",
-                  )}
-                >
-                  {t("Currency/Country", "العملة/البلد")}
-                </th>
-                <th
-                  className={cn(
-                    "p-3 font-semibold text-sm border-b",
-                    dir === "rtl" ? "text-right" : "text-left",
-                  )}
-                >
-                  {t("Impact", "التأثير")}
-                </th>
-                <th
-                  className={cn(
-                    "p-3 font-semibold text-sm border-b",
-                    dir === "rtl" ? "text-right" : "text-left",
-                  )}
-                >
-                  {t("Event", "الحدث")}
-                </th>
-                <th
-                  className={cn(
-                    "p-3 font-semibold text-sm border-b",
-                    dir === "rtl" ? "text-right" : "text-left",
-                  )}
-                >
-                  {t("Actual", "الفعلي")}
-                </th>
-                <th
-                  className={cn(
-                    "p-3 font-semibold text-sm border-b",
-                    dir === "rtl" ? "text-right" : "text-left",
-                  )}
-                >
-                  {t("Forecast", "التوقع")}
-                </th>
-                <th
-                  className={cn(
-                    "p-3 font-semibold text-sm border-b",
-                    dir === "rtl" ? "text-right" : "text-left",
-                  )}
-                >
-                  {t("Previous", "السابق")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredEvents.length === 0 ? (
+          <div className="min-w-[700px]">
+            <table className="w-full border-collapse bg-card">
+              <thead className="bg-muted/50">
                 <tr>
-                  <td
-                    colSpan={7}
-                    className="p-8 text-center text-muted-foreground"
-                  >
-                    {t(
-                      "No events found matching your criteria",
-                      "لا توجد أحداث تطابق معاييرك",
+                  <th
+                    className={cn(
+                      "p-3 font-semibold text-sm border-b",
+                      dir === "rtl" ? "text-right" : "text-left",
                     )}
-                  </td>
-                </tr>
-              ) : (
-                filteredEvents.map((event, index) => (
-                  <tr
-                    key={index}
-                    className="border-b hover:bg-muted/30 transition-colors"
                   >
+                    {t("Date & Time", "التاريخ والوقت")}
+                  </th>
+                  <th
+                    className={cn(
+                      "p-3 font-semibold text-sm border-b",
+                      dir === "rtl" ? "text-right" : "text-left",
+                    )}
+                  >
+                    {t("Currency/Country", "العملة/البلد")}
+                  </th>
+                  <th
+                    className={cn(
+                      "p-3 font-semibold text-sm border-b",
+                      dir === "rtl" ? "text-right" : "text-left",
+                    )}
+                  >
+                    {t("Impact", "التأثير")}
+                  </th>
+                  <th
+                    className={cn(
+                      "p-3 font-semibold text-sm border-b",
+                      dir === "rtl" ? "text-right" : "text-left",
+                    )}
+                  >
+                    {t("Event", "الحدث")}
+                  </th>
+                  <th
+                    className={cn(
+                      "p-3 font-semibold text-sm border-b",
+                      dir === "rtl" ? "text-right" : "text-left",
+                    )}
+                  >
+                    {t("Actual", "الفعلي")}
+                  </th>
+                  <th
+                    className={cn(
+                      "p-3 font-semibold text-sm border-b",
+                      dir === "rtl" ? "text-right" : "text-left",
+                    )}
+                  >
+                    {t("Forecast", "التوقع")}
+                  </th>
+                  <th
+                    className={cn(
+                      "p-3 font-semibold text-sm border-b",
+                      dir === "rtl" ? "text-right" : "text-left",
+                    )}
+                  >
+                    {t("Previous", "السابق")}
+                  </th>
+                  <th
+                    className={cn(
+                      "p-3 font-semibold text-sm border-b",
+                      dir === "rtl" ? "text-right" : "text-left",
+                    )}
+                  >
+                    {t("Alerts", "التنبيهات")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {displayedEvents.length === 0 ? (
+                  <tr>
                     <td
-                      className={cn(
-                        "p-3 text-sm",
-                        dir === "rtl" ? "text-right" : "text-left",
-                      )}
+                      colSpan={8}
+                      className="p-8 text-center text-muted-foreground"
                     >
-                      <div className="font-medium">
-                        {formatDate(event.date, language)}
-                      </div>
-                    </td>
-                    <td
-                      className={cn(
-                        "p-3 text-sm",
-                        dir === "rtl" ? "text-right" : "text-left",
+                      {t(
+                        "No events found matching your criteria",
+                        "لا توجد أحداث تطابق معاييرك",
                       )}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg">
-                          {getCountryFlag(event.country)}
-                        </span>
-                        <span className="font-medium">{event.country}</span>
-                      </div>
-                    </td>
-                    <td
-                      className={cn(
-                        "p-3",
-                        dir === "rtl" ? "text-right" : "text-left",
-                      )}
-                    >
-                      <Badge
-                        className={cn(
-                          "text-xs px-2 py-1",
-                          getImportanceColor(event.importance),
-                        )}
-                      >
-                        {getImportanceLabel(event.importance, language)}
-                      </Badge>
-                    </td>
-                    <td
-                      className={cn(
-                        "p-3 text-sm",
-                        dir === "rtl" ? "text-right" : "text-left",
-                      )}
-                    >
-                      <div className="font-medium max-w-xs">{event.event}</div>
-                    </td>
-                    <td
-                      className={cn(
-                        "p-3 text-sm font-medium",
-                        dir === "rtl" ? "text-right" : "text-left",
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          "px-2 py-1 rounded text-xs",
-                          event.actual
-                            ? "bg-primary/10 text-primary"
-                            : "text-muted-foreground",
-                        )}
-                      >
-                        {event.actual || "-"}
-                      </span>
-                    </td>
-                    <td
-                      className={cn(
-                        "p-3 text-sm",
-                        dir === "rtl" ? "text-right" : "text-left",
-                      )}
-                    >
-                      <span className="text-muted-foreground">
-                        {event.forecast || "-"}
-                      </span>
-                    </td>
-                    <td
-                      className={cn(
-                        "p-3 text-sm",
-                        dir === "rtl" ? "text-right" : "text-left",
-                      )}
-                    >
-                      <span className="text-muted-foreground">
-                        {event.previous || "-"}
-                      </span>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  displayedEvents.map((event, index) => (
+                    <tr
+                      key={index}
+                      className="border-b hover:bg-muted/30 transition-colors"
+                    >
+                      <td
+                        className={cn(
+                          "p-3 text-sm",
+                          dir === "rtl" ? "text-right" : "text-left",
+                        )}
+                      >
+                        <div className="font-medium">
+                          {formatDate(event.date, language)}
+                        </div>
+                      </td>
+                      <td
+                        className={cn(
+                          "p-3 text-sm",
+                          dir === "rtl" ? "text-right" : "text-left",
+                        )}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center">
+                            {getCountryFlag(event.country)}
+                          </div>
+                          <span className="font-medium">{event.country}</span>
+                        </div>
+                      </td>
+                      <td
+                        className={cn(
+                          "p-3",
+                          dir === "rtl" ? "text-right" : "text-left",
+                        )}
+                      >
+                        <Badge
+                          className={cn(
+                            "text-xs px-2 py-1",
+                            getImportanceColor(event.importance),
+                          )}
+                        >
+                          {getImportanceLabel(event.importance, language)}
+                        </Badge>
+                      </td>
+                      <td
+                        className={cn(
+                          "p-3 text-sm",
+                          dir === "rtl" ? "text-right" : "text-left",
+                        )}
+                      >
+                        <div className="font-medium max-w-xs">
+                          {event.event}
+                        </div>
+                      </td>
+                      <td
+                        className={cn(
+                          "p-3 text-sm font-medium",
+                          dir === "rtl" ? "text-right" : "text-left",
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "px-2 py-1 rounded text-xs",
+                            event.actual
+                              ? "bg-primary/10 text-primary"
+                              : "text-muted-foreground",
+                          )}
+                        >
+                          {event.actual || "-"}
+                        </span>
+                      </td>
+                      <td
+                        className={cn(
+                          "p-3 text-sm",
+                          dir === "rtl" ? "text-right" : "text-left",
+                        )}
+                      >
+                        <span className="text-muted-foreground">
+                          {event.forecast || "-"}
+                        </span>
+                      </td>
+                      <td
+                        className={cn(
+                          "p-3 text-sm",
+                          dir === "rtl" ? "text-right" : "text-left",
+                        )}
+                      >
+                        <span className="text-muted-foreground">
+                          {event.previous || "-"}
+                        </span>
+                      </td>
+                      <td
+                        className={cn(
+                          "p-3",
+                          dir === "rtl" ? "text-right" : "text-left",
+                        )}
+                      >
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0 hover:bg-primary/10"
+                          onClick={() => onCreateAlert?.(event)}
+                          title={t(
+                            "Create Alert for this Event",
+                            "إنشاء تنبيه لهذا الحدث",
+                          )}
+                        >
+                          <Bell className="h-4 w-4" />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

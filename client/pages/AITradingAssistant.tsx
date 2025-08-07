@@ -17,7 +17,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/components/ui/use-toast";
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 import { NewLiquidToggle } from "@/components/ui/new-liquid-toggle";
-import TradingViewWidget from "@/components/ui/tradingview-widget";
+// Using EODHD data only - no TradingView widgets
 import {
   Send,
   Bot,
@@ -135,7 +135,7 @@ const AITradingAssistant: React.FC = () => {
                 id: "2",
                 title: "متوقع موافقة على صناديق بيتكوين المتداولة هذا الأسبوع",
                 summary:
-                  "من المتوقع أن تحصل صناديق العملات المشفرة الرئيسية على الموافقة التنظيمية، مما قد يعزز الاعتماد المؤسسي.",
+                  "من المتوقع أن تحصل صناديق ا��عملات المشفرة الرئيسية على الموافقة التنظيمية، مما قد يعزز الاعتماد المؤسسي.",
                 source: "بلومبرغ",
                 publishedAt: "2024-01-15T09:15:00Z",
                 impact: "high",
@@ -493,7 +493,7 @@ const AITradingAssistant: React.FC = () => {
 
           {/* Chart and Market Data */}
           <div className="lg:col-span-2 space-y-8">
-            {/* TradingView Chart */}
+            {/* EODHD Market Data - No TradingView */}
             <Card>
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
@@ -544,18 +544,23 @@ const AITradingAssistant: React.FC = () => {
                 </div>
               </CardHeader>
               <CardContent className="p-4">
-                <TradingViewWidget
-                  symbol={selectedSymbol}
-                  theme={theme}
-                  height="400px"
-                  className="w-full rounded-xl overflow-hidden"
-                />
+                <div className="h-[400px] flex items-center justify-center bg-muted/30 rounded-xl">
+                  <div className="text-center space-y-4">
+                    <h3 className="text-lg font-semibold">EODHD Price Data</h3>
+                    <p className="text-muted-foreground">
+                      Chart functionality will use EODHD API data
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Selected: {selectedSymbol}
+                    </p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
             {/* Market Data and News */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Live Market Data - Real TradingView Widget */}
+              {/* Live Market Data - EODHD Data Only */}
               <Card>
                 <CardHeader className="pb-4">
                   <div className="flex items-center gap-3">
@@ -565,27 +570,20 @@ const AITradingAssistant: React.FC = () => {
                     <CardTitle className="text-xl">Live Market Data</CardTitle>
                   </div>
                 </CardHeader>
-                <CardContent className="p-0">
-                  <div className="h-[300px] w-full">
-                    <iframe
-                      src={`https://s.tradingview.com/embed-widget/hotlists/?locale=en#%7B%22colorTheme%22%3A%22${theme}%22%2C%22dateRange%22%3A%2212M%22%2C%22exchange%22%3A%22US%22%2C%22showChart%22%3Atrue%2C%22locale%22%3A%22en%22%2C%22width%22%3A%22100%25%22%2C%22height%22%3A%22300%22%2C%22largeChartUrl%22%3A%22%22%2C%22isTransparent%22%3A${theme === "dark" ? "true" : "false"}%2C%22showSymbolLogo%22%3Atrue%2C%22showFloatingTooltip%22%3Afalse%2C%22plotLineColorGrowing%22%3A%22hsl(85%2C%2070%25%2C%2050%25)%22%2C%22plotLineColorFalling%22%3A%22rgba(239%2C%2083%2C%2080%2C%201)%22%2C%22gridLineColor%22%3A%22rgba(240%2C%20243%2C%20250%2C%200.06)%22%2C%22scaleFontColor%22%3A%22rgba(209%2C%20212%2C%20220%2C%201)%22%2C%22belowLineFillColorGrowing%22%3A%22rgba(41%2C%2098%2C%20255%2C%200.12)%22%2C%22belowLineFillColorFalling%22%3A%22rgba(239%2C%2083%2C%2080%2C%200.12)%22%2C%22belowLineFillColorGrowingBottom%22%3A%22rgba(41%2C%2098%2C%20255%2C%200)%22%2C%22belowLineFillColorFallingBottom%22%3A%22rgba(239%2C%2083%2C%2080%2C%200)%22%2C%22symbolActiveColor%22%3A%22rgba(41%2C%2098%2C%20255%2C%200.12)%22%2C%22utm_source%22%3A%22liirat.com%22%2C%22utm_medium%22%3A%22widget_new%22%2C%22utm_campaign%22%3A%22hotlists%22%7D`}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        border: "none",
-                        backgroundColor:
-                          theme === "dark" ? "transparent" : "#ffffff",
-                      }}
-                      frameBorder="0"
-                      allowTransparency={theme === "dark"}
-                      scrolling="no"
-                      allowFullScreen
-                    />
+                <CardContent className="p-4">
+                  <div className="h-[250px] flex items-center justify-center bg-muted/30 rounded-lg">
+                    <div className="text-center space-y-3">
+                      <TrendingUp className="h-8 w-8 text-primary mx-auto" />
+                      <h3 className="font-semibold">EODHD Market Data</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Real-time data powered by EODHD API
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* News Feed - Now with Real TradingView News Widget */}
+              {/* News Feed - EODHD News API */}
               <Card>
                 <CardHeader className="pb-4">
                   <div className="flex items-center gap-3">
@@ -596,30 +594,13 @@ const AITradingAssistant: React.FC = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-[300px] rounded-xl overflow-hidden">
-                    <div
-                      className="tradingview-widget-container"
-                      style={{ height: "100%", width: "100%" }}
-                    >
-                      <div
-                        className="tradingview-widget-container__widget"
-                        style={{ height: "calc(100% - 32px)", width: "100%" }}
-                      >
-                        <iframe
-                          src={`https://s.tradingview.com/embed-widget/timeline/?locale=en#%7B%22feedMode%22%3A%22market%22%2C%22market%22%3A%22crypto%22%2C%22isTransparent%22%3A${theme === "dark" ? "true" : "false"}%2C%22displayMode%22%3A%22adaptive%22%2C%22width%22%3A%22100%25%22%2C%22height%22%3A%22100%25%22%2C%22colorTheme%22%3A%22${theme}%22%2C%22utm_source%22%3A%22liirat.com%22%2C%22utm_medium%22%3A%22widget_new%22%2C%22utm_campaign%22%3A%22timeline%22%7D`}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            border: "none",
-                            backgroundColor:
-                              theme === "dark" ? "transparent" : "#ffffff",
-                          }}
-                          frameBorder="0"
-                          allowTransparency={theme === "dark"}
-                          scrolling="no"
-                          allowFullScreen
-                        />
-                      </div>
+                  <div className="h-[250px] flex items-center justify-center bg-muted/30 rounded-lg">
+                    <div className="text-center space-y-3">
+                      <Newspaper className="h-8 w-8 text-primary mx-auto" />
+                      <h3 className="font-semibold">EODHD Financial News</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Market news powered by EODHD API
+                      </p>
                     </div>
                   </div>
                 </CardContent>

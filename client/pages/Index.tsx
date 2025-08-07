@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
-import CustomPriceTicker from "@/components/ui/custom-price-ticker";
+import EODHDPriceTicker from "@/components/ui/eodhd-price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
@@ -85,37 +85,92 @@ export default function Index() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Fetch economic events data with language support
-  const fetchEconomicEvents = async (lang: string = language) => {
+  // Fetch economic events data with language support and filters
+  const fetchEconomicEvents = async (
+    lang: string = language,
+    filters?: {
+      country?: string;
+      importance?: string[];
+      from?: string;
+      to?: string;
+    },
+  ) => {
     try {
       setIsLoadingEvents(true);
       setEventsError(null);
 
       console.log(`Fetching economic events for language: ${lang}`);
 
-      // First test basic server connectivity
-      try {
-        const pingResponse = await fetch("/api/ping", {
-          method: "GET",
-          headers: { Accept: "application/json" },
-        });
-        console.log(`Server ping status: ${pingResponse.status}`);
-      } catch (pingError) {
-        console.error("Server ping failed:", pingError);
-        throw new Error("Server not reachable");
+      // First test basic server connectivity with timeout and retries
+      let pingSuccessful = false;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+          const pingResponse = await fetch("/api/ping", {
+            method: "GET",
+            headers: { Accept: "application/json" },
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeoutId);
+          console.log(
+            `Server ping status: ${pingResponse.status} (attempt ${attempt})`,
+          );
+
+          if (pingResponse.ok) {
+            pingSuccessful = true;
+            break;
+          }
+        } catch (pingError) {
+          console.warn(`Server ping failed (attempt ${attempt}/3):`, pingError);
+          if (attempt === 3) {
+            console.error("All ping attempts failed, proceeding with fallback");
+            // Don't throw error, just log and continue with mock data
+          }
+          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt)); // Progressive delay
+        }
       }
 
-      // Fetch from EODHD calendar endpoint
-      const response = await fetch(
-        `/api/eodhd-calendar?limit=50&importance=3,2`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
+      // Build query parameters with filters
+      const params = new URLSearchParams();
+      params.append("limit", "50"); // Limit to 50 events for better performance
+
+      // Add importance filter
+      if (filters?.importance?.length) {
+        params.append("importance", filters.importance.join(","));
+      } else {
+        params.append("importance", "3,2,1"); // Default to all importance levels
+      }
+
+      // Add country filter
+      if (filters?.country) {
+        params.append("country", filters.country);
+      }
+
+      // Add date range filters
+      if (filters?.from) {
+        params.append("from", filters.from);
+      }
+      if (filters?.to) {
+        params.append("to", filters.to);
+      }
+
+      // Fetch from EODHD calendar endpoint with better error handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+      const response = await fetch(`/api/eodhd-calendar?${params.toString()}`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-      );
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const contentType = response.headers.get("content-type");
@@ -145,36 +200,48 @@ export default function Index() {
     } catch (error) {
       console.error("Failed to fetch economic events:", error);
 
-      // Provide more specific error messages
-      let errorMessage = "Network error - unable to fetch events";
+      // NO MOCK DATA - show only real API data
+      let errorMessage =
+        "Failed to load economic data. Please check your connection and try again.";
       if (error instanceof TypeError && error.message.includes("fetch")) {
-        errorMessage = "Connection failed - check network or server status";
+        errorMessage =
+          "Connection failed. Please check your internet connection.";
+      } else if (error instanceof Error && error.message.includes("aborted")) {
+        errorMessage = "Request timeout. Please try again.";
       } else if (error instanceof Error) {
-        errorMessage = `Request failed: ${error.message}`;
+        errorMessage = `API unavailable: ${error.message}`;
       }
 
       setEventsError(errorMessage);
-      setEconomicEvents([]);
+      setEconomicEvents([]); // Empty array - no mock data
     } finally {
       setIsLoadingEvents(false);
     }
   };
 
-  // Fetch economic events on component mount
-  useEffect(() => {
-    fetchEconomicEvents();
-  }, []);
-
-  // Fetch events when language changes
+  // Initial fetch on mount and language change
   useEffect(() => {
     fetchEconomicEvents(language);
+  }, [language]);
+
+  // Periodic refresh every 15 minutes
+  useEffect(() => {
+    const intervalId = setInterval(
+      () => {
+        console.log("Periodic refresh - fetching latest economic events");
+        fetchEconomicEvents(language);
+      },
+      15 * 60 * 1000,
+    ); // 15 minutes
+
+    return () => clearInterval(intervalId);
   }, [language]);
 
   // Enhanced economic calendar data with mixed language support
 
   return (
     <div
-      className={`min-h-screen bg-background relative overflow-x-hidden ${language === "ar" ? "arabic" : "english"}`}
+      className={`min-h-screen bg-background relative overflow-x-hidden w-full max-w-full ${language === "ar" ? "arabic" : "english"}`}
     >
       {/* Global Background Image */}
       <div className="fixed inset-0 z-0">
@@ -188,16 +255,16 @@ export default function Index() {
       {/* All content with relative positioning */}
       <div className="relative z-10 pt-[120px]">
         <main role="main">
-          {/* Real-Time Market Ticker - Always Visible */}
+          {/* Real-Time EODHD Market Ticker - Always Visible */}
           <div className="fixed top-0 left-0 right-0 z-[70] w-full">
-            <CustomPriceTicker className="w-full" />
+            <EODHDPriceTicker className="w-full" />
           </div>
 
           {/* Floating Navigation Header */}
           <header
-            className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? "translate-y-20" : "-translate-y-20"} top-4`}
+            className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? "translate-y-20" : "-translate-y-20"} top-4 mx-2 max-w-[calc(100vw-1rem)]`}
           >
-            <div className="neumorphic-card bg-background/95 backdrop-blur-md rounded-full px-6 py-3 flex items-center justify-between shadow-lg border border-border/50">
+            <div className="neumorphic-card bg-background/95 backdrop-blur-md rounded-full px-2 sm:px-4 lg:px-6 py-2 sm:py-3 flex items-center justify-between shadow-lg border border-border/50 w-full max-w-full">
               <div className="flex items-center">
                 <img
                   src="/liirat-logo-new.png"
@@ -247,7 +314,7 @@ export default function Index() {
                 </a>
               </nav>
 
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-0.5 sm:space-x-1">
                 <NotificationDropdown className="h-8 w-8" />
                 <SimpleLanguageToggle />
                 <NewLiquidToggle />
@@ -256,23 +323,23 @@ export default function Index() {
           </header>
 
           {/* Hero Section */}
-          <section className="pt-20 pb-12 sm:py-20 lg:py-32 relative overflow-hidden">
+          <section className="pt-20 pb-12 sm:py-20 lg:py-32 relative overflow-hidden px-2 sm:px-0">
             {/* Official Logo Background Pattern */}
             <div className="absolute inset-0">
               <div className="w-full h-full bg-gradient-to-br from-primary/5 via-background to-primary/10"></div>
               <div className="absolute inset-0 bg-[url('/liirat-logo-new.png')] bg-center bg-no-repeat bg-contain opacity-[0.03]"></div>
             </div>
             <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-primary/5"></div>
-            <div className="container mx-auto px-2 sm:px-4 relative">
+            <div className="container mx-auto px-2 sm:px-4 lg:px-8 relative max-w-full">
               <div className="text-center max-w-4xl mx-auto">
-                <div className="neumorphic-lg bg-card/90 rounded-3xl p-6 sm:p-12 mb-8">
-                  <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6 leading-tight text-foreground">
+                <div className="neumorphic-lg bg-card/90 rounded-3xl p-4 sm:p-8 lg:p-12 mb-8 mx-2 sm:mx-0">
+                  <h1 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight text-foreground">
                     {t("hero.title")}
                     <span className="text-primary block">
                       {t("hero.subtitle")}
                     </span>
                   </h1>
-                  <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-6 sm:mb-8 leading-relaxed">
+                  <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 sm:mb-8 leading-relaxed">
                     {t("hero.description")}
                   </p>
                 </div>
@@ -310,7 +377,7 @@ export default function Index() {
 
           {/* EODHD Economic Calendar Section */}
           <section id="calendar" className="py-12 sm:py-20 bg-muted/30">
-            <div className="container mx-auto px-2 sm:px-4">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {t("calendar.title")}
@@ -340,10 +407,10 @@ export default function Index() {
                 <CardContent>
                   {isLoadingEvents ? (
                     <div className="flex items-center justify-center py-12">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary/20 border-t-primary"></div>
                       <span className="ml-2">
                         {language === "ar"
-                          ? "جاري تحميل التقويم الاق��صادي..."
+                          ? "جاري تحميل التقويم الاقتصادي..."
                           : "Loading economic calendar..."}
                       </span>
                     </div>
@@ -360,20 +427,54 @@ export default function Index() {
                               {eventsError.replace("API Error:", "Error")}
                             </span>
                           </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            {language === "ar"
-                              ? "يرجى المحاولة مرة أخرى لاحقاً أو التواصل مع admin@ruyaacapital.com"
-                              : "Please try again later or contact admin@ruyaacapital.com"}
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => fetchEconomicEvents(language)}
+                              className="text-xs"
+                            >
+                              {t("Retry", "إعادة المحاولة")}
+                            </Button>
+                            <div className="text-xs text-muted-foreground">
+                              {language === "ar"
+                                ? "أو تواصل مع admin@ruyaacapital.com"
+                                : "or contact admin@ruyaacapital.com"}
+                            </div>
                           </div>
                         </div>
                       )}
-                      <MacroCalendarTable
-                        events={economicEvents}
-                        className="rounded-lg overflow-hidden"
-                        language={language}
-                        dir={dir}
-                        onRefresh={() => fetchEconomicEvents(language)}
-                      />
+                      <div className="space-y-3">
+                        {eventsError && economicEvents.length > 0 && (
+                          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                            <div className="flex items-center text-yellow-800 dark:text-yellow-200 text-sm">
+                              <Bell className="w-4 h-4 mr-2" />
+                              <span>
+                                {language === "ar"
+                                  ? "عرض بيانات تجريبية - سيتم التحديث عند استعادة الاتصال"
+                                  : "Showing demo data - will update when connection is restored"}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                        <MacroCalendarTable
+                          events={economicEvents}
+                          className="rounded-lg overflow-hidden"
+                          language={language}
+                          dir={dir}
+                          onRefresh={(filters) => {
+                            console.log("Refreshing with filters:", filters);
+                            fetchEconomicEvents(language, filters);
+                          }}
+                          onCreateAlert={(event) => {
+                            console.log("Creating alert for event:", event);
+                            // Scroll to alerts section to create the alert
+                            document
+                              .getElementById("alerts")
+                              ?.scrollIntoView({ behavior: "smooth" });
+                          }}
+                        />
+                      </div>
                     </div>
                   )}
                 </CardContent>
@@ -428,7 +529,7 @@ export default function Index() {
 
           {/* Advanced Alert System Section */}
           <section id="alerts" className="py-12 sm:py-20">
-            <div className="container mx-auto px-2 sm:px-4">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {language === "ar"
@@ -447,7 +548,7 @@ export default function Index() {
 
           {/* About Liirat Section */}
           <section id="about" className="py-12 sm:py-20 bg-muted/30">
-            <div className="container mx-auto px-2 sm:px-4">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full">
               <div className="text-center mb-16">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {t("about.title")}
@@ -511,7 +612,7 @@ export default function Index() {
 
           {/* Contact Section */}
           <section id="contact" className="py-12 sm:py-20">
-            <div className="container mx-auto px-2 sm:px-4">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full">
               <div className="max-w-2xl mx-auto text-center">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {t("contact.title")}

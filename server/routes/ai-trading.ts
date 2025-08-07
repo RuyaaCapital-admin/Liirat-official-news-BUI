@@ -277,7 +277,7 @@ export const handleChartIndicator = async (req: Request, res: Response) => {
   try {
     const { indicator, symbol } = req.body;
 
-    // This would integrate with TradingView's charting library
+    // This would integrate with EODHD's charting data
     // For now, we'll return a success response
     res.json({
       success: true,

@@ -157,12 +157,12 @@ export function ChatWidget({ className }: ChatWidgetProps) {
   return (
     <div
       className={cn(
-        "fixed bottom-4 z-50 w-[calc(100vw-1rem)] max-w-[24rem] sm:w-80 md:w-96",
-        dir === "rtl" ? "left-2 sm:left-6" : "right-2 sm:right-6",
+        "fixed bottom-4 z-50 w-[calc(100vw-2rem)] max-w-[22rem] sm:w-80 md:w-96",
+        dir === "rtl" ? "left-4 sm:left-6" : "right-4 sm:right-6",
         className,
       )}
     >
-      <Card className="neumorphic-card bg-background/95 backdrop-blur-sm border-border/50">
+      <Card className="neumorphic-card bg-background/95 backdrop-blur-sm border-border/50 overflow-hidden">
         <CardHeader
           className="flex flex-row items-center justify-between space-y-0 pb-2 text-primary-foreground rounded-t-lg"
           style={{
@@ -202,8 +202,11 @@ export function ChatWidget({ className }: ChatWidgetProps) {
         </CardHeader>
 
         {!isMinimized && (
-          <CardContent className="p-0">
-            <ScrollArea className="h-80 sm:h-80 p-3 sm:p-4">
+          <CardContent className="p-0 relative">
+            <ScrollArea
+              className="h-64 sm:h-80 p-3 sm:p-4 touch-pan-y"
+              onTouchStart={(e) => e.stopPropagation()}
+            >
               <div className="space-y-4">
                 {messages.map((message) => (
                   <div
