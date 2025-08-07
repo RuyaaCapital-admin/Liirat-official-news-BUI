@@ -60,6 +60,13 @@ export function createServer() {
   // Price alert route
   app.get("/price-alert", handlePriceAlert);
 
+  // New EODHD API routes (secure server-side only)
+  app.get("/eodhd/search", handleEODHDSearch);
+  app.get("/eodhd/price", handleEODHDPrice);
+  app.get("/eodhd/calendar", handleEODHDCalendar);
+  app.get("/eodhd/news", handleEODHDNews);
+  app.get("/eodhd/ping", handleEODHDPing);
+
   // AI Analysis routes (secure backend only)
   app.post("/ai-analysis", handleAIAnalysis);
   app.post("/translate", handleTranslation);
