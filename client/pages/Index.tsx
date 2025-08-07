@@ -133,7 +133,7 @@ export default function Index() {
 
       // Build query parameters with filters
       const params = new URLSearchParams();
-      params.append("limit", "100"); // Increased limit for better coverage
+      params.append("limit", "50"); // Limit to 50 events for better performance
 
       // Add importance filter
       if (filters?.importance?.length) {
@@ -427,7 +427,7 @@ export default function Index() {
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "الأحداث الاقتصادية المهمة والإعل��نات المالية"
+                      ? "الأحداث الاقتصادية المهمة والإعلانات المالية"
                       : "Important economic events and financial announcements"}
                   </CardDescription>
                 </CardHeader>
