@@ -591,7 +591,10 @@ export default function EnhancedMacroCalendar({
                   selectedCountries.length > 0 ||
                   selectedImportance.length < 3 ||
                   selectedCategory !== "all") && (
-                  <Badge variant="secondary" className="ml-2 text-xs bg-primary/10 text-primary">
+                  <Badge
+                    variant="secondary"
+                    className="ml-2 text-xs bg-primary/10 text-primary"
+                  >
                     {language === "ar" ? "نشط" : "Active"}
                   </Badge>
                 )}
@@ -729,7 +732,10 @@ export default function EnhancedMacroCalendar({
                   className={cn(
                     "h-9 px-2 text-xs transition-all duration-200 hover:scale-105 border",
                     selectedImportance.includes(level)
-                      ? cn(getImportanceColor(level), "shadow-md border-white/20")
+                      ? cn(
+                          getImportanceColor(level),
+                          "shadow-md border-white/20",
+                        )
                       : "hover:bg-muted border-border bg-background text-foreground",
                   )}
                 >

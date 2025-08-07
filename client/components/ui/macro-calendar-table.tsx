@@ -388,8 +388,12 @@ export function MacroCalendarTable({
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [translatedContent, setTranslatedContent] = useState<Record<string, string>>({});
-  const [loadingTranslation, setLoadingTranslation] = useState<Record<string, boolean>>({});
+  const [translatedContent, setTranslatedContent] = useState<
+    Record<string, string>
+  >({});
+  const [loadingTranslation, setLoadingTranslation] = useState<
+    Record<string, boolean>
+  >({});
 
   const t = (enText: string, arText: string) =>
     language === "ar" ? arText : enText;
@@ -412,7 +416,11 @@ export function MacroCalendarTable({
   const translateEventTitle = async (event: EconomicEvent) => {
     const eventKey = `${event.event}-${event.country}`;
 
-    if (translatedContent[eventKey] || loadingTranslation[eventKey] || language !== "ar") {
+    if (
+      translatedContent[eventKey] ||
+      loadingTranslation[eventKey] ||
+      language !== "ar"
+    ) {
       return translatedContent[eventKey] || event.event;
     }
 
@@ -1015,14 +1023,16 @@ export function MacroCalendarTable({
 
                 <div className="space-y-2">
                   <div className="font-medium text-sm leading-tight">
-                    {language === "ar" && translatedContent[`${event.event}-${event.country}`]
+                    {language === "ar" &&
+                    translatedContent[`${event.event}-${event.country}`]
                       ? translatedContent[`${event.event}-${event.country}`]
                       : event.event}
-                    {language === "ar" && loadingTranslation[`${event.event}-${event.country}`] && (
-                      <span className="ml-2 text-xs text-muted-foreground animate-pulse">
-                        (ترجمة...)
-                      </span>
-                    )}
+                    {language === "ar" &&
+                      loadingTranslation[`${event.event}-${event.country}`] && (
+                        <span className="ml-2 text-xs text-muted-foreground animate-pulse">
+                          (ترجمة...)
+                        </span>
+                      )}
                   </div>
 
                   <div className="text-xs text-muted-foreground flex items-center gap-1">
@@ -1208,14 +1218,20 @@ export function MacroCalendarTable({
                         )}
                       >
                         <div className="font-medium max-w-xs">
-                          {language === "ar" && translatedContent[`${event.event}-${event.country}`]
-                            ? translatedContent[`${event.event}-${event.country}`]
+                          {language === "ar" &&
+                          translatedContent[`${event.event}-${event.country}`]
+                            ? translatedContent[
+                                `${event.event}-${event.country}`
+                              ]
                             : event.event}
-                          {language === "ar" && loadingTranslation[`${event.event}-${event.country}`] && (
-                            <span className="ml-2 text-xs text-muted-foreground animate-pulse">
-                              (ترجمة...)
-                            </span>
-                          )}
+                          {language === "ar" &&
+                            loadingTranslation[
+                              `${event.event}-${event.country}`
+                            ] && (
+                              <span className="ml-2 text-xs text-muted-foreground animate-pulse">
+                                (ترجمة...)
+                              </span>
+                            )}
                         </div>
                       </td>
                       <td
