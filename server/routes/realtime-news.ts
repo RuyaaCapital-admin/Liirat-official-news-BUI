@@ -194,7 +194,7 @@ export const handleRealtimeNews: RequestHandler = async (req, res) => {
 
     console.log(`Returning ${filteredArticles.length} filtered news articles out of ${articles.length} total`);
 
-    res.json({
+    const responseData = {
       articles: filteredArticles,
       total: filteredArticles.length,
       availableCategories: [...new Set(articles.map(a => a.category))],
@@ -210,7 +210,12 @@ export const handleRealtimeNews: RequestHandler = async (req, res) => {
         search,
       },
       timestamp: new Date().toISOString(),
-    });
+    };
+
+    // Cache the successful response
+    apiOptimizer.setCache(cacheKey, responseData, 'news');
+
+    res.json(responseData);
 
   } catch (error) {
     console.error("Error fetching real-time news:", error);
