@@ -75,71 +75,57 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
     }
   };
 
-  // Fetch price data with enhanced error handling and fallback
-  const fetchPriceData = async (symbol: string, retryCount = 0) => {
-    const maxRetries = 1; // Further reduced retries to minimize errors
-    const retryDelay = 3000; // Fixed 3 second delay
+  // Fetch price data using new batch API endpoint
+  const fetchBatchPriceData = async (symbols: string[], retryCount = 0) => {
+    const maxRetries = 1;
+    const retryDelay = 3000;
 
     try {
       const now = Date.now();
-      const lastFetch = lastFetchTime.current[symbol] || 0;
 
-      // Skip if symbol is blacklisted (repeatedly failed)
-      if (failedSymbols.current.has(symbol)) {
-        console.log(`[TICKER] Skipping blacklisted symbol: ${symbol}`);
-        return;
-      }
-
-      // Rate limiting: don't fetch if less than 30 seconds have passed
-      if (now - lastFetch < 30000 && retryCount === 0) {
-        return;
-      }
-
-      lastFetchTime.current[symbol] = now;
-
-      // Set connecting status only on first attempt
+      // Set connecting status for all symbols
       if (retryCount === 0) {
-        setPriceData((prev) => ({
-          ...prev,
-          [symbol]: { ...prev[symbol], status: "connecting" },
-        }));
+        symbols.forEach(symbol => {
+          setPriceData((prev) => ({
+            ...prev,
+            [symbol]: { ...prev[symbol], status: "connecting" },
+          }));
+        });
       }
 
-      // Always try to fetch - don't block on connectivity check
-      console.log(`[TICKER] Attempting to fetch ${symbol}...`);
+      console.log(`[TICKER] Attempting to fetch batch: ${symbols.join(',')}`);
 
-      // Create fetch with shorter timeout for production
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
 
       let response;
       try {
         response = await fetch(
-          `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+          `/api/eodhd/price?symbols=${encodeURIComponent(symbols.join(','))}`,
           {
             method: "GET",
             headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
+              Accept: "application/json; charset=utf-8",
+              "Content-Type": "application/json; charset=utf-8",
             },
             signal: controller.signal,
           },
         );
       } catch (fetchError) {
-        console.warn(`[TICKER] Fetch failed for ${symbol}:`, fetchError);
+        console.warn(`[TICKER] Batch fetch failed:`, fetchError);
         clearTimeout(timeoutId);
 
-        // Set disconnected status and return early for network errors
-        setPriceData((prev) => ({
-          ...prev,
-          [symbol]: {
-            ...prev[symbol],
-            status: "disconnected",
-            lastUpdate: new Date(),
-          },
-        }));
-
-        // Don't retry on basic fetch failures - they indicate network issues
+        // Set disconnected status for all symbols
+        symbols.forEach(symbol => {
+          setPriceData((prev) => ({
+            ...prev,
+            [symbol]: {
+              ...prev[symbol],
+              status: "disconnected",
+              lastUpdate: new Date(),
+            },
+          }));
+        });
         return;
       }
 
@@ -148,11 +134,10 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
       if (!response.ok) {
         const errorText = await response.text().catch(() => "No response body");
         console.error(
-          `[TICKER] API error for ${symbol}: ${response.status} - ${response.statusText}`,
+          `[TICKER] API error for batch: ${response.status} - ${response.statusText}`,
           errorText.substring(0, 200),
         );
 
-        // Only retry on specific error codes
         if (
           (response.status >= 500 ||
             response.status === 429 ||
@@ -160,98 +145,97 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
           retryCount < maxRetries
         ) {
           console.log(
-            `[TICKER] Retrying ${symbol} in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`,
+            `[TICKER] Retrying batch in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`,
           );
-          setTimeout(() => fetchPriceData(symbol, retryCount + 1), retryDelay);
+          setTimeout(() => fetchBatchPriceData(symbols, retryCount + 1), retryDelay);
           return;
         }
 
-        // Set disconnected status after all retries failed
-        setPriceData((prev) => ({
-          ...prev,
-          [symbol]: {
-            ...prev[symbol],
-            status: "disconnected",
-            lastUpdate: new Date(),
-          },
-        }));
+        // Set disconnected status for all symbols after retries
+        symbols.forEach(symbol => {
+          setPriceData((prev) => ({
+            ...prev,
+            [symbol]: {
+              ...prev[symbol],
+              status: "disconnected",
+              lastUpdate: new Date(),
+            },
+          }));
+        });
         return;
       }
 
       const data = await response.json();
 
-      if (data.prices && data.prices.length > 0) {
-        const priceInfo = data.prices[0];
-        const config = TICKER_CONFIG.find((c) => c.symbol === symbol);
+      if (data.ok && data.items && data.items.length > 0) {
+        // Update each symbol with its data
+        data.items.forEach((item: any) => {
+          const config = TICKER_CONFIG.find((c) => c.symbol === item.symbol);
 
-        setPriceData((prev) => ({
-          ...prev,
-          [symbol]: {
-            symbol,
-            displayName: config?.displayName || symbol,
-            price: priceInfo.price || 0,
-            change: priceInfo.change || 0,
-            changePercent: priceInfo.change_percent || 0,
-            lastUpdate: new Date(),
-            status: "connected",
-          },
-        }));
-        console.log(
-          `[TICKER] Successfully fetched ${symbol}: $${priceInfo.price}`,
-        );
+          setPriceData((prev) => ({
+            ...prev,
+            [item.symbol]: {
+              symbol: item.symbol,
+              displayName: config?.displayName || item.symbol,
+              price: item.price || 0,
+              change: item.change || 0,
+              changePercent: item.changePct || 0,
+              lastUpdate: new Date(),
+              status: "connected",
+            },
+          }));
+        });
+
+        console.log(`[TICKER] Successfully fetched ${data.items.length} symbols`);
       } else {
-        console.warn(`[TICKER] No price data received for ${symbol}`);
-        setPriceData((prev) => ({
-          ...prev,
-          [symbol]: { ...prev[symbol], status: "disconnected" },
-        }));
+        console.warn(`[TICKER] No price data received in batch response`);
+        symbols.forEach(symbol => {
+          setPriceData((prev) => ({
+            ...prev,
+            [symbol]: { ...prev[symbol], status: "disconnected" },
+          }));
+        });
       }
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      console.error(`[TICKER] Network error for ${symbol}:`, errorMessage);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(`[TICKER] Network error for batch:`, errorMessage);
 
-      // Check if it's a network error or timeout
       const isNetworkError =
         errorMessage.includes("Failed to fetch") ||
         errorMessage.includes("NetworkError") ||
         errorMessage.includes("AbortError") ||
         errorMessage.includes("TypeError");
 
-      // Only retry on specific network errors and within retry limits
-      if (isNetworkError && retryCount < maxRetries && retryCount < 2) {
+      if (isNetworkError && retryCount < maxRetries) {
         console.log(
-          `[TICKER] Retrying ${symbol} due to network error in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`,
+          `[TICKER] Retrying batch due to network error in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`,
         );
         setTimeout(() => {
           try {
-            fetchPriceData(symbol, retryCount + 1);
+            fetchBatchPriceData(symbols, retryCount + 1);
           } catch (retryError) {
-            console.error(`[TICKER] Retry failed for ${symbol}:`, retryError);
+            console.error(`[TICKER] Batch retry failed:`, retryError);
           }
         }, retryDelay);
         return;
       }
 
-      // Final failure - blacklist symbol and set disconnected status
-      console.warn(
-        `[TICKER] Blacklisting symbol ${symbol} after repeated failures`,
-      );
-      failedSymbols.current.add(symbol);
-
-      const config = TICKER_CONFIG.find((c) => c.symbol === symbol);
-      setPriceData((prev) => ({
-        ...prev,
-        [symbol]: {
-          symbol,
-          displayName: config?.displayName || symbol,
-          price: 0,
-          change: 0,
-          changePercent: 0,
-          status: "disconnected",
-          lastUpdate: new Date(),
-        },
-      }));
+      // Set disconnected status for all symbols on final failure
+      symbols.forEach(symbol => {
+        const config = TICKER_CONFIG.find((c) => c.symbol === symbol);
+        setPriceData((prev) => ({
+          ...prev,
+          [symbol]: {
+            symbol,
+            displayName: config?.displayName || symbol,
+            price: 0,
+            change: 0,
+            changePercent: 0,
+            status: "disconnected",
+            lastUpdate: new Date(),
+          },
+        }));
+      });
     }
   };
 
