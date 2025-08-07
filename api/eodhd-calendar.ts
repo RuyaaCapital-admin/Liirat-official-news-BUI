@@ -173,7 +173,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
-    console.log(`Removed ${events.length - uniqueEvents.length} duplicate events`);
+    console.log(
+      `Removed ${events.length - uniqueEvents.length} duplicate events`,
+    );
 
     // Filter events by importance on our side if multiple levels were requested
     let filteredEvents = uniqueEvents;

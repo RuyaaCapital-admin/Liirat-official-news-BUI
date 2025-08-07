@@ -147,7 +147,9 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
       }
     }
 
-    console.log(`Removed ${events.length - uniqueEvents.length} duplicate events`);
+    console.log(
+      `Removed ${events.length - uniqueEvents.length} duplicate events`,
+    );
 
     // Filter events by importance on our side if multiple levels were requested
     let filteredEvents = uniqueEvents;
