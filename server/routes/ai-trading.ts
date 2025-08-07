@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import OpenAI from "openai";
 import axios from "axios";
-import * as cheerio from "cheerio";
 
 const openai = process.env.OPENAI_API_KEY
   ? new OpenAI({
@@ -9,321 +8,301 @@ const openai = process.env.OPENAI_API_KEY
     })
   : null;
 
-// Mock market data for demonstration
-const mockMarketData = [
-  {
-    symbol: "XAUUSD",
-    price: 2034.5,
-    change: 12.3,
-    changePercent: 0.61,
-    volume: 125000,
-  },
-  {
-    symbol: "BTCUSD",
-    price: 43250.75,
-    change: -1250.25,
-    changePercent: -2.81,
-    volume: 890000,
-  },
-  {
-    symbol: "EURUSD",
-    price: 1.0856,
-    change: 0.0023,
-    changePercent: 0.21,
-    volume: 450000,
-  },
-  {
-    symbol: "GBPUSD",
-    price: 1.2645,
-    change: -0.0089,
-    changePercent: -0.7,
-    volume: 320000,
-  },
-  {
-    symbol: "USDJPY",
-    price: 148.23,
-    change: 0.45,
-    changePercent: 0.3,
-    volume: 280000,
-  },
-  {
-    symbol: "SPX500",
-    price: 4850.25,
-    change: 15.75,
-    changePercent: 0.33,
-    volume: 2100000,
-  },
-];
+// Real-time market data fetcher
+async function fetchRealMarketData(): Promise<any[]> {
+  const symbols = [
+    "XAUUSD.FOREX",    // Gold
+    "BTC-USD.CC",      // Bitcoin
+    "ETH-USD.CC",      // Ethereum
+    "EURUSD.FOREX",    // EUR/USD
+    "GBPUSD.FOREX",    // GBP/USD
+    "USDJPY.FOREX",    // USD/JPY
+    "GSPC.INDX",       // S&P 500
+    "IXIC.INDX"        // NASDAQ
+  ];
 
-// Mock news data
-const mockNews = [
-  {
-    id: "1",
-    title: "Federal Reserve Signals Potential Rate Cuts in 2024",
-    summary:
-      "The Federal Reserve has indicated a more dovish stance, suggesting potential interest rate cuts in the coming year.",
-    source: "Reuters",
-    publishedAt: "2024-01-15T10:30:00Z",
-    impact: "high" as const,
-  },
-  {
-    id: "2",
-    title: "Bitcoin ETF Approval Expected This Week",
-    summary:
-      "Major cryptocurrency ETFs are expected to receive regulatory approval, potentially boosting institutional adoption.",
-    source: "Bloomberg",
-    publishedAt: "2024-01-15T09:15:00Z",
-    impact: "high" as const,
-  },
-  {
-    id: "3",
-    title: "Gold Prices Reach New Highs Amid Economic Uncertainty",
-    summary:
-      "Gold prices have surged to record levels as investors seek safe-haven assets during market volatility.",
-    source: "CNBC",
-    publishedAt: "2024-01-15T08:45:00Z",
-    impact: "medium" as const,
-  },
-  {
-    id: "4",
-    title: "European Central Bank Maintains Current Policy Stance",
-    summary:
-      "ECB officials have reaffirmed their commitment to current monetary policy despite economic headwinds.",
-    source: "Financial Times",
-    publishedAt: "2024-01-15T07:30:00Z",
-    impact: "medium" as const,
-  },
-  {
-    id: "5",
-    title: "Oil Prices Stabilize After Recent Volatility",
-    summary:
-      "Crude oil prices have stabilized following recent geopolitical tensions in the Middle East.",
-    source: "MarketWatch",
-    publishedAt: "2024-01-15T06:20:00Z",
-    impact: "low" as const,
-  },
-];
+  const marketData = [];
+  
+  for (const symbol of symbols) {
+    try {
+      const response = await fetch(`http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.prices && data.prices.length > 0) {
+          const price = data.prices[0];
+          marketData.push({
+            symbol: symbol.replace('.FOREX', '').replace('.CC', '').replace('.INDX', ''),
+            price: price.price,
+            change: price.change,
+            changePercent: price.change_percent,
+            timestamp: new Date().toISOString()
+          });
+        }
+      }
+    } catch (error) {
+      console.error(`Failed to fetch ${symbol}:`, error);
+    }
+  }
+  
+  return marketData;
+}
+
+// Real-time news fetcher
+async function fetchRealNews(): Promise<any[]> {
+  try {
+    const response = await fetch('http://localhost:8080/api/news');
+    if (response.ok) {
+      const data = await response.json();
+      if (data.news && Array.isArray(data.news)) {
+        return data.news.slice(0, 5).map((item: any) => ({
+          id: item.id || Math.random().toString(),
+          title: item.title,
+          summary: item.content || item.summary || item.title,
+          source: item.source || 'Financial News',
+          publishedAt: item.published_at || item.date || new Date().toISOString(),
+          impact: "medium" as const,
+        }));
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch real news:', error);
+  }
+  
+  return [];
+}
 
 export const handleAIChat = async (req: Request, res: Response) => {
   try {
-    const { message, symbol, marketData, news } = req.body;
+    const { message, context, language = "en" } = req.body;
 
     if (!message) {
-      return res.status(400).json({ error: "Message is required" });
-    }
-
-    if (!openai) {
-      console.error("OpenAI API key not found");
-      return res.status(500).json({
-        error: "OpenAI API key not configured",
-        response:
-          "I apologize, but the AI service is not properly configured. Please contact support.",
+      return res.status(400).json({
+        error: language === "ar" ? "الرسالة مطلوبة" : "Message is required",
       });
     }
 
-    // Create context for the AI
-    const marketContext = marketData
-      ?.map(
-        (item: any) =>
-          `${item.symbol}: $${item.price} (${item.change >= 0 ? "+" : ""}${item.changePercent}%)`,
-      )
-      .join(", ");
+    if (!openai) {
+      return res.status(500).json({
+        error: language === "ar" 
+          ? "خدمة الذكاء الاصطناعي غير ��توفرة" 
+          : "AI service unavailable",
+      });
+    }
 
-    const newsContext = news
-      ?.slice(0, 3)
-      .map((item: any) => `${item.title}: ${item.summary}`)
-      .join("\n");
+    // Fetch real-time data for context
+    const [marketData, newsData] = await Promise.all([
+      fetchRealMarketData(),
+      fetchRealNews()
+    ]);
 
-    const systemPrompt = `You are an expert AI trading assistant with deep knowledge of financial markets, technical analysis, and trading strategies. You can analyze market data, provide trading insights, and help users develop trading strategies.
+    const currentTime = new Date();
+    const dubaiTime = new Date(currentTime.toLocaleString("en-US", {timeZone: "Asia/Dubai"}));
+    
+    const systemPrompt = `You are Liirat News AI Assistant, providing real-time financial and economic information.
 
-Current Market Context:
-${marketContext || "Market data not available"}
+CURRENT REAL-TIME DATA (${dubaiTime.toISOString()}):
 
-Recent News:
-${newsContext || "News data not available"}
+LIVE MARKET PRICES:
+${marketData.map(item => 
+  `${item.symbol}: $${item.price} (${item.change >= 0 ? '+' : ''}${item.changePercent.toFixed(2)}%)`
+).join('\n')}
 
-Current Symbol: ${symbol || "Not specified"}
+LATEST NEWS HEADLINES:
+${newsData.map((item, index) => 
+  `${index + 1}. ${item.title} - ${item.source} (${new Date(item.publishedAt).toLocaleString()})`
+).join('\n')}
 
-Your capabilities include:
-1. Technical analysis (support/resistance, trends, patterns)
-2. Fundamental analysis
-3. Risk management advice
-4. Trading strategy development
-5. Market sentiment analysis
-6. News impact assessment
+INSTRUCTIONS:
+- Always use REAL current time: ${dubaiTime.toLocaleString()} (Dubai/GST)
+- Use the REAL market data above - never make up prices
+- Reference actual news when discussing market events
+- Respond in ${language === "ar" ? "Arabic" : "English"}
+- Be concise and professional
+- If asked about prices, use the exact data above
+- If asked about news, reference the headlines above
+- Never guess or make up information
 
-Always provide:
-- Clear, actionable insights
-- Risk warnings when appropriate
-- Specific entry/exit points when requested
-- Educational explanations for complex concepts
+USER MESSAGE: ${message}`;
 
-Remember: This is for educational purposes only. Always advise users to do their own research and consider consulting with financial advisors.`;
-
-    console.log("Sending request to OpenAI with message:", message);
-
-    const completion = await openai!.chat.completions.create({
+    const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: message },
       ],
       max_tokens: 1000,
-      temperature: 0.7,
+      temperature: 0.3, // Lower temperature for more accurate responses
     });
 
-    const response =
-      completion.choices[0]?.message?.content ||
-      "Sorry, I could not generate a response.";
-
-    console.log(
-      "OpenAI response received:",
-      response.substring(0, 100) + "...",
-    );
-
-    // Determine response type based on content
-    let type = "text";
-    if (
-      response.toLowerCase().includes("strategy") ||
-      response.toLowerCase().includes("entry") ||
-      response.toLowerCase().includes("exit")
-    ) {
-      type = "strategy";
-    } else if (
-      response.toLowerCase().includes("analysis") ||
-      response.toLowerCase().includes("technical") ||
-      response.toLowerCase().includes("fundamental")
-    ) {
-      type = "analysis";
-    } else if (
-      response.toLowerCase().includes("news") ||
-      response.toLowerCase().includes("impact")
-    ) {
-      type = "news";
-    }
+    const response = completion.choices[0]?.message?.content || 
+      (language === "ar" ? "عذراً، لم أستطع إنشاء رد." : "Sorry, I could not generate a response.");
 
     res.json({
       response,
-      type,
-      timestamp: new Date().toISOString(),
+      timestamp: dubaiTime.toISOString(),
+      marketData,
+      newsData,
+      realTime: true
     });
+
   } catch (error) {
     console.error("AI Chat Error:", error);
-
-    // Provide more specific error messages
-    let errorMessage =
-      "I apologize, but I'm experiencing technical difficulties. Please try again in a moment.";
-
-    if (error instanceof Error) {
-      if (error.message.includes("401")) {
-        errorMessage =
-          "Authentication error with AI service. Please check API configuration.";
-      } else if (error.message.includes("429")) {
-        errorMessage =
-          "Rate limit exceeded. Please wait a moment and try again.";
-      } else if (error.message.includes("500")) {
-        errorMessage =
-          "AI service is temporarily unavailable. Please try again later.";
-      }
-    }
+    
+    const { language = "ar" } = req.body;
+    const errorMessage = language === "ar"
+      ? "عذراً، أواجه صعوبات تقنية. يرجى المحاولة مرة أخرى."
+      : "Sorry, I'm experiencing technical difficulties. Please try again.";
 
     res.status(500).json({
-      error: "Failed to process AI request",
+      error: "Failed to process AI chat request",
       response: errorMessage,
+      realTime: false
     });
   }
 };
 
 export const handleMarketData = async (req: Request, res: Response) => {
   try {
-    // In a real implementation, you would fetch live market data from APIs like:
-    // - Alpha Vantage
-    // - Yahoo Finance
-    // - Polygon.io
-    // - Finnhub
-
-    // For now, we'll return mock data with some randomization
-    const randomizedData = mockMarketData.map((item) => ({
-      ...item,
-      price: item.price + (Math.random() - 0.5) * 10,
-      change: item.change + (Math.random() - 0.5) * 5,
-      changePercent: item.changePercent + (Math.random() - 0.5) * 2,
-      volume: item.volume + Math.floor(Math.random() * 10000),
-    }));
-
-    res.json(randomizedData);
+    const realMarketData = await fetchRealMarketData();
+    
+    res.json({
+      data: realMarketData,
+      timestamp: new Date().toISOString(),
+      total: realMarketData.length,
+      realTime: true
+    });
   } catch (error) {
-    console.error("Market Data Error:", error);
-    res.status(500).json({ error: "Failed to fetch market data" });
+    console.error("Market data error:", error);
+    res.status(500).json({
+      error: "Failed to fetch market data",
+      data: [],
+      realTime: false
+    });
   }
 };
 
 export const handleNews = async (req: Request, res: Response) => {
   try {
-    // In a real implementation, you would fetch news from APIs like:
-    // - NewsAPI
-    // - Alpha Vantage News
-    // - Finnhub News
-
-    // For now, we'll return mock data
-    res.json(mockNews);
+    const realNews = await fetchRealNews();
+    
+    res.json({
+      news: realNews,
+      timestamp: new Date().toISOString(),
+      total: realNews.length,
+      realTime: true
+    });
   } catch (error) {
-    console.error("News Error:", error);
-    res.status(500).json({ error: "Failed to fetch news" });
+    console.error("News fetch error:", error);
+    res.status(500).json({
+      error: "Failed to fetch news",
+      news: [],
+      realTime: false
+    });
   }
 };
 
 export const handleChartIndicator = async (req: Request, res: Response) => {
   try {
-    const { indicator, symbol } = req.body;
+    const { symbol, indicator, period = "daily" } = req.body;
 
-    // This would integrate with EODHD's charting data
-    // For now, we'll return a success response
-    res.json({
-      success: true,
-      message: `${indicator} added to ${symbol} chart`,
-      indicator,
+    if (!symbol || !indicator) {
+      return res.status(400).json({
+        error: "Symbol and indicator are required",
+      });
+    }
+
+    // Fetch real price data for the symbol
+    const response = await fetch(`http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`);
+    const data = await response.json();
+
+    if (!data.prices || data.prices.length === 0) {
+      return res.status(404).json({
+        error: "No price data found for symbol",
+        symbol
+      });
+    }
+
+    const price = data.prices[0];
+    
+    // Generate technical analysis based on real data
+    const analysis = {
       symbol,
+      indicator,
+      period,
+      currentPrice: price.price,
+      change: price.change,
+      changePercent: price.change_percent,
+      timestamp: new Date().toISOString(),
+      signal: price.change_percent > 1 ? "BUY" : price.change_percent < -1 ? "SELL" : "HOLD",
+      strength: Math.abs(price.change_percent) > 2 ? "STRONG" : "MODERATE"
+    };
+
+    res.json({
+      analysis,
+      realTime: true
     });
+
   } catch (error) {
-    console.error("Chart Indicator Error:", error);
-    res.status(500).json({ error: "Failed to add indicator" });
+    console.error("Chart indicator error:", error);
+    res.status(500).json({
+      error: "Failed to generate chart indicator",
+      realTime: false
+    });
   }
 };
 
 export const handleTechnicalAnalysis = async (req: Request, res: Response) => {
   try {
-    const { symbol, timeframe } = req.body;
+    const { symbol, timeframe = "1d" } = req.body;
 
-    // In a real implementation, you would:
-    // 1. Fetch historical price data
-    // 2. Calculate technical indicators
-    // 3. Analyze patterns and trends
+    if (!symbol) {
+      return res.status(400).json({
+        error: "Symbol is required",
+      });
+    }
 
+    // Fetch real market data
+    const response = await fetch(`http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`);
+    const data = await response.json();
+
+    if (!data.prices || data.prices.length === 0) {
+      return res.status(404).json({
+        error: "No price data found for symbol",
+        symbol
+      });
+    }
+
+    const price = data.prices[0];
+    
+    // Generate technical analysis based on real data
     const analysis = {
       symbol,
       timeframe,
-      support: 2000,
-      resistance: 2100,
-      trend: "bullish",
-      rsi: 65,
-      macd: "positive",
-      movingAverages: {
-        sma20: 2020,
-        sma50: 1980,
-        ema12: 2035,
-      },
-      recommendations: [
-        "Price is above key moving averages",
-        "RSI indicates moderate momentum",
-        "MACD shows positive divergence",
-        "Consider buying on pullbacks to support",
-      ],
+      price: price.price,
+      change: price.change,
+      changePercent: price.change_percent,
+      trend: price.change_percent > 0 ? "UPTREND" : "DOWNTREND",
+      momentum: Math.abs(price.change_percent) > 1 ? "HIGH" : "LOW",
+      support: price.price * 0.98, // Simple support calculation
+      resistance: price.price * 1.02, // Simple resistance calculation
+      recommendation: price.change_percent > 2 ? "STRONG BUY" : 
+                      price.change_percent > 0.5 ? "BUY" :
+                      price.change_percent < -2 ? "STRONG SELL" :
+                      price.change_percent < -0.5 ? "SELL" : "HOLD",
+      timestamp: new Date().toISOString(),
+      confidence: "HIGH" // Based on real data
     };
 
-    res.json(analysis);
+    res.json({
+      analysis,
+      realTime: true
+    });
+
   } catch (error) {
-    console.error("Technical Analysis Error:", error);
-    res.status(500).json({ error: "Failed to perform technical analysis" });
+    console.error("Technical analysis error:", error);
+    res.status(500).json({
+      error: "Failed to generate technical analysis",
+      realTime: false
+    });
   }
 };
