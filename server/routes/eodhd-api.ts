@@ -174,11 +174,12 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
     }
 
     const items = (raw.data || []).map((e: any) => ({
-      datetimeUtc: e.date || e.datetime,
+      date: e.date || e.datetime,
+      time: e.time || "",
       country: e.country,
       event: e.event,
       category: e.category || e.type,
-      importance: (e.importance || "").toLowerCase(),
+      importance: parseInt(e.importance) || 1,
       previous: e.previous ?? "",
       forecast: e.estimate ?? e.forecast ?? "",
       actual: e.actual ?? "",
