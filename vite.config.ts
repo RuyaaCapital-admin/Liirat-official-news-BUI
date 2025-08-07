@@ -56,6 +56,8 @@ function expressPlugin(): Plugin {
                 "/api/news",
                 "/api/marketaux-news",
                 "/api/price-alert",
+                "/api/eodhd-calendar",
+                "/api/eodhd-price",
               ]);
               return app(req, res, next);
             } else {
