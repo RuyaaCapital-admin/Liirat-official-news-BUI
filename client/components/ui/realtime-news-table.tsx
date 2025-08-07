@@ -248,17 +248,17 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     }).format(date);
   };
 
-  // Get importance color
+  // Get importance color with better contrast for light mode
   const getImportanceColor = (importance: number) => {
     switch (importance) {
       case 3:
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+        return "bg-red-500 text-white border-red-600";
       case 2:
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+        return "bg-yellow-500 text-white border-yellow-600";
       case 1:
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+        return "bg-green-500 text-white border-green-600";
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
+        return "bg-gray-500 text-white border-gray-600";
     }
   };
 
@@ -399,22 +399,26 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
           </div>
         ) : (
           <div className="space-y-4">
-            {filteredArticles.slice(0, itemsToShow).map((article) => (
+            {filteredArticles.slice(0, itemsToShow).map((article, index) => (
               <div
-                key={article.id}
+                key={`${article.id}-${index}`}
                 className="border border-border rounded-lg p-4 hover:bg-muted/30 transition-colors"
+                dir={dir}
               >
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge className={getImportanceColor(article.importance)}>
+                    <div className={cn(
+                      "flex items-center gap-2 mb-2 flex-wrap",
+                      dir === "rtl" ? "justify-start" : "justify-start"
+                    )}>
+                      <Badge className={cn(getImportanceColor(article.importance), "font-medium")}>
                         {getImportanceLabel(article.importance)}
                       </Badge>
-                      <Badge variant="outline">{article.category}</Badge>
+                      <Badge variant="outline" className="font-medium">{article.category}</Badge>
                       {article.country && (
                         <Badge
                           variant="outline"
-                          className="flex items-center gap-1"
+                          className="flex items-center gap-1 font-medium"
                         >
                           <Globe className="w-3 h-3" />
                           {article.country}
@@ -475,19 +479,28 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                     <div className="flex gap-2">
                       {/* AI Analysis Button */}
                       <Button
-                        variant="outline"
+                        variant={aiAnalysis[article.id] ? "default" : "outline"}
                         size="sm"
                         onClick={() => requestAIAnalysis(article)}
                         disabled={loadingAnalysis[article.id]}
-                        className="flex items-center gap-1"
+                        className={cn(
+                          "flex items-center gap-2 font-medium transition-all duration-200 shadow-sm",
+                          aiAnalysis[article.id]
+                            ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg"
+                            : "hover:bg-primary/10 border-primary/20 hover:border-primary/40",
+                          loadingAnalysis[article.id] && "animate-pulse"
+                        )}
                       >
                         <Bot
                           className={cn(
-                            "w-3 h-3",
+                            "w-4 h-4",
                             loadingAnalysis[article.id] && "animate-spin",
+                            aiAnalysis[article.id] && "text-primary-foreground"
                           )}
                         />
-                        {language === "ar" ? "تحليل ذكي" : "AI Analysis"}
+                        <span className="text-xs font-medium">
+                          {language === "ar" ? "تحليل" : "AI"}
+                        </span>
                       </Button>
 
                       {/* Read More Dialog */}
