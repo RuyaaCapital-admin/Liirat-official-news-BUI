@@ -243,16 +243,17 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     }
   };
 
-  // Format date with timezone
+  // Format date with timezone - always use English format to avoid Hijri calendar
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat(language === "ar" ? "ar-SA" : "en-US", {
+    return new Intl.DateTimeFormat("en-US", {
       timeZone: selectedTimezone,
       year: "numeric",
       month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+      hour12: false,
     }).format(date);
   };
 
@@ -416,7 +417,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                 {language === "ar" ? "آخر أسبوع" : "Last week"}
               </SelectItem>
               <SelectItem value="1m">
-                {language === "ar" ? "آخر شهر" : "Last month"}
+                {language === "ar" ? "آخ�� شهر" : "Last month"}
               </SelectItem>
             </SelectContent>
           </Select>
