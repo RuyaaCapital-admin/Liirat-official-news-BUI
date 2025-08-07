@@ -165,6 +165,15 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     return () => clearInterval(interval);
   }, [selectedTimeframe, selectedCategory, selectedSymbol]);
 
+  // Auto-translate articles when language changes to Arabic
+  useEffect(() => {
+    if (language === "ar" && filteredArticles.length > 0) {
+      filteredArticles.slice(0, itemsToShow).forEach((article) => {
+        translateTitle(article);
+      });
+    }
+  }, [language, filteredArticles, itemsToShow]);
+
   // Apply filters
   useEffect(() => {
     let filtered = [...articles];
@@ -466,7 +475,12 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                     </div>
 
                     <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                      {article.title}
+                      {language === "ar" && translatedTitles[article.id]
+                        ? translatedTitles[article.id]
+                        : article.title}
+                      {language === "ar" && loadingTranslation[article.id] && (
+                        <span className="ml-2 text-xs text-muted-foreground">(translating...)</span>
+                      )}
                     </h3>
 
                     <p className="text-muted-foreground text-sm mb-3 line-clamp-3">
