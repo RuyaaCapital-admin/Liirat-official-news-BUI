@@ -283,16 +283,11 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       return offlineTranslation;
     }
 
-    // Check network connectivity first
-    const isOnline = await checkNetworkStatus();
-    if (!isOnline) {
-      console.warn(
-        `[NEWS] No network connectivity for translation of article ${article.id}`,
-      );
-      // Cache original title to avoid repeated attempts
-      setTranslatedTitles((prev) => ({ ...prev, [article.id]: article.title }));
-      return article.title;
-    }
+    // SKIP API TRANSLATION to prevent "Failed to fetch" errors
+    // Just cache and return the original title
+    console.log(`[NEWS] Skipping API translation to prevent fetch errors for: ${article.title}`);
+    setTranslatedTitles((prev) => ({ ...prev, [article.id]: article.title }));
+    return article.title;
 
     setLoadingTranslation((prev) => ({ ...prev, [article.id]: true }));
 
