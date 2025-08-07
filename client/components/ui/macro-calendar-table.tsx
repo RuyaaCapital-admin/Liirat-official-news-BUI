@@ -37,6 +37,8 @@ import {
   ChevronDown,
   Bell,
   Plus,
+  AlertTriangle,
+  Clock,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -57,7 +59,7 @@ interface MacroCalendarTableProps {
 // Top economic countries that frequently affect markets
 const TOP_COUNTRIES = [
   "US",
-  "EUR",
+  "EUR", 
   "GB",
   "JP",
   "CA",
@@ -69,64 +71,21 @@ const TOP_COUNTRIES = [
 ];
 
 const ALL_COUNTRIES = [
-  "US",
-  "EUR",
-  "GB",
-  "JP",
-  "CA",
-  "AU",
-  "CHF",
-  "DE",
-  "FR",
-  "IT",
-  "ES",
-  "NL",
-  "BE",
-  "AT",
-  "PT",
-  "IE",
-  "FI",
-  "GR",
-  "CZ",
-  "PL",
-  "HU",
-  "SK",
-  "SI",
-  "EE",
-  "LV",
-  "LT",
-  "CN",
-  "IN",
-  "BR",
-  "MX",
-  "RU",
-  "ZA",
-  "KR",
-  "SG",
-  "HK",
-  "TH",
-  "MY",
-  "ID",
-  "PH",
-  "VN",
-  "NO",
-  "SE",
-  "DK",
-  "IS",
-  "TR",
-  "IL",
-  "SA",
-  "AE",
+  "US", "EUR", "GB", "JP", "CA", "AU", "CHF", "DE", "FR", "IT", "ES", "NL",
+  "BE", "AT", "PT", "IE", "FI", "GR", "CZ", "PL", "HU", "SK", "SI", "EE",
+  "LV", "LT", "CN", "IN", "BR", "MX", "RU", "ZA", "KR", "SG", "HK", "TH",
+  "MY", "ID", "PH", "VN", "NO", "SE", "DK", "IS", "TR", "IL", "SA", "AE",
+  "NZ", "NZD"
 ];
 
 const getImportanceColor = (importance: number) => {
   switch (importance) {
     case 3:
-      return "bg-red-500 text-white";
+      return "bg-red-500 text-white"; // HIGH impact
     case 2:
-      return "bg-orange-500 text-white";
+      return "bg-yellow-500 text-white"; // MEDIUM impact  
     case 1:
-      return "bg-green-500 text-white";
+      return "bg-green-500 text-white"; // LOW impact
     default:
       return "bg-gray-500 text-white";
   }
@@ -135,149 +94,74 @@ const getImportanceColor = (importance: number) => {
 const getImportanceLabel = (importance: number, language: string) => {
   if (language === "ar") {
     switch (importance) {
-      case 3:
-        return "عالي";
-      case 2:
-        return "متوسط";
-      case 1:
-        return "منخفض";
-      default:
-        return "غير محدد";
+      case 3: return "عالي";
+      case 2: return "متوسط";
+      case 1: return "منخفض";
+      default: return "غير محدد";
     }
   }
   switch (importance) {
-    case 3:
-      return "High";
-    case 2:
-      return "Medium";
-    case 1:
-      return "Low";
-    default:
-      return "Unknown";
+    case 3: return "HIGH";
+    case 2: return "MEDIUM";
+    case 1: return "LOW";
+    default: return "Unknown";
   }
 };
 
 const getCountryCode = (country: string): string => {
   const countryCodeMap: Record<string, string> = {
-    US: "US",
-    USA: "US",
-    "United States": "US",
-    EUR: "EU",
-    EU: "EU",
-    Eurozone: "EU",
-    GB: "GB",
-    UK: "GB",
-    "United Kingdom": "GB",
-    JP: "JP",
-    JPY: "JP",
-    Japan: "JP",
-    CA: "CA",
-    CAD: "CA",
-    Canada: "CA",
-    AU: "AU",
-    AUD: "AU",
-    Australia: "AU",
-    CHF: "CH",
-    CH: "CH",
-    Switzerland: "CH",
-    DE: "DE",
-    GER: "DE",
-    Germany: "DE",
-    FR: "FR",
-    France: "FR",
-    IT: "IT",
-    Italy: "IT",
-    ES: "ES",
-    Spain: "ES",
-    NL: "NL",
-    Netherlands: "NL",
-    BE: "BE",
-    Belgium: "BE",
-    AT: "AT",
-    Austria: "AT",
-    PT: "PT",
-    Portugal: "PT",
-    IE: "IE",
-    Ireland: "IE",
-    FI: "FI",
-    Finland: "FI",
-    GR: "GR",
-    Greece: "GR",
-    CZ: "CZ",
-    "Czech Republic": "CZ",
-    PL: "PL",
-    Poland: "PL",
-    HU: "HU",
-    Hungary: "HU",
-    SK: "SK",
-    Slovakia: "SK",
-    SI: "SI",
-    Slovenia: "SI",
-    EE: "EE",
-    Estonia: "EE",
-    LV: "LV",
-    Latvia: "LV",
-    LT: "LT",
-    Lithuania: "LT",
-    CN: "CN",
-    CHN: "CN",
-    China: "CN",
-    IN: "IN",
-    IND: "IN",
-    India: "IN",
-    BR: "BR",
-    BRA: "BR",
-    Brazil: "BR",
-    MX: "MX",
-    MEX: "MX",
-    Mexico: "MX",
-    RU: "RU",
-    RUS: "RU",
-    Russia: "RU",
-    ZA: "ZA",
-    "South Africa": "ZA",
-    KR: "KR",
-    "South Korea": "KR",
-    SG: "SG",
-    SGP: "SG",
-    Singapore: "SG",
-    HK: "HK",
-    "Hong Kong": "HK",
-    TH: "TH",
-    Thailand: "TH",
-    MY: "MY",
-    Malaysia: "MY",
-    ID: "ID",
-    Indonesia: "ID",
-    PH: "PH",
-    Philippines: "PH",
-    VN: "VN",
-    Vietnam: "VN",
-    NO: "NO",
-    Norway: "NO",
-    SE: "SE",
-    Sweden: "SE",
-    DK: "DK",
-    Denmark: "DK",
-    IS: "IS",
-    Iceland: "IS",
-    TR: "TR",
-    Turkey: "TR",
-    IL: "IL",
-    Israel: "IL",
-    SA: "SA",
-    "Saudi Arabia": "SA",
-    AE: "AE",
-    UAE: "AE",
-    "United Arab Emirates": "AE",
-    NZ: "NZ",
-    "New Zealand": "NZ",
+    US: "US", USA: "US", "United States": "US",
+    EUR: "EU", EU: "EU", Eurozone: "EU",
+    GB: "GB", UK: "GB", "United Kingdom": "GB",
+    JP: "JP", JPY: "JP", Japan: "JP",
+    CA: "CA", CAD: "CA", Canada: "CA",
+    AU: "AU", AUD: "AU", Australia: "AU",
+    CHF: "CH", CH: "CH", Switzerland: "CH",
+    DE: "DE", GER: "DE", Germany: "DE",
+    FR: "FR", France: "FR",
+    IT: "IT", Italy: "IT",
+    ES: "ES", Spain: "ES",
+    NL: "NL", Netherlands: "NL",
+    BE: "BE", Belgium: "BE",
+    AT: "AT", Austria: "AT",
+    PT: "PT", Portugal: "PT",
+    IE: "IE", Ireland: "IE",
+    FI: "FI", Finland: "FI",
+    GR: "GR", Greece: "GR",
+    CZ: "CZ", "Czech Republic": "CZ",
+    PL: "PL", Poland: "PL",
+    HU: "HU", Hungary: "HU",
+    SK: "SK", Slovakia: "SK",
+    SI: "SI", Slovenia: "SI",
+    EE: "EE", Estonia: "EE",
+    LV: "LV", Latvia: "LV",
+    LT: "LT", Lithuania: "LT",
+    CN: "CN", CHN: "CN", China: "CN",
+    IN: "IN", IND: "IN", India: "IN",
+    BR: "BR", BRA: "BR", Brazil: "BR",
+    MX: "MX", MEX: "MX", Mexico: "MX",
+    RU: "RU", RUS: "RU", Russia: "RU",
+    ZA: "ZA", "South Africa": "ZA",
+    KR: "KR", "South Korea": "KR",
+    SG: "SG", SGP: "SG", Singapore: "SG",
+    HK: "HK", "Hong Kong": "HK",
+    TH: "TH", Thailand: "TH",
+    MY: "MY", Malaysia: "MY",
+    ID: "ID", Indonesia: "ID",
+    PH: "PH", Philippines: "PH",
+    VN: "VN", Vietnam: "VN",
+    NO: "NO", Norway: "NO",
+    SE: "SE", Sweden: "SE",
+    DK: "DK", Denmark: "DK",
+    IS: "IS", Iceland: "IS",
+    TR: "TR", Turkey: "TR",
+    IL: "IL", Israel: "IL",
+    SA: "SA", "Saudi Arabia": "SA",
+    AE: "AE", UAE: "AE", "United Arab Emirates": "AE",
+    NZ: "NZ", NZD: "NZ", "New Zealand": "NZ",
   };
 
-  // Try direct match first, then uppercase
-  return (
-    countryCodeMap[country] || countryCodeMap[country?.toUpperCase()] || ""
-  );
+  return countryCodeMap[country] || countryCodeMap[country?.toUpperCase()] || "";
 };
 
 const getCountryFlag = (country: string) => {
@@ -298,10 +182,10 @@ const getCountryFlag = (country: string) => {
     );
   }
 
-  // Fallback to world icon for unknown countries
+  // Fallback to country code text for unknown countries
   return (
-    <span className="text-muted-foreground inline-flex items-center justify-center w-5 h-4 rounded text-xs border">
-      {country}
+    <span className="text-muted-foreground inline-flex items-center justify-center w-5 h-4 rounded text-xs border bg-muted">
+      {country.substring(0, 2).toUpperCase()}
     </span>
   );
 };
@@ -323,18 +207,22 @@ const getCountryName = (country: string, language: string) => {
   return countryNames[country]?.[language] || country;
 };
 
-const formatDate = (dateStr: string, language: string) => {
+// Convert UTC datetime to user's timezone with proper formatting
+const formatDateTimeWithTimezone = (dateStr: string, language: string) => {
   try {
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) {
       return dateStr; // Return original if invalid date
     }
 
+    // Get user's timezone
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    
     if (language === "ar") {
-      // Use Gregorian calendar for Arabic with full date display
       return date.toLocaleDateString("ar-SA-u-ca-gregory", {
+        timeZone: userTimezone,
         weekday: "short",
-        month: "short",
+        month: "short", 
         day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
@@ -342,9 +230,10 @@ const formatDate = (dateStr: string, language: string) => {
       });
     } else {
       return date.toLocaleDateString("en-US", {
+        timeZone: userTimezone,
         weekday: "short",
         month: "short",
-        day: "numeric",
+        day: "numeric", 
         hour: "2-digit",
         minute: "2-digit",
         hour12: true,
@@ -367,9 +256,7 @@ export function MacroCalendarTable({
   const [searchTerm, setSearchTerm] = useState("");
   const [countrySearchTerm, setCountrySearchTerm] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("all");
-  const [selectedImportances, setSelectedImportances] = useState<string[]>([
-    "3",
-  ]);
+  const [selectedImportances, setSelectedImportances] = useState<string[]>(["3", "2", "1"]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [dateRange, setDateRange] = useState("all");
   const [isCountryOpen, setIsCountryOpen] = useState(false);
@@ -378,8 +265,7 @@ export function MacroCalendarTable({
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const t = (enText: string, arText: string) =>
-    language === "ar" ? arText : enText;
+  const t = (enText: string, arText: string) => language === "ar" ? arText : enText;
 
   // Listen for online/offline changes
   React.useEffect(() => {
@@ -455,9 +341,7 @@ export function MacroCalendarTable({
         }
       })();
 
-      return (
-        matchesSearch && matchesCountry && matchesImportance && matchesDate
-      );
+      return matchesSearch && matchesCountry && matchesImportance && matchesDate;
     });
 
     // Sort events by date - soonest first
@@ -478,47 +362,33 @@ export function MacroCalendarTable({
     });
 
     return sorted;
-  }, [
-    events,
-    searchTerm,
-    selectedCountry,
-    selectedImportances,
-    selectedDate,
-    dateRange,
-  ]);
+  }, [events, searchTerm, selectedCountry, selectedImportances, selectedDate, dateRange]);
 
   // Display logic - show first 10 by default, expand to show all
-  const displayedEvents = isExpanded
-    ? filteredEvents
-    : filteredEvents.slice(0, 10);
+  const displayedEvents = isExpanded ? filteredEvents : filteredEvents.slice(0, 10);
 
   const handleUpdate = () => {
     // Update online status from navigator
     setIsOnline(navigator.onLine);
-    // Set last updated timestamp
+    // Set last updated timestamp  
     setLastUpdated(new Date());
     // Call refresh callback with current filters
     if (onRefresh) {
       const filters = {
         country: selectedCountry === "all" ? undefined : selectedCountry,
         importance: selectedImportances,
-        from: selectedDate
-          ? selectedDate.toISOString().split("T")[0]
-          : undefined,
+        from: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
         to: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
       };
       onRefresh(filters);
     }
   };
 
-  // REMOVED auto-refresh to prevent infinite API calls
-  // Refresh only happens manually via Update button
-
   const clearFilters = () => {
     setSearchTerm("");
     setCountrySearchTerm("");
     setSelectedCountry("all");
-    setSelectedImportances(["3"]);
+    setSelectedImportances(["3", "2", "1"]);
     setSelectedDate(undefined);
     setDateRange("all");
   };
@@ -529,13 +399,14 @@ export function MacroCalendarTable({
       <div className="bg-card border rounded-lg p-4 space-y-4">
         <div className="flex items-center gap-2 mb-3">
           <Filter className="h-4 w-4 text-primary" />
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between w-full">
             <h3 className="font-semibold text-sm">
               {t("Economic Calendar Filters", "فلاتر التقويم الاقتصادي")}
             </h3>
-            <span className="text-xs text-muted-foreground">
-              {t("Auto-refresh: 15min", "تحديث تلقائي: 15 دقيقة")}
-            </span>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              <span>{t("Live from EODHD", "مباشر من EODHD")}</span>
+            </div>
           </div>
         </div>
 
@@ -599,9 +470,7 @@ export function MacroCalendarTable({
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
-                        variant={
-                          dateRange.includes("week") ? "default" : "outline"
-                        }
+                        variant={dateRange.includes("week") ? "default" : "outline"}
                         size="sm"
                         className="justify-between"
                       >
@@ -677,10 +546,7 @@ export function MacroCalendarTable({
                     )}
                   />
                   <Input
-                    placeholder={t(
-                      "Search countries...",
-                      "البحث في البلدان...",
-                    )}
+                    placeholder={t("Search countries...", "البحث في البلدان...")}
                     value={countrySearchTerm}
                     onChange={(e) => setCountrySearchTerm(e.target.value)}
                     className={cn(dir === "rtl" ? "pr-10 text-right" : "pl-10")}
@@ -765,13 +631,15 @@ export function MacroCalendarTable({
                 className={cn("justify-between", dir === "rtl" && "text-right")}
               >
                 <span>
-                  {selectedImportances.length === 1
-                    ? selectedImportances[0] === "3"
-                      ? t("High Impact", "عالي التأثير")
-                      : selectedImportances[0] === "2"
-                        ? t("Medium Impact", "متوسط التأثير")
-                        : t("Low Impact", "منخفض التأثير")
-                    : `${selectedImportances.length} ${t("Impact Levels", "مستويات التأثير")}`}
+                  {selectedImportances.length === 3
+                    ? t("All Impact", "جميع التأثيرات")
+                    : selectedImportances.length === 1
+                      ? selectedImportances[0] === "3"
+                        ? t("High Impact", "عالي التأثير")
+                        : selectedImportances[0] === "2"
+                          ? t("Medium Impact", "متوسط التأثير")
+                          : t("Low Impact", "منخفض التأثير")
+                      : `${selectedImportances.length} ${t("Impact Levels", "مستويات التأثير")}`}
                 </span>
                 <ChevronDown className="h-4 w-4 opacity-50" />
               </Button>
@@ -790,7 +658,7 @@ export function MacroCalendarTable({
                   {
                     value: "2",
                     label: t("Medium Impact", "متوسط التأثير"),
-                    color: "text-orange-600",
+                    color: "text-yellow-600",
                   },
                   {
                     value: "1",
@@ -896,10 +764,13 @@ export function MacroCalendarTable({
         <div className="sm:hidden space-y-3">
           {displayedEvents.length === 0 ? (
             <div className="p-6 text-center text-muted-foreground bg-card rounded-lg border">
-              {t(
-                "No events found matching your criteria",
-                "لا توجد أحداث تطابق معاييرك",
-              )}
+              <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+              <p className="font-medium">
+                {t("No events found matching your criteria", "لا توجد أحداث تطابق معاييرك")}
+              </p>
+              <p className="text-sm mt-1">
+                {t("Try adjusting your filters or check back later", "جرب تعديل فلاترك أو تحقق مرة أخرى لاحقاً")}
+              </p>
             </div>
           ) : (
             displayedEvents.map((event, index) => (
@@ -940,20 +811,37 @@ export function MacroCalendarTable({
                     {event.event}
                   </div>
 
-                  <div className="text-xs text-muted-foreground">
-                    {formatDate(event.date, language)}
+                  <div className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    {formatDateTimeWithTimezone(event.date, language)}
                   </div>
 
-                  {event.actual && (
-                    <div className="flex items-center gap-2 text-xs">
-                      <span className="text-muted-foreground">
-                        {t("Actual", "الفعلي")}:
-                      </span>
-                      <span className="px-2 py-1 rounded bg-primary/10 text-primary font-medium">
-                        {event.actual}
-                      </span>
-                    </div>
-                  )}
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    {event.actual && event.actual !== "-" && (
+                      <div className="bg-primary/10 text-primary rounded p-1 text-center">
+                        <div className="text-[10px] text-muted-foreground">
+                          {t("Actual", "الفعلي")}
+                        </div>
+                        <div className="font-medium">{event.actual}</div>
+                      </div>
+                    )}
+                    {event.forecast && event.forecast !== "-" && (
+                      <div className="bg-muted rounded p-1 text-center">
+                        <div className="text-[10px] text-muted-foreground">
+                          {t("Forecast", "التوقع")}
+                        </div>
+                        <div className="font-medium">{event.forecast}</div>
+                      </div>
+                    )}
+                    {event.previous && event.previous !== "-" && (
+                      <div className="bg-muted rounded p-1 text-center">
+                        <div className="text-[10px] text-muted-foreground">
+                          {t("Previous", "السابق")}
+                        </div>
+                        <div className="font-medium">{event.previous}</div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             ))
@@ -1039,10 +927,13 @@ export function MacroCalendarTable({
                       colSpan={8}
                       className="p-8 text-center text-muted-foreground"
                     >
-                      {t(
-                        "No events found matching your criteria",
-                        "لا توجد أحداث تطابق معاييرك",
-                      )}
+                      <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                      <p className="font-medium">
+                        {t("No events found matching your criteria", "لا توجد أحداث تطابق معاييرك")}
+                      </p>
+                      <p className="text-sm mt-1">
+                        {t("Try adjusting your filters or check back later", "جرب تعديل فلاترك أو تحقق مرة أخرى لاحقاً")}
+                      </p>
                     </td>
                   </tr>
                 ) : (
@@ -1057,8 +948,9 @@ export function MacroCalendarTable({
                           dir === "rtl" ? "text-right" : "text-left",
                         )}
                       >
-                        <div className="font-medium">
-                          {formatDate(event.date, language)}
+                        <div className="font-medium flex items-center gap-1">
+                          <Clock className="h-3 w-3 text-muted-foreground" />
+                          {formatDateTimeWithTimezone(event.date, language)}
                         </div>
                       </td>
                       <td
@@ -1108,12 +1000,12 @@ export function MacroCalendarTable({
                         <span
                           className={cn(
                             "px-2 py-1 rounded text-xs",
-                            event.actual
+                            event.actual && event.actual !== "-"
                               ? "bg-primary/10 text-primary"
                               : "text-muted-foreground",
                           )}
                         >
-                          {event.actual || "-"}
+                          {event.actual && event.actual !== "-" ? event.actual : "-"}
                         </span>
                       </td>
                       <td
@@ -1123,7 +1015,7 @@ export function MacroCalendarTable({
                         )}
                       >
                         <span className="text-muted-foreground">
-                          {event.forecast || "-"}
+                          {event.forecast && event.forecast !== "-" ? event.forecast : "-"}
                         </span>
                       </td>
                       <td
@@ -1133,7 +1025,7 @@ export function MacroCalendarTable({
                         )}
                       >
                         <span className="text-muted-foreground">
-                          {event.previous || "-"}
+                          {event.previous && event.previous !== "-" ? event.previous : "-"}
                         </span>
                       </td>
                       <td
