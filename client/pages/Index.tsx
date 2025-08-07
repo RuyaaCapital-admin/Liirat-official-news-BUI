@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
-import TradingViewTicker from "@/components/ui/trading-view-ticker";
+import CustomPriceTicker from "@/components/ui/custom-price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
@@ -430,7 +430,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيهات ذكية لأزواج العملات مع مراقبة الأسعار في الوقت الفعلي"
+                    ? "قم بإنشاء تنبيهات ذكية ��أزواج العملات مع مراقبة الأسعار في الوقت الفعلي"
                     : "Create intelligent alerts for currency pairs with real-time price monitoring"}
                 </p>
               </div>
