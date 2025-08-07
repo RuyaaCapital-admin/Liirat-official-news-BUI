@@ -57,7 +57,7 @@ interface EnhancedMacroCalendarProps {
 // Economic event categories
 const EVENT_CATEGORIES = [
   { value: "all", labelEn: "All Categories", labelAr: "جميع الفئات" },
-  { value: "inflation", labelEn: "Inflation", labelAr: "التضخم" },
+  { value: "inflation", labelEn: "Inflation", labelAr: "��لتضخم" },
   { value: "employment", labelEn: "Employment", labelAr: "التوظيف" },
   {
     value: "central_bank",
@@ -337,9 +337,8 @@ export default function EnhancedMacroCalendar({
 
   // Auto-translate events when language changes to Arabic (with debouncing)
   useEffect(() => {
-    // Temporarily disable auto-translation until valid OpenAI API key is configured
-    // Translation functionality will be enabled once a valid API key is set
-    if (false && language === "ar" && displayedEvents.length > 0) {
+    // Enable real-time translation for Arabic mode with proper API configuration
+    if (language === "ar" && displayedEvents.length > 0) {
       // Debounce translation requests to avoid overwhelming the API
       const timer = setTimeout(() => {
         displayedEvents.slice(0, 5).forEach((event, index) => {
@@ -729,10 +728,10 @@ export default function EnhancedMacroCalendar({
                     );
                   }}
                   className={cn(
-                    "h-9 px-2 text-xs transition-all duration-200 hover:scale-105",
+                    "h-9 px-2 text-xs transition-all duration-200 hover:scale-105 border",
                     selectedImportance.includes(level)
-                      ? cn(getImportanceColor(level), "shadow-md")
-                      : "hover:bg-muted",
+                      ? cn(getImportanceColor(level), "shadow-md border-white/20")
+                      : "hover:bg-muted border-border bg-background text-foreground",
                   )}
                 >
                   {getImportanceLabel(level)}
