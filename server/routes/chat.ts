@@ -83,7 +83,7 @@ function findSymbol(query: string): any | null {
 async function fetchSpecificPrice(symbol: string): Promise<any | null> {
   try {
     const response = await fetch(
-      `http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+      `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
     );
     if (response.ok) {
       const data = await response.json();
@@ -115,7 +115,7 @@ async function fetchRealMarketData(): Promise<any[]> {
   for (const symbol of popularSymbols) {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+        `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
       );
       if (response.ok) {
         const data = await response.json();
