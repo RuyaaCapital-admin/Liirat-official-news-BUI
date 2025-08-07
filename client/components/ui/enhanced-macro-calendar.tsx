@@ -57,7 +57,7 @@ interface EnhancedMacroCalendarProps {
 // Economic event categories
 const EVENT_CATEGORIES = [
   { value: "all", labelEn: "All Categories", labelAr: "جميع الفئات" },
-  { value: "inflation", labelEn: "Inflation", labelAr: "��لتضخم" },
+  { value: "inflation", labelEn: "Inflation", labelAr: "التضخم" },
   { value: "employment", labelEn: "Employment", labelAr: "التوظيف" },
   {
     value: "central_bank",
@@ -67,7 +67,7 @@ const EVENT_CATEGORIES = [
   { value: "gdp", labelEn: "GDP", labelAr: "الناتج المحلي" },
   { value: "retail", labelEn: "Retail Sales", labelAr: "مبيعات التجزئة" },
   { value: "manufacturing", labelEn: "Manufacturing", labelAr: "التصنيع" },
-  { value: "housing", labelEn: "Housing", labelAr: "الإس��ان" },
+  { value: "housing", labelEn: "Housing", labelAr: "الإسكان" },
   { value: "earnings", labelEn: "Earnings", labelAr: "الأرباح" },
 ];
 
