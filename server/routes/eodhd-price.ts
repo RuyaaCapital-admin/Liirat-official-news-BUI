@@ -75,26 +75,27 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     if (isCrypto) {
       // Crypto API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/crypto");
-      // For crypto, EODHD expects symbols like BTC-USD, ETH-USD
       finalSymbol = symbolStr;
     } else if (isIndex) {
-      // Index API endpoint - use stocks endpoint for indices
+      // Indices API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
-      finalSymbol = symbolStr.includes(".INDX")
-        ? symbolStr
-        : symbolStr + ".INDX";
-    } else if (isGold) {
-      // Gold - use forex endpoint for XAUUSD.FOREX
+      finalSymbol = symbolStr;
+    } else if (isUSStock) {
+      // US Stocks API endpoint
+      apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
+      finalSymbol = symbolStr;
+    } else if (isCommodity) {
+      // Commodities API endpoint
+      apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
+      finalSymbol = symbolStr;
+    } else if (isForex || isMetal) {
+      // Forex API endpoint for currency pairs and metals
       apiUrl = new URL("https://eodhd.com/api/real-time/forex");
-      // Use XAUUSD.FOREX symbol
-      finalSymbol = "XAUUSD.FOREX";
+      finalSymbol = symbolStr;
     } else {
-      // Forex API endpoint - default for currency pairs
+      // Default to forex endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/forex");
-      // For forex, EODHD expects symbols like EURUSD.FOREX
-      finalSymbol = symbolStr.includes(".FOREX")
-        ? symbolStr
-        : symbolStr + ".FOREX";
+      finalSymbol = symbolStr.includes(".FOREX") ? symbolStr : symbolStr + ".FOREX";
     }
 
     // Add API parameters
