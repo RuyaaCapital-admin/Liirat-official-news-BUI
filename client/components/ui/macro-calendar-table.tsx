@@ -788,7 +788,8 @@ export function MacroCalendarTable({
 
         {/* Desktop Table Layout */}
         <div className="hidden sm:block border rounded-lg overflow-x-auto">
-          <table className="w-full border-collapse bg-card">
+          <div className="min-w-[700px]">
+            <table className="w-full border-collapse bg-card">
             <thead className="bg-muted/50">
               <tr>
                 <th
@@ -955,7 +956,8 @@ export function MacroCalendarTable({
                 ))
               )}
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
       </div>
     </div>
