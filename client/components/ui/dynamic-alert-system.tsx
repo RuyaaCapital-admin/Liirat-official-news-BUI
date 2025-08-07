@@ -363,7 +363,7 @@ export default function DynamicAlertSystem({
     if (!selectedSymbol || !targetPrice) {
       toast.error(
         language === "ar"
-          ? "يرجى اختيار ا��رمز والسعر المستهدف"
+          ? "يرجى اختيار الرمز والسعر المستهدف"
           : "Please select symbol and target price",
       );
       return;
@@ -412,7 +412,7 @@ export default function DynamicAlertSystem({
   // Delete alert
   const deleteAlert = (id: string) => {
     setPriceAlerts((prev) => prev.filter((alert) => alert.id !== id));
-    toast.success(language === "ar" ? "تم حذف الت��بيه" : "Alert deleted");
+    toast.success(language === "ar" ? "تم حذف التنبيه" : "Alert deleted");
   };
 
   // Toggle alert active state
@@ -439,7 +439,7 @@ export default function DynamicAlertSystem({
                 size="sm"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                {language === "ar" ? "إضافة تنب��ه" : "Add Alert"}
+                {language === "ar" ? "إضافة تنبيه" : "Add Alert"}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
