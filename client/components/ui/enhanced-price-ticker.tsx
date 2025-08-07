@@ -155,37 +155,58 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
     }
   };
 
-  // Initialize price data and start fetching
+  // Check API status first, then initialize price data
   useEffect(() => {
-    const initialData: Record<string, PriceData> = {};
-    TICKER_CONFIG.forEach((config) => {
-      initialData[config.symbol] = {
-        symbol: config.symbol,
-        displayName: config.displayName,
-        price: 0,
-        change: 0,
-        changePercent: 0,
-        lastUpdate: new Date(),
-        status: "connecting",
-      };
-    });
-    setPriceData(initialData);
+    const initializePriceTicker = async () => {
+      // Check API status first
+      try {
+        console.log('[TICKER] Checking API status...');
+        const statusResponse = await fetch('/api/status');
+        if (statusResponse.ok) {
+          const statusData = await statusResponse.json();
+          console.log('[TICKER] API Status:', statusData.overall, statusData.summary);
 
-    // Start fetching price data for all symbols (staggered)
-    TICKER_CONFIG.forEach((config, index) => {
-      setTimeout(() => {
-        fetchPriceData(config.symbol);
-      }, index * 1000); // 1 second between each initial request
-    });
+          if (statusData.checks?.eodhd?.status !== 'ok') {
+            console.warn('[TICKER] EODHD API issues detected:', statusData.checks.eodhd);
+          }
+        }
+      } catch (error) {
+        console.warn('[TICKER] Could not check API status:', error);
+      }
+
+      // Initialize price data
+      const initialData: Record<string, PriceData> = {};
+      TICKER_CONFIG.forEach((config) => {
+        initialData[config.symbol] = {
+          symbol: config.symbol,
+          displayName: config.displayName,
+          price: 0,
+          change: 0,
+          changePercent: 0,
+          lastUpdate: new Date(),
+          status: "connecting",
+        };
+      });
+      setPriceData(initialData);
+
+      // Start fetching price data for all symbols (staggered)
+      TICKER_CONFIG.forEach((config, index) => {
+        setTimeout(() => {
+          fetchPriceData(config.symbol);
+        }, index * 1500); // Increased delay to 1.5 seconds between requests
+      });
+    };
+
+    initializePriceTicker();
 
     // Set up interval for continuous updates
     const interval = setInterval(() => {
       TICKER_CONFIG.forEach((config, index) => {
         setTimeout(() => {
           fetchPriceData(config.symbol);
-        }, index * 500); // 500ms between each update request
+        }, index * 800); // 800ms between each update request
       });
-    }, 45000); // Update every 45 seconds
+    }, 60000); // Update every 60 seconds (reduced frequency)
 
     return () => clearInterval(interval);
   }, []);
