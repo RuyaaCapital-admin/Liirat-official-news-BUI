@@ -517,8 +517,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
             </h3>
             <p className="text-muted-foreground">
               {language === "ar"
-                ? "لا يمكن الوصول إلى بيانات الأسعار من EODHD API. يرجى التحقق من مفتاح API أو المحاولة لاحقاً."
-                : "Unable to access price data from EODHD API. Please check API key or try again later."}
+                ? "لا يمكن الوصول إلى بيانات الأسعار. يرجى المحاولة لاحقاً أو التواصل مع admin@ruyaacapital.com"
+                : "Unable to access price data. Please try again later or contact admin@ruyaacapital.com"}
             </p>
           </CardContent>
         </Card>
