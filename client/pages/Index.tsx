@@ -105,37 +105,26 @@ export default function Index() {
     console.log(`Current location: ${window.location.origin}`);
     console.log(`API endpoint will be: ${window.location.origin}/api/eodhd-calendar`);
 
-      // First test basic server connectivity with timeout and retries
-      let pingSuccessful = false;
-      for (let attempt = 1; attempt <= 3; attempt++) {
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      // First test API connectivity with health check
+    let apiHealthy = false;
+    try {
+      const healthResponse = await fetch("/api/health-check", {
+        method: "GET",
+        headers: { Accept: "application/json" },
+        signal: AbortSignal.timeout(5000), // 5 second timeout
+      });
 
-          const pingResponse = await fetch("/api/ping", {
-            method: "GET",
-            headers: { Accept: "application/json" },
-            signal: controller.signal,
-          });
-
-          clearTimeout(timeoutId);
-          console.log(
-            `Server ping status: ${pingResponse.status} (attempt ${attempt})`,
-          );
-
-          if (pingResponse.ok) {
-            pingSuccessful = true;
-            break;
-          }
-        } catch (pingError) {
-          console.warn(`Server ping failed (attempt ${attempt}/3):`, pingError);
-          if (attempt === 3) {
-            console.error("All ping attempts failed, proceeding with fallback");
-            // Don't throw error, just log and continue with mock data
-          }
-          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt)); // Progressive delay
-        }
+      if (healthResponse.ok) {
+        const healthData = await healthResponse.json();
+        console.log("API Health Check:", healthData);
+        apiHealthy = true;
+      } else {
+        console.warn(`API health check failed: ${healthResponse.status}`);
       }
+    } catch (healthError) {
+      console.warn("API health check failed:", healthError);
+      // Continue anyway, maybe the specific endpoint will work
+    }
 
       // Build query parameters with filters
       const params = new URLSearchParams();
@@ -248,7 +237,7 @@ export default function Index() {
       }
     } else {
       errorMessage = language === "ar"
-        ? "خطأ غير معروف. يرجى المحاولة مرة أخرى."
+        ? "خط�� غير معروف. يرجى المحاولة مرة أخرى."
         : "Unknown error. Please try again.";
     }
 
@@ -415,7 +404,7 @@ export default function Index() {
                     }
                     aria-label="Navigate to news section"
                   >
-                    {language === "ar" ? "الأخبار المب��شرة" : "Live News"}
+                    {language === "ar" ? "الأخبار المباشرة" : "Live News"}
                   </Button>
                   <Button
                     variant="outline"
@@ -648,7 +637,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "تابع آخر الأخبار المالية والاقتصادية مع تحليل الذكاء الاصطن��عي"
+                    ? "تابع آخر الأخبار المالية والاقتصادية مع تحليل الذكاء الاصطناعي"
                     : "Follow the latest financial and economic news with AI analysis"}
                 </p>
               </div>
