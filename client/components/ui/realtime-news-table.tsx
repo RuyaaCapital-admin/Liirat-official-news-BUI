@@ -549,6 +549,18 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                     </div>
 
                     <div className="flex gap-2">
+                      {/* Bell Alert Button */}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleBellClick(article)}
+                        className="flex items-center gap-1 hover:bg-primary/10"
+                        title={language === "ar" ? "إنشاء تنبيه للخبر" : "Create news alert"}
+                      >
+                        <Bell className="w-3 h-3" />
+                        {language === "ar" ? "تنبيه" : "Alert"}
+                      </Button>
+
                       {/* AI Analysis Button */}
                       <Button
                         variant="outline"
