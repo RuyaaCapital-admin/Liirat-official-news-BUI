@@ -413,7 +413,7 @@ export default function EnhancedMacroCalendar({
     setLoadingTranslation((prev) => ({ ...prev, [eventKey]: true }));
 
     try {
-      const response = await fetch("/api/ai-analysis", {
+      const response = await fetch("/api/translate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -421,7 +421,6 @@ export default function EnhancedMacroCalendar({
         body: JSON.stringify({
           text: event.event,
           targetLanguage: "ar",
-          type: "translation",
         }),
       });
 
