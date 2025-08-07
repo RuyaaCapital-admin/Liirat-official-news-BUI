@@ -105,8 +105,8 @@ export default function Index() {
         throw new Error("Server not reachable");
       }
 
-      // Fetch from EODHD economic events endpoint
-      const response = await fetch(`/api/economic-events?limit=20`, {
+      // Fetch from EODHD calendar endpoint
+      const response = await fetch(`/api/eodhd-calendar?limit=50&importance=3,2`, {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -336,7 +336,7 @@ export default function Index() {
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                       <span className="ml-2">
                         {language === "ar"
-                          ? "جاري تحميل التقويم الاقتصادي..."
+                          ? "جاري تحميل ��لتقويم الاقتصادي..."
                           : "Loading economic calendar..."}
                       </span>
                     </div>
