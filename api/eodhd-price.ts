@@ -182,9 +182,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
-    res.status(500).json({
-      error: errorMessage,
+    // Return empty array instead of mock data on errors
+    res.status(200).json({
       prices: [],
+      total: 0,
+      error: errorMessage,
       timestamp: new Date().toISOString(),
     });
   }
