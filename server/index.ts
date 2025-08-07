@@ -16,6 +16,8 @@ import { handleMarketauxNews } from "./routes/marketaux-news";
 import { handleEODHDCalendar } from "./routes/eodhd-calendar";
 import { handleEODHDPrice } from "./routes/eodhd-price";
 import eodhd_news from "./routes/eodhd-news";
+import { handleAIAnalysis, handleTranslation } from "./routes/ai-analysis";
+import { handleRealtimeNews } from "./routes/realtime-news";
 
 export function createServer() {
   const app = express();
