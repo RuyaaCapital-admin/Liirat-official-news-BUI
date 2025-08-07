@@ -501,14 +501,16 @@ export default function EnhancedMacroCalendar({
         setTranslatedContent((prev) => ({ ...prev, [eventKey]: translated }));
         return translated;
       } else {
-        // Log error but don't show fallback - try again later
-        console.error(`Translation API error: ${response.status}`);
-        throw new Error(`Translation failed: ${response.status}`);
+        // Log error but don't throw - use original text as fallback
+        console.warn(`[TRANSLATION] API error ${response.status}, using original text as fallback`);
+        setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
+        return event.event;
       }
     } catch (error) {
-      console.error("Translation failed:", error);
-      // Re-throw error to trigger retry later instead of using fallback
-      throw error;
+      console.warn("[TRANSLATION] Error occurred, using original text as fallback:", error);
+      // Always fallback to original text instead of throwing error
+      setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
+      return event.event;
     } finally {
       setLoadingTranslation((prev) => ({ ...prev, [eventKey]: false }));
     }
