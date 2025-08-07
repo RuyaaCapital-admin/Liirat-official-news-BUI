@@ -300,6 +300,8 @@ export function ModernEconomicCalendar({
       return false;
     if (selectedCurrency !== "all" && event.currency !== selectedCurrency)
       return false;
+    // Show all events if importance is missing or not 1/2/3
+    if (!event.importance || !['1','2','3'].includes(event.importance.toString())) return true;
     if (!selectedImportance.includes(event.importance.toString())) return false;
     if (searchQuery) {
       const query = searchQuery.toLowerCase();

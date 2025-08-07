@@ -101,11 +101,10 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
   };
 
   useEffect(() => {
-    fetchPriceData();
-
-    // Update every 30 seconds
-    const interval = setInterval(fetchPriceData, 30000);
-    return () => clearInterval(interval);
+    // Disabled price ticker API calls for now
+    // fetchPriceData();
+    // const interval = setInterval(fetchPriceData, 30000);
+    // return () => clearInterval(interval);
   }, []);
 
   if (isLoading) {
