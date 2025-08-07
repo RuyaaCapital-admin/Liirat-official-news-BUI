@@ -324,7 +324,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       Oil: "النفط",
       Bitcoin: "البتكوين",
       News: "الأخبار",
-      Report: "التقرير",
+      Report: "الت��رير",
       Analysis: "التحليل",
       Growth: "النمو",
       Rise: "الارتفاع",
@@ -362,23 +362,16 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       return article.title; // Return original if not Arabic mode
     }
 
-    // Try offline translation first for instant results
+    // Use offline translation for instant results without API calls
     const offlineTranslation = getOfflineTranslation(article.title);
-    if (offlineTranslation !== article.title) {
-      setTranslatedTitles((prev) => ({
-        ...prev,
-        [article.id]: offlineTranslation,
-      }));
-      return offlineTranslation;
-    }
+    console.log(`[NEWS] Translating offline: "${article.title}" -> "${offlineTranslation}"`);
 
-    // SKIP API TRANSLATION to prevent "Failed to fetch" errors
-    // Just cache and return the original title
-    console.log(
-      `[NEWS] Skipping API translation to prevent fetch errors for: ${article.title}`,
-    );
-    setTranslatedTitles((prev) => ({ ...prev, [article.id]: article.title }));
-    return article.title;
+    // Always cache the translation result (even if unchanged)
+    setTranslatedTitles((prev) => ({
+      ...prev,
+      [article.id]: offlineTranslation,
+    }));
+    return offlineTranslation;
 
     setLoadingTranslation((prev) => ({ ...prev, [article.id]: true }));
 
