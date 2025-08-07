@@ -258,7 +258,7 @@ export default function Index() {
         <main role="main">
           {/* Real-Time EODHD Market Ticker - Always Visible */}
           <div className="fixed top-0 left-0 right-0 z-[70] w-full">
-            <EODHDPriceTicker className="w-full" />
+            <EnhancedPriceTicker className="w-full" />
           </div>
 
           {/* Floating Navigation Header */}
@@ -452,23 +452,21 @@ export default function Index() {
                               <Bell className="w-4 h-4 mr-2" />
                               <span>
                                 {language === "ar"
-                                  ? "عرض بيانات تجريبية - سيتم التحديث عند استعادة الاتصال"
+                                  ? "عرض بيان��ت تجريبية - سيتم التحديث عند استعادة الاتصال"
                                   : "Showing demo data - will update when connection is restored"}
                               </span>
                             </div>
                           </div>
                         )}
-                        <MacroCalendarTable
+                        <EnhancedMacroCalendar
                           events={economicEvents}
                           className="rounded-lg overflow-hidden"
-                          language={language}
-                          dir={dir}
                           onRefresh={(filters) => {
                             console.log("Refreshing with filters:", filters);
                             fetchEconomicEvents(language, filters);
                           }}
-                          onCreateAlert={(event) => {
-                            console.log("Creating alert for event:", event);
+                          onCreateAlert={(event, type) => {
+                            console.log("Creating alert for event:", event, "type:", type);
                             // Scroll to alerts section to create the alert
                             document
                               .getElementById("alerts")
@@ -543,7 +541,7 @@ export default function Index() {
                     : "Create intelligent alerts for currency pairs with real-time price monitoring"}
                 </p>
               </div>
-              <AdvancedAlertSystem />
+              <SeparatedAlertSystem />
             </div>
           </section>
 
