@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+import { apiOptimizer, generateCacheKey, getClientId } from "../utils/rate-limiter";
 
 // OpenAI integration for news/event analysis
 export const handleAIAnalysis: RequestHandler = async (req, res) => {
