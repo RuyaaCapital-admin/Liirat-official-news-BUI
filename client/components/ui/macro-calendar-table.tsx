@@ -439,6 +439,25 @@ export function MacroCalendarTable({
         matchesSearch && matchesCountry && matchesImportance && matchesDate
       );
     });
+
+    // Sort events by date - soonest first
+    const sorted = filtered.sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      const now = Date.now();
+
+      // Prioritize upcoming events over past events
+      const aIsUpcoming = dateA >= now;
+      const bIsUpcoming = dateB >= now;
+
+      if (aIsUpcoming && !bIsUpcoming) return -1;
+      if (!aIsUpcoming && bIsUpcoming) return 1;
+
+      // Within the same category (upcoming or past), sort by date
+      return dateA - dateB;
+    });
+
+    return sorted;
   }, [
     events,
     searchTerm,
@@ -640,7 +659,7 @@ export function MacroCalendarTable({
                   <Input
                     placeholder={t(
                       "Search countries...",
-                      "البحث في البلدان...",
+                      "البحث في الب��دان...",
                     )}
                     value={countrySearchTerm}
                     onChange={(e) => setCountrySearchTerm(e.target.value)}
