@@ -28,7 +28,7 @@ const TICKER_CONFIG = [
   { symbol: "USDJPY.FOREX", displayName: "USD/JPY", priority: 1 },
 
   // TIER 2: Important but can load slower
-  { symbol: "GC.COMEX", displayName: "GOLD", priority: 2 },
+  { symbol: "XAUUSD.FOREX", displayName: "GOLD", priority: 2 },
   { symbol: "AAPL.US", displayName: "APPLE", priority: 2 },
   { symbol: "MSFT.US", displayName: "MICROSOFT", priority: 2 },
   { symbol: "NVDA.US", displayName: "NVIDIA", priority: 2 },
