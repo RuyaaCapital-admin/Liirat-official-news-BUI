@@ -143,10 +143,10 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     }
   };
 
-  // Initial fetch and periodic refresh
+  // Initial fetch and periodic refresh (reduced frequency)
   useEffect(() => {
     fetchNews();
-    const interval = setInterval(fetchNews, 300000); // Refresh every 5 minutes
+    const interval = setInterval(fetchNews, 600000); // Refresh every 10 minutes to reduce API calls
     return () => clearInterval(interval);
   }, [selectedTimeframe, selectedCategory, selectedSymbol]);
 
@@ -196,7 +196,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         setAiAnalysis(prev => ({ 
           ...prev, 
           [article.id]: language === "ar" 
-            ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
+            ? "��حليل الذكاء الاصطناعي غير متاح حاليًا"
             : "AI analysis currently unavailable"
         }));
       }
