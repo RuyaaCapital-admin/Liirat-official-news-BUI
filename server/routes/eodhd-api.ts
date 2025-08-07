@@ -110,7 +110,6 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
             changePct: +(changePct ?? 0),
             ts: +(timestamp ?? Date.now()),
           };
-          console.log(`✅ Success for ${symbol}:`, priceData);
           results.push(priceData);
         } else {
           console.warn(`❌ Failed response for ${symbol}:`, r);
