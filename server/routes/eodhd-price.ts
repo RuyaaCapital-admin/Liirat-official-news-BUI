@@ -174,7 +174,7 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
 
     // NO MOCK DATA - ONLY REAL DATA ALLOWED
 
-    // Filter out invalid prices (but keep prices that have valid previousClose for gold)
+    // Filter out invalid prices (but keep prices that have valid previousClose for metals)
     prices = prices.filter(
       (p) => p.price > 0 || (p.previous_close && p.previous_close > 0),
     );
