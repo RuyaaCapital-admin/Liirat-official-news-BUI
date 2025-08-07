@@ -261,51 +261,42 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
     initializePriceTicker();
   }, []);
 
-  // Start fetching data immediately
+  // Start fetching data immediately using batch requests
   useEffect(() => {
-    console.log("[TICKER] Starting price updates immediately");
+    console.log("[TICKER] Starting price updates with batch API");
 
-    // Start fetching by priority tiers to reduce load
-    const tier1 = TICKER_CONFIG.filter((c) => c.priority === 1);
-    const tier2 = TICKER_CONFIG.filter((c) => c.priority === 2);
-    const tier3 = TICKER_CONFIG.filter((c) => c.priority === 3);
+    const tier1 = TICKER_CONFIG.filter((c) => c.priority === 1).map(c => c.symbol);
+    const tier2 = TICKER_CONFIG.filter((c) => c.priority === 2).map(c => c.symbol);
+    const tier3 = TICKER_CONFIG.filter((c) => c.priority === 3).map(c => c.symbol);
 
     // Fetch tier 1 immediately (most important)
-    tier1.forEach((config, index) => {
-      setTimeout(() => {
-        fetchPriceData(config.symbol);
-      }, index * 1000); // 1 second between tier 1
-    });
+    if (tier1.length > 0) {
+      fetchBatchPriceData(tier1);
+    }
 
     // Fetch tier 2 after 10 seconds
     setTimeout(() => {
-      tier2.forEach((config, index) => {
-        setTimeout(() => {
-          fetchPriceData(config.symbol);
-        }, index * 2000); // 2 seconds between tier 2
-      });
+      if (tier2.length > 0) {
+        fetchBatchPriceData(tier2);
+      }
     }, 10000);
 
     // Fetch tier 3 after 30 seconds
     setTimeout(() => {
-      tier3.forEach((config, index) => {
-        setTimeout(() => {
-          fetchPriceData(config.symbol);
-        }, index * 3000); // 3 seconds between tier 3
-      });
+      if (tier3.length > 0) {
+        fetchBatchPriceData(tier3);
+      }
     }, 30000);
 
     // Set up interval for updates - only tier 1 updates frequently
     const interval = setInterval(() => {
-      tier1.forEach((config, index) => {
-        setTimeout(() => {
-          fetchPriceData(config.symbol);
-        }, index * 2000);
-      });
+      if (tier1.length > 0) {
+        fetchBatchPriceData(tier1);
+      }
     }, 120000); // Update tier 1 every 2 minutes
 
     return () => clearInterval(interval);
-  }, []); // Remove dependency on network status
+  }, []);
 
   // Get ALL price entries for display - show every symbol regardless of status
   const validPrices = Object.values(priceData);
