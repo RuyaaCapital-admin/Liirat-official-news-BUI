@@ -16,18 +16,23 @@ interface TickerProps {
   className?: string;
 }
 
-// Configuration for the 10 required pairs with correct EODHD endpoints
+// Configuration for the most traded pairs with EODHD endpoints
 const TICKER_CONFIG = [
-  { symbol: "EURUSD.FOREX", displayName: "EUR/USD", wsType: "forex" },
-  { symbol: "USDJPY.FOREX", displayName: "USD/JPY", wsType: "forex" },
-  { symbol: "GBPUSD.FOREX", displayName: "GBP/USD", wsType: "forex" },
-  { symbol: "AUDUSD.FOREX", displayName: "AUD/USD", wsType: "forex" },
-  { symbol: "USDCHF.FOREX", displayName: "USD/CHF", wsType: "forex" },
-  { symbol: "USDCAD.FOREX", displayName: "USD/CAD", wsType: "forex" },
-  { symbol: "BTC-USD.CC", displayName: "BTC/USD", wsType: "crypto" },
-  { symbol: "ETH-USD.CC", displayName: "ETH/USD", wsType: "crypto" },
-  { symbol: "XAUUSD.FOREX", displayName: "XAU/USD", wsType: "forex" },
-  { symbol: "GSPC.INDX", displayName: "S&P 500", wsType: "us" },
+  { symbol: "EURUSD.FOREX", displayName: "EUR/USD" },
+  { symbol: "USDJPY.FOREX", displayName: "USD/JPY" },
+  { symbol: "GBPUSD.FOREX", displayName: "GBP/USD" },
+  { symbol: "AUDUSD.FOREX", displayName: "AUD/USD" },
+  { symbol: "USDCHF.FOREX", displayName: "USD/CHF" },
+  { symbol: "USDCAD.FOREX", displayName: "USD/CAD" },
+  { symbol: "NZDUSD.FOREX", displayName: "NZD/USD" },
+  { symbol: "EURGBP.FOREX", displayName: "EUR/GBP" },
+  { symbol: "EURJPY.FOREX", displayName: "EUR/JPY" },
+  { symbol: "GBPJPY.FOREX", displayName: "GBP/JPY" },
+  { symbol: "BTC-USD.CC", displayName: "BTC/USD" },
+  { symbol: "ETH-USD.CC", displayName: "ETH/USD" },
+  { symbol: "XAUUSD.FOREX", displayName: "XAU/USD" },
+  { symbol: "XAGUSD.FOREX", displayName: "XAG/USD" },
+  { symbol: "GSPC.INDX", displayName: "S&P 500" },
 ];
 
 // Note: API key should be handled on backend only
@@ -36,8 +41,9 @@ const TICKER_CONFIG = [
 export default function EnhancedPriceTicker({ className }: TickerProps) {
   const [priceData, setPriceData] = useState<Record<string, PriceData>>({});
   const [currentIndex, setCurrentIndex] = useState(0);
-  const wsConnections = useRef<Record<string, WebSocket>>({});
-  const reconnectTimeouts = useRef<Record<string, NodeJS.Timeout>>({});
+  const [isScrolling, setIsScrolling] = useState(true);
+  const fetchTimeouts = useRef<Record<string, NodeJS.Timeout>>({});
+  const lastFetchTime = useRef<Record<string, number>>({});
 
   // Initialize price data
   useEffect(() => {
