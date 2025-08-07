@@ -183,7 +183,7 @@ export default function Index() {
         <main role="main">
           {/* Real-Time Market Ticker - Always Visible */}
           <div className="fixed top-0 left-0 right-0 z-[70] w-full">
-            <TradingViewTicker className="w-full" />
+            <CustomPriceTicker className="w-full" />
           </div>
 
           {/* Floating Navigation Header */}
@@ -430,7 +430,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيهات ذكية ��أزواج العملات مع مراقبة الأسعار في الوقت الفعلي"
+                    ? "قم بإنشاء تنبيهات ذكية لأزواج العملات مع مراقبة الأسعار في الوقت الفعلي"
                     : "Create intelligent alerts for currency pairs with real-time price monitoring"}
                 </p>
               </div>
