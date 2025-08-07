@@ -92,10 +92,14 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
     // Transform EODHD response to our format
     const events: EconomicEvent[] = Array.isArray(data)
       ? data.map((event: any) => {
-          // Create a descriptive event name from type, comparison, and period
+          // Create a properly formatted event name
           let eventName = event.type || "Economic Event";
           if (event.comparison && event.period) {
-            eventName = `${event.type} (${event.comparison.toUpperCase()}) - ${event.period}`;
+            const comparisonText = event.comparison === 'mom' ? 'Month-over-Month' :
+                                 event.comparison === 'yoy' ? 'Year-over-Year' :
+                                 event.comparison === 'qoq' ? 'Quarter-over-Quarter' :
+                                 event.comparison.toUpperCase();
+            eventName = `${event.type} (${comparisonText}) - ${event.period}`;
           } else if (event.period) {
             eventName = `${event.type} - ${event.period}`;
           }
