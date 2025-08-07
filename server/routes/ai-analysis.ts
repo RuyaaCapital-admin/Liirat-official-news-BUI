@@ -254,8 +254,12 @@ export const handleTranslation: RequestHandler = async (req, res) => {
       text: req.body.text?.substring(0, 50) + '...'
     });
 
+    const errorMessage = req.body.targetLanguage === "ar"
+      ? `فشلت الترجمة: ${error instanceof Error ? error.message : 'خطأ غير معروف'}`
+      : `Translation failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
+
     res.status(500).json({
-      error: `Translation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      error: errorMessage,
       translatedText: req.body.text, // Return original text as fallback
     });
   }
