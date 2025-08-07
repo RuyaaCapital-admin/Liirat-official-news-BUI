@@ -422,187 +422,50 @@ export default function EnhancedMacroCalendar({
   return (
     <div className={cn("w-full space-y-4", className)}>
       {/* Header Controls - Always Visible */}
-      <div className="flex flex-wrap gap-4 items-center justify-between">
-        {/* Left side - Time period selector (always visible) */}
-        <div className="flex items-center gap-2">
-          <Select value={selectedPeriod} onValueChange={handlePeriodChange}>
-            <SelectTrigger className="w-[150px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {TIME_PERIODS.map((period) => (
-                <SelectItem key={period.value} value={period.value}>
-                  {language === "ar" ? period.labelAr : period.labelEn}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <div className="space-y-4">
+        {/* Primary Controls Row */}
+        <div className="flex flex-wrap gap-4 items-center justify-between">
+          {/* Left side - Time period and timezone (always visible) */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                {language === "ar" ? "الفترة:" : "Period:"}
+              </label>
+              <Select value={selectedPeriod} onValueChange={handlePeriodChange}>
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TIME_PERIODS.map((period) => (
+                    <SelectItem key={period.value} value={period.value}>
+                      {language === "ar" ? period.labelAr : period.labelEn}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <Select value={selectedTimezone} onValueChange={setSelectedTimezone}>
-            <SelectTrigger className="w-[180px]">
-              <Globe className="w-4 h-4 mr-2" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {TIMEZONES.map((tz) => (
-                <SelectItem key={tz.value} value={tz.value}>
-                  {tz.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                {language === "ar" ? "التوقيت:" : "Time:"}
+              </label>
+              <Select value={selectedTimezone} onValueChange={setSelectedTimezone}>
+                <SelectTrigger className="w-[140px]">
+                  <Globe className="w-4 h-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TIMEZONES.map((tz) => (
+                    <SelectItem key={tz.value} value={tz.value}>
+                      {tz.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-        {/* Right side - Filter and Refresh */}
-        <div className="flex items-center gap-2">
-          <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2">
-                <Filter className="w-4 h-4" />
-                {language === "ar" ? "فلاتر" : "Filters"}
-                <ChevronDown className="w-4 h-4" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80" align="end">
-              <div className="space-y-4">
-                <h4 className="font-medium">
-                  {language === "ar" ? "خيارات الفلترة" : "Filter Options"}
-                </h4>
-
-                {/* Search */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {language === "ar" ? "البحث" : "Search"}
-                  </label>
-                  <div className="relative">
-                    <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      placeholder={
-                        language === "ar"
-                          ? "البحث في الأحداث..."
-                          : "Search events..."
-                      }
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                {/* Category Filter */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {language === "ar" ? "الفئة" : "Category"}
-                  </label>
-                  <Select
-                    value={selectedCategory}
-                    onValueChange={setSelectedCategory}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {EVENT_CATEGORIES.map((category) => (
-                        <SelectItem key={category.value} value={category.value}>
-                          {language === "ar"
-                            ? category.labelAr
-                            : category.labelEn}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Country Filter */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {language === "ar" ? "الدول" : "Countries"}
-                  </label>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-between"
-                      >
-                        {selectedCountries.length === 0
-                          ? language === "ar"
-                            ? "جميع الدول"
-                            : "All Countries"
-                          : `${selectedCountries.length} ${language === "ar" ? "دولة مختارة" : "selected"}`}
-                        <ChevronDown className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56">
-                      <DropdownMenuItem
-                        onClick={() => setSelectedCountries([])}
-                      >
-                        {language === "ar" ? "جميع الدول" : "All Countries"}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      {COUNTRIES.map((country) => (
-                        <DropdownMenuItem
-                          key={country}
-                          onClick={() => {
-                            setSelectedCountries((prev) =>
-                              prev.includes(country)
-                                ? prev.filter((c) => c !== country)
-                                : [...prev, country],
-                            );
-                          }}
-                        >
-                          <Checkbox
-                            checked={selectedCountries.includes(country)}
-                            className="mr-2"
-                          />
-                          <ReactCountryFlag
-                            countryCode={country}
-                            svg
-                            className="mr-2"
-                          />
-                          {country}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-
-                {/* Importance Filter */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {language === "ar" ? "مستوى الأهمية" : "Importance Level"}
-                  </label>
-                  <div className="flex gap-2">
-                    {[3, 2, 1].map((level) => (
-                      <Button
-                        key={level}
-                        variant={
-                          selectedImportance.includes(level)
-                            ? "default"
-                            : "outline"
-                        }
-                        size="sm"
-                        onClick={() => {
-                          setSelectedImportance((prev) =>
-                            prev.includes(level)
-                              ? prev.filter((l) => l !== level)
-                              : [...prev, level],
-                          );
-                        }}
-                        className={
-                          selectedImportance.includes(level)
-                            ? getImportanceColor(level)
-                            : ""
-                        }
-                      >
-                        {getImportanceLabel(level)}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-
+          {/* Right side - Refresh */}
           <Button
             variant="outline"
             onClick={() => onRefresh && onRefresh()}
@@ -612,7 +475,154 @@ export default function EnhancedMacroCalendar({
             {language === "ar" ? "تحديث" : "Refresh"}
           </Button>
         </div>
+
+        {/* Filters Row - Always Visible */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg">
+          <div className="md:col-span-4 mb-2">
+            <h4 className="font-medium text-sm">
+              {language === "ar" ? "فلاتر" : "Filters"}
+              {(searchTerm || selectedCountries.length > 0 || selectedImportance.length < 3 || selectedCategory !== "all") && (
+                <Badge variant="secondary" className="ml-2 text-xs">
+                  {language === "ar" ? "نشط" : "Active"}
+                </Badge>
+              )}
+            </h4>
+          </div>
+
+          {/* Search */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">
+              {language === "ar" ? "البحث" : "Search"}
+            </label>
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder={
+                  language === "ar"
+                    ? "البحث في الأحداث..."
+                    : "Search events..."
+                }
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 h-9"
+              />
+            </div>
+          </div>
+
+          {/* Category Filter */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">
+              {language === "ar" ? "الفئة" : "Category"}
+            </label>
+            <Select
+              value={selectedCategory}
+              onValueChange={setSelectedCategory}
+            >
+              <SelectTrigger className="h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {EVENT_CATEGORIES.map((category) => (
+                  <SelectItem key={category.value} value={category.value}>
+                    {language === "ar"
+                      ? category.labelAr
+                      : category.labelEn}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Countries */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">
+              {language === "ar" ? "الدول" : "Countries"}
+            </label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-between h-9 text-sm"
+                >
+                  {selectedCountries.length === 0
+                    ? language === "ar"
+                      ? "جميع الدول"
+                      : "All Countries"
+                    : `${selectedCountries.length} ${language === "ar" ? "دولة" : "selected"}`}
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuItem
+                  onClick={() => setSelectedCountries([])}
+                >
+                  {language === "ar" ? "جميع الدول" : "All Countries"}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {COUNTRIES.map((country) => (
+                  <DropdownMenuItem
+                    key={country}
+                    onClick={() => {
+                      setSelectedCountries((prev) =>
+                        prev.includes(country)
+                          ? prev.filter((c) => c !== country)
+                          : [...prev, country],
+                      );
+                    }}
+                  >
+                    <Checkbox
+                      checked={selectedCountries.includes(country)}
+                      className="mr-2"
+                    />
+                    <ReactCountryFlag
+                      countryCode={country}
+                      svg
+                      className="mr-2"
+                    />
+                    {country}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Importance Filter */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">
+              {language === "ar" ? "مستوى الأهمية" : "Importance"}
+            </label>
+            <div className="flex gap-1">
+              {[3, 2, 1].map((level) => (
+                <Button
+                  key={level}
+                  variant={
+                    selectedImportance.includes(level)
+                      ? "default"
+                      : "outline"
+                  }
+                  size="sm"
+                  onClick={() => {
+                    setSelectedImportance((prev) =>
+                      prev.includes(level)
+                        ? prev.filter((l) => l !== level)
+                        : [...prev, level],
+                    );
+                  }}
+                  className={cn(
+                    "h-9 px-2 text-xs",
+                    selectedImportance.includes(level)
+                      ? getImportanceColor(level)
+                      : ""
+                  )}
+                >
+                  {getImportanceLabel(level)}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
+
 
       {/* Events Table */}
       <div className="border border-border rounded-lg overflow-hidden">
