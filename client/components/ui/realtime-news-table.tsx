@@ -131,14 +131,14 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         limit: "50",
       });
 
-      if (selectedCategory !== "all") {
-        params.append("category", selectedCategory);
-      }
+      // EODHD API requires either 's' (symbol) or 't' (topic) parameter
       if (selectedSymbol !== "all") {
-        params.append("symbol", selectedSymbol);
-      }
-      if (searchTerm.trim()) {
-        params.append("search", searchTerm.trim());
+        params.append("s", selectedSymbol);
+      } else if (selectedCategory !== "all") {
+        params.append("t", selectedCategory);
+      } else {
+        // Default to general financial news
+        params.append("t", "financial");
       }
 
       console.log(`Fetching news with params: ${params.toString()}`);
