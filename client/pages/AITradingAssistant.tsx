@@ -560,7 +560,7 @@ const AITradingAssistant: React.FC = () => {
 
             {/* Market Data and News */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Live Market Data - Real TradingView Widget */}
+              {/* Live Market Data - EODHD Data Only */}
               <Card>
                 <CardHeader className="pb-4">
                   <div className="flex items-center gap-3">
