@@ -74,9 +74,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Determine symbol type and format correctly for EODHD
     const symbolStr = (symbol || symbols) as string;
     const isCrypto =
-      symbolStr.includes("-USD") ||
+      symbolStr.includes("-USD.CC") ||
       symbolStr.includes("BTC") ||
       symbolStr.includes("ETH");
+    const isMetal = symbolStr === "XAUUSD" || symbolStr === "XAGUSD";
     const isIndex = symbolStr === "GSPC" || symbolStr.includes(".INDX");
 
     // Use the official real-time API endpoint format
