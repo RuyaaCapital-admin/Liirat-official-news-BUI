@@ -57,6 +57,7 @@ export function createServer() {
   // EODHD API routes
   app.get("/eodhd-calendar", handleEODHDCalendar);
   app.get("/eodhd-price", handleEODHDPrice);
+  app.use("/", eodhd_news);
 
   return app;
 }
