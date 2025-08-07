@@ -4,12 +4,16 @@
   "framework": "vite",
   "functions": {
     "api/**/*.ts": {
+ codex/confirm-api-connections-and-fix-vercel-build
       "runtime": "@vercel/node@5.3.11"
+
+      "runtime": "nodejs20"
+ main
     }
   },
   "rewrites": [
     {
-      "source": "/((?!api).*)",
+      "source": "/:path(((?api).*))",
       "destination": "/index.html"
     }
   ],
@@ -32,7 +36,7 @@
       ]
     },
     {
-      "source": "/api/(.*)",
+      "source": "/api/(.*(?!!))",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
