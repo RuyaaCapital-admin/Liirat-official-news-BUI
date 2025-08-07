@@ -253,7 +253,7 @@ export default function DynamicAlertSystem({
         console.error("Error fetching symbol price:", error);
         toast.error(
           language === "ar"
-            ? "خطأ في جلب السعر ال��الي"
+            ? "خطأ في جلب السعر الحالي"
             : "Error fetching current price",
         );
       } finally {
