@@ -54,17 +54,23 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
   // Network connectivity check
   const checkNetworkConnectivity = async (): Promise<boolean> => {
     // Basic browser online check first
-    if (!navigator.onLine) {
+    if (!navigator?.onLine) {
       return false;
     }
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
       const response = await fetch("/api/status", {
         method: "GET",
-        signal: AbortSignal.timeout(3000), // Reduced timeout
+        signal: controller.signal,
       });
-      return response.ok;
-    } catch {
+
+      clearTimeout(timeoutId);
+      return response?.ok || false;
+    } catch (error) {
+      console.debug("[TICKER] Network connectivity check failed:", error);
       return false;
     }
   };
@@ -121,11 +127,19 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         );
       } catch (fetchError) {
         console.warn(`[TICKER] Fetch failed for ${symbol}:`, fetchError);
-        // Return early for network errors to avoid retry storms
+        clearTimeout(timeoutId);
+
+        // Set disconnected status and return early for network errors
         setPriceData((prev) => ({
           ...prev,
-          [symbol]: { ...prev[symbol], status: "disconnected" },
+          [symbol]: {
+            ...prev[symbol],
+            status: "disconnected",
+            lastUpdate: new Date(),
+          },
         }));
+
+        // Don't retry on basic fetch failures - they indicate network issues
         return;
       }
 
@@ -201,14 +215,21 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
       const isNetworkError =
         errorMessage.includes("Failed to fetch") ||
         errorMessage.includes("NetworkError") ||
-        errorMessage.includes("AbortError");
+        errorMessage.includes("AbortError") ||
+        errorMessage.includes("TypeError");
 
-      // Retry on network errors but with exponential backoff
-      if (isNetworkError && retryCount < maxRetries) {
+      // Only retry on specific network errors and within retry limits
+      if (isNetworkError && retryCount < maxRetries && retryCount < 2) {
         console.log(
           `[TICKER] Retrying ${symbol} due to network error in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`,
         );
-        setTimeout(() => fetchPriceData(symbol, retryCount + 1), retryDelay);
+        setTimeout(() => {
+          try {
+            fetchPriceData(symbol, retryCount + 1);
+          } catch (retryError) {
+            console.error(`[TICKER] Retry failed for ${symbol}:`, retryError);
+          }
+        }, retryDelay);
         return;
       }
 

@@ -1,11 +1,10 @@
 {
-  "version": 2,
   "buildCommand": "npm run build:client",
   "outputDirectory": "dist/spa",
   "framework": "vite",
   "functions": {
     "api/**/*.ts": {
-      "runtime": "@vercel/node"
+      "runtime": "@vercel/node@20.x"
     }
   },
   "rewrites": [

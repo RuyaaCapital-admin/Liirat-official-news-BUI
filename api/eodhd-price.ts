@@ -74,9 +74,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Determine symbol type and format correctly for EODHD
     const symbolStr = (symbol || symbols) as string;
     const isCrypto =
-      symbolStr.includes("-USD") ||
+      symbolStr.includes("-USD.CC") ||
       symbolStr.includes("BTC") ||
       symbolStr.includes("ETH");
+    const isMetal =
+      symbolStr.includes("GC.COMEX") || symbolStr.includes("SI.COMEX");
     const isIndex = symbolStr === "GSPC" || symbolStr.includes(".INDX");
 
     // Use the official real-time API endpoint format
@@ -189,16 +191,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 function transformPriceData(item: any, originalSymbol: string): PriceData {
   // Parse values from EODHD response
-  const price = parseFloat(
+  let price = parseFloat(
     item.close || item.price || item.last || item.value || 0,
   );
   const previousClose = parseFloat(
-    item.previousClose || item.previous_close || item.close || 0,
+    item.previousClose || item.previous_close || 0,
   );
-  const change = parseFloat(item.change || 0) || price - previousClose;
+
+  // Special handling for metals when close is NA but previousClose exists
+  if (
+    (price === 0 || isNaN(price) || item.close === "NA") &&
+    previousClose > 0
+  ) {
+    price = previousClose;
+    console.log(`Using previousClose for ${item.code}: ${price}`);
+  }
+
+  const change =
+    parseFloat(item.change || 0) ||
+    (price && previousClose ? price - previousClose : 0);
   const change_percent =
     parseFloat(item.change_p || item.change_percent || 0) ||
-    (previousClose > 0 ? (change / previousClose) * 100 : 0);
+    (previousClose > 0 && change !== 0 ? (change / previousClose) * 100 : 0);
 
   console.log(
     `Transforming data for ${item.code}: price=${price}, change=${change}, change_p=${change_percent}`,
@@ -211,9 +225,10 @@ function transformPriceData(item: any, originalSymbol: string): PriceData {
     change: change,
     change_percent: change_percent,
     currency: item.currency || undefined,
-    timestamp: item.timestamp
-      ? new Date(item.timestamp * 1000).toISOString()
-      : new Date().toISOString(),
+    timestamp:
+      item.timestamp && item.timestamp !== "NA"
+        ? new Date(item.timestamp * 1000).toISOString()
+        : new Date().toISOString(),
     market_status: item.market_status || undefined,
     volume: parseFloat(item.volume || 0) || undefined,
     high: parseFloat(item.high || 0) || undefined,

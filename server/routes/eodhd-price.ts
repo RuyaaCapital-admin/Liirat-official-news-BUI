@@ -66,9 +66,10 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     const isIndex = symbolStr.includes(".INDX");
     const isForex = symbolStr.includes(".FOREX");
     const isUSStock = symbolStr.includes(".US");
-    const isCommodity = symbolStr.includes(".F");
+    const isCommodity =
+      symbolStr.includes(".F") || symbolStr.includes(".COMEX");
     const isMetal =
-      symbolStr.includes("XAUUSD") || symbolStr.includes("XAGUSD");
+      symbolStr.includes("GC.COMEX") || symbolStr.includes("SI.COMEX");
 
     let apiUrl: URL;
     let finalSymbol = symbolStr;
@@ -76,6 +77,10 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     if (isCrypto) {
       // Crypto API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/crypto");
+      finalSymbol = symbolStr;
+    } else if (isCommodity || isMetal) {
+      // Commodities API endpoint (includes COMEX metals)
+      apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
       finalSymbol = symbolStr;
     } else if (isIndex) {
       // Indices API endpoint
@@ -85,12 +90,8 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       // US Stocks API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
       finalSymbol = symbolStr;
-    } else if (isCommodity) {
-      // Commodities API endpoint
-      apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
-      finalSymbol = symbolStr;
-    } else if (isForex || isMetal) {
-      // Forex API endpoint for currency pairs and metals
+    } else if (isForex) {
+      // Forex API endpoint for currency pairs
       apiUrl = new URL("https://eodhd.com/api/real-time/forex");
       finalSymbol = symbolStr;
     } else {
@@ -164,7 +165,15 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     if (Array.isArray(data)) {
       // Multiple symbols response or single symbol in array
       prices = data
-        .filter((item: any) => item && item.code && item.close !== "NA")
+        .filter((item: any) => {
+          // Include items with valid previousClose even if close is NA (for metals)
+          return (
+            item &&
+            item.code &&
+            (item.close !== "NA" ||
+              (item.previousClose && item.previousClose !== "NA"))
+          );
+        })
         .map((item: any) => transformPriceData(item, symbolStr));
     } else if (data && typeof data === "object" && data.code) {
       // Single symbol response
@@ -175,10 +184,8 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
 
     // NO MOCK DATA - ONLY REAL DATA ALLOWED
 
-    // Filter out invalid prices (but keep prices that have valid previousClose for gold)
-    prices = prices.filter(
-      (p) => p.price > 0 || (p.previous_close && p.previous_close > 0),
-    );
+    // Filter out invalid prices (but keep prices that have valid previousClose for metals)
+    prices = prices.filter((p) => p.price > 0);
 
     console.log("Transformed prices:", JSON.stringify(prices, null, 2));
 
@@ -237,7 +244,6 @@ function transformPriceData(item: any, originalSymbol: string): PriceData {
     previousClose > 0
   ) {
     price = previousClose;
-    // For metals, set minimal change to show it's using previous close
     console.log(`Using previousClose for ${item.code}: ${price}`);
   }
 
@@ -259,9 +265,10 @@ function transformPriceData(item: any, originalSymbol: string): PriceData {
     change: change,
     change_percent: change_percent,
     currency: item.currency || undefined,
-    timestamp: item.timestamp
-      ? new Date(item.timestamp * 1000).toISOString()
-      : new Date().toISOString(),
+    timestamp:
+      item.timestamp && item.timestamp !== "NA"
+        ? new Date(item.timestamp * 1000).toISOString()
+        : new Date().toISOString(),
     market_status: item.market_status || undefined,
     volume: parseFloat(item.volume || 0) || undefined,
     high: parseFloat(item.high || 0) || undefined,
