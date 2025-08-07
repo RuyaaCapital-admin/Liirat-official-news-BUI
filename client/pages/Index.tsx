@@ -16,7 +16,7 @@ import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import EnhancedMacroCalendar from "@/components/ui/enhanced-macro-calendar";
 import RealtimeNewsTable from "@/components/ui/realtime-news-table";
-import EnhancedAlertSystem from "@/components/ui/enhanced-alert-system";
+import DynamicAlertSystem from "@/components/ui/dynamic-alert-system";
 import { EconomicEventsResponse, EconomicEvent } from "@shared/api";
 import { NotificationSystem } from "@/components/ui/notification-system";
 import { NotificationDropdown } from "@/components/ui/notification-dropdown";
@@ -617,11 +617,11 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيهات ذكية لأزواج العملات مع مراقبة الأسعار في الوقت الفعلي"
-                    : "Create intelligent alerts for currency pairs with real-time price monitoring"}
+                    ? "قم بإنشاء تنبيهات ذكية لأي رمز مالي مع مراقبة الأسعار في الوقت الفعلي"
+                    : "Create intelligent alerts for any financial symbol with real-time price monitoring"}
                 </p>
               </div>
-              <EnhancedAlertSystem />
+              <DynamicAlertSystem />
             </div>
           </section>
 
