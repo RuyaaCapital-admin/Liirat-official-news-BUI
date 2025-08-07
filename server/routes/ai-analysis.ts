@@ -57,18 +57,15 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
     }
 
     // Create analysis prompt with the exact system prompt requested
-    const systemPrompt = "Summarize this event/news and its likely market effect in a short, honest, and clear way. Only base analysis on the event content, never randomize, never guess. Focus on what a trader needs to know — deliver clear benefit, no complexity.";
+    const systemPrompt = language === "ar"
+      ? "لخص هذا الحدث/الخبر وتأثيره المحتمل على السوق بطريقة قصيرة وصادقة وواضحة. اعتمد فقط على محتوى الحدث، لا تعشوائي أبداً، لا تخمن. ركز على ما يحتاج المتداول لمعرفته - قدم فائدة واضحة، بدون تعقيد."
+      : "Summarize this event/news and its likely market effect in a short, honest, and clear way. Only base analysis on the event content, never randomize, never guess. Focus on what a trader needs to know — deliver clear benefit, no complexity.";
 
     let userPrompt = "";
     if (type === "event") {
       userPrompt = `Economic Event: ${text}`;
     } else {
       userPrompt = `News: ${text}`;
-    }
-
-    // Add translation instruction for Arabic
-    if (language === "ar") {
-      userPrompt += "\n\nPlease provide the response in Arabic.";
     }
 
     console.log(`AI Analysis request: ${type} analysis for ${language}`);
@@ -85,7 +82,7 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
       },
       signal: controller.signal,
       body: JSON.stringify({
-        model: "gpt-4o-mini", // Using gpt-4o-mini as requested
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
@@ -96,8 +93,8 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
             content: userPrompt,
           },
         ],
-        max_tokens: 200,
-        temperature: 0.2,
+        max_tokens: 150,
+        temperature: 0.1,
       }),
     });
 
