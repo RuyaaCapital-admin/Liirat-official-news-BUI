@@ -387,12 +387,16 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
                   <div
                     className={cn(
                       "text-xs font-mono",
-                      data.changePercent >= 0
+                      data.status === "connecting"
+                        ? "text-muted-foreground"
+                        : data.changePercent >= 0
                         ? "text-green-500"
                         : "text-red-500",
                     )}
                   >
-                    {formatPercent(data.changePercent)}
+                    {data.status === "connecting"
+                      ? "API Key"
+                      : formatPercent(data.changePercent)}
                   </div>
                 </div>
               </div>
