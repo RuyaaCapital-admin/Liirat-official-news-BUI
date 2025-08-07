@@ -85,7 +85,7 @@ export function ModernEconomicCalendar({
     const countryTranslations = [
       { ar: "الولايات المتحدة", en: "United States", currency: "USD" },
       { ar: "ألمانيا", en: "Germany", currency: "EUR" },
-      { ar: "المملكة ال��تحدة", en: "United Kingdom", currency: "GBP" },
+      { ar: "المملكة المتحدة", en: "United Kingdom", currency: "GBP" },
       { ar: "اليابان", en: "Japan", currency: "JPY" },
       { ar: "كندا", en: "Canada", currency: "CAD" },
     ];
@@ -213,7 +213,7 @@ export function ModernEconomicCalendar({
       labelAr: "نيويورك (EST)",
       labelEn: "New York (EST)",
     },
-    { value: "Tokyo (JST)", labelAr: "طو��يو (JST)", labelEn: "Tokyo (JST)" },
+    { value: "Tokyo (JST)", labelAr: "طوكيو (JST)", labelEn: "Tokyo (JST)" },
     {
       value: "Sydney (AEDT)",
       labelAr: "سيدني (AEDT)",
@@ -421,7 +421,7 @@ export function ModernEconomicCalendar({
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
             <Filter className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-semibold">أدوات التصفية والبحث</h3>
+            <h3 className="text-lg font-semibold">أدو��ت التصفية والبحث</h3>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -944,7 +944,7 @@ export function ModernEconomicCalendar({
             {filteredEvents.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>لا توجد أحداث اقتصادية تطابق المرشحات المحددة</p>
+                <p>لا توجد أحداث اقتصادية تطابق المرشحا�� المحددة</p>
               </div>
             )}
           </div>
