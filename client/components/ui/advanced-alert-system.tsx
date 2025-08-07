@@ -74,7 +74,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     { symbol: "USDJPY", name: "USD/JPY", nameAr: "دولار/ين" },
     { symbol: "USDCHF", name: "USD/CHF", nameAr: "دولار/فرنك" },
     { symbol: "AUDUSD", name: "AUD/USD", nameAr: "دولار أسترالي/دولار" },
-    { symbol: "USDCAD", name: "USD/CAD", nameAr: "دولار/دولار كن��ي" },
+    { symbol: "USDCAD", name: "USD/CAD", nameAr: "دولار/دولار كندي" },
     { symbol: "NZDUSD", name: "NZD/USD", nameAr: "دولار نيوزيلندي/دولار" },
     { symbol: "EURGBP", name: "EUR/GBP", nameAr: "يورو/جنيه" },
     { symbol: "EURJPY", name: "EUR/JPY", nameAr: "يورو/ين" },
