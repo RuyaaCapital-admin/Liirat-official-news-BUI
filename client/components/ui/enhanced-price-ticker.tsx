@@ -124,12 +124,9 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
             method: "GET",
             headers: {
               Accept: "application/json",
-              "Cache-Control": "no-cache",
+              "Content-Type": "application/json",
             },
             signal: controller.signal,
-            // Add credentials and mode for CORS
-            mode: "cors",
-            credentials: "same-origin",
           },
         );
       } catch (fetchError) {
