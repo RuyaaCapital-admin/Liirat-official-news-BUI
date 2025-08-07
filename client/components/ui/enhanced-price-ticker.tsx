@@ -67,11 +67,15 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
 
   // Network connectivity check
   const checkNetworkConnectivity = async (): Promise<boolean> => {
+    // Basic browser online check first
+    if (!navigator.onLine) {
+      return false;
+    }
+
     try {
       const response = await fetch("/api/status", {
         method: "GET",
-        cache: "no-cache",
-        signal: AbortSignal.timeout(5000),
+        signal: AbortSignal.timeout(3000), // Reduced timeout
       });
       return response.ok;
     } catch {
