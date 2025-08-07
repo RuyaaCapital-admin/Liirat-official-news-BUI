@@ -628,7 +628,7 @@ export function MacroCalendarTable({
               >
                 <span className="flex items-center gap-2">
                   {selectedCountry === "all"
-                    ? t("Currency/Country", "الع��لة/البلد")
+                    ? t("Currency/Country", "العملة/البلد")
                     : (
                         <>
                           <div className="flex items-center">
@@ -838,6 +838,11 @@ export function MacroCalendarTable({
               `عرض ${filteredEvents.length} من ${events.length} حدث`,
             )}
           </span>
+          {lastUpdated && (
+            <span className="text-xs">
+              {t("Last updated", "آخر تحديث")}: {lastUpdated.toLocaleTimeString()}
+            </span>
+          )}
         </div>
       </div>
 
@@ -849,7 +854,7 @@ export function MacroCalendarTable({
             <div className="p-6 text-center text-muted-foreground bg-card rounded-lg border">
               {t(
                 "No events found matching your criteria",
-                "لا توجد أحداث تطابق معاييرك",
+                "لا توجد ��حداث تطابق معاييرك",
               )}
             </div>
           ) : (
