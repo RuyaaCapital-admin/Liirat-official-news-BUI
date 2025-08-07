@@ -31,18 +31,42 @@ export const handleRealtimeNews: RequestHandler = async (req, res) => {
 
   try {
     // Extract query parameters
-    const { 
-      category, 
-      symbol, 
-      tag, 
-      from, 
-      to, 
-      limit = "20", 
+    const {
+      category,
+      symbol,
+      tag,
+      from,
+      to,
+      limit = "20",
       offset = "0",
-      search 
+      search
     } = req.query;
 
     console.log("Real-time news request with filters:", { category, symbol, tag, from, to, limit, offset, search });
+
+    // Get client ID for rate limiting
+    const clientId = getClientId(req);
+
+    // Check rate limit
+    if (!apiOptimizer.checkRateLimit(clientId, 'news')) {
+      return res.status(429).json({
+        articles: [],
+        total: 0,
+        error: "Rate limit exceeded. Please try again later.",
+        retryAfter: 60
+      });
+    }
+
+    // Generate cache key
+    const cacheKey = generateCacheKey('news', {
+      category, symbol, tag, from, to, limit, offset, search
+    });
+
+    // Check cache first
+    const cachedData = apiOptimizer.getCached(cacheKey, 'news');
+    if (cachedData) {
+      return res.json(cachedData);
+    }
 
     // Build EODHD News API URL
     const apiUrl = new URL("https://eodhd.com/api/news");
