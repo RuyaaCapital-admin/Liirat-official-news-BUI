@@ -174,13 +174,13 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     if (language === "ar" && filteredArticles.length > 0) {
       // Debounce translation requests to avoid overwhelming the API
       const timer = setTimeout(() => {
-        filteredArticles.slice(0, Math.min(3, itemsToShow)).forEach((article, index) => {
+        filteredArticles.slice(0, Math.min(5, itemsToShow)).forEach((article, index) => {
           // Stagger requests to avoid rate limiting
           setTimeout(() => {
             translateTitle(article);
-          }, index * 300);
+          }, index * 600);
         });
-      }, 500);
+      }, 1000);
 
       return () => clearTimeout(timer);
     }
