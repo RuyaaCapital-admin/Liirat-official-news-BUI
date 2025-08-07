@@ -132,6 +132,12 @@ export default function Index() {
       const params = new URLSearchParams();
       params.append("limit", "50"); // Limit to 50 events for better performance
 
+      // Add date range - these are REQUIRED by EODHD API
+      const fromDate = filters?.from || new Date().toISOString().split('T')[0]; // Today
+      const toDate = filters?.to || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // Next 7 days
+      params.append("from", fromDate);
+      params.append("to", toDate);
+
       // Add importance filter
       if (filters?.importance?.length) {
         params.append("importance", filters.importance.join(","));
@@ -142,14 +148,6 @@ export default function Index() {
       // Add country filter
       if (filters?.country) {
         params.append("country", filters.country);
-      }
-
-      // Add date range filters
-      if (filters?.from) {
-        params.append("from", filters.from);
-      }
-      if (filters?.to) {
-        params.append("to", filters.to);
       }
 
       // Fetch from EODHD calendar endpoint with robust error handling
