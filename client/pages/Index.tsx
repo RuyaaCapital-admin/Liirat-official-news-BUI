@@ -247,7 +247,7 @@ export default function Index() {
         <main role="main">
           {/* Real-Time Market Ticker - Always Visible */}
           <div className="fixed top-0 left-0 right-0 z-[70] w-full">
-            <CustomPriceTicker className="w-full" />
+            <TradingViewTicker className="w-full" />
           </div>
 
           {/* Floating Navigation Header */}
@@ -412,7 +412,7 @@ export default function Index() {
                             <AlertTriangle className="w-4 h-4 mr-2" />
                             <span>
                               {language === "ar"
-                                ? "خطأ في تحميل التقويم الاقتصادي:"
+                                ? "خطأ في تحميل التقويم الا��تصادي:"
                                 : "Error loading economic calendar:"}{" "}
                               {eventsError.replace("API Error:", "Error")}
                             </span>
