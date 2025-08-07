@@ -85,7 +85,7 @@ const TIMEZONES = [
 
 // Time period options
 const TIME_PERIODS = [
-  { value: "this_week", labelEn: "This Week", labelAr: "هذا الأسبوع" },
+  { value: "this_week", labelEn: "This Week", labelAr: "هذا الأس��وع" },
   { value: "next_week", labelEn: "Next Week", labelAr: "الأسبوع القادم" },
   { value: "this_month", labelEn: "This Month", labelAr: "هذا الشهر" },
   { value: "custom", labelEn: "Custom Range", labelAr: "فترة مخصصة" },
@@ -446,7 +446,7 @@ export default function EnhancedMacroCalendar({
     return event.event; // Fallback to original
   };
 
-  // Handle AI analysis request
+  // Handle AI analysis request with better error handling
   const requestAIAnalysis = async (event: EconomicEvent) => {
     if (aiAnalysis[event.event] || loadingAnalysis[event.event]) {
       return;
@@ -455,6 +455,9 @@ export default function EnhancedMacroCalendar({
     setLoadingAnalysis((prev) => ({ ...prev, [event.event]: true }));
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
       const response = await fetch("/api/ai-analysis", {
         method: "POST",
         headers: {
@@ -465,19 +468,22 @@ export default function EnhancedMacroCalendar({
           language: language,
           type: "event",
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const data = await response.json();
-        setAiAnalysis((prev) => ({ ...prev, [event.event]: data.analysis }));
+        if (data.analysis) {
+          setAiAnalysis((prev) => ({ ...prev, [event.event]: data.analysis }));
+        } else {
+          throw new Error("No analysis received");
+        }
       } else {
-        setAiAnalysis((prev) => ({
-          ...prev,
-          [event.event]:
-            language === "ar"
-              ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
-              : "AI analysis currently unavailable",
-        }));
+        const errorData = await response.json();
+        console.error(`AI Analysis API error: ${response.status}`, errorData);
+        throw new Error(`API error: ${response.status}`);
       }
     } catch (error) {
       console.error("AI analysis error:", error);
@@ -708,7 +714,7 @@ export default function EnhancedMacroCalendar({
                   "px-4 py-3 text-sm font-medium w-[140px]",
                   dir === "rtl" ? "text-right" : "text-left"
                 )}>
-                  {language === "ar" ? "التاريخ والوقت" : "Date & Time"}
+                  {language === "ar" ? "��لتاريخ والوقت" : "Date & Time"}
                 </th>
                 <th className={cn(
                   "px-4 py-3 text-sm font-medium w-[100px]",
@@ -853,10 +859,10 @@ export default function EnhancedMacroCalendar({
                             onClick={() => requestAIAnalysis(event)}
                             disabled={loadingAnalysis[event.event]}
                             className={cn(
-                              "h-8 px-3 font-medium transition-all duration-200",
+                              "h-8 px-3 font-medium transition-all duration-200 shadow-sm",
                               aiAnalysis[event.event]
-                                ? "bg-primary text-primary-foreground shadow-md hover:shadow-lg"
-                                : "hover:bg-primary/10 border-primary/20",
+                                ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg"
+                                : "hover:bg-primary/10 border-primary/30 hover:border-primary/60",
                               loadingAnalysis[event.event] && "animate-pulse"
                             )}
                             title={
@@ -870,7 +876,7 @@ export default function EnhancedMacroCalendar({
                                 aiAnalysis[event.event] && "text-primary-foreground"
                               )}
                             />
-                            <span className="text-xs">
+                            <span className="text-xs font-medium">
                               {language === "ar" ? "تحليل" : "AI"}
                             </span>
                           </Button>
