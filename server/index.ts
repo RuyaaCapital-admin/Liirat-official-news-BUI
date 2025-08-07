@@ -53,5 +53,9 @@ export function createServer() {
   // Price alert route
   app.get("/api/price-alert", handlePriceAlert);
 
+  // EODHD API routes
+  app.get("/api/eodhd-calendar", handleEODHDCalendar);
+  app.get("/api/eodhd-price", handleEODHDPrice);
+
   return app;
 }
