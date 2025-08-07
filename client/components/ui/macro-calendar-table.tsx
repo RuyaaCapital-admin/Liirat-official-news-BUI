@@ -321,9 +321,14 @@ const getCountryName = (country: string, language: string) => {
 const formatDate = (dateStr: string, language: string) => {
   try {
     const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      return dateStr; // Return original if invalid date
+    }
+
     if (language === "ar") {
-      // Use Gregorian calendar for Arabic to avoid Islamic calendar months like "صفر"
+      // Use Gregorian calendar for Arabic with full date display
       return date.toLocaleDateString("ar-SA-u-ca-gregory", {
+        weekday: "short",
         month: "short",
         day: "numeric",
         hour: "2-digit",
@@ -332,6 +337,7 @@ const formatDate = (dateStr: string, language: string) => {
       });
     } else {
       return date.toLocaleDateString("en-US", {
+        weekday: "short",
         month: "short",
         day: "numeric",
         hour: "2-digit",
@@ -339,7 +345,8 @@ const formatDate = (dateStr: string, language: string) => {
         hour12: true,
       });
     }
-  } catch {
+  } catch (error) {
+    console.warn("Date formatting error:", error, "for date:", dateStr);
     return dateStr;
   }
 };
