@@ -270,21 +270,21 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
   useEffect(() => {
     console.log("[TICKER] Starting price updates immediately");
 
-    // Start fetching price data for all symbols (staggered) - ALWAYS TRY
+    // Start fetching price data for all symbols (staggered) - reduce concurrent requests
     TICKER_CONFIG.forEach((config, index) => {
       setTimeout(() => {
         fetchPriceData(config.symbol);
-      }, index * 1500); // 1.5 seconds between requests
+      }, index * 2000); // 2 seconds between requests to reduce load
     });
 
-    // Set up interval for continuous updates
+    // Set up interval for continuous updates - less frequent
     const interval = setInterval(() => {
       TICKER_CONFIG.forEach((config, index) => {
         setTimeout(() => {
           fetchPriceData(config.symbol);
-        }, index * 800); // 800ms between each update request
+        }, index * 1500); // 1.5 seconds between each update request
       });
-    }, 60000); // Update every 60 seconds
+    }, 90000); // Update every 90 seconds to reduce API load
 
     return () => clearInterval(interval);
   }, []); // Remove dependency on network status
