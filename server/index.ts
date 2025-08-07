@@ -10,14 +10,16 @@ import {
   handleTechnicalAnalysis,
 } from "./routes/ai-trading";
 import { handleChat } from "./routes/chat";
-import { getEconomicEvents, getNews } from "./routes/eodhd";
 import { handlePriceAlert } from "./routes/price-alert";
 import { handleMarketauxNews } from "./routes/marketaux-news";
-import { handleEODHDCalendar } from "./routes/eodhd-calendar";
-import { handleEODHDPrice } from "./routes/eodhd-price";
-import eodhd_news from "./routes/eodhd-news";
 import { handleAIAnalysis, handleTranslation } from "./routes/ai-analysis";
-import { handleRealtimeNews } from "./routes/realtime-news";
+import {
+  handleEODHDSearch,
+  handleEODHDPrice,
+  handleEODHDCalendar,
+  handleEODHDNews,
+  handleEODHDPing,
+} from "./routes/eodhd-api";
 import { handleStatus } from "./routes/status";
 
 export function createServer() {
@@ -47,27 +49,22 @@ export function createServer() {
   app.post("/chart-indicator", handleChartIndicator);
   app.post("/technical-analysis", handleTechnicalAnalysis);
 
-  // EODHD API routes
-  app.get("/economic-events", getEconomicEvents);
-  app.get("/news", getNews);
-
   // Marketaux News API route
   app.get("/marketaux-news", handleMarketauxNews);
 
   // Price alert route
   app.get("/price-alert", handlePriceAlert);
 
-  // EODHD API routes
-  app.get("/eodhd-calendar", handleEODHDCalendar);
-  app.get("/eodhd-price", handleEODHDPrice);
-  app.use("/", eodhd_news);
+  // New EODHD API routes (secure server-side only)
+  app.get("/eodhd/search", handleEODHDSearch);
+  app.get("/eodhd/price", handleEODHDPrice);
+  app.get("/eodhd/calendar", handleEODHDCalendar);
+  app.get("/eodhd/news", handleEODHDNews);
+  app.get("/eodhd/ping", handleEODHDPing);
 
   // AI Analysis routes (secure backend only)
   app.post("/ai-analysis", handleAIAnalysis);
   app.post("/translate", handleTranslation);
-
-  // Real-time news route
-  app.get("/realtime-news", handleRealtimeNews);
 
   // Status endpoint
   app.get("/status", handleStatus);

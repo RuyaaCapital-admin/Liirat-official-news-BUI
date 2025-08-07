@@ -143,7 +143,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
 
       console.log(`Fetching news with params: ${params.toString()}`);
 
-      const response = await fetch(`/api/realtime-news?${params.toString()}`);
+      const response = await fetch(`/api/eodhd/news?${params.toString()}`);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }

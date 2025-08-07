@@ -60,10 +60,10 @@ const AI_API_CONFIG = {
   model: "gpt-3.5-turbo",
   maxTokens: 500,
 
-  // Demo mode - set to true to show demo analysis without API calls
-  demoMode:
-    !import.meta.env.VITE_OPENAI_API_KEY ||
-    import.meta.env.VITE_OPENAI_API_KEY === "your-api-key-here",
+  // API available when key is configured
+  apiAvailable:
+    !!import.meta.env.VITE_OPENAI_API_KEY &&
+    import.meta.env.VITE_OPENAI_API_KEY !== "your-api-key-here",
 };
 
 export function AIEventInsight({ event, className }: AIEventInsightProps) {
@@ -83,8 +83,74 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
     return `Event: ${eventData.event}. Actual: ${eventData.actual}. Forecast: ${eventData.forecast}. Previous: ${eventData.previous}. Date: ${eventData.date}. Write a single, short, actionable sentence for traders. No intro, no extra text. Maximum 25 words. Language: ${languageText}.`;
   };
 
-  // Generate demo analysis for testing without API
-  const generateDemoAnalysis = (
+  // Call OpenAI API
+  const fetchAIInsight = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      if (!AI_API_CONFIG.apiAvailable) {
+        setError(
+          language === "ar"
+            ? "مفتاح OpenAI API غير متوفر"
+            : "OpenAI API key not configured",
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      const prompt = generatePrompt(event, language);
+
+      const response = await fetch(AI_API_CONFIG.apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: AI_API_CONFIG.model,
+          messages: [
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          max_tokens: AI_API_CONFIG.maxTokens,
+          temperature: 0.7,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenAI API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const aiResponse = data.choices[0]?.message?.content;
+
+      if (!aiResponse) {
+        throw new Error("No response from AI");
+      }
+
+      setInsight({
+        summary: aiResponse,
+        whatHappened: aiResponse,
+        whyImportant: aiResponse,
+        marketImpact: aiResponse,
+        language,
+      });
+    } catch (error) {
+      console.error("AI Insight error:", error);
+      setError(
+        language === "ar"
+          ? "فشل في الحصول على تحليل الذكاء الاصطناعي"
+          : "Failed to get AI analysis",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const oldFetchAIInsight = (
     eventData: EconomicEvent,
     language: "ar" | "en",
   ): AIInsightResponse => {
@@ -97,7 +163,7 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
         : `${eventData.event} أقل من المتوقع، ضغط محتمل على ${eventData.country}.`;
 
       return {
-        summary: `${analysis}\n\n⚠️ هذا تحليل تجريبي. للحصول على تحليل حقيقي من الذكاء الاصطناعي، يرجى إعداد مفتاح OpenAI API في متغيرات البيئة.`,
+        summary: `${analysis}\n\n⚠️ هذا تحليل تجريبي. للحصول على تحليل حقيقي من الذكاء الاصطناعي، يرجى إعداد مفتاح OpenAI API في ��تغيرات البيئة.`,
         whatHappened: analysis,
         whyImportant: analysis,
         marketImpact: analysis,
@@ -109,7 +175,7 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
         : `${eventData.event} below forecast, potential bearish pressure on ${eventData.country}.`;
 
       return {
-        summary: `${analysis}\n\n⚠️ This is a demo analysis. For real AI insights, please configure your OpenAI API key in environment variables.`,
+        summary: `${analysis}\n\n⚠️ OpenAI API key required for AI analysis.`,
         whatHappened: analysis,
         whyImportant: analysis,
         marketImpact: analysis,
@@ -124,12 +190,12 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
     setError(null);
 
     try {
-      // 🔧 DEMO MODE - Remove this when API is configured
-      if (AI_API_CONFIG.demoMode) {
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        const demoInsight = generateDemoAnalysis(event, language);
-        setInsight(demoInsight);
+      if (!AI_API_CONFIG.apiAvailable) {
+        setError(
+          language === "ar"
+            ? "مفتاح OpenAI API غير متوفر"
+            : "OpenAI API key not configured",
+        );
         setIsLoading(false);
         return;
       }

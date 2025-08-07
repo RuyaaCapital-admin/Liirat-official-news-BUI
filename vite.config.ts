@@ -69,15 +69,15 @@ function expressPlugin(): Plugin {
             "/api/news-trading",
             "/api/chart-indicator",
             "/api/technical-analysis",
-            "/api/economic-events",
-            "/api/news",
             "/api/marketaux-news",
             "/api/price-alert",
-            "/api/eodhd-calendar",
-            "/api/eodhd-price",
+            "/api/eodhd/search",
+            "/api/eodhd/price",
+            "/api/eodhd/calendar",
+            "/api/eodhd/news",
+            "/api/eodhd/ping",
             "/api/ai-analysis",
             "/api/translate",
-            "/api/realtime-news",
           ]);
 
           // Strip /api prefix and handle the request

@@ -104,13 +104,13 @@ export default function Index() {
       console.log(`Fetching economic events for language: ${lang}`);
       console.log(`Current location: ${window.location.origin}`);
       console.log(
-        `API endpoint will be: ${window.location.origin}/api/eodhd-calendar`,
+        `API endpoint will be: ${window.location.origin}/api/eodhd/calendar`,
       );
 
       // First test API connectivity with health check
       let apiHealthy = false;
       try {
-        const healthResponse = await fetch("/api/health-check", {
+        const healthResponse = await fetch("/api/eodhd/ping", {
           method: "GET",
           headers: { Accept: "application/json" },
           signal: AbortSignal.timeout(5000), // 5 second timeout
@@ -154,7 +154,7 @@ export default function Index() {
 
       // Fetch from EODHD calendar endpoint with robust error handling
       console.log(
-        `Attempting to fetch economic events from: /api/eodhd-calendar?${params.toString()}`,
+        `Attempting to fetch economic events from: /api/eodhd/calendar?${params.toString()}`,
       );
 
       const controller = new AbortController();
@@ -162,7 +162,7 @@ export default function Index() {
 
       let response;
       try {
-        response = await fetch(`/api/eodhd-calendar?${params.toString()}`, {
+        response = await fetch(`/api/eodhd/calendar?${params.toString()}`, {
           method: "GET",
           headers: {
             Accept: "application/json",
@@ -228,7 +228,7 @@ export default function Index() {
         if (error.message.includes("Network connection failed")) {
           errorMessage =
             language === "ar"
-              ? "خطأ في الاتصال بالشبكة. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى."
+              ? "خطأ في الاتصال ب��لشبكة. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى."
               : "Network connection failed. Please check your internet connection and try again.";
         } else if (error.message.includes("Request timeout")) {
           errorMessage =
@@ -517,8 +517,8 @@ export default function Index() {
                               <Bell className="w-4 h-4 mr-2" />
                               <span>
                                 {language === "ar"
-                                  ? "عرض بيانات تجريبية - سيتم الت��ديث عن�� استعادة الاتصال"
-                                  : "Showing demo data - will update when connection is restored"}
+                                  ? "عرض بيانات تجريبية - سيتم الت��ديث عن�� استع��دة الاتصال"
+                                  : "Data will update when connection is restored"}
                               </span>
                             </div>
                           </div>
@@ -659,7 +659,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيهات ذكية لأي رمز مالي مع مراقبة الأسعار في الوقت الفعلي"
+                    ? "قم بإنشاء تنبيهات ذكية لأي رمز مالي مع مر��قبة الأسعار في الوقت الفعلي"
                     : "Create intelligent alerts for any financial symbol with real-time price monitoring"}
                 </p>
               </div>
