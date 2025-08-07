@@ -19,7 +19,7 @@ interface TickerProps {
 
 // Configuration for the most traded pairs with EODHD endpoints
 const TICKER_CONFIG = [
-  // Gold (XAU)
+  // Gold (XAU) - FIRST as user specifically requested
   { symbol: "XAUUSD.FOREX", displayName: "GOLD" },
   // Crypto (BTC and ETH only)
   { symbol: "BTC-USD.CC", displayName: "BTC/USD" },
