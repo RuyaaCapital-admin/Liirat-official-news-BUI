@@ -228,7 +228,7 @@ export default function Index() {
         if (error.message.includes("Network connection failed")) {
           errorMessage =
             language === "ar"
-              ? "خطأ في الاتصال ب��لشبكة. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى."
+              ? "خطأ في الاتصال بالشبكة. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى."
               : "Network connection failed. Please check your internet connection and try again.";
         } else if (error.message.includes("Request timeout")) {
           errorMessage =
@@ -500,7 +500,7 @@ export default function Index() {
                               onClick={() => fetchEconomicEvents(language)}
                               className="text-xs"
                             >
-                              {t("Retry", "إع��دة المحاولة")}
+                              {t("Retry", "إعادة المحاولة")}
                             </Button>
                             <div className="text-xs text-muted-foreground">
                               {language === "ar"
@@ -517,7 +517,7 @@ export default function Index() {
                               <Bell className="w-4 h-4 mr-2" />
                               <span>
                                 {language === "ar"
-                                  ? "عرض بيانات تجريبية - سيتم الت��ديث عن�� استع��دة الاتصال"
+                                  ? "عرض بيانات تجريبية - سيتم التحديث عند استعادة الاتصال"
                                   : "Data will update when connection is restored"}
                               </span>
                             </div>
@@ -659,7 +659,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيهات ذكية لأي رمز مالي مع مر��قبة الأسعار في الوقت الفعلي"
+                    ? "قم بإنشاء تنبيهات ذكية لأي رمز مالي مع مراقبة الأسعار في الوقت الفعلي"
                     : "Create intelligent alerts for any financial symbol with real-time price monitoring"}
                 </p>
               </div>
