@@ -156,7 +156,7 @@ export function ModernEconomicCalendar({
 
   const weekOptions = [
     { value: "this-week", label: "هذا الأسبوع" },
-    { value: "next-week", label: "الأسبوع القادم" },
+    { value: "next-week", label: "الأسبوع ال��ادم" },
   ];
 
   const dayOptions = [
@@ -181,7 +181,7 @@ export function ModernEconomicCalendar({
     { value: "Dubai (GST)", labelAr: "دبي (GST)", labelEn: "Dubai (GST)" },
     { value: "London (GMT)", labelAr: "لندن (GMT)", labelEn: "London (GMT)" },
     { value: "New York (EST)", labelAr: "نيويورك (EST)", labelEn: "New York (EST)" },
-    { value: "Tokyo (JST)", labelAr: "طوكيو (JST)", labelEn: "Tokyo (JST)" },
+    { value: "Tokyo (JST)", labelAr: "طو��يو (JST)", labelEn: "Tokyo (JST)" },
     { value: "Sydney (AEDT)", labelAr: "سيدني (AEDT)", labelEn: "Sydney (AEDT)" },
   ];
 
@@ -576,7 +576,12 @@ export function ModernEconomicCalendar({
                       setSelectedImportance([...selectedImportance, "1"]);
                     }
                   }}
-                  className="flex-1 text-xs"
+                  className={cn(
+                    "flex-1 text-xs transition-all duration-200 border",
+                    selectedImportance.includes("1")
+                      ? "bg-green-500 text-white border-green-600 shadow-md hover:bg-green-600"
+                      : "hover:bg-muted border-border bg-background text-foreground"
+                  )}
                 >
                   عادي
                 </Button>
@@ -594,7 +599,12 @@ export function ModernEconomicCalendar({
                       setSelectedImportance([...selectedImportance, "2"]);
                     }
                   }}
-                  className="flex-1 text-xs"
+                  className={cn(
+                    "flex-1 text-xs transition-all duration-200 border",
+                    selectedImportance.includes("2")
+                      ? "bg-yellow-500 text-white border-yellow-600 shadow-md hover:bg-yellow-600"
+                      : "hover:bg-muted border-border bg-background text-foreground"
+                  )}
                 >
                   متوسط
                 </Button>
@@ -612,7 +622,12 @@ export function ModernEconomicCalendar({
                       setSelectedImportance([...selectedImportance, "3"]);
                     }
                   }}
-                  className="flex-1 text-xs"
+                  className={cn(
+                    "flex-1 text-xs transition-all duration-200 border",
+                    selectedImportance.includes("3")
+                      ? "bg-red-500 text-white border-red-600 shadow-md hover:bg-red-600"
+                      : "hover:bg-muted border-border bg-background text-foreground"
+                  )}
                 >
                   مرتفع
                 </Button>
