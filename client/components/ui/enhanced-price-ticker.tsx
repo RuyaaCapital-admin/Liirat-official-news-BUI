@@ -120,7 +120,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
 
 
     } catch (error) {
-      console.error(`Failed to connect WebSocket for ${config.symbol}:`, error);
+      console.error(`Failed to setup price updates for ${config.symbol}:`, error);
       setPriceData(prev => ({
         ...prev,
         [config.symbol]: {
