@@ -163,11 +163,11 @@ ${
     : "I'm only able to assist with economic and financial news or market data. Please ask about these topics."
 }
 
-If real-time EODHD data is unavailable:
+If real-time data is unavailable:
 ${
   language === "ar"
-    ? "عذراً، بيانات EODHD غير متاحة حالياً بسبب قيود الوصول لـ API. يرجى المحاولة لاحقاً."
-    : "Sorry, EODHD data is currently unavailable due to API access restrictions. Please try again later."
+    ? "عذراً، البيانات غير متاحة حالياً. يرجى المحاولة لاحقاً أو التواصل مع admin@ruyaacapital.com"
+    : "Sorry, data is currently unavailable. Please try again later or contact admin@ruyaacapital.com"
 }
 
 RESPONSE FORMAT:
