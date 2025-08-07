@@ -209,14 +209,21 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
       const isNetworkError =
         errorMessage.includes("Failed to fetch") ||
         errorMessage.includes("NetworkError") ||
-        errorMessage.includes("AbortError");
+        errorMessage.includes("AbortError") ||
+        errorMessage.includes("TypeError");
 
-      // Retry on network errors but with exponential backoff
-      if (isNetworkError && retryCount < maxRetries) {
+      // Only retry on specific network errors and within retry limits
+      if (isNetworkError && retryCount < maxRetries && retryCount < 2) {
         console.log(
           `[TICKER] Retrying ${symbol} due to network error in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`,
         );
-        setTimeout(() => fetchPriceData(symbol, retryCount + 1), retryDelay);
+        setTimeout(() => {
+          try {
+            fetchPriceData(symbol, retryCount + 1);
+          } catch (retryError) {
+            console.error(`[TICKER] Retry failed for ${symbol}:`, retryError);
+          }
+        }, retryDelay);
         return;
       }
 
