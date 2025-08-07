@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, WifiOff, Wifi } from "lucide-react";
+import { useNetworkStatus } from "@/hooks/use-network-status";
 
 interface PriceData {
   symbol: string;
@@ -46,6 +47,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
   const [isScrolling, setIsScrolling] = useState(true);
   const lastFetchTime = useRef<Record<string, number>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { isApiAvailable, isDegraded, isOnline } = useNetworkStatus();
 
   // Network connectivity check
   const checkNetworkConnectivity = async (): Promise<boolean> => {
@@ -201,26 +203,10 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
     }
   };
 
-  // Check API status first, then initialize price data
+  // Initialize price data with network awareness
   useEffect(() => {
-    const initializePriceTicker = async () => {
-      // Check API status first
-      try {
-        console.log('[TICKER] Checking API status...');
-        const statusResponse = await fetch('/api/status');
-        if (statusResponse.ok) {
-          const statusData = await statusResponse.json();
-          console.log('[TICKER] API Status:', statusData.overall, statusData.summary);
-
-          if (statusData.checks?.eodhd?.status !== 'ok') {
-            console.warn('[TICKER] EODHD API issues detected:', statusData.checks.eodhd);
-          }
-        }
-      } catch (error) {
-        console.warn('[TICKER] Could not check API status:', error);
-      }
-
-      // Initialize price data
+    const initializePriceTicker = () => {
+      // Initialize price data structure
       const initialData: Record<string, PriceData> = {};
       TICKER_CONFIG.forEach((config) => {
         initialData[config.symbol] = {
@@ -230,32 +216,44 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
           change: 0,
           changePercent: 0,
           lastUpdate: new Date(),
-          status: "connecting",
+          status: isApiAvailable ? "connecting" : "disconnected",
         };
       });
       setPriceData(initialData);
-
-      // Start fetching price data for all symbols (staggered)
-      TICKER_CONFIG.forEach((config, index) => {
-        setTimeout(() => {
-          fetchPriceData(config.symbol);
-        }, index * 1500); // Increased delay to 1.5 seconds between requests
-      });
     };
 
     initializePriceTicker();
+  }, []);
+
+  // Start fetching data when API becomes available
+  useEffect(() => {
+    if (!isApiAvailable || !isOnline) {
+      console.log('[TICKER] API not available or offline, skipping price updates');
+      return;
+    }
+
+    console.log('[TICKER] API available, starting price updates');
+
+    // Start fetching price data for all symbols (staggered)
+    TICKER_CONFIG.forEach((config, index) => {
+      setTimeout(() => {
+        fetchPriceData(config.symbol);
+      }, index * 2000); // 2 seconds between requests to reduce load
+    });
 
     // Set up interval for continuous updates
     const interval = setInterval(() => {
-      TICKER_CONFIG.forEach((config, index) => {
-        setTimeout(() => {
-          fetchPriceData(config.symbol);
-        }, index * 800); // 800ms between each update request
-      });
-    }, 60000); // Update every 60 seconds (reduced frequency)
+      if (isApiAvailable && isOnline) {
+        TICKER_CONFIG.forEach((config, index) => {
+          setTimeout(() => {
+            fetchPriceData(config.symbol);
+          }, index * 1000); // 1 second between each update request
+        });
+      }
+    }, 90000); // Update every 90 seconds when API is available
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isApiAvailable, isOnline]);
 
   // Get valid price entries for display
   const validPrices = Object.values(priceData).filter(
