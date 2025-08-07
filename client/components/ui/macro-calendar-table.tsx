@@ -137,7 +137,7 @@ const getImportanceLabel = (importance: number, language: string) => {
       case 2:
         return "متوسط";
       case 1:
-        return "منخفض";
+        return "��نخفض";
       default:
         return "غير محدد";
     }
@@ -293,7 +293,11 @@ const getCountryFlag = (country: string) => {
   }
 
   // Fallback to world icon for unknown countries
-  return <span className="text-muted-foreground">🌍</span>;
+  return (
+    <span className="text-muted-foreground inline-flex items-center justify-center w-5 h-4 rounded text-xs border">
+      {country}
+    </span>
+  );
 };
 
 const getCountryName = (country: string, language: string) => {
@@ -516,7 +520,7 @@ export function MacroCalendarTable({
         <div className="flex items-center gap-2 mb-3">
           <Filter className="h-4 w-4 text-primary" />
           <h3 className="font-semibold text-sm">
-            {t("Economic Calendar Filters", "فلاتر التقوي�� الاقتصادي")}
+            {t("Economic Calendar Filters", "فلاتر التقويم الاقتصادي")}
           </h3>
         </div>
 
