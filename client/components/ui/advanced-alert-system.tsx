@@ -121,7 +121,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
             if (response.ok) {
               const data = await response.json();
               console.log(`Price response for ${symbol.symbol}:`, data);
-              const priceData = data.ok && data.items?.[0] ? data.items[0] : null;
+              const priceData =
+                data.ok && data.items?.[0] ? data.items[0] : null;
               if (priceData) {
                 setIsConnected(true);
                 return {
@@ -198,7 +199,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
               if (response.ok) {
                 const data = await response.json();
-                const priceData = data.ok && data.items?.[0] ? data.items[0] : null;
+                const priceData =
+                  data.ok && data.items?.[0] ? data.items[0] : null;
                 if (priceData) {
                   setIsConnected(true);
                   return {

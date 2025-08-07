@@ -18,7 +18,7 @@ import {
   handleEODHDPrice,
   handleEODHDCalendar,
   handleEODHDNews,
-  handleEODHDPing
+  handleEODHDPing,
 } from "./routes/eodhd-api";
 import { handleStatus } from "./routes/status";
 
@@ -48,7 +48,6 @@ export function createServer() {
   app.get("/news-trading", handleNews); // Renamed to avoid conflict
   app.post("/chart-indicator", handleChartIndicator);
   app.post("/technical-analysis", handleTechnicalAnalysis);
-
 
   // Marketaux News API route
   app.get("/marketaux-news", handleMarketauxNews);

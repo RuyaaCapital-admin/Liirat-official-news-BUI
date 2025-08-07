@@ -221,7 +221,12 @@ export default function SeparatedAlertSystem({
       );
       if (response.ok) {
         const data = await response.json();
-        if (data.ok && data.items && data.items.length > 0 && data.items[0].price) {
+        if (
+          data.ok &&
+          data.items &&
+          data.items.length > 0 &&
+          data.items[0].price
+        ) {
           setCurrentPrice(data.items[0].price);
         } else {
           setCurrentPrice(null);
@@ -259,7 +264,12 @@ export default function SeparatedAlertSystem({
           );
           if (response.ok) {
             const data = await response.json();
-            if (data.ok && data.items && data.items.length > 0 && data.items[0].price) {
+            if (
+              data.ok &&
+              data.items &&
+              data.items.length > 0 &&
+              data.items[0].price
+            ) {
               const currentPrice = data.items[0].price;
               const targetPrice =
                 typeof alert.targetPrice === "string"

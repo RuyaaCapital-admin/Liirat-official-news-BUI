@@ -61,7 +61,9 @@ const AI_API_CONFIG = {
   maxTokens: 500,
 
   // API available when key is configured
-  apiAvailable: !!import.meta.env.VITE_OPENAI_API_KEY && import.meta.env.VITE_OPENAI_API_KEY !== "your-api-key-here",
+  apiAvailable:
+    !!import.meta.env.VITE_OPENAI_API_KEY &&
+    import.meta.env.VITE_OPENAI_API_KEY !== "your-api-key-here",
 };
 
 export function AIEventInsight({ event, className }: AIEventInsightProps) {
@@ -88,7 +90,11 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
 
     try {
       if (!AI_API_CONFIG.apiAvailable) {
-        setError(language === "ar" ? "مفتاح OpenAI API غير متوفر" : "OpenAI API key not configured");
+        setError(
+          language === "ar"
+            ? "مفتاح OpenAI API غير متوفر"
+            : "OpenAI API key not configured",
+        );
         setIsLoading(false);
         return;
       }
@@ -185,7 +191,11 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
 
     try {
       if (!AI_API_CONFIG.apiAvailable) {
-        setError(language === "ar" ? "مفتاح OpenAI API غير متوفر" : "OpenAI API key not configured");
+        setError(
+          language === "ar"
+            ? "مفتاح OpenAI API غير متوفر"
+            : "OpenAI API key not configured",
+        );
         setIsLoading(false);
         return;
       }

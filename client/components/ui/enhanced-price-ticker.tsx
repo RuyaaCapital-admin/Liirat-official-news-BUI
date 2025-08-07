@@ -85,7 +85,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
 
       // Set connecting status for all symbols
       if (retryCount === 0) {
-        symbols.forEach(symbol => {
+        symbols.forEach((symbol) => {
           setPriceData((prev) => ({
             ...prev,
             [symbol]: { ...prev[symbol], status: "connecting" },
@@ -93,7 +93,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         });
       }
 
-      console.log(`[TICKER] Attempting to fetch batch: ${symbols.join(',')}`);
+      console.log(`[TICKER] Attempting to fetch batch: ${symbols.join(",")}`);
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 8000);
@@ -101,7 +101,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
       let response;
       try {
         response = await fetch(
-          `/api/eodhd/price?symbols=${encodeURIComponent(symbols.join(','))}`,
+          `/api/eodhd/price?symbols=${encodeURIComponent(symbols.join(","))}`,
           {
             method: "GET",
             headers: {
@@ -116,7 +116,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         clearTimeout(timeoutId);
 
         // Set disconnected status for all symbols
-        symbols.forEach(symbol => {
+        symbols.forEach((symbol) => {
           setPriceData((prev) => ({
             ...prev,
             [symbol]: {
@@ -146,7 +146,10 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         );
 
         // For authentication errors (502 with upstream error), don't retry
-        if (response.status === 502 && errorDetails.includes('Unauthenticated')) {
+        if (
+          response.status === 502 &&
+          errorDetails.includes("Unauthenticated")
+        ) {
           console.log(`[TICKER] Authentication error - API key required`);
           // Set disconnected status but don't retry
         } else if (
@@ -158,12 +161,15 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
           console.log(
             `[TICKER] Retrying batch in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`,
           );
-          setTimeout(() => fetchBatchPriceData(symbols, retryCount + 1), retryDelay);
+          setTimeout(
+            () => fetchBatchPriceData(symbols, retryCount + 1),
+            retryDelay,
+          );
           return;
         }
 
         // Set appropriate status for all symbols after retries/auth errors
-        symbols.forEach(symbol => {
+        symbols.forEach((symbol) => {
           const config = TICKER_CONFIG.find((c) => c.symbol === symbol);
           setPriceData((prev) => ({
             ...prev,
@@ -201,10 +207,12 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
           }));
         });
 
-        console.log(`[TICKER] Successfully fetched ${data.items.length} symbols`);
+        console.log(
+          `[TICKER] Successfully fetched ${data.items.length} symbols`,
+        );
       } else {
         console.warn(`[TICKER] No price data received in batch response`);
-        symbols.forEach(symbol => {
+        symbols.forEach((symbol) => {
           setPriceData((prev) => ({
             ...prev,
             [symbol]: { ...prev[symbol], status: "disconnected" },
@@ -212,7 +220,8 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         });
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       console.error(`[TICKER] Network error for batch:`, errorMessage);
 
       const isNetworkError =
@@ -236,7 +245,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
       }
 
       // Set disconnected status for all symbols on final failure
-      symbols.forEach(symbol => {
+      symbols.forEach((symbol) => {
         const config = TICKER_CONFIG.find((c) => c.symbol === symbol);
         setPriceData((prev) => ({
           ...prev,
@@ -280,9 +289,15 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
   useEffect(() => {
     console.log("[TICKER] Starting price updates with batch API");
 
-    const tier1 = TICKER_CONFIG.filter((c) => c.priority === 1).map(c => c.symbol);
-    const tier2 = TICKER_CONFIG.filter((c) => c.priority === 2).map(c => c.symbol);
-    const tier3 = TICKER_CONFIG.filter((c) => c.priority === 3).map(c => c.symbol);
+    const tier1 = TICKER_CONFIG.filter((c) => c.priority === 1).map(
+      (c) => c.symbol,
+    );
+    const tier2 = TICKER_CONFIG.filter((c) => c.priority === 2).map(
+      (c) => c.symbol,
+    );
+    const tier3 = TICKER_CONFIG.filter((c) => c.priority === 3).map(
+      (c) => c.symbol,
+    );
 
     // Fetch tier 1 immediately (most important)
     if (tier1.length > 0) {
