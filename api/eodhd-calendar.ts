@@ -119,9 +119,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           event: event.type || event.event || event.title || event.name || "Economic Event", // Use 'type' for event name
           category: event.category || event.type || "Economic",
           importance: parseInt(event.importance) || 1,
-          actual: event.actual || undefined,
-          forecast: event.estimate || event.forecast || undefined, // Use 'estimate' for forecast
-          previous: event.previous || undefined,
+          actual: event.actual != null ? String(event.actual) : "-",
+          forecast: event.estimate != null ? String(event.estimate) : (event.forecast != null ? String(event.forecast) : "-"),
+          previous: event.previous != null ? String(event.previous) : "-",
         }))
       : [];
 
