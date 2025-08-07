@@ -236,10 +236,8 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
     return () => clearInterval(interval);
   }, []); // Remove dependency on network status
 
-  // Get price entries for display - show all symbols even if price is 0 initially
-  const validPrices = Object.values(priceData).filter(
-    (data) => data.status === "connected" || data.status === "connecting",
-  );
+  // Get ALL price entries for display - show every symbol regardless of status
+  const validPrices = Object.values(priceData);
 
   // Handle scroll pause on hover
   const handleMouseEnter = () => setIsScrolling(false);
@@ -303,7 +301,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
                 </div>
                 <div className="text-right">
                   <div className="font-mono text-sm font-bold">
-                    {formatPrice(data.price, data.symbol)}
+                    {data.status === "connecting" ? "..." : formatPrice(data.price, data.symbol)}
                   </div>
                   <div
                     className={cn(
