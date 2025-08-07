@@ -42,6 +42,12 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
     }
     if (to) {
       apiUrl.searchParams.append("to", to as string);
+    } else {
+      // If no date range specified, default to next 30 days for better relevance
+      const today = new Date();
+      const thirtyDaysFromNow = new Date(today.getTime() + (30 * 24 * 60 * 60 * 1000));
+      apiUrl.searchParams.append("from", today.toISOString().split('T')[0]);
+      apiUrl.searchParams.append("to", thirtyDaysFromNow.toISOString().split('T')[0]);
     }
 
     console.log(`Fetching EODHD economic events: ${apiUrl.toString()}`);
