@@ -87,17 +87,22 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
     // Transform EODHD response to our format
     const events: EconomicEvent[] = Array.isArray(data)
       ? data.map((event: any) => ({
-          date: event.date || new Date().toISOString().split("T")[0],
-          time: event.time || "",
+          date: event.date || new Date().toISOString(),
+          time: event.time || undefined,
           country: event.country || event.currency || "Unknown",
           event: event.event || event.title || event.name || "Economic Event",
           category: event.category || event.type || "Economic",
-          importance: parseInt(event.importance) || 1,
-          actual: event.actual || undefined,
-          forecast: event.forecast || event.estimate || undefined,
-          previous: event.previous || undefined,
+          importance: parseInt(event.importance) || parseInt(event.impact) || 1,
+          actual: event.actual !== null && event.actual !== undefined ? String(event.actual) : undefined,
+          forecast: event.forecast !== null && event.forecast !== undefined ? String(event.forecast) : undefined,
+          previous: event.previous !== null && event.previous !== undefined ? String(event.previous) : undefined,
         }))
       : [];
+
+    console.log(`✅ Successfully transformed ${events.length} economic events from EODHD`);
+    if (events.length > 0) {
+      console.log("Sample event:", events[0]);
+    }
 
     res.json({
       events,
