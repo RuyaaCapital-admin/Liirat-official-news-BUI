@@ -169,16 +169,15 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
       return res.status(502).json(raw);
     }
 
-    const items = (raw.data || []).map((e: any) => ({
-      date: e.date || e.datetime,
-      time: e.time || "",
-      country: e.country,
-      event: e.event,
-      category: e.category || e.type,
-      importance: parseInt(e.importance) || 1,
-      previous: e.previous ?? "",
-      forecast: e.estimate ?? e.forecast ?? "",
-      actual: e.actual ?? "",
+    const items = (raw.data || raw || []).map((e: any) => ({
+      datetimeIso: toIsoUtc(e.date || e.datetime),
+      country: e.country || '',
+      event: e.event || '',
+      category: e.category || e.type || '',
+      importance: String(e.importance || '').toLowerCase(),
+      previous: e.previous ?? '',
+      forecast: e.estimate ?? e.forecast ?? '',
+      actual: e.actual ?? ''
     }));
 
     res.status(200).json({ ok: true, items });
