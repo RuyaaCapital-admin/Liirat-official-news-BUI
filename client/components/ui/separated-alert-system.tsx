@@ -171,6 +171,52 @@ export default function SeparatedAlertSystem({
   const [loadingPrice, setLoadingPrice] = useState(false);
   const [selectedSymbol, setSelectedSymbol] = useState<typeof ALL_SYMBOLS[0] | null>(null);
 
+  // Filter symbols based on search
+  const filteredSymbols = React.useMemo(() => {
+    if (!symbolSearch || symbolSearch.length < 2) return ALL_SYMBOLS.slice(0, 10);
+
+    const searchLower = symbolSearch.toLowerCase();
+    return ALL_SYMBOLS.filter(symbol =>
+      symbol.displayName.toLowerCase().includes(searchLower) ||
+      symbol.symbol.toLowerCase().includes(searchLower)
+    ).slice(0, 15);
+  }, [symbolSearch]);
+
+  // Fetch real-time price for selected symbol
+  const fetchRealTimePrice = async (symbol: string) => {
+    if (!symbol) return;
+
+    setLoadingPrice(true);
+    try {
+      const response = await fetch(`/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.length > 0 && data[0].price) {
+          setCurrentPrice(data[0].price);
+        } else {
+          setCurrentPrice(null);
+        }
+      } else {
+        console.error('Failed to fetch price:', response.status);
+        setCurrentPrice(null);
+      }
+    } catch (error) {
+      console.error('Error fetching price:', error);
+      setCurrentPrice(null);
+    } finally {
+      setLoadingPrice(false);
+    }
+  };
+
+  // Handle symbol selection
+  const handleSymbolSelect = (symbol: typeof ALL_SYMBOLS[0]) => {
+    setSelectedSymbol(symbol);
+    setPriceForm(prev => ({ ...prev, symbol: symbol.symbol }));
+    setSymbolSearch(symbol.displayName);
+    setShowSymbolSuggestions(false);
+    fetchRealTimePrice(symbol.symbol);
+  };
+
   // Create news/event alert
   const createNewsEventAlert = () => {
     const alert: NewsEventAlert = {
@@ -474,7 +520,7 @@ export default function SeparatedAlertSystem({
                         <div>
                           <Label>
                             {language === "ar"
-                              ? "دقائق قبل الحدث"
+                              ? "دقائق قبل ��لحدث"
                               : "Minutes Before Event"}
                           </Label>
                           <Input
@@ -622,7 +668,7 @@ export default function SeparatedAlertSystem({
                     <Button className="flex items-center gap-2">
                       <Plus className="w-4 h-4" />
                       {language === "ar"
-                        ? "إضافة تنبيه سعر"
+                        ? "إضافة تنبيه سع��"
                         : "Add Price Alert"}
                     </Button>
                   </DialogTrigger>
