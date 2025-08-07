@@ -174,7 +174,7 @@ export default function EnhancedMacroCalendar({
         case 1:
           return "منخفض";
         default:
-          return "غير محدد";
+          return "غير م��دد";
       }
     } else {
       switch (importance) {
@@ -560,7 +560,7 @@ export default function EnhancedMacroCalendar({
             ...prev,
             [event.event]:
               language === "ar"
-                ? "⚠️ مفتاح OpenAI API غير صحيح أو غير مُعدّ. يرجى إعداد مفتاح صحيح في ��تغيرات البيئة."
+                ? "⚠️ مفتاح OpenAI API غير صحيح أو غير مُعدّ. يرجى إعداد مفتاح صحيح في متغيرات البيئة."
                 : "⚠️ OpenAI API key is invalid or not configured. Please set a valid API key in environment variables.",
           }));
           return; // Exit early to avoid throwing error
