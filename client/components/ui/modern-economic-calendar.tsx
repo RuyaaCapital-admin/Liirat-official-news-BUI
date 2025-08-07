@@ -161,11 +161,11 @@ export function ModernEconomicCalendar({
   };
 
   const timezones = [
-    "Dubai (GST)",
-    "London (GMT)",
-    "New York (EST)",
-    "Tokyo (JST)",
-    "Sydney (AEDT)",
+    { value: "Dubai (GST)", labelAr: "دبي (GST)", labelEn: "Dubai (GST)" },
+    { value: "London (GMT)", labelAr: "لندن (GMT)", labelEn: "London (GMT)" },
+    { value: "New York (EST)", labelAr: "نيويورك (EST)", labelEn: "New York (EST)" },
+    { value: "Tokyo (JST)", labelAr: "طوكيو (JST)", labelEn: "Tokyo (JST)" },
+    { value: "Sydney (AEDT)", labelAr: "سيدني (AEDT)", labelEn: "Sydney (AEDT)" },
   ];
 
   const getImportanceColor = (importance: 1 | 2 | 3) => {
@@ -205,6 +205,45 @@ export function ModernEconomicCalendar({
     }
   };
 
+  // Handle translation for event titles in Arabic mode
+  const translateEventTitle = async (event: EconomicEvent) => {
+    const eventKey = `${event.id}-${event.event}`;
+
+    if (translatedContent[eventKey] || loadingTranslation[eventKey] || language !== "ar") {
+      return translatedContent[eventKey] || event.event;
+    }
+
+    setLoadingTranslation((prev) => ({ ...prev, [eventKey]: true }));
+
+    try {
+      const response = await fetch("/api/translate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: event.event,
+          targetLanguage: "ar",
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const translated = data.translatedText || event.event;
+        setTranslatedContent((prev) => ({ ...prev, [eventKey]: translated }));
+        return translated;
+      } else {
+        console.error(`Translation API error: ${response.status}`);
+        throw new Error(`Translation failed: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Translation failed:", error);
+      throw error;
+    } finally {
+      setLoadingTranslation((prev) => ({ ...prev, [eventKey]: false }));
+    }
+  };
+
   const handleAIAnalysis = async (eventId: string) => {
     setIsLoadingAI(eventId);
 
@@ -218,7 +257,7 @@ export function ModernEconomicCalendar({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message: `قم بتحليل هذا الحدث الاقتصادي: ${event.event} في ${event.country}. القيم: فعلي: ${event.actual || "غير متوفر"}, متوقع: ${event.forecast || "غير متوفر"}, سابق: ${event.previous || "غير متوفر"}`,
+          message: `قم بتحليل هذا الحدث الاقتصادي: ${event.event} في ${event.country}. القيم: فعلي: ${event.actual || "غير متوفر"}, ��توقع: ${event.forecast || "غير متوفر"}, سابق: ${event.previous || "غير متوفر"}`,
           language: "ar",
         }),
       });
@@ -321,8 +360,8 @@ export function ModernEconomicCalendar({
                 </SelectTrigger>
                 <SelectContent>
                   {timezones.map((tz) => (
-                    <SelectItem key={tz} value={tz}>
-                      {tz}
+                    <SelectItem key={tz.value} value={tz.value}>
+                      {language === "ar" ? tz.labelAr : tz.labelEn}
                     </SelectItem>
                   ))}
                 </SelectContent>
