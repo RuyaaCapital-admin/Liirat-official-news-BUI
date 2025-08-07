@@ -19,12 +19,6 @@ interface PriceData {
 export const handleEODHDPrice: RequestHandler = async (req, res) => {
   // Use the provided EODHD API key
   const apiKey = "6891e3b89ee5e1.29062933";
-  if (!apiKey) {
-    return res.status(500).json({
-      error: "EODHD API key not configured",
-      prices: [],
-    });
-  }
 
   try {
     const { symbol, symbols, fmt = "json", filter = "live" } = req.query;
@@ -36,77 +30,40 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       });
     }
 
-    // Determine if it's crypto, forex, or regular stock
+    // Determine symbol type and format correctly for EODHD
     const symbolStr = (symbol || symbols) as string;
-    const isMultiple = !!symbols;
-
-    // Improved symbol classification
-    const isCrypto =
-      symbolStr.includes("-USD") ||
-      symbolStr.includes("BTC") ||
-      symbolStr.includes("ETH") ||
-      symbolStr.match(/^(BTC|ETH|LTC|ADA|DOT|DOGE|XRP|LINK|UNI)/);
-
-    const isForex =
-      symbolStr.includes("FOREX:") ||
-      symbolStr.includes(".FOREX") ||
-      symbolStr.match(
-        /^(EUR|GBP|USD|JPY|CAD|AUD|CHF|NZD|SEK|NOK)(USD|EUR|GBP|JPY|CAD|AUD|CHF|NZD|SEK|NOK)$/,
-      );
-
-    const isComm =
-      symbolStr.includes(".COMM") || symbolStr.match(/^(XAU|XAG|WTI|BRENT|CL)/);
-    const isIndex =
-      symbolStr.includes(".INDX") ||
-      symbolStr.match(/^(SPX|DJI|IXIC|NDX|FTSE|DAX|CAC|NIKKEI)/);
-
+    const isCrypto = symbolStr.includes("-USD") || symbolStr.includes("BTC") || symbolStr.includes("ETH");
+    const isIndex = symbolStr === "GSPC" || symbolStr.includes(".INDX");
+    
     let apiUrl: URL;
     let finalSymbol = symbolStr;
 
     if (isCrypto) {
       // Crypto API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/crypto");
-      // Convert formats like BTCUSD to BTC-USD for EODHD
-      if (!symbolStr.includes("-") && symbolStr.length > 3) {
-        if (symbolStr.includes("USD")) {
-          finalSymbol = symbolStr.replace("USD", "-USD");
-        } else if (symbolStr.includes("BTC")) {
-          finalSymbol = symbolStr.replace("BTC", "BTC-");
-        }
-      }
-      apiUrl.searchParams.append("s", finalSymbol);
-    } else if (isForex) {
-      // Forex API endpoint
-      apiUrl = new URL("https://eodhd.com/api/real-time/forex");
-      // Convert EURUSD to EUR-USD format if needed
-      if (!symbolStr.includes("-") && symbolStr.length === 6) {
-        finalSymbol = symbolStr.substring(0, 3) + "-" + symbolStr.substring(3);
-      }
-      apiUrl.searchParams.append("s", finalSymbol);
-    } else {
-      // Regular stocks/ETFs/indices/commodities
+      // For crypto, EODHD expects symbols like BTC-USD, ETH-USD
+      finalSymbol = symbolStr;
+    } else if (isIndex) {
+      // Index API endpoint - use stocks endpoint for indices
       apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
-      // Add .US suffix for US stocks if not already present
-      if (!symbolStr.includes(".") && symbolStr.match(/^[A-Z]{1,5}$/)) {
-        finalSymbol = symbolStr + ".US";
-      }
-      apiUrl.searchParams.append("s", finalSymbol);
+      finalSymbol = symbolStr.includes(".INDX") ? symbolStr : symbolStr + ".INDX";
+    } else {
+      // Forex API endpoint - default for currency pairs
+      apiUrl = new URL("https://eodhd.com/api/real-time/forex");
+      // For forex, EODHD expects symbols like EURUSD.FOREX
+      finalSymbol = symbolStr.includes(".FOREX") ? symbolStr : symbolStr + ".FOREX";
     }
 
-    // Add common parameters
+    // Add API parameters
+    apiUrl.searchParams.append("s", finalSymbol);
     apiUrl.searchParams.append("api_token", apiKey);
     apiUrl.searchParams.append("fmt", fmt as string);
-    if (filter && !isCrypto) {
-      apiUrl.searchParams.append("filter", filter as string);
-    }
 
-    console.log(
-      `Fetching EODHD price data for ${symbolStr} -> ${finalSymbol}: ${apiUrl.toString()}`,
-    );
+    console.log(`Fetching EODHD price data: ${apiUrl.toString()}`);
 
     // Create abort controller for timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
     const response = await fetch(apiUrl.toString(), {
       method: "GET",
@@ -120,33 +77,27 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.error(
-        `EODHD Price API error: ${response.status} - ${response.statusText}`,
-      );
-
-      // Return empty array instead of mock data for 401/403 errors
-      if (response.status === 401 || response.status === 403) {
-        return res.status(200).json({
-          prices: [],
-          total: 0,
-          symbol: symbolStr,
-          message: "EODHD API access restricted - no mock data provided",
-          timestamp: new Date().toISOString(),
-        });
+      console.error(`EODHD Price API error: ${response.status} - ${response.statusText}`);
+      
+      // Log response body for debugging
+      try {
+        const errorBody = await response.text();
+        console.error("Error response body:", errorBody.substring(0, 500));
+      } catch (e) {
+        console.error("Could not read error response body");
       }
 
-      return res.status(response.status).json({
+      return res.status(200).json({
         error: `EODHD Price API Error: ${response.status} - ${response.statusText}`,
         prices: [],
+        symbol: symbolStr,
       });
     }
 
     // Check if response is JSON
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
-      console.error(
-        `EODHD Price API returned non-JSON content: ${contentType}`,
-      );
+      console.error(`EODHD Price API returned non-JSON content: ${contentType}`);
       return res.status(500).json({
         error: "Invalid response format from EODHD Price API",
         prices: [],
@@ -154,17 +105,27 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     }
 
     const data = await response.json();
+    console.log("Raw EODHD API response:", JSON.stringify(data, null, 2));
 
     // Transform EODHD response to our format
     let prices: PriceData[] = [];
 
     if (Array.isArray(data)) {
-      // Multiple symbols response
-      prices = data.map((item: any) => transformPriceData(item));
-    } else if (data && typeof data === "object") {
+      // Multiple symbols response or single symbol in array
+      prices = data
+        .filter((item: any) => item && item.code && item.close !== "NA")
+        .map((item: any) => transformPriceData(item, symbolStr));
+    } else if (data && typeof data === "object" && data.code) {
       // Single symbol response
-      prices = [transformPriceData(data)];
+      if (data.close !== "NA") {
+        prices = [transformPriceData(data, symbolStr)];
+      }
     }
+
+    // Filter out invalid prices
+    prices = prices.filter(p => p.price > 0);
+
+    console.log("Transformed prices:", JSON.stringify(prices, null, 2));
 
     res.json({
       prices,
@@ -185,7 +146,6 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       }
     }
 
-    // Return empty array instead of mock data on errors
     res.status(200).json({
       prices: [],
       total: 0,
@@ -195,21 +155,29 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
   }
 };
 
-function transformPriceData(item: any): PriceData {
+function transformPriceData(item: any, originalSymbol: string): PriceData {
+  // Parse values from EODHD response
+  const price = parseFloat(item.close || item.price || item.last || item.value || 0);
+  const previousClose = parseFloat(item.previousClose || item.previous_close || item.close || 0);
+  const change = parseFloat(item.change || 0) || (price - previousClose);
+  const change_percent = parseFloat(item.change_p || item.change_percent || 0) || 
+                         (previousClose > 0 ? ((change / previousClose) * 100) : 0);
+  
+  console.log(`Transforming data for ${item.code}: price=${price}, change=${change}, change_p=${change_percent}`);
+  
   return {
-    symbol: item.code || item.symbol || "Unknown",
+    symbol: originalSymbol, // Use the original symbol requested
     name: item.name || undefined,
-    price: parseFloat(item.close || item.price || item.last || 0),
-    change: parseFloat(item.change || item.change_price || 0),
-    change_percent: parseFloat(item.change_p || item.change_percent || 0),
+    price: price,
+    change: change,
+    change_percent: change_percent,
     currency: item.currency || undefined,
-    timestamp: item.timestamp || item.gmtoffset || new Date().toISOString(),
+    timestamp: item.timestamp ? new Date(item.timestamp * 1000).toISOString() : new Date().toISOString(),
     market_status: item.market_status || undefined,
     volume: parseFloat(item.volume || 0) || undefined,
     high: parseFloat(item.high || 0) || undefined,
     low: parseFloat(item.low || 0) || undefined,
     open: parseFloat(item.open || 0) || undefined,
-    previous_close:
-      parseFloat(item.previous_close || item.previousClose || 0) || undefined,
+    previous_close: previousClose || undefined,
   };
 }
