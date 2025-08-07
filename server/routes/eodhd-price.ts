@@ -162,8 +162,13 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
 
     if (Array.isArray(data)) {
       // Multiple symbols response or single symbol in array
+      console.log(`Processing array response for ${symbolStr}, items:`, data.length);
       prices = data
-        .filter((item: any) => item && item.code && item.close !== "NA")
+        .filter((item: any) => {
+          console.log(`Filtering item ${item.code}: close=${item.close}, previousClose=${item.previousClose}`);
+          // Include items with valid previousClose even if close is NA (for metals)
+          return item && item.code && (item.close !== "NA" || (item.previousClose && item.previousClose !== "NA"));
+        })
         .map((item: any) => transformPriceData(item, symbolStr));
     } else if (data && typeof data === "object" && data.code) {
       // Single symbol response
