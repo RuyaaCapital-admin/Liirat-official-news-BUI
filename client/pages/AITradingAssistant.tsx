@@ -145,7 +145,7 @@ const AITradingAssistant: React.FC = () => {
                 title:
                   "أسعار الذهب تصل إلى مستويات قياسية جديدة وسط عدم اليقين الاقتصادي",
                 summary:
-                  "ارتفعت أسعار الذهب إلى مستويات قياسية حيث يسعى المستثمرون إلى الأصول الآمنة خلال تقلبات السوق.",
+                  "ارتفعت أسعار الذهب إلى مستويات قياسية حيث يسعى المستثمرون إلى ال��صول الآمنة خلال تقلبات السوق.",
                 source: "سي إن بي سي",
                 publishedAt: "2024-01-15T08:45:00Z",
                 impact: "medium",
@@ -375,7 +375,7 @@ const AITradingAssistant: React.FC = () => {
             </h1>
             <p className="text-lg text-muted-foreground">
               {language === "ar"
-                ? "رفيقك الذكي لتحليل الأسواق واستراتيجيات التداول"
+                ? "رفيقك الذكي لتحليل الأسواق ��استراتيجيات التداول"
                 : "Your intelligent companion for market analysis and trading strategies"}
             </p>
             <div className="flex justify-center gap-4 mt-4">
@@ -583,7 +583,7 @@ const AITradingAssistant: React.FC = () => {
                 </CardContent>
               </Card>
 
-              {/* News Feed - Now with Real TradingView News Widget */}
+              {/* News Feed - EODHD News API */}
               <Card>
                 <CardHeader className="pb-4">
                   <div className="flex items-center gap-3">
@@ -594,30 +594,13 @@ const AITradingAssistant: React.FC = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-[300px] rounded-xl overflow-hidden">
-                    <div
-                      className="tradingview-widget-container"
-                      style={{ height: "100%", width: "100%" }}
-                    >
-                      <div
-                        className="tradingview-widget-container__widget"
-                        style={{ height: "calc(100% - 32px)", width: "100%" }}
-                      >
-                        <iframe
-                          src={`https://s.tradingview.com/embed-widget/timeline/?locale=en#%7B%22feedMode%22%3A%22market%22%2C%22market%22%3A%22crypto%22%2C%22isTransparent%22%3A${theme === "dark" ? "true" : "false"}%2C%22displayMode%22%3A%22adaptive%22%2C%22width%22%3A%22100%25%22%2C%22height%22%3A%22100%25%22%2C%22colorTheme%22%3A%22${theme}%22%2C%22utm_source%22%3A%22liirat.com%22%2C%22utm_medium%22%3A%22widget_new%22%2C%22utm_campaign%22%3A%22timeline%22%7D`}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            border: "none",
-                            backgroundColor:
-                              theme === "dark" ? "transparent" : "#ffffff",
-                          }}
-                          frameBorder="0"
-                          allowTransparency={theme === "dark"}
-                          scrolling="no"
-                          allowFullScreen
-                        />
-                      </div>
+                  <div className="h-[250px] flex items-center justify-center bg-muted/30 rounded-lg">
+                    <div className="text-center space-y-3">
+                      <Newspaper className="h-8 w-8 text-primary mx-auto" />
+                      <h3 className="font-semibold">EODHD Financial News</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Market news powered by EODHD API
+                      </p>
                     </div>
                   </div>
                 </CardContent>
