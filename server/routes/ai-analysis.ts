@@ -7,8 +7,7 @@ import {
 
 // OpenAI integration for news/event analysis
 export const handleAIAnalysis: RequestHandler = async (req, res) => {
-  const openaiApiKey =
-    "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";
+  const openaiApiKey = process.env.OPENAI_API_KEY;
 
   try {
     const { text, language = "en", type = "news" } = req.body;
