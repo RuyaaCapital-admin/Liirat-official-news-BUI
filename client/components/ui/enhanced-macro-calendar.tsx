@@ -368,10 +368,7 @@ export default function EnhancedMacroCalendar({
         displayedEvents.slice(0, 5).forEach((event, index) => {
           // Stagger requests to avoid rate limiting and reduce API load
           setTimeout(() => {
-            translateContent(event).catch((error) => {
-              // Silently handle translation failures, fallback already handled in translateContent
-              console.debug("Translation failed for:", event.event);
-            });
+            translateContent(event);
           }, index * 2000); // 2 second delay between requests to reduce load
         });
       }, 1000);
