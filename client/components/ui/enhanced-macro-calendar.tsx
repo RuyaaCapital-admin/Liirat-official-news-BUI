@@ -557,7 +557,7 @@ export default function EnhancedMacroCalendar({
               {language === "ar" ? "فلاتر" : "Filters"}
               {(searchTerm || selectedCountries.length > 0 || selectedImportance.length < 3 || selectedCategory !== "all") && (
                 <Badge variant="secondary" className="ml-2 text-xs">
-                  {language === "ar" ? "نشط" : "Active"}
+                  {language === "ar" ? "نش��" : "Active"}
                 </Badge>
               )}
             </h4>
@@ -699,33 +699,57 @@ export default function EnhancedMacroCalendar({
 
 
       {/* Events Table */}
-      <div className="border border-border rounded-lg overflow-hidden">
+      <div className="border border-border rounded-lg overflow-hidden" dir={dir}>
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full table-fixed">
             <thead className="bg-muted/30">
               <tr>
-                <th className="px-4 py-3 text-left text-sm font-medium">
+                <th className={cn(
+                  "px-4 py-3 text-sm font-medium w-[140px]",
+                  dir === "rtl" ? "text-right" : "text-left"
+                )}>
                   {language === "ar" ? "التاريخ والوقت" : "Date & Time"}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium">
+                <th className={cn(
+                  "px-4 py-3 text-sm font-medium w-[100px]",
+                  dir === "rtl" ? "text-right" : "text-left"
+                )}>
                   {language === "ar" ? "الدولة" : "Country"}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium">
+                <th className={cn(
+                  "px-4 py-3 text-sm font-medium w-[200px]",
+                  dir === "rtl" ? "text-right" : "text-left"
+                )}>
                   {language === "ar" ? "الحدث" : "Event"}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium">
+                <th className={cn(
+                  "px-4 py-3 text-sm font-medium w-[100px]",
+                  dir === "rtl" ? "text-right" : "text-left"
+                )}>
                   {language === "ar" ? "الأهمية" : "Impact"}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium">
+                <th className={cn(
+                  "px-4 py-3 text-sm font-medium w-[80px]",
+                  dir === "rtl" ? "text-right" : "text-left"
+                )}>
                   {language === "ar" ? "السابق" : "Previous"}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium">
+                <th className={cn(
+                  "px-4 py-3 text-sm font-medium w-[80px]",
+                  dir === "rtl" ? "text-right" : "text-left"
+                )}>
                   {language === "ar" ? "المتوقع" : "Forecast"}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium">
+                <th className={cn(
+                  "px-4 py-3 text-sm font-medium w-[80px]",
+                  dir === "rtl" ? "text-right" : "text-left"
+                )}>
                   {language === "ar" ? "الفعلي" : "Actual"}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium">
+                <th className={cn(
+                  "px-4 py-3 text-sm font-medium w-[120px]",
+                  dir === "rtl" ? "text-right" : "text-left"
+                )}>
                   {language === "ar" ? "الإجراءات" : "Actions"}
                 </th>
               </tr>
@@ -744,27 +768,38 @@ export default function EnhancedMacroCalendar({
                 </tr>
               ) : (
                 displayedEvents.map((event, index) => (
-                  <React.Fragment key={index}>
+                  <React.Fragment key={`${event.event}-${index}`}>
                     <tr className="border-t border-border hover:bg-muted/20">
-                      <td className="px-4 py-3 text-sm">
-                        <div className="flex items-center gap-1">
+                      <td className="px-4 py-3 text-sm align-top">
+                        <div className={cn(
+                          "flex items-center gap-1 text-xs",
+                          dir === "rtl" ? "justify-end" : "justify-start"
+                        )}>
                           <Clock className="w-3 h-3 text-muted-foreground" />
-                          {formatDateTime(event.date, event.time)}
+                          <span className="whitespace-nowrap">
+                            {formatDateTime(event.date, event.time)}
+                          </span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm">
-                        <div className="flex items-center gap-2">
+                      <td className="px-4 py-3 text-sm align-top">
+                        <div className={cn(
+                          "flex items-center gap-2",
+                          dir === "rtl" ? "justify-end" : "justify-start"
+                        )}>
                           <ReactCountryFlag
                             countryCode={event.country}
                             svg
-                            className="w-4 h-3"
+                            className="w-4 h-3 flex-shrink-0"
                           />
-                          <span>{event.country}</span>
+                          <span className="text-xs">{event.country}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm">
-                        <div className="max-w-xs">
-                          <div className="font-medium">
+                      <td className="px-4 py-3 text-sm align-top">
+                        <div className="w-full">
+                          <div className={cn(
+                            "font-medium text-xs leading-tight",
+                            dir === "rtl" ? "text-right" : "text-left"
+                          )}>
                             {language === "ar" && translatedContent[`${event.event}-${event.country}`]
                               ? translatedContent[`${event.event}-${event.country}`]
                               : event.event}
@@ -779,22 +814,39 @@ export default function EnhancedMacroCalendar({
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm">
-                        <Badge className={getImportanceColor(event.importance)}>
-                          {getImportanceLabel(event.importance)}
-                        </Badge>
+                      <td className="px-4 py-3 text-sm align-top">
+                        <div className={cn(
+                          "flex",
+                          dir === "rtl" ? "justify-end" : "justify-start"
+                        )}>
+                          <Badge className={cn(getImportanceColor(event.importance), "text-xs")}>
+                            {getImportanceLabel(event.importance)}
+                          </Badge>
+                        </div>
                       </td>
-                      <td className="px-4 py-3 text-sm">
+                      <td className={cn(
+                        "px-4 py-3 text-xs align-top",
+                        dir === "rtl" ? "text-right" : "text-left"
+                      )}>
                         {event.previous || "-"}
                       </td>
-                      <td className="px-4 py-3 text-sm">
+                      <td className={cn(
+                        "px-4 py-3 text-xs align-top",
+                        dir === "rtl" ? "text-right" : "text-left"
+                      )}>
                         {event.forecast || "-"}
                       </td>
-                      <td className="px-4 py-3 text-sm font-medium">
+                      <td className={cn(
+                        "px-4 py-3 text-xs font-medium align-top",
+                        dir === "rtl" ? "text-right" : "text-left"
+                      )}>
                         {event.actual || "-"}
                       </td>
-                      <td className="px-4 py-3 text-sm">
-                        <div className="flex items-center gap-1">
+                      <td className="px-4 py-3 text-sm align-top">
+                        <div className={cn(
+                          "flex items-center gap-1",
+                          dir === "rtl" ? "justify-end" : "justify-start"
+                        )}>
                           <Button
                             variant={aiAnalysis[event.event] ? "default" : "outline"}
                             size="sm"
