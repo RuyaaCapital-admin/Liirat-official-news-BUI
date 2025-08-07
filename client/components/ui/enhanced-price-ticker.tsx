@@ -147,7 +147,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
 
         // For authentication errors (502 with upstream error), don't retry
         if (response.status === 502 && errorDetails.includes('Unauthenticated')) {
-          console.log(`[TICKER] Authentication error - using demo API key, skipping retries`);
+          console.log(`[TICKER] Authentication error - API key required`);
           // Set disconnected status but don't retry
         } else if (
           (response.status >= 500 ||
@@ -171,8 +171,8 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
               ...prev[symbol],
               symbol,
               displayName: config?.displayName || symbol,
-              // Show demo data for auth errors, disconnected for other errors
-              status: (response.status === 502 && errorDetails.includes('Unauthenticated')) ? "connecting" : "disconnected",
+              // Show disconnected for all errors
+              status: "disconnected",
               lastUpdate: new Date(),
             },
           }));
@@ -379,7 +379,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
                 <div className="text-right">
                   <div className="font-mono text-sm font-bold">
                     {data.status === "connecting"
-                      ? "Demo"
+                      ? "..."
                       : data.status === "disconnected"
                         ? "Offline"
                         : formatPrice(data.price, data.symbol)}
@@ -387,16 +387,12 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
                   <div
                     className={cn(
                       "text-xs font-mono",
-                      data.status === "connecting"
-                        ? "text-muted-foreground"
-                        : data.changePercent >= 0
+                      data.changePercent >= 0
                         ? "text-green-500"
                         : "text-red-500",
                     )}
                   >
-                    {data.status === "connecting"
-                      ? "API Key"
-                      : formatPercent(data.changePercent)}
+                    {formatPercent(data.changePercent)}
                   </div>
                 </div>
               </div>
