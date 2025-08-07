@@ -319,10 +319,9 @@ export default function SeparatedAlertSystem({
 
   // Create price alert
   const createPriceAlert = () => {
-    const selectedSymbol = POPULAR_SYMBOLS.find(
-      (s) => s.symbol === priceForm.symbol,
-    );
-    if (!selectedSymbol) return;
+    if (!selectedSymbol || !priceForm.targetPrice) {
+      return; // Don't create alert without proper symbol and target price
+    }
 
     const alert: PriceAlert = {
       id: Date.now().toString(),
