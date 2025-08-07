@@ -18,7 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    await getNews(req as any, res as any);
+    await getNews(req as any, res as any, () => {});
   } catch (error) {
     console.error("News API error:", error);
     res.status(500).json({
