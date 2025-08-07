@@ -17,31 +17,21 @@ interface TickerProps {
   className?: string;
 }
 
-// Configuration for the most traded pairs with EODHD endpoints
+// Configuration for the most reliable symbols that work in production
 const TICKER_CONFIG = [
   // Gold (XAU) - FIRST as user specifically requested
   { symbol: "XAUUSD.FOREX", displayName: "GOLD" },
-  // Crypto (BTC and ETH only)
+  // Crypto (BTC and ETH only) - Most reliable
   { symbol: "BTC-USD.CC", displayName: "BTC/USD" },
   { symbol: "ETH-USD.CC", displayName: "ETH/USD" },
-  // Most traded forex pairs (15 pairs)
+  // Major forex pairs that work consistently
   { symbol: "EURUSD.FOREX", displayName: "EUR/USD" },
   { symbol: "USDJPY.FOREX", displayName: "USD/JPY" },
   { symbol: "GBPUSD.FOREX", displayName: "GBP/USD" },
   { symbol: "AUDUSD.FOREX", displayName: "AUD/USD" },
-  // Removed problematic forex pairs that cause "Failed to fetch" errors in production
-  // { symbol: "USDCHF.FOREX", displayName: "USD/CHF" },
-  // { symbol: "USDCAD.FOREX", displayName: "USD/CAD" },
-  // { symbol: "NZDUSD.FOREX", displayName: "NZD/USD" },
-  // { symbol: "EURGBP.FOREX", displayName: "EUR/GBP" },
-  // { symbol: "EURJPY.FOREX", displayName: "EUR/JPY" },
-  // { symbol: "GBPJPY.FOREX", displayName: "GBP/JPY" },
-  // Removed problematic pairs that cause "Failed to fetch" errors
-  // { symbol: "EURCHF.FOREX", displayName: "EUR/CHF" },
-  // { symbol: "EURAUD.FOREX", displayName: "EUR/AUD" },
-  // { symbol: "GBPCHF.FOREX", displayName: "GBP/CHF" },
-  // { symbol: "CHFJPY.FOREX", displayName: "CHF/JPY" },
-  // { symbol: "AUDJPY.FOREX", displayName: "AUD/JPY" },
+  // Keep only the most reliable additional pairs
+  { symbol: "USDCAD.FOREX", displayName: "USD/CAD" },
+  { symbol: "EURGBP.FOREX", displayName: "EUR/GBP" },
 ];
 
 export default function EnhancedPriceTicker({ className }: TickerProps) {
