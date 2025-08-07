@@ -243,7 +243,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
     }
   };
 
-  // Fallback polling for disconnected symbols
+  // Fallback polling for disconnected symbols (reduced frequency)
   useEffect(() => {
     const fallbackInterval = setInterval(() => {
       Object.entries(priceData).forEach(([symbol, data]) => {
@@ -251,7 +251,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
           fetchFallbackPrice(symbol);
         }
       });
-    }, 30000); // Every 30 seconds
+    }, 60000); // Every 60 seconds to reduce API calls
 
     return () => clearInterval(fallbackInterval);
   }, [priceData]);
