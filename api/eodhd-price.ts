@@ -222,7 +222,7 @@ function transformPriceData(item: any, originalSymbol: string): PriceData {
     change: change,
     change_percent: change_percent,
     currency: item.currency || undefined,
-    timestamp: item.timestamp
+    timestamp: item.timestamp && item.timestamp !== "NA"
       ? new Date(item.timestamp * 1000).toISOString()
       : new Date().toISOString(),
     market_status: item.market_status || undefined,
