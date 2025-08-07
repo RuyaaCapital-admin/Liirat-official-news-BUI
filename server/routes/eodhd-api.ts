@@ -91,11 +91,8 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
 
     for (const symbol of symbolList) {
       try {
-        console.log(`🔍 Fetching price for symbol: ${symbol}`);
         const response = await eodFetch(`/real-time/${encodeURIComponent(symbol.toUpperCase())}`);
         const r = await response.json();
-
-        console.log(`📊 Response for ${symbol}:`, { ok: r.ok, hasData: !!r.data, data: r.data });
 
         if (r.ok && r.data) {
           const item = r.data;
