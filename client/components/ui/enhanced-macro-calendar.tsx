@@ -67,7 +67,7 @@ const EVENT_CATEGORIES = [
   { value: "gdp", labelEn: "GDP", labelAr: "الناتج المحلي" },
   { value: "retail", labelEn: "Retail Sales", labelAr: "مبيعات التجزئة" },
   { value: "manufacturing", labelEn: "Manufacturing", labelAr: "التصنيع" },
-  { value: "housing", labelEn: "Housing", labelAr: "الإسكان" },
+  { value: "housing", labelEn: "Housing", labelAr: "الإس��ان" },
   { value: "earnings", labelEn: "Earnings", labelAr: "الأرباح" },
 ];
 
@@ -430,15 +430,14 @@ export default function EnhancedMacroCalendar({
         setTranslatedContent((prev) => ({ ...prev, [eventKey]: translated }));
         return translated;
       } else {
-        // Fallback to original text on API error
-        setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
-        return event.event;
+        // Log error but don't show fallback - try again later
+        console.error(`Translation API error: ${response.status}`);
+        throw new Error(`Translation failed: ${response.status}`);
       }
     } catch (error) {
-      console.debug("Translation failed, using original text:", error);
-      // Silent fallback to original text
-      setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
-      return event.event;
+      console.error("Translation failed:", error);
+      // Re-throw error to trigger retry later instead of using fallback
+      throw error;
     } finally {
       setLoadingTranslation((prev) => ({ ...prev, [eventKey]: false }));
     }
