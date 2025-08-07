@@ -218,9 +218,13 @@ export const handleEODHDNews: RequestHandler = async (req, res) => {
     const items = (raw.data || raw).map((n: any) => ({
       datetimeIso: toIsoUtc(n.date || n.datetime || n.published_at || n.time),
       title: String(n.title || ''),
+      content: String(n.content || n.description || n.title || ''),
       source: String(n.source || ''),
       symbols: n.symbols || [],
-      url: n.link || n.url || ''
+      tags: n.tags || n.symbols || [],
+      url: n.link || n.url || '',
+      country: n.country || '',
+      category: n.category || 'financial'
     }));
 
     res.status(200).json({ ok: true, items });
