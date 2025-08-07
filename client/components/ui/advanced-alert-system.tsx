@@ -480,6 +480,47 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     return pair.currentPrice.toFixed(pair.symbol.includes("JPY") ? 2 : 4);
   };
 
+  // Show loading state while fetching currency pairs
+  if (isLoadingPairs) {
+    return (
+      <div className={cn("w-full space-y-6", className)} dir={dir}>
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <CardContent className="p-8 text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">
+              {language === "ar"
+                ? "جاري تحميل أزواج العملات من EODHD..."
+                : "Loading currency pairs from EODHD..."}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show message when no pairs are available (API access restricted)
+  if (currencyPairs.length === 0) {
+    return (
+      <div className={cn("w-full space-y-6", className)} dir={dir}>
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <CardContent className="p-8 text-center">
+            <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">
+              {language === "ar"
+                ? "بيانات EODHD غير متاحة"
+                : "EODHD Data Not Available"}
+            </h3>
+            <p className="text-muted-foreground">
+              {language === "ar"
+                ? "لا يمكن الوصول إلى بيانات الأسعار من EODHD API. يرجى التحقق من مفتاح API أو المحاولة لاحقاً."
+                : "Unable to access price data from EODHD API. Please check API key or try again later."}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className={cn("w-full space-y-6", className)} dir={dir}>
       {/* Create New Alert Card */}
