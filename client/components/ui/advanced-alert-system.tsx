@@ -788,22 +788,22 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                           </div>
                         </div>
 
-                        <div className="text-center">
+                        <div className="text-center min-w-[60px]">
                           <div className="text-xs text-muted-foreground">
                             {language === "ar" ? "المستهدف" : "Target"}
                           </div>
-                          <div className="font-mono font-medium">
+                          <div className="font-mono font-medium text-xs sm:text-sm">
                             {alert.condition === "above" ? "↑" : "↓"}{" "}
                             {alert.targetPrice.toFixed(4)}
                           </div>
                         </div>
 
                         {pair && (
-                          <div className="text-center">
+                          <div className="text-center min-w-[60px]">
                             <div className="text-xs text-muted-foreground">
                               {language === "ar" ? "الحالي" : "Current"}
                             </div>
-                            <div className="font-mono font-medium">
+                            <div className="font-mono font-medium text-xs sm:text-sm">
                               {getPriceDisplay(pair)}
                             </div>
                           </div>
@@ -813,7 +813,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                           variant={
                             status === "triggered" ? "destructive" : "outline"
                           }
-                          className="text-xs"
+                          className="text-xs whitespace-nowrap"
                         >
                           {status === "triggered"
                             ? language === "ar"
