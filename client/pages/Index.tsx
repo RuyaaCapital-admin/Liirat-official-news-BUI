@@ -448,10 +448,20 @@ export default function Index() {
                               {eventsError.replace("API Error:", "Error")}
                             </span>
                           </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            {language === "ar"
-                              ? "يرجى المحاولة مرة أخرى لاحقاً أو التواصل مع admin@ruyaacapital.com"
-                              : "Please try again later or contact admin@ruyaacapital.com"}
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => fetchEconomicEvents(language)}
+                              className="text-xs"
+                            >
+                              {t("Retry", "إعادة المحاولة")}
+                            </Button>
+                            <div className="text-xs text-muted-foreground">
+                              {language === "ar"
+                                ? "أو تواصل مع admin@ruyaacapital.com"
+                                : "or contact admin@ruyaacapital.com"}
+                            </div>
                           </div>
                         </div>
                       )}
@@ -528,7 +538,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيهات ذكية لأزواج العملات مع مراقبة الأسعار في الوقت الفعلي"
+                    ? "قم بإنشاء تنبيهات ذكية لأزواج العملات مع مراقبة الأسعار في الوقت ا��فعلي"
                     : "Create intelligent alerts for currency pairs with real-time price monitoring"}
                 </p>
               </div>
