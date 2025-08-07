@@ -221,13 +221,24 @@ const getCountryName = (country: string, language: string) => {
 const formatDate = (dateStr: string, language: string) => {
   try {
     const date = new Date(dateStr);
-    const locale = language === "ar" ? "ar-SA" : "en-US";
-    return date.toLocaleDateString(locale, {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    if (language === "ar") {
+      // Use Gregorian calendar for Arabic to avoid Islamic calendar months like "صفر"
+      return date.toLocaleDateString("ar-SA-u-ca-gregory", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+    } else {
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+    }
   } catch {
     return dateStr;
   }
@@ -456,7 +467,7 @@ export function MacroCalendarTable({
                           setIsCalendarOpen(false);
                         }}
                       >
-                        {t("Next Week", "الأسبوع القادم")}
+                        {t("Next Week", "الأس��وع القادم")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
