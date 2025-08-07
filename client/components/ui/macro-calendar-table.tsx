@@ -304,11 +304,11 @@ const getCountryFlag = (country: string) => {
 const getCountryName = (country: string, language: string) => {
   const countryNames: Record<string, { en: string; ar: string }> = {
     US: { en: "United States", ar: "الولايات المتحدة" },
-    EUR: { en: "Eurozone", ar: "منطقة اليورو" },
+    EUR: { en: "Eurozone", ar: "منط��ة اليورو" },
     GB: { en: "United Kingdom", ar: "المملكة المتحدة" },
     JP: { en: "Japan", ar: "اليابان" },
     CA: { en: "Canada", ar: "كندا" },
-    AU: { en: "Australia", ar: "��ستراليا" },
+    AU: { en: "Australia", ar: "أستراليا" },
     CHF: { en: "Switzerland", ar: "سويسرا" },
     DE: { en: "Germany", ar: "ألمانيا" },
     FR: { en: "France", ar: "فرنسا" },
@@ -605,7 +605,7 @@ export function MacroCalendarTable({
                           setIsCalendarOpen(false);
                         }}
                       >
-                        {t("Next Week", "الأس��وع القادم")}
+                        {t("Next Week", "الأسبوع القادم")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -658,7 +658,7 @@ export function MacroCalendarTable({
                   <Input
                     placeholder={t(
                       "Search countries...",
-                      "البحث في الب��دان...",
+                      "البحث في البلدان...",
                     )}
                     value={countrySearchTerm}
                     onChange={(e) => setCountrySearchTerm(e.target.value)}
@@ -675,7 +675,7 @@ export function MacroCalendarTable({
                       setIsCountryOpen(false);
                     }}
                   >
-                    {t("All Countries", "جم��ع البلدان")}
+                    {t("All Countries", "جميع البلدان")}
                   </div>
 
                   {/* Top Countries Section */}
