@@ -514,8 +514,8 @@ export default function EnhancedMacroCalendar({
         ...prev,
         [event.event]:
           language === "ar"
-            ? "تحليل الذكاء ��لاصطناعي غير متاح حاليًا"
-            : "AI analysis currently unavailable",
+            ? "❌ تحليل الذكاء الاصطناعي غير متاح حاليًا. يرجى التحقق من إعدادات API."
+            : "❌ AI analysis currently unavailable. Please check API configuration.",
       }));
     } finally {
       setLoadingAnalysis((prev) => ({ ...prev, [event.event]: false }));
