@@ -450,7 +450,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "تابع الأحداث الاقتصادية المهمة والأخبار المالية في الوقت الفعلي"
+                    ? "تابع الأحداث الاقتصادية المهمة والأ��بار المالية في الوقت الفعلي"
                     : "Track important economic events and real-time financial news"}
                 </p>
               </div>
@@ -523,7 +523,7 @@ export default function Index() {
                             </div>
                           </div>
                         )}
-                        <EnhancedCalendarTable
+                        <EnhancedMacroCalendar
                           events={economicEvents}
                           isLoading={isLoadingEvents}
                           error={
