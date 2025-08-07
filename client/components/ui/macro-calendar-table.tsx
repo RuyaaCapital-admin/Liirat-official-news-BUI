@@ -804,17 +804,17 @@ export function MacroCalendarTable({
             </PopoverContent>
           </Popover>
 
-          {/* Update Button with Status */}
+          {/* Manual Update Button */}
           <Button
-            variant="outline"
+            variant="default"
             onClick={handleUpdate}
-            className="flex items-center gap-2 relative"
+            className="flex items-center gap-2 relative bg-primary hover:bg-primary/90"
           >
             <RefreshCw className="h-4 w-4" />
-            {t("Update", "تحديث")}
+            {t("Refresh Data", "تحديث البيانات")}
             <div
               className={cn(
-                "absolute top-1 right-1 w-2 h-2 rounded-full",
+                "absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-background",
                 isOnline ? "bg-green-500" : "bg-red-500",
               )}
             />
@@ -854,7 +854,7 @@ export function MacroCalendarTable({
             <div className="p-6 text-center text-muted-foreground bg-card rounded-lg border">
               {t(
                 "No events found matching your criteria",
-                "لا توجد ��حداث تطابق معاييرك",
+                "لا توجد أحداث تطابق معاييرك",
               )}
             </div>
           ) : (
@@ -917,7 +917,7 @@ export function MacroCalendarTable({
                     dir === "rtl" ? "text-right" : "text-left",
                   )}
                 >
-                  {t("Date & Time", "التاريخ والوقت")}
+                  {t("Date & Time", "التاري�� والوقت")}
                 </th>
                 <th
                   className={cn(
