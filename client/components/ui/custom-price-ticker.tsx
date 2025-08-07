@@ -151,7 +151,7 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
       )}
     >
       {/* Scrolling Container */}
-      <div className="flex items-center h-full animate-scroll whitespace-nowrap">
+      <div className="flex items-center h-full animate-scroll whitespace-nowrap will-change-transform">
         {/* First Set */}
         {priceData.map((item, index) => (
           <div
