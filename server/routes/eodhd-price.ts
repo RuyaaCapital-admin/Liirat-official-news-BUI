@@ -67,8 +67,7 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     const isForex = symbolStr.includes(".FOREX");
     const isUSStock = symbolStr.includes(".US");
     const isCommodity = symbolStr.includes(".F");
-    const isMetal =
-      symbolStr.includes("XAUUSD") || symbolStr.includes("XAGUSD");
+    const isMetal = symbolStr === "XAUUSD" || symbolStr === "XAGUSD";
 
     let apiUrl: URL;
     let finalSymbol = symbolStr;
@@ -77,6 +76,10 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       // Crypto API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/crypto");
       finalSymbol = symbolStr;
+    } else if (isMetal) {
+      // Direct single-symbol endpoint for metals (GOLD/SILVER)
+      apiUrl = new URL(`https://eodhd.com/api/real-time/${symbolStr}`);
+      // Don't add 's' parameter for direct single-symbol endpoint
     } else if (isIndex) {
       // Indices API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
@@ -89,8 +92,8 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       // Commodities API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
       finalSymbol = symbolStr;
-    } else if (isForex || isMetal) {
-      // Forex API endpoint for currency pairs and metals
+    } else if (isForex) {
+      // Forex API endpoint for currency pairs
       apiUrl = new URL("https://eodhd.com/api/real-time/forex");
       finalSymbol = symbolStr;
     } else {
@@ -101,8 +104,10 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
         : symbolStr + ".FOREX";
     }
 
-    // Add API parameters
-    apiUrl.searchParams.append("s", finalSymbol);
+    // Add API parameters - skip for metals using direct endpoint
+    if (!isMetal) {
+      apiUrl.searchParams.append("s", finalSymbol);
+    }
     apiUrl.searchParams.append("api_token", apiKey);
     apiUrl.searchParams.append("fmt", fmt as string);
 
