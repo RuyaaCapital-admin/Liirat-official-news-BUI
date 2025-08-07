@@ -137,8 +137,8 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
 
   if (isLoading) {
     return (
-      <div className={cn("w-full h-[60px] bg-card border-b border-border flex items-center justify-center", className)}>
-        <div className="animate-pulse text-sm text-muted-foreground">Loading market data...</div>
+      <div className={cn("w-full h-[50px] sm:h-[60px] bg-card border-b border-border flex items-center justify-center", className)}>
+        <div className="animate-pulse text-xs sm:text-sm text-muted-foreground">Loading market data...</div>
       </div>
     );
   }
@@ -146,7 +146,7 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
   return (
     <div
       className={cn(
-        "w-full h-[60px] bg-card border-b border-border overflow-hidden relative",
+        "w-full h-[50px] sm:h-[60px] bg-card border-b border-border overflow-hidden relative",
         className
       )}
     >
