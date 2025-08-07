@@ -205,11 +205,11 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
     };
   }, []);
 
-  // Auto-scroll through tickers
+  // Auto-scroll through tickers (increased interval to reduce processing)
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex(prev => (prev + 1) % TICKER_CONFIG.length);
-    }, 3000); // Change every 3 seconds
+    }, 5000); // Change every 5 seconds to reduce processing
 
     return () => clearInterval(interval);
   }, []);
