@@ -136,6 +136,8 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
   } catch (error) {
     console.error("Error in AI analysis:", error);
 
+    const { language = "en" } = req.body; // Ensure language is available in catch block
+
     let errorMessage = "AI analysis failed";
     if (error instanceof Error) {
       if (error.name === "AbortError") {
