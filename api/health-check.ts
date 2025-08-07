@@ -12,15 +12,21 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method !== "GET") {
-    res.status(405).json({ error: "Method not allowed" });
-    return;
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const ping = process.env.PING_MESSAGE ?? "pong";
-
+  // Simple health check response
   res.status(200).json({
-    message: ping,
+    status: "ok",
     timestamp: new Date().toISOString(),
-    environment: "production",
+    environment: process.env.NODE_ENV || "development",
+    vercel: {
+      region: process.env.VERCEL_REGION || "unknown",
+      url: process.env.VERCEL_URL || "unknown",
+    },
+    api: {
+      eodhdKey: process.env.EODHD_API_KEY ? "configured" : "missing",
+      fallbackKey: "6891e3b89ee5e1.29062933",
+    },
   });
 }

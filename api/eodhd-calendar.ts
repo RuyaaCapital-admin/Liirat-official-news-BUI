@@ -1,19 +1,3 @@
-/**
- * EODHD Economic Events (Calendar) API Endpoint
- *
- * Fetches real-time and upcoming economic events from EODHD API
- * Supports filtering by country, importance, date range
- *
- * Documentation: https://eodhd.com/financial-apis/economic-events-api/
- *
- * Query Parameters:
- * - country: Filter by country code (US, GB, EUR, etc.)
- * - importance: Filter by importance level (1=low, 2=medium, 3=high)
- * - from: Start date (YYYY-MM-DD)
- * - to: End date (YYYY-MM-DD)
- * - limit: Number of events to return (default: 50)
- */
-
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 interface EconomicEvent {
@@ -28,6 +12,112 @@ interface EconomicEvent {
   previous?: string;
 }
 
+function transformEventData(
+  event: any,
+  language: string = "en",
+): EconomicEvent {
+  // Parse date and time from EODHD format
+  const eventDate =
+    event.date || event.Date || new Date().toISOString().split("T")[0];
+  const eventTime = event.time || event.Time || "00:00";
+
+  // Format date consistently
+  let formattedDate = eventDate;
+  if (!eventDate.includes("T")) {
+    formattedDate = `${eventDate}T${eventTime}:00Z`;
+  }
+
+  // Handle country code/name
+  const country = event.country || event.Country || event.currency || "Unknown";
+
+  // Handle event name
+  const eventName =
+    event.event ||
+    event.Event ||
+    event.title ||
+    event.Title ||
+    event.name ||
+    event.Name ||
+    event.type ||
+    event.Type ||
+    "Economic Event";
+
+  // Handle category
+  const category =
+    event.category ||
+    event.Category ||
+    event.sector ||
+    event.Sector ||
+    "Economic";
+
+  // Determine importance based on keywords and event type
+  let importance = 2; // Default to medium
+  const eventNameLower = eventName.toLowerCase();
+
+  // High importance keywords
+  if (
+    eventNameLower.includes("gdp") ||
+    eventNameLower.includes("inflation") ||
+    eventNameLower.includes("interest rate") ||
+    eventNameLower.includes("employment") ||
+    eventNameLower.includes("unemployment") ||
+    eventNameLower.includes("retail sales") ||
+    eventNameLower.includes("consumer price") ||
+    eventNameLower.includes("producer price") ||
+    eventNameLower.includes("federal funds rate") ||
+    eventNameLower.includes("nonfarm payrolls") ||
+    eventNameLower.includes("cpi") ||
+    eventNameLower.includes("ppi")
+  ) {
+    importance = 3;
+  }
+  // Low importance keywords
+  else if (
+    eventNameLower.includes("building permits") ||
+    eventNameLower.includes("housing starts") ||
+    eventNameLower.includes("factory orders") ||
+    eventNameLower.includes("wholesale inventories") ||
+    eventNameLower.includes("business inventories")
+  ) {
+    importance = 1;
+  }
+
+  // Override with API importance if provided
+  if (event.importance && !isNaN(parseInt(event.importance))) {
+    importance = Math.min(Math.max(parseInt(event.importance), 1), 3);
+  }
+
+  // Handle actual, forecast, previous values
+  const actual =
+    event.actual !== null && event.actual !== undefined
+      ? String(event.actual)
+      : undefined;
+
+  const forecast =
+    event.forecast !== null && event.forecast !== undefined
+      ? String(event.forecast)
+      : event.estimate !== null && event.estimate !== undefined
+        ? String(event.estimate)
+        : undefined;
+
+  const previous =
+    event.previous !== null && event.previous !== undefined
+      ? String(event.previous)
+      : undefined;
+
+  return {
+    date: formattedDate,
+    time: eventTime,
+    country,
+    event: eventName,
+    category,
+    importance,
+    actual,
+    forecast,
+    previous,
+  };
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Set CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -39,71 +129,59 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // Use the user's specified API key
-  const apiKey = "6891e3b89ee5e1.29062933";
+  if (req.method !== "GET") {
+    res.status(405).json({ error: "Method not allowed" });
+    return;
+  }
 
   try {
-    // Extract query parameters
-    const { country, importance, from, to, limit = "50" } = req.query;
+    // Get API key from Vercel environment variables or use provided key as fallback
+    const apiKey = process.env.EODHD_API_KEY || "6891e3b89ee5e1.29062933";
 
-    // Build EODHD API URL
+    // Extract query parameters
+    const {
+      country,
+      importance,
+      from,
+      to,
+      limit = "50",
+      lang = "en",
+    } = req.query;
+
+    // Build OFFICIAL EODHD Economic Calendar API URL
     const apiUrl = new URL("https://eodhd.com/api/economic-events");
     apiUrl.searchParams.append("api_token", apiKey);
     apiUrl.searchParams.append("fmt", "json");
 
-    // Set reasonable limit
-    const eventLimit = Math.min(parseInt(limit as string) || 50, 100);
-    apiUrl.searchParams.append("limit", eventLimit.toString());
-
-    // Add optional filters
-    if (country && country !== "all") {
-      apiUrl.searchParams.append("country", country as string);
-    }
-
-    // Handle importance filter - can be comma-separated values
-    if (importance && importance !== "all") {
-      const importanceStr = importance as string;
-      const importanceLevels = importanceStr
-        .split(",")
-        .map((i) => parseInt(i.trim()))
-        .filter((i) => !isNaN(i));
-      if (importanceLevels.length > 0) {
-        // For now, use the highest importance level as EODHD API may not support multiple
-        const maxImportance = Math.max(...importanceLevels);
-        // Note: EODHD may not have importance filtering, we'll filter on our side
-      }
-    }
-
-    // Add date range filters
-    if (from) {
-      apiUrl.searchParams.append("from", from as string);
+    // Set date range - REQUIRED parameters
+    if (from && typeof from === "string") {
+      apiUrl.searchParams.append("from", from);
     } else {
-      // Default to start of current week to get current events
-      const today = new Date();
-      const startOfWeek = new Date(today);
-      startOfWeek.setDate(today.getDate() - today.getDay()); // Start of current week (Sunday)
-      const fromDate = startOfWeek.toISOString().split("T")[0];
-      apiUrl.searchParams.append("from", fromDate);
-      console.log(`Default from date: ${fromDate}`);
+      // Default to today
+      const today = new Date().toISOString().split("T")[0];
+      apiUrl.searchParams.append("from", today);
     }
 
-    if (to) {
-      apiUrl.searchParams.append("to", to as string);
+    if (to && typeof to === "string") {
+      apiUrl.searchParams.append("to", to);
     } else {
-      // Default to end of next week to get upcoming events
-      const today = new Date();
-      const endOfNextWeek = new Date(today);
-      endOfNextWeek.setDate(today.getDate() - today.getDay() + 13); // End of next week (Saturday)
-      const toDate = endOfNextWeek.toISOString().split("T")[0];
+      // Default to one week from today
+      const nextWeek = new Date();
+      nextWeek.setDate(nextWeek.getDate() + 7);
+      const toDate = nextWeek.toISOString().split("T")[0];
       apiUrl.searchParams.append("to", toDate);
-      console.log(`Default to date: ${toDate}`);
     }
 
-    console.log(`Fetching EODHD economic events: ${apiUrl.toString()}`);
+    // Add optional parameters
+    if (country && country !== "all" && typeof country === "string") {
+      apiUrl.searchParams.append("country", country);
+    }
+
+    console.log(`Fetching EODHD Economic Calendar: ${apiUrl.toString()}`);
 
     // Create abort controller for timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
     const response = await fetch(apiUrl.toString(), {
       method: "GET",
@@ -122,17 +200,57 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       );
 
       // Log response body for debugging
+      let errorDetails = "";
       try {
         const errorBody = await response.text();
-        console.error("Error response body:", errorBody.substring(0, 500));
+        errorDetails = errorBody.substring(0, 500);
+        console.error("EODHD API Error response:", errorDetails);
       } catch (e) {
         console.error("Could not read error response body");
       }
 
+      // Return proper error response based on status
+      let errorMessage = "Failed to fetch economic calendar";
+      let userMessage = "";
+
+      if (response.status === 403) {
+        errorMessage = "API key authentication failed";
+        userMessage =
+          lang === "ar"
+            ? "خطأ في مفتاح API. يرجى التحقق من إعدادات الخدمة."
+            : "API key authentication failed. Please check service configuration.";
+      } else if (response.status === 401) {
+        errorMessage = "API key is invalid or expired";
+        userMessage =
+          lang === "ar"
+            ? "مفتاح API غير صالح أو منتهي الصلاحية."
+            : "API key is invalid or expired.";
+      } else if (response.status === 429) {
+        errorMessage = "API rate limit exceeded";
+        userMessage =
+          lang === "ar"
+            ? "تم تجاوز حد الاستخدام. يرجى المحاولة لاحقاً."
+            : "API rate limit exceeded. Please try again later.";
+      } else if (response.status === 404) {
+        errorMessage = "Economic calendar service not found";
+        userMessage =
+          lang === "ar"
+            ? "خدمة التقويم الاقتصادي غير متوفرة."
+            : "Economic calendar service not available.";
+      } else {
+        userMessage =
+          lang === "ar"
+            ? "خطأ في جلب التقويم الاقتصادي. يرجى المحاولة مرة أخرى."
+            : "Error fetching economic calendar. Please try again.";
+      }
+
       return res.status(response.status).json({
-        error: `EODHD Calendar API Error: ${response.status} - ${response.statusText}`,
+        error: errorMessage,
+        userMessage,
+        details: errorDetails,
         events: [],
         timestamp: new Date().toISOString(),
+        canRetry: response.status !== 401 && response.status !== 403,
       });
     }
 
@@ -142,187 +260,110 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.error(
         `EODHD Calendar API returned non-JSON content: ${contentType}`,
       );
-      const textResponse = await response.text();
-      console.error("Non-JSON response:", textResponse.substring(0, 500));
       return res.status(500).json({
         error: "Invalid response format from EODHD Calendar API",
+        userMessage:
+          lang === "ar"
+            ? "تنسيق استجابة غير صالح من خدمة التقويم."
+            : "Invalid response format from calendar service.",
         events: [],
+        canRetry: true,
       });
     }
 
     const data = await response.json();
     console.log(
-      "Raw EODHD Calendar response (first 3 items):",
-      JSON.stringify(data.slice ? data.slice(0, 3) : data, null, 2),
+      "EODHD Calendar API response received, items count:",
+      Array.isArray(data) ? data.length : "Not an array",
     );
 
     // Transform EODHD response to our format
-    const events: EconomicEvent[] = Array.isArray(data)
-      ? data.map((event: any) => transformEventData(event))
-      : [];
+    let events: EconomicEvent[] = [];
 
-    // Remove duplicates based on date, country, and event name
-    const uniqueEvents: EconomicEvent[] = [];
-    const seen = new Set<string>();
-
-    for (const event of events) {
-      const key = `${event.date}_${event.country}_${event.event}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        uniqueEvents.push(event);
+    if (Array.isArray(data)) {
+      events = data
+        .filter((event: any) => event && (event.date || event.time))
+        .map((event: any) => transformEventData(event, lang as string));
+    } else if (data && typeof data === "object") {
+      // Handle case where API returns an object instead of array
+      if (data.events && Array.isArray(data.events)) {
+        events = data.events
+          .filter((event: any) => event && (event.date || event.time))
+          .map((event: any) => transformEventData(event, lang as string));
       }
     }
 
-    console.log(
-      `Removed ${events.length - uniqueEvents.length} duplicate events`,
-    );
-
-    // Filter events by importance on our side if multiple levels were requested
-    let filteredEvents = uniqueEvents;
-    if (importance && importance !== "all") {
-      const importanceStr = importance as string;
-      const requestedLevels = importanceStr
+    // Filter by importance if specified
+    if (importance && importance !== "all" && typeof importance === "string") {
+      const requestedLevels = importance
         .split(",")
         .map((i) => parseInt(i.trim()))
-        .filter((i) => !isNaN(i));
+        .filter((i) => !isNaN(i) && i >= 1 && i <= 3);
+
       if (requestedLevels.length > 0) {
-        filteredEvents = events.filter((event) =>
+        events = events.filter((event) =>
           requestedLevels.includes(event.importance),
         );
       }
     }
 
-    console.log(
-      `Returning ${filteredEvents.length} filtered events out of ${events.length} total events`,
-    );
+    // Apply limit
+    const eventLimit = Math.min(parseInt(limit as string) || 50, 200);
+    events = events.slice(0, eventLimit);
 
-    res.status(200).json({
-      events: filteredEvents,
-      total: filteredEvents.length,
+    console.log(`Returning ${events.length} economic events`);
+
+    const responseData = {
+      events,
+      total: events.length,
       filters: {
-        country,
-        importance,
-        from,
-        to,
+        country: country || "all",
+        importance: importance || "all",
+        from: from || "today",
+        to: to || "+7 days",
         limit: eventLimit,
+        lang: lang || "en",
       },
       timestamp: new Date().toISOString(),
-    });
+      success: true,
+    };
+
+    res.json(responseData);
   } catch (error) {
-    console.error("Error fetching EODHD economic events:", error);
+    console.error("Error fetching EODHD economic calendar:", error);
 
     // Handle specific error types
-    let errorMessage = "Failed to fetch economic events";
+    let errorMessage = "Failed to fetch economic calendar";
+    let userMessage = "";
+
     if (error instanceof Error) {
       if (error.name === "AbortError") {
-        errorMessage = "Request timeout - EODHD API took too long to respond";
+        errorMessage = "Request timeout";
+        userMessage =
+          (req.query.lang as string) === "ar"
+            ? "انتهت مهلة الطلب. يرجى المحاولة مرة أخرى."
+            : "Request timeout. Please try again.";
+      } else if (error.message.includes("fetch")) {
+        errorMessage = "Network error";
+        userMessage =
+          (req.query.lang as string) === "ar"
+            ? "خطأ في الشبكة. يرجى التحقق من الاتصال."
+            : "Network error. Please check your connection.";
       } else {
         errorMessage = error.message;
+        userMessage =
+          (req.query.lang as string) === "ar"
+            ? "خطأ في الخدمة. يرجى المحاولة لاحقاً."
+            : "Service error. Please try again later.";
       }
     }
 
     res.status(500).json({
       error: errorMessage,
+      userMessage,
       events: [],
       timestamp: new Date().toISOString(),
+      canRetry: true,
     });
   }
-}
-
-function transformEventData(event: any): EconomicEvent {
-  // Parse date and time from EODHD format
-  const rawDate = event.date || new Date().toISOString();
-  let formattedDate = rawDate;
-  let timeOnly = "00:00";
-
-  // EODHD returns dates like "2025-09-05 23:00:00"
-  if (rawDate.includes(" ")) {
-    const [datePart, timePart] = rawDate.split(" ");
-    formattedDate = `${datePart}T${timePart}Z`; // Convert to ISO format
-    timeOnly = timePart.substring(0, 5); // Extract HH:MM
-  } else if (rawDate.includes("T")) {
-    // Already in ISO format
-    formattedDate = rawDate;
-    timeOnly = rawDate.split("T")[1]?.substring(0, 5) || "00:00";
-  } else {
-    // Date only, add default time
-    formattedDate = `${rawDate}T00:00:00Z`;
-    timeOnly = "00:00";
-  }
-
-  // Handle country code
-  const country = event.country || event.Country || "Unknown";
-
-  // Handle event name
-  const eventName =
-    event.type ||
-    event.event ||
-    event.Event ||
-    event.title ||
-    event.Title ||
-    event.name ||
-    event.Name ||
-    "Economic Event";
-
-  // Handle category
-  const category =
-    event.category || event.Category || event.type || event.Type || "Economic";
-
-  // Calculate importance based on the event type (since EODHD may not provide importance directly)
-  let importance = 2; // Default to medium
-  const eventTypeLower = eventName.toLowerCase();
-
-  // High importance events
-  if (
-    eventTypeLower.includes("inflation") ||
-    eventTypeLower.includes("interest rate") ||
-    eventTypeLower.includes("employment") ||
-    eventTypeLower.includes("gdp") ||
-    eventTypeLower.includes("retail sales") ||
-    eventTypeLower.includes("consumer price") ||
-    eventTypeLower.includes("producer price") ||
-    eventTypeLower.includes("unemployment")
-  ) {
-    importance = 3;
-  }
-  // Low importance events
-  else if (
-    eventTypeLower.includes("building permits") ||
-    eventTypeLower.includes("housing starts") ||
-    eventTypeLower.includes("factory orders")
-  ) {
-    importance = 1;
-  }
-
-  // Handle actual, forecast, previous values
-  const actual =
-    event.actual !== null && event.actual !== undefined
-      ? String(event.actual)
-      : undefined;
-  const forecast =
-    event.estimate !== null && event.estimate !== undefined
-      ? String(event.estimate)
-      : event.forecast !== null && event.forecast !== undefined
-        ? String(event.forecast)
-        : undefined;
-  const previous =
-    event.previous !== null && event.previous !== undefined
-      ? String(event.previous)
-      : undefined;
-
-  console.log(
-    `Transforming event: ${eventName} on ${formattedDate} for ${country}`,
-  );
-
-  return {
-    date: formattedDate,
-    time: timeOnly,
-    country: country,
-    event: eventName,
-    category: category,
-    importance: Math.min(Math.max(importance, 1), 3), // Ensure importance is between 1-3
-    actual: actual,
-    forecast: forecast,
-    previous: previous,
-  };
 }

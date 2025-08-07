@@ -34,13 +34,27 @@ interface PriceData {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Set CORS headers
+  // Set comprehensive CORS headers for production
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS",
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, Accept, X-Requested-With",
+  );
+  res.setHeader("Access-Control-Max-Age", "86400"); // 24 hours
+  res.setHeader("Cache-Control", "public, max-age=30"); // Cache for 30 seconds
 
   if (req.method === "OPTIONS") {
     res.status(200).end();
+    return;
+  }
+
+  // Only allow GET requests
+  if (req.method !== "GET") {
+    res.status(405).json({ error: "Method not allowed", prices: [] });
     return;
   }
 
@@ -65,35 +79,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       symbolStr.includes("ETH");
     const isIndex = symbolStr === "GSPC" || symbolStr.includes(".INDX");
 
-    let apiUrl: URL;
-    let finalSymbol = symbolStr;
-
-    if (isCrypto) {
-      // Crypto API endpoint
-      apiUrl = new URL("https://eodhd.com/api/real-time/crypto");
-      // For crypto, EODHD expects symbols like BTC-USD, ETH-USD
-      finalSymbol = symbolStr;
-    } else if (isIndex) {
-      // Index API endpoint - use stocks endpoint for indices
-      apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
-      finalSymbol = symbolStr.includes(".INDX")
-        ? symbolStr
-        : symbolStr + ".INDX";
-    } else {
-      // Forex API endpoint - default for currency pairs
-      apiUrl = new URL("https://eodhd.com/api/real-time/forex");
-      // For forex, EODHD expects symbols like EURUSD.FOREX
-      finalSymbol = symbolStr.includes(".FOREX")
-        ? symbolStr
-        : symbolStr + ".FOREX";
-    }
-
-    // Add API parameters
-    apiUrl.searchParams.append("s", finalSymbol);
+    // Use the official real-time API endpoint format
+    const apiUrl = new URL(`https://eodhd.com/api/real-time/${symbolStr}`);
     apiUrl.searchParams.append("api_token", apiKey);
     apiUrl.searchParams.append("fmt", fmt as string);
 
-    console.log(`Fetching EODHD price data: ${apiUrl.toString()}`);
+    console.log(
+      `[PRICE API] Fetching EODHD data for ${symbolStr}: ${apiUrl.toString()}`,
+    );
 
     // Create abort controller for timeout
     const controller = new AbortController();
@@ -104,6 +97,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       headers: {
         Accept: "application/json",
         "User-Agent": "Liirat-News/1.0",
+        "Cache-Control": "no-cache",
       },
       signal: controller.signal,
     });

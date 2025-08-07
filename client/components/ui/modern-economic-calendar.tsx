@@ -125,6 +125,59 @@ export function ModernEconomicCalendar({
     );
   }, [searchQuery, searchSuggestions]);
 
+  const filteredEvents = Array.isArray(events)
+    ? events
+        .filter((event) => {
+          // Only show events from now onward
+          const eventDate = getEventDate(event);
+          if (eventDate < now) return false;
+          if (selectedCategory !== "all" && event.category !== selectedCategory)
+            return false;
+          if (
+            !selectedCurrencies.includes("all") &&
+            !selectedCurrencies.includes(event.currency)
+          )
+            return false;
+          if (
+            !selectedCountries.includes("all") &&
+            !selectedCountries.includes(event.country)
+          )
+            return false;
+          if (
+            !event.importance ||
+            !["1", "2", "3"].includes(event.importance.toString())
+          )
+            return true;
+          if (!selectedImportance.includes(event.importance.toString()))
+            return false;
+          if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            // Normalize Arabic text to avoid encoding issues
+            const normalize = (str: string) =>
+              str ? str.normalize("NFC") : "";
+            const matchesArabic =
+              (event.event &&
+                normalize(event.event).includes(normalize(searchQuery))) ||
+              (event.country &&
+                normalize(event.country).includes(normalize(searchQuery))) ||
+              (event.currency &&
+                normalize(event.currency).includes(normalize(searchQuery)));
+            const matchesEnglish =
+              (event.event && event.event.toLowerCase().includes(query)) ||
+              (event.country && event.country.toLowerCase().includes(query)) ||
+              (event.currency && event.currency.toLowerCase().includes(query));
+            if (!matchesArabic && !matchesEnglish) return false;
+          }
+          return true;
+        })
+        .sort((a, b) => {
+          // Sort by date/time ascending
+          const dateA = getEventDate(a);
+          const dateB = getEventDate(b);
+          return dateA.getTime() - dateB.getTime();
+        })
+    : [];
+
   // Auto-translate event titles when language changes to Arabic
   useEffect(() => {
     if (language === "ar" && filteredEvents.length > 0) {
@@ -350,59 +403,6 @@ export function ModernEconomicCalendar({
     return new Date();
   };
 
-  const filteredEvents = Array.isArray(events)
-    ? events
-        .filter((event) => {
-          // Only show events from now onward
-          const eventDate = getEventDate(event);
-          if (eventDate < now) return false;
-          if (selectedCategory !== "all" && event.category !== selectedCategory)
-            return false;
-          if (
-            !selectedCurrencies.includes("all") &&
-            !selectedCurrencies.includes(event.currency)
-          )
-            return false;
-          if (
-            !selectedCountries.includes("all") &&
-            !selectedCountries.includes(event.country)
-          )
-            return false;
-          if (
-            !event.importance ||
-            !["1", "2", "3"].includes(event.importance.toString())
-          )
-            return true;
-          if (!selectedImportance.includes(event.importance.toString()))
-            return false;
-          if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            // Normalize Arabic text to avoid encoding issues
-            const normalize = (str: string) =>
-              str ? str.normalize("NFC") : "";
-            const matchesArabic =
-              (event.event &&
-                normalize(event.event).includes(normalize(searchQuery))) ||
-              (event.country &&
-                normalize(event.country).includes(normalize(searchQuery))) ||
-              (event.currency &&
-                normalize(event.currency).includes(normalize(searchQuery)));
-            const matchesEnglish =
-              (event.event && event.event.toLowerCase().includes(query)) ||
-              (event.country && event.country.toLowerCase().includes(query)) ||
-              (event.currency && event.currency.toLowerCase().includes(query));
-            if (!matchesArabic && !matchesEnglish) return false;
-          }
-          return true;
-        })
-        .sort((a, b) => {
-          // Sort by date/time ascending
-          const dateA = getEventDate(a);
-          const dateB = getEventDate(b);
-          return dateA.getTime() - dateB.getTime();
-        })
-    : [];
-
   return (
     <div className={cn("w-full space-y-6", className)} dir="rtl">
       {/* Header */}
@@ -467,7 +467,7 @@ export function ModernEconomicCalendar({
                     setTimeout(() => setShowSearchSuggestions(false), 200)
                   }
                   className="pr-10 bg-background/80 border-border/50 hover:border-primary/50 transition-colors"
-                  placeholder="ابحث في الأحداث أو العملات... (اكتب حرف أو اثنين)"
+                  placeholder="ابحث في الأحداث ��و العملات... (اكتب حرف أو اثنين)"
                   dir="rtl"
                 />
 

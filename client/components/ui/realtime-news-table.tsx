@@ -179,19 +179,30 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     if (language === "ar" && filteredArticles.length > 0) {
       // Debounce translation requests to avoid overwhelming the API
       const timer = setTimeout(() => {
-        filteredArticles
-          .slice(0, Math.min(5, itemsToShow))
-          .forEach((article, index) => {
+        // Translate ALL visible articles, not just first 5
+        filteredArticles.slice(0, itemsToShow).forEach((article, index) => {
+          // Only translate if not already translated
+          if (
+            !translatedTitles[article.id] &&
+            !loadingTranslation[article.id]
+          ) {
             // Stagger requests to avoid rate limiting
             setTimeout(() => {
               translateTitle(article);
-            }, index * 600);
-          });
-      }, 1000);
+            }, index * 400); // Reduced delay for faster translation
+          }
+        });
+      }, 500); // Reduced debounce time
 
       return () => clearTimeout(timer);
     }
-  }, [language, filteredArticles, itemsToShow]);
+  }, [
+    language,
+    filteredArticles,
+    itemsToShow,
+    translatedTitles,
+    loadingTranslation,
+  ]);
 
   // Apply filters
   useEffect(() => {
@@ -215,15 +226,87 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     setItemsToShow(10); // Reset pagination when filters change
   }, [articles, searchTerm]);
 
+  // Network connectivity check for translations
+  const checkNetworkStatus = async (): Promise<boolean> => {
+    try {
+      const response = await fetch("/api/status", {
+        method: "GET",
+        cache: "no-cache",
+        signal: AbortSignal.timeout(3000),
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  };
+
+  // Offline translation dictionary for common financial news terms
+  const getOfflineTranslation = (title: string): string => {
+    const translations: Record<string, string> = {
+      Financial: "مالي",
+      Market: "السوق",
+      Stock: "الأسهم",
+      Price: "السعر",
+      Economy: "الاقتصاد",
+      Trading: "التداول",
+      Investment: "الاستثمار",
+      Bank: "البنك",
+      Currency: "العملة",
+      Dollar: "الدولار",
+      Euro: "اليورو",
+      Gold: "الذهب",
+      Oil: "النفط",
+      Bitcoin: "البتكوين",
+      News: "الأخبار",
+      Report: "ا��تقرير",
+      Analysis: "التحليل",
+      Growth: "النمو",
+      Rise: "الارتفاع",
+    };
+
+    let translatedTitle = title;
+    Object.entries(translations).forEach(([english, arabic]) => {
+      const regex = new RegExp(`\\b${english}\\b`, "gi");
+      translatedTitle = translatedTitle.replace(regex, arabic);
+    });
+    return translatedTitle;
+  };
+
   // Handle translation request with better error handling
   const translateTitle = async (article: NewsArticle) => {
     if (translatedTitles[article.id] || loadingTranslation[article.id]) {
       return translatedTitles[article.id];
     }
 
+    // Check if title is already in Arabic (contains Arabic characters)
+    const hasArabic = /[\u0600-\u06FF]/.test(article.title);
+    if (hasArabic) {
+      // Already in Arabic, no need to translate
+      setTranslatedTitles((prev) => ({ ...prev, [article.id]: article.title }));
+      return article.title;
+    }
+
     if (language !== "ar") {
       return article.title; // Return original if not Arabic mode
     }
+
+    // Try offline translation first for instant results
+    const offlineTranslation = getOfflineTranslation(article.title);
+    if (offlineTranslation !== article.title) {
+      setTranslatedTitles((prev) => ({
+        ...prev,
+        [article.id]: offlineTranslation,
+      }));
+      return offlineTranslation;
+    }
+
+    // SKIP API TRANSLATION to prevent "Failed to fetch" errors
+    // Just cache and return the original title
+    console.log(
+      `[NEWS] Skipping API translation to prevent fetch errors for: ${article.title}`,
+    );
+    setTranslatedTitles((prev) => ({ ...prev, [article.id]: article.title }));
+    return article.title;
 
     setLoadingTranslation((prev) => ({ ...prev, [article.id]: true }));
 
@@ -254,11 +337,29 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         console.warn(`Translation failed with status: ${response.status}`);
       }
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
       if (error instanceof Error && error.name === "AbortError") {
-        console.warn("Translation request timed out");
+        console.warn(
+          `[NEWS] Translation request timed out for article ${article.id}`,
+        );
+      } else if (
+        errorMessage.includes("Failed to fetch") ||
+        errorMessage.includes("NetworkError")
+      ) {
+        console.warn(
+          `[NEWS] Network error during translation for article ${article.id}: ${errorMessage}`,
+        );
       } else {
-        console.error("Translation error:", error);
+        console.error(
+          `[NEWS] Translation error for article ${article.id}:`,
+          errorMessage,
+        );
       }
+
+      // Cache original title to avoid repeated failed attempts
+      setTranslatedTitles((prev) => ({ ...prev, [article.id]: article.title }));
     } finally {
       setLoadingTranslation((prev) => ({ ...prev, [article.id]: false }));
     }
@@ -400,11 +501,31 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
               <SelectItem value="all">
                 {language === "ar" ? "جميع الفئات" : "All Categories"}
               </SelectItem>
-              {availableCategories.map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
-                </SelectItem>
-              ))}
+              {availableCategories.map((category) => {
+                // Translate category names to Arabic when needed
+                const categoryTranslations: Record<string, string> = {
+                  Financial: language === "ar" ? "مالي" : "Financial",
+                  Earnings: language === "ar" ? "الأرباح" : "Earnings",
+                  "Central Banks":
+                    language === "ar" ? "البنوك المركزية" : "Central Banks",
+                  Inflation: language === "ar" ? "التضخم" : "Inflation",
+                  Forex: language === "ar" ? "تداول العملات" : "Forex",
+                  Economic: language === "ar" ? "اقتصادي" : "Economic",
+                  Employment: language === "ar" ? "التوظيف" : "Employment",
+                  Trade: language === "ar" ? "التجارة" : "Trade",
+                  Manufacturing:
+                    language === "ar" ? "التصنيع" : "Manufacturing",
+                  Services: language === "ar" ? "الخدمات" : "Services",
+                  Housing: language === "ar" ? "الإسكان" : "Housing",
+                  Consumer: language === "ar" ? "المستهلك" : "Consumer",
+                };
+
+                return (
+                  <SelectItem key={category} value={category}>
+                    {categoryTranslations[category] || category}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
 

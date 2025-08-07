@@ -16,7 +16,7 @@ import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import EnhancedMacroCalendar from "@/components/ui/enhanced-macro-calendar";
 import RealtimeNewsTable from "@/components/ui/realtime-news-table";
-import SeparatedAlertSystem from "@/components/ui/separated-alert-system";
+import DynamicAlertSystem from "@/components/ui/dynamic-alert-system";
 import { EconomicEventsResponse, EconomicEvent } from "@shared/api";
 import { NotificationSystem } from "@/components/ui/notification-system";
 import { NotificationDropdown } from "@/components/ui/notification-dropdown";
@@ -102,37 +102,30 @@ export default function Index() {
       setEventsError(null);
 
       console.log(`Fetching economic events for language: ${lang}`);
+      console.log(`Current location: ${window.location.origin}`);
+      console.log(
+        `API endpoint will be: ${window.location.origin}/api/eodhd-calendar`,
+      );
 
-      // First test basic server connectivity with timeout and retries
-      let pingSuccessful = false;
-      for (let attempt = 1; attempt <= 3; attempt++) {
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      // First test API connectivity with health check
+      let apiHealthy = false;
+      try {
+        const healthResponse = await fetch("/api/health-check", {
+          method: "GET",
+          headers: { Accept: "application/json" },
+          signal: AbortSignal.timeout(5000), // 5 second timeout
+        });
 
-          const pingResponse = await fetch("/api/ping", {
-            method: "GET",
-            headers: { Accept: "application/json" },
-            signal: controller.signal,
-          });
-
-          clearTimeout(timeoutId);
-          console.log(
-            `Server ping status: ${pingResponse.status} (attempt ${attempt})`,
-          );
-
-          if (pingResponse.ok) {
-            pingSuccessful = true;
-            break;
-          }
-        } catch (pingError) {
-          console.warn(`Server ping failed (attempt ${attempt}/3):`, pingError);
-          if (attempt === 3) {
-            console.error("All ping attempts failed, proceeding with fallback");
-            // Don't throw error, just log and continue with mock data
-          }
-          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt)); // Progressive delay
+        if (healthResponse.ok) {
+          const healthData = await healthResponse.json();
+          console.log("API Health Check:", healthData);
+          apiHealthy = true;
+        } else {
+          console.warn(`API health check failed: ${healthResponse.status}`);
         }
+      } catch (healthError) {
+        console.warn("API health check failed:", healthError);
+        // Continue anyway, maybe the specific endpoint will work
       }
 
       // Build query parameters with filters
@@ -159,18 +152,44 @@ export default function Index() {
         params.append("to", filters.to);
       }
 
-      // Fetch from EODHD calendar endpoint with better error handling
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      // Fetch from EODHD calendar endpoint with robust error handling
+      console.log(
+        `Attempting to fetch economic events from: /api/eodhd-calendar?${params.toString()}`,
+      );
 
-      const response = await fetch(`/api/eodhd-calendar?${params.toString()}`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        signal: controller.signal,
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+      let response;
+      try {
+        response = await fetch(`/api/eodhd-calendar?${params.toString()}`, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
+        });
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        console.error("Network error when fetching calendar:", fetchError);
+
+        // Handle specific network errors
+        if (
+          fetchError instanceof TypeError &&
+          fetchError.message.includes("fetch")
+        ) {
+          throw new Error(
+            "Network connection failed. Please check your internet connection and try again.",
+          );
+        } else if (fetchError.name === "AbortError") {
+          throw new Error(
+            "Request timeout. The server took too long to respond.",
+          );
+        } else {
+          throw new Error(`Network error: ${fetchError.message}`);
+        }
+      }
 
       clearTimeout(timeoutId);
 
@@ -202,16 +221,41 @@ export default function Index() {
     } catch (error) {
       console.error("Failed to fetch economic events:", error);
 
-      // NO MOCK DATA - show only real API data
-      let errorMessage =
-        "Failed to load economic data. Please check your connection and try again.";
-      if (error instanceof TypeError && error.message.includes("fetch")) {
+      // Provide user-friendly error messages based on error type
+      let errorMessage: string;
+
+      if (error instanceof Error) {
+        if (error.message.includes("Network connection failed")) {
+          errorMessage =
+            language === "ar"
+              ? "خطأ في الاتصال بالشبكة. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى."
+              : "Network connection failed. Please check your internet connection and try again.";
+        } else if (error.message.includes("Request timeout")) {
+          errorMessage =
+            language === "ar"
+              ? "انتهت مهلة الطلب. يرجى المحاولة مرة أخرى."
+              : "Request timeout. Please try again.";
+        } else if (error.message.includes("API key")) {
+          errorMessage =
+            language === "ar"
+              ? "خطأ في مفتاح API. يرجى التواصل مع الدعم الفني."
+              : "API authentication error. Please contact support.";
+        } else if (error.message.includes("Rate limit")) {
+          errorMessage =
+            language === "ar"
+              ? "تم تجاوز حد الاستخدام. يرجى الانتظار والمحاولة لاحقاً."
+              : "Rate limit exceeded. Please wait and try again later.";
+        } else {
+          errorMessage =
+            language === "ar"
+              ? `خطأ في الخدمة: ${error.message}`
+              : `Service error: ${error.message}`;
+        }
+      } else {
         errorMessage =
-          "Connection failed. Please check your internet connection.";
-      } else if (error instanceof Error && error.message.includes("aborted")) {
-        errorMessage = "Request timeout. Please try again.";
-      } else if (error instanceof Error) {
-        errorMessage = `API unavailable: ${error.message}`;
+          language === "ar"
+            ? "خط�� غير معروف. يرجى المحاولة مرة أخرى."
+            : "Unknown error. Please try again.";
       }
 
       setEventsError(errorMessage);
@@ -406,7 +450,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "تابع الأحداث الاقتصادية المهمة والأخبار المالية في الوقت الفعلي"
+                    ? "تابع الأحداث الاقتصادية المهمة والأ��بار المالية في الوقت الفعلي"
                     : "Track important economic events and real-time financial news"}
                 </p>
               </div>
@@ -422,7 +466,7 @@ export default function Index() {
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "الأحداث الاقتصادية المهمة والإعلانات المالية"
+                      ? "الأحداث الا��تصادية المهمة والإعلانات المالية"
                       : "Important economic events and financial announcements"}
                   </CardDescription>
                 </CardHeader>
@@ -444,7 +488,7 @@ export default function Index() {
                             <AlertTriangle className="w-4 h-4 mr-2" />
                             <span>
                               {language === "ar"
-                                ? "خطأ في تحميل التقويم الاقتصادي:"
+                                ? "خطأ في تحميل التقويم الاق��صادي:"
                                 : "Error loading economic calendar:"}{" "}
                               {eventsError.replace("API Error:", "Error")}
                             </span>
@@ -481,17 +525,29 @@ export default function Index() {
                         )}
                         <EnhancedMacroCalendar
                           events={economicEvents}
+                          isLoading={isLoadingEvents}
+                          error={
+                            eventsError
+                              ? {
+                                  message: eventsError,
+                                  userMessage:
+                                    language === "ar"
+                                      ? "خطأ في تحميل التقويم الاقتصادي. يرجى المحاولة مرة أخرى."
+                                      : "Error loading economic calendar. Please try again.",
+                                  canRetry: true,
+                                  details: eventsError,
+                                }
+                              : null
+                          }
                           className="rounded-lg overflow-hidden"
                           onRefresh={(filters) => {
                             console.log("Refreshing with filters:", filters);
                             fetchEconomicEvents(language, filters);
                           }}
-                          onCreateAlert={(event, type) => {
+                          onCreateAlert={(event) => {
                             console.log(
-                              "Creating alert for event:",
+                              "Creating alert for economic event:",
                               event,
-                              "type:",
-                              type,
                             );
 
                             // Create an actual alert for the economic event
@@ -617,11 +673,11 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيهات ذكية لأزواج العملات مع مراقبة الأسعار في الوقت الفعلي"
-                    : "Create intelligent alerts for currency pairs with real-time price monitoring"}
+                    ? "قم بإنشاء تنبيهات ذكية لأي رمز ما��ي مع مراقبة الأسعار في الوقت الفعلي"
+                    : "Create intelligent alerts for any financial symbol with real-time price monitoring"}
                 </p>
               </div>
-              <SeparatedAlertSystem />
+              <DynamicAlertSystem />
             </div>
           </section>
 

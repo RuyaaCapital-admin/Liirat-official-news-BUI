@@ -22,6 +22,9 @@
     "typecheck": "tsc",
     "vercel-build": "npm run build:client"
   },
+  "engines": {
+    "node": "20.x"
+  },
   "dependencies": {
     "@types/styled-components": "^5.1.34",
     "axios": "^1.6.0",

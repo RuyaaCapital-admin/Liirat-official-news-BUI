@@ -62,7 +62,7 @@ const EVENT_CATEGORIES = [
   {
     value: "central_bank",
     labelEn: "Central Banks",
-    labelAr: "البنوك المركزية",
+    labelAr: "البنوك المركزي��",
   },
   { value: "gdp", labelEn: "GDP", labelAr: "الناتج المحلي" },
   { value: "retail", labelEn: "Retail Sales", labelAr: "مبيعات التجزئة" },
@@ -192,33 +192,57 @@ export default function EnhancedMacroCalendar({
 
   const formatDateTime = (dateString: string, timeString?: string) => {
     try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) return dateString;
+      // Handle various date formats
+      let date: Date;
 
-      // Force Gregorian calendar and Arabic numerals
-      if (language === "ar") {
-        // Use English locale with Arabic labels to avoid hijri calendar
-        const englishFormat = new Intl.DateTimeFormat("en-US", {
-          timeZone: selectedTimezone,
-          month: "short",
-          day: "numeric",
-          hour: timeString ? "2-digit" : undefined,
-          minute: timeString ? "2-digit" : undefined,
-          hour12: false,
-        }).format(date);
-        return englishFormat; // Return English format even in Arabic mode
+      // Clean up the date string if it has weird formatting
+      if (dateString.includes("T00:00:00")) {
+        // Remove the weird T00:00:00Z suffix
+        date = new Date(dateString.split("T")[0]);
       } else {
-        return new Intl.DateTimeFormat("en-US", {
-          timeZone: selectedTimezone,
-          month: "short",
-          day: "numeric",
-          hour: timeString ? "2-digit" : undefined,
-          minute: timeString ? "2-digit" : undefined,
-          hour12: false,
-        }).format(date);
+        date = new Date(dateString);
       }
+
+      if (isNaN(date.getTime())) {
+        // If still invalid, try parsing as YYYY-MM-DD
+        const cleanDate = dateString.replace(/[^0-9-]/g, "").split("-");
+        if (cleanDate.length >= 3) {
+          date = new Date(
+            parseInt(cleanDate[0]),
+            parseInt(cleanDate[1]) - 1,
+            parseInt(cleanDate[2]),
+          );
+        } else {
+          return dateString;
+        }
+      }
+
+      // Simple, clean formatting for both Arabic and English
+      const options: Intl.DateTimeFormatOptions = {
+        month: "short",
+        day: "numeric",
+        timeZone: "Asia/Dubai", // Always use Dubai time
+      };
+
+      // Add time if provided and valid
+      if (timeString && timeString !== "00:00" && !timeString.includes("T")) {
+        options.hour = "2-digit";
+        options.minute = "2-digit";
+        options.hour12 = false;
+
+        // Create a new date with the time
+        const [hours, minutes] = timeString.split(":").map(Number);
+        if (!isNaN(hours) && !isNaN(minutes)) {
+          date.setHours(hours, minutes, 0, 0);
+        }
+      }
+
+      // Always use en-US locale for clean, consistent formatting
+      return new Intl.DateTimeFormat("en-US", options).format(date);
     } catch (error) {
-      return dateString;
+      console.error("Date formatting error:", error, "for:", dateString);
+      // Return just the date part if there's an error
+      return dateString.split("T")[0] || dateString;
     }
   };
 
@@ -401,6 +425,29 @@ export default function EnhancedMacroCalendar({
     }
   };
 
+  // Offline translation fallback for common economic terms
+  const getOfflineTranslation = (text: string): string => {
+    const offlineTranslations: Record<string, string> = {
+      Exports: "الصادرات",
+      Imports: "الواردات",
+      GDP: "الناتج المحلي الإجمالي",
+      Inflation: "التضخم",
+      Unemployment: "البطالة",
+      "Interest Rate": "سعر الفائدة",
+      "Trade Balance": "الميزان التجاري",
+      "Consumer Price Index": "مؤشر أسعار المستهلك",
+      "Producer Price Index": "مؤشر أسعار المنتجين",
+      "Industrial Production": "الإنتاج الصناعي",
+      "Retail Sales": "مبيعات التجزئة",
+      Employment: "التوظيف",
+      Manufacturing: "التصنيع",
+      Services: "الخدمات",
+      Housing: "الإسكان",
+    };
+
+    return offlineTranslations[text] || text;
+  };
+
   // Handle translation request with proper error handling and API calls
   const translateContent = async (event: EconomicEvent) => {
     const eventKey = `${event.event}-${event.country}`;
@@ -410,19 +457,43 @@ export default function EnhancedMacroCalendar({
       return translatedContent[eventKey] || event.event;
     }
 
+    // Try offline translation first
+    const offlineTranslation = getOfflineTranslation(event.event);
+    if (offlineTranslation !== event.event) {
+      setTranslatedContent((prev) => ({
+        ...prev,
+        [eventKey]: offlineTranslation,
+      }));
+      return offlineTranslation;
+    }
+
     setLoadingTranslation((prev) => ({ ...prev, [eventKey]: true }));
 
     try {
-      const response = await fetch("/api/translate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: event.event,
-          targetLanguage: "ar",
-        }),
-      });
+      let response;
+      try {
+        response = await fetch("/api/translate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            text: event.event,
+            targetLanguage: "ar",
+          }),
+          // Add timeout and error handling
+          signal: AbortSignal.timeout(5000),
+        });
+      } catch (fetchError) {
+        console.warn(
+          `[TRANSLATION] Fetch failed for "${event.event}":`,
+          fetchError,
+        );
+        // Use original text as fallback
+        setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
+        return event.event;
+      }
 
       if (response.ok) {
         const data = await response.json();
@@ -490,7 +561,7 @@ export default function EnhancedMacroCalendar({
             ...prev,
             [event.event]:
               language === "ar"
-                ? "⚠️ مفتاح OpenAI API غير صحيح أو غير مُعدّ. يرجى إعداد مفتاح صحيح في متغيرات البيئة."
+                ? "⚠️ مفتاح OpenAI API غير صحيح أو غير مُعدّ. يرجى إعداد مفتاح صحيح في ��تغيرات البيئة."
                 : "⚠️ OpenAI API key is invalid or not configured. Please set a valid API key in environment variables.",
           }));
           return; // Exit early to avoid throwing error
@@ -513,7 +584,7 @@ export default function EnhancedMacroCalendar({
         ...prev,
         [event.event]:
           language === "ar"
-            ? "❌ تحليل الذكاء الاصطناعي غير متاح حاليًا. يرجى التحقق من إعدادات API."
+            ? "❌ تحليل الذكاء الاصطناعي غير متاح حاليًا. يرج�� التحقق من إعدادات API."
             : "❌ AI analysis currently unavailable. Please check API configuration.",
       }));
     } finally {
@@ -745,6 +816,106 @@ export default function EnhancedMacroCalendar({
             </div>
           </div>
         </div>
+
+        {/* Custom Date Range Picker - Show when "Custom Range" is selected */}
+        {selectedPeriod === "custom" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-primary/5 rounded-lg border border-primary/20">
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-muted-foreground">
+                {language === "ar" ? "من تاريخ" : "From Date"}
+              </label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal h-9",
+                      !dateFrom && "text-muted-foreground",
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateFrom
+                      ? format(dateFrom, "MMM dd, yyyy")
+                      : language === "ar"
+                        ? "اختر التاريخ"
+                        : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateFrom}
+                    onSelect={setDateFrom}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-muted-foreground">
+                {language === "ar" ? "إلى ��اريخ" : "To Date"}
+              </label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal h-9",
+                      !dateTo && "text-muted-foreground",
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateTo
+                      ? format(dateTo, "MMM dd, yyyy")
+                      : language === "ar"
+                        ? "اختر التاريخ"
+                        : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateTo}
+                    onSelect={setDateTo}
+                    initialFocus
+                    disabled={(date) => (dateFrom ? date < dateFrom : false)}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Apply Custom Date Range Button */}
+            <div className="md:col-span-2 flex justify-end">
+              <Button
+                onClick={() => {
+                  if (dateFrom && dateTo && onRefresh) {
+                    onRefresh({
+                      from: dateFrom.toISOString().split("T")[0],
+                      to: dateTo.toISOString().split("T")[0],
+                      country:
+                        selectedCountries.length > 0
+                          ? selectedCountries.join(",")
+                          : undefined,
+                      importance: selectedImportance.map(String),
+                      category:
+                        selectedCategory !== "all"
+                          ? selectedCategory
+                          : undefined,
+                    });
+                  }
+                }}
+                disabled={!dateFrom || !dateTo}
+                className="gap-2"
+              >
+                <CalendarIcon className="w-4 h-4" />
+                {language === "ar"
+                  ? "تطبيق التاريخ المخصص"
+                  : "Apply Custom Range"}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Events Table */}

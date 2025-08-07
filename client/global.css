@@ -136,7 +136,8 @@
   }
 
   /* Prevent horizontal scrolling on mobile */
-  html, body {
+  html,
+  body {
     max-width: 100vw;
     overflow-x: hidden;
   }
@@ -228,6 +229,7 @@
     background: hsl(var(--background));
     border: none;
     border-radius: 1rem;
+    color: hsl(var(--foreground));
     box-shadow:
       6px 6px 12px var(--neumorphic-shadow-dark),
       -6px -6px 12px var(--neumorphic-shadow-light);
@@ -235,6 +237,8 @@
   }
 
   .neumorphic-button:hover {
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
     box-shadow:
       8px 8px 16px var(--neumorphic-shadow-dark),
       -8px -8px 16px var(--neumorphic-shadow-light);
@@ -265,9 +269,11 @@
   }
 
   .neumorphic-button-small {
-    background: hsl(var(--background));
+    background: hsl(var(--primary));
     border: none;
     border-radius: 0.5rem;
+    color: hsl(var(--primary-foreground));
+    font-weight: 500;
     box-shadow:
       3px 3px 6px var(--neumorphic-shadow-dark),
       -3px -3px 6px var(--neumorphic-shadow-light);
@@ -275,6 +281,7 @@
   }
 
   .neumorphic-button-small:hover {
+    background: hsl(var(--primary) / 0.9);
     transform: translateY(-1px);
     box-shadow:
       4px 4px 8px var(--neumorphic-shadow-dark),

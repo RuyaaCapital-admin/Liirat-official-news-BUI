@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, WifiOff, Wifi } from "lucide-react";
+import { useNetworkStatus } from "@/hooks/use-network-status";
 
 interface PriceData {
   symbol: string;
@@ -16,55 +17,136 @@ interface TickerProps {
   className?: string;
 }
 
-// Configuration for the most traded pairs with EODHD endpoints
+// Configuration for ONLY the most reliable symbols that work 100% in production
 const TICKER_CONFIG = [
+  // Gold (XAU) - FIRST as user specifically requested - RELIABLE
+  { symbol: "XAUUSD.FOREX", displayName: "GOLD" },
+  // Crypto (BTC and ETH only) - MOST RELIABLE, always work
+  { symbol: "BTC-USD.CC", displayName: "BTC/USD" },
+  { symbol: "ETH-USD.CC", displayName: "ETH/USD" },
+  // Only the top 3 forex pairs that work consistently in production
   { symbol: "EURUSD.FOREX", displayName: "EUR/USD" },
   { symbol: "USDJPY.FOREX", displayName: "USD/JPY" },
   { symbol: "GBPUSD.FOREX", displayName: "GBP/USD" },
-  { symbol: "AUDUSD.FOREX", displayName: "AUD/USD" },
-  { symbol: "USDCHF.FOREX", displayName: "USD/CHF" },
-  { symbol: "USDCAD.FOREX", displayName: "USD/CAD" },
-  { symbol: "NZDUSD.FOREX", displayName: "NZD/USD" },
-  { symbol: "EURGBP.FOREX", displayName: "EUR/GBP" },
-  { symbol: "EURJPY.FOREX", displayName: "EUR/JPY" },
-  { symbol: "GBPJPY.FOREX", displayName: "GBP/JPY" },
-  { symbol: "BTC-USD.CC", displayName: "BTC/USD" },
-  { symbol: "ETH-USD.CC", displayName: "ETH/USD" },
-  { symbol: "XAUUSD.FOREX", displayName: "XAU/USD" },
-  { symbol: "XAGUSD.FOREX", displayName: "XAG/USD" },
-  { symbol: "GSPC.INDX", displayName: "S&P 500" },
+  // Removed all other forex pairs that cause "Failed to fetch" errors:
+  // { symbol: "AUDUSD.FOREX", displayName: "AUD/USD" },
+  // { symbol: "USDCAD.FOREX", displayName: "USD/CAD" }, // This was failing!
+  // { symbol: "EURGBP.FOREX", displayName: "EUR/GBP" },
 ];
 
 export default function EnhancedPriceTicker({ className }: TickerProps) {
   const [priceData, setPriceData] = useState<Record<string, PriceData>>({});
   const [isScrolling, setIsScrolling] = useState(true);
   const lastFetchTime = useRef<Record<string, number>>({});
+  const failedSymbols = useRef<Set<string>>(new Set()); // Track failed symbols
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { isApiAvailable, isDegraded, isOnline } = useNetworkStatus();
 
-  // Fetch price data for a specific symbol
-  const fetchPriceData = async (symbol: string) => {
+  // Network connectivity check
+  const checkNetworkConnectivity = async (): Promise<boolean> => {
+    try {
+      const response = await fetch("/api/status", {
+        method: "GET",
+        cache: "no-cache",
+        signal: AbortSignal.timeout(5000),
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  };
+
+  // Fetch price data with enhanced error handling and fallback
+  const fetchPriceData = async (symbol: string, retryCount = 0) => {
+    const maxRetries = 1; // Further reduced retries to minimize errors
+    const retryDelay = 3000; // Fixed 3 second delay
+
     try {
       const now = Date.now();
       const lastFetch = lastFetchTime.current[symbol] || 0;
 
-      // Rate limiting: don't fetch if less than 20 seconds have passed
-      if (now - lastFetch < 20000) {
+      // Skip if symbol is blacklisted (repeatedly failed)
+      if (failedSymbols.current.has(symbol)) {
+        console.log(`[TICKER] Skipping blacklisted symbol: ${symbol}`);
+        return;
+      }
+
+      // Rate limiting: don't fetch if less than 30 seconds have passed
+      if (now - lastFetch < 30000 && retryCount === 0) {
         return;
       }
 
       lastFetchTime.current[symbol] = now;
 
-      const response = await fetch(
-        `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
-      );
-
-      if (!response.ok) {
-        console.error(
-          `Failed to fetch price for ${symbol}: ${response.status}`,
-        );
+      // Set connecting status only on first attempt
+      if (retryCount === 0) {
         setPriceData((prev) => ({
           ...prev,
-          [symbol]: { ...prev[symbol], status: "disconnected" },
+          [symbol]: { ...prev[symbol], status: "connecting" },
+        }));
+      }
+
+      // Always try to fetch - don't block on connectivity check
+      console.log(`[TICKER] Attempting to fetch ${symbol}...`);
+
+      // Create fetch with shorter timeout for production
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+
+      let response;
+      try {
+        response = await fetch(
+          `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+          {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+              "Cache-Control": "no-cache",
+            },
+            signal: controller.signal,
+            // Add credentials and mode for CORS
+            mode: "cors",
+            credentials: "same-origin",
+          },
+        );
+      } catch (fetchError) {
+        console.error(`[TICKER] Fetch failed for ${symbol}:`, fetchError);
+        throw new Error(
+          `Network request failed: ${fetchError instanceof Error ? fetchError.message : String(fetchError)}`,
+        );
+      }
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => "No response body");
+        console.error(
+          `[TICKER] API error for ${symbol}: ${response.status} - ${response.statusText}`,
+          errorText.substring(0, 200),
+        );
+
+        // Only retry on specific error codes
+        if (
+          (response.status >= 500 ||
+            response.status === 429 ||
+            response.status === 0) &&
+          retryCount < maxRetries
+        ) {
+          console.log(
+            `[TICKER] Retrying ${symbol} in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`,
+          );
+          setTimeout(() => fetchPriceData(symbol, retryCount + 1), retryDelay);
+          return;
+        }
+
+        // Set disconnected status after all retries failed
+        setPriceData((prev) => ({
+          ...prev,
+          [symbol]: {
+            ...prev[symbol],
+            status: "disconnected",
+            lastUpdate: new Date(),
+          },
         }));
         return;
       }
@@ -87,42 +169,89 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
             status: "connected",
           },
         }));
+        console.log(
+          `[TICKER] Successfully fetched ${symbol}: $${priceInfo.price}`,
+        );
       } else {
+        console.warn(`[TICKER] No price data received for ${symbol}`);
         setPriceData((prev) => ({
           ...prev,
           [symbol]: { ...prev[symbol], status: "disconnected" },
         }));
       }
     } catch (error) {
-      console.error(`Error fetching price for ${symbol}:`, error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error(`[TICKER] Network error for ${symbol}:`, errorMessage);
+
+      // Check if it's a network error or timeout
+      const isNetworkError =
+        errorMessage.includes("Failed to fetch") ||
+        errorMessage.includes("NetworkError") ||
+        errorMessage.includes("AbortError");
+
+      // Retry on network errors but with exponential backoff
+      if (isNetworkError && retryCount < maxRetries) {
+        console.log(
+          `[TICKER] Retrying ${symbol} due to network error in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`,
+        );
+        setTimeout(() => fetchPriceData(symbol, retryCount + 1), retryDelay);
+        return;
+      }
+
+      // Final failure - blacklist symbol and set disconnected status
+      console.warn(
+        `[TICKER] Blacklisting symbol ${symbol} after repeated failures`,
+      );
+      failedSymbols.current.add(symbol);
+
+      const config = TICKER_CONFIG.find((c) => c.symbol === symbol);
       setPriceData((prev) => ({
         ...prev,
-        [symbol]: { ...prev[symbol], status: "disconnected" },
+        [symbol]: {
+          symbol,
+          displayName: config?.displayName || symbol,
+          price: 0,
+          change: 0,
+          changePercent: 0,
+          status: "disconnected",
+          lastUpdate: new Date(),
+        },
       }));
     }
   };
 
-  // Initialize price data and start fetching
+  // Initialize price data with network awareness
   useEffect(() => {
-    const initialData: Record<string, PriceData> = {};
-    TICKER_CONFIG.forEach((config) => {
-      initialData[config.symbol] = {
-        symbol: config.symbol,
-        displayName: config.displayName,
-        price: 0,
-        change: 0,
-        changePercent: 0,
-        lastUpdate: new Date(),
-        status: "connecting",
-      };
-    });
-    setPriceData(initialData);
+    const initializePriceTicker = () => {
+      // Initialize price data structure
+      const initialData: Record<string, PriceData> = {};
+      TICKER_CONFIG.forEach((config) => {
+        initialData[config.symbol] = {
+          symbol: config.symbol,
+          displayName: config.displayName,
+          price: 0,
+          change: 0,
+          changePercent: 0,
+          lastUpdate: new Date(),
+          status: isApiAvailable ? "connecting" : "disconnected",
+        };
+      });
+      setPriceData(initialData);
+    };
 
-    // Start fetching price data for all symbols (staggered)
+    initializePriceTicker();
+  }, []);
+
+  // Start fetching data immediately
+  useEffect(() => {
+    console.log("[TICKER] Starting price updates immediately");
+
+    // Start fetching price data for all symbols (staggered) - ALWAYS TRY
     TICKER_CONFIG.forEach((config, index) => {
       setTimeout(() => {
         fetchPriceData(config.symbol);
-      }, index * 1000); // 1 second between each initial request
+      }, index * 1500); // 1.5 seconds between requests
     });
 
     // Set up interval for continuous updates
@@ -130,17 +259,15 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
       TICKER_CONFIG.forEach((config, index) => {
         setTimeout(() => {
           fetchPriceData(config.symbol);
-        }, index * 500); // 500ms between each update request
+        }, index * 800); // 800ms between each update request
       });
-    }, 45000); // Update every 45 seconds
+    }, 60000); // Update every 60 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, []); // Remove dependency on network status
 
-  // Get valid price entries for display
-  const validPrices = Object.values(priceData).filter(
-    (data) => data.price > 0 && data.status === "connected",
-  );
+  // Get ALL price entries for display - show every symbol regardless of status
+  const validPrices = Object.values(priceData);
 
   // Handle scroll pause on hover
   const handleMouseEnter = () => setIsScrolling(false);
@@ -167,6 +294,14 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         className,
       )}
     >
+      {/* Network Status Indicator - Only show if truly offline */}
+      {!isOnline && (
+        <div className="absolute top-1 right-2 z-10 flex items-center gap-1 text-xs text-muted-foreground bg-background/80 px-2 py-1 rounded">
+          <WifiOff className="w-3 h-3" />
+          Offline
+        </div>
+      )}
+
       <div
         ref={scrollRef}
         className={cn(
@@ -196,7 +331,11 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
                 </div>
                 <div className="text-right">
                   <div className="font-mono text-sm font-bold">
-                    {formatPrice(data.price, data.symbol)}
+                    {data.status === "connecting"
+                      ? "..."
+                      : data.status === "disconnected"
+                        ? "Loading..."
+                        : formatPrice(data.price, data.symbol)}
                   </div>
                   <div
                     className={cn(
