@@ -102,6 +102,8 @@ export default function Index() {
       setEventsError(null);
 
       console.log(`Fetching economic events for language: ${lang}`);
+    console.log(`Current location: ${window.location.origin}`);
+    console.log(`API endpoint will be: ${window.location.origin}/api/eodhd-calendar`);
 
       // First test basic server connectivity with timeout and retries
       let pingSuccessful = false;
@@ -225,7 +227,7 @@ export default function Index() {
     if (error instanceof Error) {
       if (error.message.includes("Network connection failed")) {
         errorMessage = language === "ar"
-          ? "خطأ في الاتصال بالشبكة. يرجى التحقق من اتصال الإنترنت والم��اولة مرة أخرى."
+          ? "خطأ في الاتصال بالشبكة. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى."
           : "Network connection failed. Please check your internet connection and try again.";
       } else if (error.message.includes("Request timeout")) {
         errorMessage = language === "ar"
@@ -413,7 +415,7 @@ export default function Index() {
                     }
                     aria-label="Navigate to news section"
                   >
-                    {language === "ar" ? "الأخبار المباشرة" : "Live News"}
+                    {language === "ar" ? "الأخبار المب��شرة" : "Live News"}
                   </Button>
                   <Button
                     variant="outline"
@@ -569,7 +571,7 @@ export default function Index() {
                             // Show success feedback
                             const successMessage =
                               language === "ar"
-                                ? `ت�� إنشاء تنبيه للحدث الاقتصادي: ${event.event}`
+                                ? `تم إنشاء تنبيه للحدث الاقتصادي: ${event.event}`
                                 : `Alert created for economic event: ${event.event}`;
 
                             addAlert({
@@ -646,7 +648,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "تابع آخر الأخبار المالية والاقتصادية مع تحليل الذكاء الاصطناعي"
+                    ? "تابع آخر الأخبار المالية والاقتصادية مع تحليل الذكاء الاصطن��عي"
                     : "Follow the latest financial and economic news with AI analysis"}
                 </p>
               </div>
