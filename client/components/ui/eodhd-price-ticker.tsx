@@ -14,15 +14,18 @@ interface EODHDPriceTickerProps {
   className?: string;
 }
 
+// Exactly 10 pairs as specified by user
 const SYMBOLS = [
-  { symbol: 'XAUUSD.FOREX', display: 'Gold' },
-  { symbol: 'GSPC.INDX', display: 'S&P 500' },
   { symbol: 'EURUSD.FOREX', display: 'EUR/USD' },
+  { symbol: 'USDJPY.FOREX', display: 'USD/JPY' },
+  { symbol: 'GBPUSD.FOREX', display: 'GBP/USD' },
+  { symbol: 'AUDUSD.FOREX', display: 'AUD/USD' },
+  { symbol: 'USDCHF.FOREX', display: 'USD/CHF' },
+  { symbol: 'USDCAD.FOREX', display: 'USD/CAD' },
   { symbol: 'BTC-USD.CC', display: 'Bitcoin' },
   { symbol: 'ETH-USD.CC', display: 'Ethereum' },
-  { symbol: 'GBPUSD.FOREX', display: 'GBP/USD' },
-  { symbol: 'USDJPY.FOREX', display: 'USD/JPY' },
-  { symbol: 'TSLA.US', display: 'Tesla' },
+  { symbol: 'XAUUSD.FOREX', display: 'Gold' },
+  { symbol: 'GSPC.INDX', display: 'S&P 500' },
 ];
 
 const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
@@ -37,42 +40,97 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
 
     setConnectionStatus('connecting');
-    
+
     try {
-      // Use server-side endpoint to avoid exposing API key
-      const wsUrl = `/api/eodhd-websocket`; // We'll create this endpoint
-      
-      // For now, use REST API fallback with periodic updates
+      // Connect to EODHD WebSocket for real-time forex data
+      const wsUrl = 'wss://ws.eodhistoricaldata.com/ws/forex?api_token=6891e3b89ee5e1.29062933';
+
+      wsRef.current = new WebSocket(wsUrl);
+
+      wsRef.current.onopen = () => {
+        console.log('EODHD WebSocket connected');
+        setIsConnected(true);
+        setConnectionStatus('connected');
+        reconnectAttempts.current = 0;
+
+        // Subscribe to all symbols
+        const subscribeMessage = {
+          action: 'subscribe',
+          symbols: SYMBOLS.map(s => s.symbol.replace('.FOREX', '').replace('.CC', '').replace('.INDX', ''))
+        };
+        wsRef.current?.send(JSON.stringify(subscribeMessage));
+      };
+
+      wsRef.current.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.s && data.p) {
+            // Find matching symbol
+            const matchingSymbol = SYMBOLS.find(sym =>
+              sym.symbol.includes(data.s) ||
+              data.s.includes(sym.symbol.split('.')[0])
+            );
+
+            if (matchingSymbol) {
+              const change = data.c || 0;
+              const changePercent = data.cp || 0;
+
+              setPrices(prev => ({
+                ...prev,
+                [matchingSymbol.symbol]: {
+                  symbol: matchingSymbol.symbol,
+                  price: parseFloat(data.p),
+                  change: parseFloat(change),
+                  changePercent: parseFloat(changePercent),
+                  lastUpdate: new Date()
+                }
+              }));
+            }
+          }
+        } catch (error) {
+          console.error('Error parsing WebSocket message:', error);
+        }
+      };
+
+      wsRef.current.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        setConnectionStatus('disconnected');
+        setIsConnected(false);
+      };
+
+      wsRef.current.onclose = () => {
+        console.log('WebSocket connection closed');
+        setIsConnected(false);
+        setConnectionStatus('disconnected');
+        scheduleReconnect();
+      };
+
+      // Also fetch initial prices via REST API as fallback
       fetchInitialPrices();
-      
-      // Set up periodic refresh as fallback
-      const interval = setInterval(fetchInitialPrices, 30000); // 30 seconds
-      
-      setIsConnected(true);
-      setConnectionStatus('connected');
-      
-      return () => clearInterval(interval);
-      
+
     } catch (error) {
       console.error('WebSocket connection failed:', error);
       setConnectionStatus('disconnected');
       scheduleReconnect();
+      // Use REST API as fallback
+      fetchInitialPrices();
     }
   };
 
   const fetchInitialPrices = async () => {
     try {
-      // Fetch prices for all symbols using REST API
+      // Fetch prices for all symbols using EODHD REST API
       const pricePromises = SYMBOLS.map(async ({ symbol, display }) => {
         try {
-          const response = await fetch(`/api/eodhd-price?symbol=${symbol.replace('.FOREX', '').replace('.CC', '').replace('.INDX', '').replace('.US', '')}`);
+          const baseSymbol = symbol.replace('.FOREX', '').replace('.CC', '').replace('.INDX', '');
+          const response = await fetch(`/api/eodhd-price?symbol=${baseSymbol}`);
           if (response.ok) {
             const data = await response.json();
-            if (data.price) {
+            if (data.price !== undefined) {
               return {
                 symbol,
                 display,
-                price: parseFloat(data.price),
+                price: parseFloat(data.price) || 0,
                 change: parseFloat(data.change || 0),
                 changePercent: parseFloat(data.change_p || 0),
                 lastUpdate: new Date()
@@ -100,12 +158,18 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
         }
       });
 
-      setPrices(prevPrices => ({ ...prevPrices, ...newPrices }));
-      setIsConnected(true);
-      setConnectionStatus('connected');
+      if (Object.keys(newPrices).length > 0) {
+        setPrices(prevPrices => ({ ...prevPrices, ...newPrices }));
+        if (connectionStatus !== 'connected') {
+          setConnectionStatus('connected');
+          setIsConnected(true);
+        }
+      }
     } catch (error) {
       console.error('Failed to fetch initial prices:', error);
-      setConnectionStatus('disconnected');
+      if (connectionStatus !== 'disconnected') {
+        setConnectionStatus('disconnected');
+      }
     }
   };
 
