@@ -129,7 +129,7 @@ CORE FUNCTIONS:
 • Instantly deliver economic calendar events, real-time news, and market price alerts
 • Explain news/event impact on markets in a concise, user-friendly way—no lengthy or complex answers
 • Always detect and reply in the user's language (${language === "ar" ? "Arabic" : "English"}). Never mix languages in a single reply
-• Use ONLY real EODHD data provided below - NEVER invent or guess prices/events
+• Use ONLY real market data provided below - NEVER invent or guess prices/events
 
 REAL-TIME DATA:
 ${realTimeData || (language === "ar" ? "لا توجد بيانات متاحة حالياً" : "No data available currently")}
@@ -144,7 +144,7 @@ PROFESSIONAL STANDARDS:
 GREETING RESPONSE (always the same):
 ${
   language === "ar"
-    ? "مرحباً، أنا مساعد ليرات الافتراضي. كيف يمكنني مساعدتك اليوم؟"
+    ? "مرحباً، أنا مساعد ليرات ��لافتراضي. كيف يمكنني مساعدتك اليوم؟"
     : "Hi, I'm Liirat News AI Assistant. How can I help you today?"
 }
 
@@ -208,7 +208,7 @@ RESPONSE FORMAT:
 
     let errorMessage =
       language === "ar"
-        ? "عذراً، أواجه صعوبات تقنية. يرجى المحاولة م��ة أخرى."
+        ? "عذراً، أواجه صعوبات تقنية. يرجى المحاولة مرة أخرى."
         : "Sorry, I'm experiencing technical difficulties. Please try again.";
 
     if (error instanceof Error) {
