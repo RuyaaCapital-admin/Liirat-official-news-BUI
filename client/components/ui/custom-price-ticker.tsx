@@ -184,24 +184,26 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
         {priceData.map((item, index) => (
           <div
             key={`${item.symbol}-2-${index}`}
-            className="flex items-center gap-2 px-4 py-2 min-w-fit"
+            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 min-w-fit"
           >
-            <span className="font-medium text-sm">{item.displayName}</span>
-            <span className="font-mono text-sm font-bold">
+            <span className="font-medium text-xs sm:text-sm truncate max-w-[80px] sm:max-w-none">
+              {item.displayName}
+            </span>
+            <span className="font-mono text-xs sm:text-sm font-bold">
               {formatPrice(item.price, item.symbol)}
             </span>
             <div
               className={cn(
-                "flex items-center gap-1 text-xs",
+                "flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs",
                 item.changePercent >= 0 ? "text-green-500" : "text-red-500"
               )}
             >
               {item.changePercent >= 0 ? (
-                <TrendingUp className="w-3 h-3" />
+                <TrendingUp className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
               ) : (
-                <TrendingDown className="w-3 h-3" />
+                <TrendingDown className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
               )}
-              <span>{formatChange(item.change, item.changePercent)}</span>
+              <span className="whitespace-nowrap">{formatChange(item.change, item.changePercent)}</span>
             </div>
           </div>
         ))}
