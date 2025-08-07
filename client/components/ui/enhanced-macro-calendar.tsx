@@ -331,12 +331,20 @@ export default function EnhancedMacroCalendar({
     return filteredEvents.slice(0, itemsPerPage);
   }, [filteredEvents, showAll, itemsPerPage]);
 
-  // Auto-translate events when language changes to Arabic
+  // Auto-translate events when language changes to Arabic (with debouncing)
   useEffect(() => {
     if (language === "ar" && displayedEvents.length > 0) {
-      displayedEvents.forEach((event) => {
-        translateContent(event);
-      });
+      // Debounce translation requests to avoid overwhelming the API
+      const timer = setTimeout(() => {
+        displayedEvents.slice(0, 5).forEach((event, index) => {
+          // Stagger requests to avoid rate limiting
+          setTimeout(() => {
+            translateContent(event);
+          }, index * 200);
+        });
+      }, 500);
+
+      return () => clearTimeout(timer);
     }
   }, [language, displayedEvents]);
 
@@ -385,7 +393,7 @@ export default function EnhancedMacroCalendar({
     }
   };
 
-  // Handle translation request
+  // Handle translation request with debouncing and better error handling
   const translateContent = async (event: EconomicEvent) => {
     const eventKey = `${event.event}-${event.country}`;
 
@@ -400,6 +408,9 @@ export default function EnhancedMacroCalendar({
     setLoadingTranslation((prev) => ({ ...prev, [eventKey]: true }));
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
       const response = await fetch("/api/translate", {
         method: "POST",
         headers: {
@@ -409,16 +420,25 @@ export default function EnhancedMacroCalendar({
           text: event.event,
           targetLanguage: "ar",
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const data = await response.json();
         const translated = data.translatedText || event.event;
         setTranslatedContent((prev) => ({ ...prev, [eventKey]: translated }));
         return translated;
+      } else {
+        console.warn(`Translation failed with status: ${response.status}`);
       }
     } catch (error) {
-      console.error("Translation error:", error);
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.warn('Translation request timed out');
+      } else {
+        console.error("Translation error:", error);
+      }
     } finally {
       setLoadingTranslation((prev) => ({ ...prev, [eventKey]: false }));
     }
