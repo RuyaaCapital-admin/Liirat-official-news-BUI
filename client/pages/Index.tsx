@@ -310,7 +310,7 @@ export default function Index() {
 
           {/* EODHD Economic Calendar Section */}
           <section id="calendar" className="py-12 sm:py-20 bg-muted/30">
-            <div className="container mx-auto px-2 sm:px-4">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {t("calendar.title")}
@@ -428,7 +428,7 @@ export default function Index() {
 
           {/* Advanced Alert System Section */}
           <section id="alerts" className="py-12 sm:py-20">
-            <div className="container mx-auto px-2 sm:px-4">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {language === "ar"
@@ -447,7 +447,7 @@ export default function Index() {
 
           {/* About Liirat Section */}
           <section id="about" className="py-12 sm:py-20 bg-muted/30">
-            <div className="container mx-auto px-2 sm:px-4">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full">
               <div className="text-center mb-16">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {t("about.title")}
@@ -511,7 +511,7 @@ export default function Index() {
 
           {/* Contact Section */}
           <section id="contact" className="py-12 sm:py-20">
-            <div className="container mx-auto px-2 sm:px-4">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full">
               <div className="max-w-2xl mx-auto text-center">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {t("contact.title")}
