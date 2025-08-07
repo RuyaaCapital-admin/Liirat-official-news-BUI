@@ -89,7 +89,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
                 ...prev,
                 [config.symbol]: {
                   ...prev[config.symbol],
-                  price: data.price,
+                  price: priceInfo.price,
                   change,
                   changePercent,
                   lastUpdate: new Date(),
