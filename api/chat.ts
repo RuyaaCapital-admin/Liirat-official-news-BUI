@@ -78,9 +78,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (validPrices.length > 0) {
           realTimeData =
             language === "ar"
-              ? `البيانات المباشرة من EODHD (${new Date().toLocaleString("ar-SA")}):
+              ? `البيانات المباشرة (${new Date().toLocaleString("ar-SA")}):
 ${validPrices.map((p) => `• ${p.symbol}: ${p.price?.toFixed(4) || "N/A"} (${p.change_percent >= 0 ? "+" : ""}${p.change_percent?.toFixed(2) || "0"}%)`).join("\n")}`
-              : `Live EODHD data (${new Date().toLocaleString()}):
+              : `Live market data (${new Date().toLocaleString()}):
 ${validPrices.map((p) => `• ${p.symbol}: ${p.price?.toFixed(4) || "N/A"} (${p.change_percent >= 0 ? "+" : ""}${p.change_percent?.toFixed(2) || "0"}%)`).join("\n")}`;
         }
       } catch (error) {
