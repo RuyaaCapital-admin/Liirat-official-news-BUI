@@ -231,13 +231,21 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
   } catch (error) {
     console.error("Error fetching EODHD economic calendar:", error);
 
-    // Handle specific error types
-    let errorMessage = "Failed to fetch economic calendar";
+    // Handle specific error types with localization
+    const isArabic = lang === "ar";
+    let errorMessage = isArabic
+      ? "فشل في جلب التقويم الاقتصادي"
+      : "Failed to fetch economic calendar";
+
     if (error instanceof Error) {
       if (error.name === "AbortError") {
-        errorMessage = "Request timeout - EODHD API took too long to respond";
+        errorMessage = isArabic
+          ? "انتهت مهلة الطلب - استغرق EODHD API وقتاً طويلاً للاستجابة"
+          : "Request timeout - EODHD API took too long to respond";
       } else if (error.message.includes("fetch")) {
-        errorMessage = "Network error connecting to EODHD API";
+        errorMessage = isArabic
+          ? "خطأ في الشبكة عند الاتصال بـ EODHD API"
+          : "Network error connecting to EODHD API";
       } else {
         errorMessage = error.message;
       }
