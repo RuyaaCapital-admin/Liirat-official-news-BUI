@@ -63,105 +63,68 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
   const searchRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
-  // Real symbols compatible with Polygon.io API - will be updated with real prices
-  const [currencyPairs, setCurrencyPairs] = useState<CurrencyPair[]>([
-    {
-      symbol: "EURUSD",
-      name: "EUR/USD",
-      nameAr: "يورو/دولار",
-      currentPrice: 1.0856,
-      change: 0.0023,
-      changePercent: 0.21,
-    },
-    {
-      symbol: "GBPUSD",
-      name: "GBP/USD",
-      nameAr: "جنيه/دولار",
-      currentPrice: 1.2645,
-      change: -0.0089,
-      changePercent: -0.7,
-    },
-    {
-      symbol: "USDJPY",
-      name: "USD/JPY",
-      nameAr: "دولار/ين",
-      currentPrice: 148.23,
-      change: 0.45,
-      changePercent: 0.3,
-    },
-    {
-      symbol: "AAPL",
-      name: "Apple Inc",
-      nameAr: "أبل",
-      currentPrice: 185.25,
-      change: 2.15,
-      changePercent: 1.17,
-    },
-    {
-      symbol: "GOOGL",
-      name: "Alphabet Inc",
-      nameAr: "ألفابت",
-      currentPrice: 142.3,
-      change: -1.85,
-      changePercent: -1.28,
-    },
-    {
-      symbol: "MSFT",
-      name: "Microsoft Corp",
-      nameAr: "مايكروسوفت",
-      currentPrice: 415.5,
-      change: 5.25,
-      changePercent: 1.28,
-    },
-    {
-      symbol: "TSLA",
-      name: "Tesla Inc",
-      nameAr: "تيسلا",
-      currentPrice: 248.75,
-      change: -8.5,
-      changePercent: -3.31,
-    },
-    {
-      symbol: "NVDA",
-      name: "NVIDIA Corp",
-      nameAr: "إنفيديا",
-      currentPrice: 785.45,
-      change: 12.3,
-      changePercent: 1.59,
-    },
-    {
-      symbol: "SPY",
-      name: "S&P 500 ETF",
-      nameAr: "صندوق إس&بي 500",
-      currentPrice: 485.2,
-      change: 3.15,
-      changePercent: 0.65,
-    },
-    {
-      symbol: "QQQ",
-      name: "Nasdaq ETF",
-      nameAr: "صندوق ناسداك",
-      currentPrice: 398.75,
-      change: -2.45,
-      changePercent: -0.61,
-    },
-    {
-      symbol: "BTCUSD",
-      name: "Bitcoin/USD",
-      nameAr: "بيتكوين/دولار",
-      currentPrice: 43250.75,
-      change: -1250.25,
-      changePercent: -2.81,
-    },
-    {
-      symbol: "ETHUSD",
-      name: "Ethereum/USD",
-      nameAr: "إيثريوم/دولار",
-      currentPrice: 2650.5,
-      change: 85.25,
-      changePercent: 3.33,
-    },
-  ]);
+  // EODHD-supported symbols - NO MOCK PRICES, only symbol definitions
+  const [currencyPairs, setCurrencyPairs] = useState<CurrencyPair[]>([]);
+  const [isLoadingPairs, setIsLoadingPairs] = useState(true);
+
+  // Define supported symbols - prices will be fetched from EODHD
+  const supportedSymbols = [
+    { symbol: "EURUSD", name: "EUR/USD", nameAr: "يورو/دولار" },
+    { symbol: "GBPUSD", name: "GBP/USD", nameAr: "جنيه/دولار" },
+    { symbol: "USDJPY", name: "USD/JPY", nameAr: "دولار/ين" },
+    { symbol: "USDCHF", name: "USD/CHF", nameAr: "دولار/فرنك" },
+    { symbol: "AUDUSD", name: "AUD/USD", nameAr: "دولار أسترالي/دولار" },
+    { symbol: "USDCAD", name: "USD/CAD", nameAr: "دولار/دولار كندي" },
+    { symbol: "NZDUSD", name: "NZD/USD", nameAr: "دولار نيوزيلندي/دولار" },
+    { symbol: "EURGBP", name: "EUR/GBP", nameAr: "يورو/جنيه" },
+    { symbol: "EURJPY", name: "EUR/JPY", nameAr: "يورو/ين" },
+    { symbol: "GBPJPY", name: "GBP/JPY", nameAr: "جنيه/ين" },
+    { symbol: "BTCUSD", name: "Bitcoin/USD", nameAr: "بيتكوين/دولار" },
+    { symbol: "ETHUSD", name: "Ethereum/USD", nameAr: "إيثريوم/دولار" },
+  ];
+
+  // Fetch real prices for all supported symbols on component mount
+  useEffect(() => {
+    const fetchAllPrices = async () => {
+      setIsLoadingPairs(true);
+      try {
+        const pricePromises = supportedSymbols.map(async (symbol) => {
+          try {
+            const response = await fetch(`/api/eodhd-price?symbol=${symbol.symbol}`);
+            if (response.ok) {
+              const data = await response.json();
+              const priceData = data.prices?.[0];
+              if (priceData) {
+                return {
+                  symbol: symbol.symbol,
+                  name: symbol.name,
+                  nameAr: symbol.nameAr,
+                  currentPrice: priceData.price || 0,
+                  change: priceData.change || 0,
+                  changePercent: priceData.change_percent || 0,
+                };
+              }
+            }
+            // Return symbol with no price if API fails - NO MOCK DATA
+            return null;
+          } catch (error) {
+            console.warn(`Failed to fetch price for ${symbol.symbol}:`, error);
+            return null;
+          }
+        });
+
+        const results = await Promise.all(pricePromises);
+        const validPairs = results.filter((pair): pair is CurrencyPair => pair !== null);
+        setCurrencyPairs(validPairs);
+      } catch (error) {
+        console.error("Error fetching currency pair prices:", error);
+      } finally {
+        setIsLoadingPairs(false);
+      }
+    };
+
+    fetchAllPrices();
+  }, []);
 
   // Filter pairs based on search query
   const filteredPairs = currencyPairs.filter(
