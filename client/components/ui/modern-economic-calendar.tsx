@@ -59,6 +59,8 @@ export function ModernEconomicCalendar({
   const [selectedImportance, setSelectedImportance] = useState<string[]>(["3"]);
   const [events, setEvents] = useState<EconomicEvent[]>([]);
   const [isLoadingAI, setIsLoadingAI] = useState<string | null>(null);
+  const [translatedContent, setTranslatedContent] = useState<Record<string, string>>({});
+  const [loadingTranslation, setLoadingTranslation] = useState<Record<string, boolean>>({});
 
   // Search suggestions based on countries, events, and currencies (Arabic and English)
   const searchSuggestions = React.useMemo(() => {
