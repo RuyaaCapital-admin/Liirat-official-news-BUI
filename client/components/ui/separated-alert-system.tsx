@@ -72,17 +72,61 @@ interface SeparatedAlertSystemProps {
   onPriceAlert?: (alert: PriceAlert) => void;
 }
 
-const POPULAR_SYMBOLS = [
-  { symbol: "EURUSD.FOREX", displayName: "EUR/USD" },
-  { symbol: "USDJPY.FOREX", displayName: "USD/JPY" },
-  { symbol: "GBPUSD.FOREX", displayName: "GBP/USD" },
-  { symbol: "AUDUSD.FOREX", displayName: "AUD/USD" },
-  { symbol: "USDCHF.FOREX", displayName: "USD/CHF" },
-  { symbol: "USDCAD.FOREX", displayName: "USD/CAD" },
-  { symbol: "BTC-USD.CC", displayName: "BTC/USD" },
-  { symbol: "ETH-USD.CC", displayName: "ETH/USD" },
-  { symbol: "XAUUSD.FOREX", displayName: "XAU/USD" },
-  { symbol: "GSPC.INDX", displayName: "S&P 500" },
+const ALL_SYMBOLS = [
+  // Major Forex Pairs
+  { symbol: "EURUSD.FOREX", displayName: "EUR/USD", type: "forex" },
+  { symbol: "USDJPY.FOREX", displayName: "USD/JPY", type: "forex" },
+  { symbol: "GBPUSD.FOREX", displayName: "GBP/USD", type: "forex" },
+  { symbol: "AUDUSD.FOREX", displayName: "AUD/USD", type: "forex" },
+  { symbol: "USDCHF.FOREX", displayName: "USD/CHF", type: "forex" },
+  { symbol: "USDCAD.FOREX", displayName: "USD/CAD", type: "forex" },
+  { symbol: "NZDUSD.FOREX", displayName: "NZD/USD", type: "forex" },
+  { symbol: "EURGBP.FOREX", displayName: "EUR/GBP", type: "forex" },
+  { symbol: "EURJPY.FOREX", displayName: "EUR/JPY", type: "forex" },
+  { symbol: "EURCHF.FOREX", displayName: "EUR/CHF", type: "forex" },
+  { symbol: "EURCAD.FOREX", displayName: "EUR/CAD", type: "forex" },
+  { symbol: "EURAUD.FOREX", displayName: "EUR/AUD", type: "forex" },
+  { symbol: "GBPJPY.FOREX", displayName: "GBP/JPY", type: "forex" },
+  { symbol: "GBPCHF.FOREX", displayName: "GBP/CHF", type: "forex" },
+  { symbol: "GBPCAD.FOREX", displayName: "GBP/CAD", type: "forex" },
+  { symbol: "GBPAUD.FOREX", displayName: "GBP/AUD", type: "forex" },
+  { symbol: "CHFJPY.FOREX", displayName: "CHF/JPY", type: "forex" },
+  { symbol: "CADJPY.FOREX", displayName: "CAD/JPY", type: "forex" },
+  { symbol: "AUDJPY.FOREX", displayName: "AUD/JPY", type: "forex" },
+  { symbol: "AUDCHF.FOREX", displayName: "AUD/CHF", type: "forex" },
+  { symbol: "AUDCAD.FOREX", displayName: "AUD/CAD", type: "forex" },
+  { symbol: "NZDJPY.FOREX", displayName: "NZD/JPY", type: "forex" },
+
+  // Major Cryptocurrencies
+  { symbol: "BTC-USD.CC", displayName: "Bitcoin (BTC/USD)", type: "crypto" },
+  { symbol: "ETH-USD.CC", displayName: "Ethereum (ETH/USD)", type: "crypto" },
+  { symbol: "ADA-USD.CC", displayName: "Cardano (ADA/USD)", type: "crypto" },
+  { symbol: "SOL-USD.CC", displayName: "Solana (SOL/USD)", type: "crypto" },
+  { symbol: "AVAX-USD.CC", displayName: "Avalanche (AVAX/USD)", type: "crypto" },
+  { symbol: "DOT-USD.CC", displayName: "Polkadot (DOT/USD)", type: "crypto" },
+  { symbol: "MATIC-USD.CC", displayName: "Polygon (MATIC/USD)", type: "crypto" },
+  { symbol: "LINK-USD.CC", displayName: "Chainlink (LINK/USD)", type: "crypto" },
+  { symbol: "UNI-USD.CC", displayName: "Uniswap (UNI/USD)", type: "crypto" },
+  { symbol: "LTC-USD.CC", displayName: "Litecoin (LTC/USD)", type: "crypto" },
+
+  // Commodities
+  { symbol: "XAUUSD.FOREX", displayName: "Gold (XAU/USD)", type: "commodity" },
+  { symbol: "XAGUSD.FOREX", displayName: "Silver (XAG/USD)", type: "commodity" },
+  { symbol: "WTIUSD.FOREX", displayName: "WTI Crude Oil", type: "commodity" },
+  { symbol: "XPDUSD.FOREX", displayName: "Palladium (XPD/USD)", type: "commodity" },
+  { symbol: "XPTUSD.FOREX", displayName: "Platinum (XPT/USD)", type: "commodity" },
+
+  // Major Stock Indices
+  { symbol: "GSPC.INDX", displayName: "S&P 500", type: "index" },
+  { symbol: "DJI.INDX", displayName: "Dow Jones", type: "index" },
+  { symbol: "IXIC.INDX", displayName: "NASDAQ", type: "index" },
+  { symbol: "RUT.INDX", displayName: "Russell 2000", type: "index" },
+  { symbol: "VIX.INDX", displayName: "VIX", type: "index" },
+  { symbol: "FTSE.INDX", displayName: "FTSE 100", type: "index" },
+  { symbol: "GDAXI.INDX", displayName: "DAX", type: "index" },
+  { symbol: "FCHI.INDX", displayName: "CAC 40", type: "index" },
+  { symbol: "N225.INDX", displayName: "Nikkei 225", type: "index" },
+  { symbol: "HSI.INDX", displayName: "Hang Seng", type: "index" },
 ];
 
 export default function SeparatedAlertSystem({
@@ -119,6 +163,13 @@ export default function SeparatedAlertSystem({
     changePercent: "",
     message: "",
   });
+
+  // Symbol search state
+  const [symbolSearch, setSymbolSearch] = useState("");
+  const [showSymbolSuggestions, setShowSymbolSuggestions] = useState(false);
+  const [currentPrice, setCurrentPrice] = useState<number | null>(null);
+  const [loadingPrice, setLoadingPrice] = useState(false);
+  const [selectedSymbol, setSelectedSymbol] = useState<typeof ALL_SYMBOLS[0] | null>(null);
 
   // Create news/event alert
   const createNewsEventAlert = () => {
