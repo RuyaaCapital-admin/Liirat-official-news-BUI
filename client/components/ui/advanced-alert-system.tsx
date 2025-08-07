@@ -192,13 +192,13 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
               }
 
               const response = await fetch(
-                `/api/eodhd-price?symbol=${apiSymbol}`,
+                `/api/eodhd/price?symbols=${apiSymbol}`,
                 { signal: AbortSignal.timeout(8000) }, // 8 second timeout
               );
 
               if (response.ok) {
                 const data = await response.json();
-                const priceData = data.prices?.[0];
+                const priceData = data.ok && data.items?.[0] ? data.items[0] : null;
                 if (priceData) {
                   setIsConnected(true);
                   return {
@@ -206,7 +206,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                     currentPrice:
                       parseFloat(priceData.price) || pair.currentPrice,
                     change: parseFloat(priceData.change || 0),
-                    changePercent: parseFloat(priceData.change_percent || 0),
+                    changePercent: parseFloat(priceData.changePct || 0),
                     lastUpdate: new Date(),
                   };
                 }
