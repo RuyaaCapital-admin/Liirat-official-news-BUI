@@ -159,18 +159,35 @@ export default function Index() {
         params.append("to", filters.to);
       }
 
-      // Fetch from EODHD calendar endpoint with better error handling
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      // Fetch from EODHD calendar endpoint with robust error handling
+      console.log(`Attempting to fetch economic events from: /api/eodhd-calendar?${params.toString()}`);
 
-      const response = await fetch(`/api/eodhd-calendar?${params.toString()}`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        signal: controller.signal,
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+      let response;
+      try {
+        response = await fetch(`/api/eodhd-calendar?${params.toString()}`, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
+        });
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        console.error("Network error when fetching calendar:", fetchError);
+
+        // Handle specific network errors
+        if (fetchError instanceof TypeError && fetchError.message.includes("fetch")) {
+          throw new Error("Network connection failed. Please check your internet connection and try again.");
+        } else if (fetchError.name === "AbortError") {
+          throw new Error("Request timeout. The server took too long to respond.");
+        } else {
+          throw new Error(`Network error: ${fetchError.message}`);
+        }
+      }
 
       clearTimeout(timeoutId);
 
