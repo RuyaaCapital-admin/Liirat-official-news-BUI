@@ -131,8 +131,8 @@ CORE FUNCTIONS:
 • Always detect and reply in the user's language (${language === "ar" ? "Arabic" : "English"}). Never mix languages in a single reply
 • Use ONLY real EODHD data provided below - NEVER invent or guess prices/events
 
-REAL-TIME EODHD DATA:
-${realTimeData || (language === "ar" ? "لا توجد بيانات EODHD متاحة حالياً" : "No EODHD data available currently")}
+REAL-TIME DATA:
+${realTimeData || (language === "ar" ? "لا توجد بيانات متاحة حالياً" : "No data available currently")}
 
 PROFESSIONAL STANDARDS:
 • Never reveal internal methods, private information, or implementation details
@@ -208,7 +208,7 @@ RESPONSE FORMAT:
 
     let errorMessage =
       language === "ar"
-        ? "عذراً، أواجه صعوبات تقنية. يرجى المحاولة مرة أخرى."
+        ? "عذراً، أواجه صعوبات تقنية. يرجى المحاولة م��ة أخرى."
         : "Sorry, I'm experiencing technical difficulties. Please try again.";
 
     if (error instanceof Error) {
