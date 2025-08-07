@@ -406,7 +406,7 @@ const AITradingAssistant: React.FC = () => {
                     </CardTitle>
                     <CardDescription>
                       {language === "ar"
-                        ? "تحدث مع مساع�� التداول"
+                        ? "تحدث مع مساعد التداول"
                         : "Chat with your trading companion"}
                     </CardDescription>
                   </div>
@@ -493,7 +493,7 @@ const AITradingAssistant: React.FC = () => {
 
           {/* Chart and Market Data */}
           <div className="lg:col-span-2 space-y-8">
-            {/* TradingView Chart */}
+            {/* EODHD Market Data - No TradingView */}
             <Card>
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
