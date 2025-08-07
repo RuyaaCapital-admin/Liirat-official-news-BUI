@@ -62,12 +62,12 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     }
 
     // Determine symbol type and format correctly for EODHD
-    const isCrypto =
-      symbolStr.includes("-USD") ||
-      symbolStr.includes("BTC") ||
-      symbolStr.includes("ETH");
-    const isIndex = symbolStr === "GSPC" || symbolStr.includes(".INDX");
-    const isGold = symbolStr.includes("XAUUSD") || symbolStr.includes("XAU") || symbolStr.includes("GC=F");
+    const isCrypto = symbolStr.includes("-USD.CC");
+    const isIndex = symbolStr.includes(".INDX");
+    const isForex = symbolStr.includes(".FOREX");
+    const isUSStock = symbolStr.includes(".US");
+    const isCommodity = symbolStr.includes(".F");
+    const isMetal = symbolStr.includes("XAUUSD") || symbolStr.includes("XAGUSD");
 
     let apiUrl: URL;
     let finalSymbol = symbolStr;
