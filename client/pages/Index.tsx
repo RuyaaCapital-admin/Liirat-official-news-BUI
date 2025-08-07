@@ -264,7 +264,7 @@ export default function Index() {
 
           {/* Floating Navigation Header */}
           <header
-            className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? "translate-y-20" : "-translate-y-20"} top-4 mx-2 max-w-[calc(100vw-1rem)]`}
+            className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? "top-20" : "-top-20"} mx-2 max-w-[calc(100vw-1rem)]`}
           >
             <div className="neumorphic-card bg-background/95 backdrop-blur-md rounded-full px-2 sm:px-4 lg:px-6 py-2 sm:py-3 flex items-center justify-between shadow-lg border border-border/50 w-full max-w-full">
               <div className="flex items-center">
@@ -417,7 +417,7 @@ export default function Index() {
                   <CardTitle className="flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-primary" />
                     {language === "ar"
-                      ? "التقويم الاقتصادي المباشر"
+                      ? "التقوي�� الاقتصادي المباشر"
                       : "Live Economic Calendar"}
                   </CardTitle>
                   <CardDescription>
