@@ -211,7 +211,7 @@ const getCountryFlag = (country: string) => {
     IL: "🇮🇱",
     SA: "🇸🇦",
     AE: "🇦🇪",
-    NZ: "🇳���",
+    NZ: "🇳🇿",
     // Additional mappings for common variations
     "United States": "🇺🇸",
     "Eurozone": "🇪🇺",
@@ -384,9 +384,10 @@ export function MacroCalendarTable({
   const handleUpdate = () => {
     // Update online status from navigator
     setIsOnline(navigator.onLine);
-    // This will trigger a refresh of the calendar data
-    // In production, this would call the API to fetch fresh data
-    window.location.reload();
+    // Call refresh callback if provided
+    if (onRefresh) {
+      onRefresh();
+    }
   };
 
   const clearFilters = () => {
