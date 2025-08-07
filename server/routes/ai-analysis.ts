@@ -220,9 +220,14 @@ export const handleTranslation: RequestHandler = async (req, res) => {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.error(`OpenAI Translation API error: ${response.status}`);
+      const errorBody = await response.text().catch(() => 'Could not read error response');
+      console.error(`[TRANSLATION] OpenAI API error:`, {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorBody.substring(0, 200)
+      });
       return res.status(500).json({
-        error: "Translation service unavailable",
+        error: `Translation service unavailable: ${response.status} ${response.statusText}`,
         translatedText: text, // Return original text as fallback
       });
     }
