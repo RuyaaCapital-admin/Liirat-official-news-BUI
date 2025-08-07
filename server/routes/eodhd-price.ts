@@ -32,9 +32,12 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
 
     // Determine symbol type and format correctly for EODHD
     const symbolStr = (symbol || symbols) as string;
-    const isCrypto = symbolStr.includes("-USD") || symbolStr.includes("BTC") || symbolStr.includes("ETH");
+    const isCrypto =
+      symbolStr.includes("-USD") ||
+      symbolStr.includes("BTC") ||
+      symbolStr.includes("ETH");
     const isIndex = symbolStr === "GSPC" || symbolStr.includes(".INDX");
-    
+
     let apiUrl: URL;
     let finalSymbol = symbolStr;
 
@@ -46,12 +49,16 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     } else if (isIndex) {
       // Index API endpoint - use stocks endpoint for indices
       apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
-      finalSymbol = symbolStr.includes(".INDX") ? symbolStr : symbolStr + ".INDX";
+      finalSymbol = symbolStr.includes(".INDX")
+        ? symbolStr
+        : symbolStr + ".INDX";
     } else {
       // Forex API endpoint - default for currency pairs
       apiUrl = new URL("https://eodhd.com/api/real-time/forex");
       // For forex, EODHD expects symbols like EURUSD.FOREX
-      finalSymbol = symbolStr.includes(".FOREX") ? symbolStr : symbolStr + ".FOREX";
+      finalSymbol = symbolStr.includes(".FOREX")
+        ? symbolStr
+        : symbolStr + ".FOREX";
     }
 
     // Add API parameters
@@ -77,8 +84,10 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.error(`EODHD Price API error: ${response.status} - ${response.statusText}`);
-      
+      console.error(
+        `EODHD Price API error: ${response.status} - ${response.statusText}`,
+      );
+
       // Log response body for debugging
       try {
         const errorBody = await response.text();
@@ -97,7 +106,9 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     // Check if response is JSON
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
-      console.error(`EODHD Price API returned non-JSON content: ${contentType}`);
+      console.error(
+        `EODHD Price API returned non-JSON content: ${contentType}`,
+      );
       return res.status(500).json({
         error: "Invalid response format from EODHD Price API",
         prices: [],
@@ -123,7 +134,7 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     }
 
     // Filter out invalid prices
-    prices = prices.filter(p => p.price > 0);
+    prices = prices.filter((p) => p.price > 0);
 
     console.log("Transformed prices:", JSON.stringify(prices, null, 2));
 
@@ -157,14 +168,21 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
 
 function transformPriceData(item: any, originalSymbol: string): PriceData {
   // Parse values from EODHD response
-  const price = parseFloat(item.close || item.price || item.last || item.value || 0);
-  const previousClose = parseFloat(item.previousClose || item.previous_close || item.close || 0);
-  const change = parseFloat(item.change || 0) || (price - previousClose);
-  const change_percent = parseFloat(item.change_p || item.change_percent || 0) || 
-                         (previousClose > 0 ? ((change / previousClose) * 100) : 0);
-  
-  console.log(`Transforming data for ${item.code}: price=${price}, change=${change}, change_p=${change_percent}`);
-  
+  const price = parseFloat(
+    item.close || item.price || item.last || item.value || 0,
+  );
+  const previousClose = parseFloat(
+    item.previousClose || item.previous_close || item.close || 0,
+  );
+  const change = parseFloat(item.change || 0) || price - previousClose;
+  const change_percent =
+    parseFloat(item.change_p || item.change_percent || 0) ||
+    (previousClose > 0 ? (change / previousClose) * 100 : 0);
+
+  console.log(
+    `Transforming data for ${item.code}: price=${price}, change=${change}, change_p=${change_percent}`,
+  );
+
   return {
     symbol: originalSymbol, // Use the original symbol requested
     name: item.name || undefined,
@@ -172,7 +190,9 @@ function transformPriceData(item: any, originalSymbol: string): PriceData {
     change: change,
     change_percent: change_percent,
     currency: item.currency || undefined,
-    timestamp: item.timestamp ? new Date(item.timestamp * 1000).toISOString() : new Date().toISOString(),
+    timestamp: item.timestamp
+      ? new Date(item.timestamp * 1000).toISOString()
+      : new Date().toISOString(),
     market_status: item.market_status || undefined,
     volume: parseFloat(item.volume || 0) || undefined,
     high: parseFloat(item.high || 0) || undefined,

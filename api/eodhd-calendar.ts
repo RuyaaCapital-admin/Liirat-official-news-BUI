@@ -59,18 +59,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (country && country !== "all") {
       apiUrl.searchParams.append("country", country as string);
     }
-    
+
     // Handle importance filter - can be comma-separated values
     if (importance && importance !== "all") {
       const importanceStr = importance as string;
-      const importanceLevels = importanceStr.split(",").map(i => parseInt(i.trim())).filter(i => !isNaN(i));
+      const importanceLevels = importanceStr
+        .split(",")
+        .map((i) => parseInt(i.trim()))
+        .filter((i) => !isNaN(i));
       if (importanceLevels.length > 0) {
         // For now, use the highest importance level as EODHD API may not support multiple
         const maxImportance = Math.max(...importanceLevels);
         // Note: EODHD may not have importance filtering, we'll filter on our side
       }
     }
-    
+
     // Add date range filters
     if (from) {
       apiUrl.searchParams.append("from", from as string);
@@ -79,7 +82,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const today = new Date().toISOString().split("T")[0];
       apiUrl.searchParams.append("from", today);
     }
-    
+
     if (to) {
       apiUrl.searchParams.append("to", to as string);
     } else {
@@ -107,8 +110,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.error(`EODHD Calendar API error: ${response.status} - ${response.statusText}`);
-      
+      console.error(
+        `EODHD Calendar API error: ${response.status} - ${response.statusText}`,
+      );
+
       // Log response body for debugging
       try {
         const errorBody = await response.text();
@@ -127,7 +132,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Check if response is JSON
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
-      console.error(`EODHD Calendar API returned non-JSON content: ${contentType}`);
+      console.error(
+        `EODHD Calendar API returned non-JSON content: ${contentType}`,
+      );
       const textResponse = await response.text();
       console.error("Non-JSON response:", textResponse.substring(0, 500));
       return res.status(500).json({
@@ -137,7 +144,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const data = await response.json();
-    console.log("Raw EODHD Calendar response (first 3 items):", JSON.stringify(data.slice ? data.slice(0, 3) : data, null, 2));
+    console.log(
+      "Raw EODHD Calendar response (first 3 items):",
+      JSON.stringify(data.slice ? data.slice(0, 3) : data, null, 2),
+    );
 
     // Transform EODHD response to our format
     const events: EconomicEvent[] = Array.isArray(data)
@@ -148,13 +158,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let filteredEvents = events;
     if (importance && importance !== "all") {
       const importanceStr = importance as string;
-      const requestedLevels = importanceStr.split(",").map(i => parseInt(i.trim())).filter(i => !isNaN(i));
+      const requestedLevels = importanceStr
+        .split(",")
+        .map((i) => parseInt(i.trim()))
+        .filter((i) => !isNaN(i));
       if (requestedLevels.length > 0) {
-        filteredEvents = events.filter(event => requestedLevels.includes(event.importance));
+        filteredEvents = events.filter((event) =>
+          requestedLevels.includes(event.importance),
+        );
       }
     }
 
-    console.log(`Returning ${filteredEvents.length} filtered events out of ${events.length} total events`);
+    console.log(
+      `Returning ${filteredEvents.length} filtered events out of ${events.length} total events`,
+    );
 
     res.status(200).json({
       events: filteredEvents,
@@ -194,7 +211,7 @@ function transformEventData(event: any): EconomicEvent {
   const rawDate = event.date || new Date().toISOString();
   let formattedDate = rawDate;
   let timeOnly = "00:00";
-  
+
   // EODHD returns dates like "2025-09-05 23:00:00"
   if (rawDate.includes(" ")) {
     const [datePart, timePart] = rawDate.split(" ");
@@ -209,45 +226,70 @@ function transformEventData(event: any): EconomicEvent {
     formattedDate = `${rawDate}T00:00:00Z`;
     timeOnly = "00:00";
   }
-  
+
   // Handle country code
   const country = event.country || event.Country || "Unknown";
-  
+
   // Handle event name
-  const eventName = event.type || event.event || event.Event || event.title || event.Title || event.name || event.Name || "Economic Event";
-  
+  const eventName =
+    event.type ||
+    event.event ||
+    event.Event ||
+    event.title ||
+    event.Title ||
+    event.name ||
+    event.Name ||
+    "Economic Event";
+
   // Handle category
-  const category = event.category || event.Category || event.type || event.Type || "Economic";
-  
+  const category =
+    event.category || event.Category || event.type || event.Type || "Economic";
+
   // Calculate importance based on the event type (since EODHD may not provide importance directly)
   let importance = 2; // Default to medium
   const eventTypeLower = eventName.toLowerCase();
-  
+
   // High importance events
-  if (eventTypeLower.includes("inflation") || 
-      eventTypeLower.includes("interest rate") || 
-      eventTypeLower.includes("employment") || 
-      eventTypeLower.includes("gdp") || 
-      eventTypeLower.includes("retail sales") ||
-      eventTypeLower.includes("consumer price") ||
-      eventTypeLower.includes("producer price") ||
-      eventTypeLower.includes("unemployment")) {
+  if (
+    eventTypeLower.includes("inflation") ||
+    eventTypeLower.includes("interest rate") ||
+    eventTypeLower.includes("employment") ||
+    eventTypeLower.includes("gdp") ||
+    eventTypeLower.includes("retail sales") ||
+    eventTypeLower.includes("consumer price") ||
+    eventTypeLower.includes("producer price") ||
+    eventTypeLower.includes("unemployment")
+  ) {
     importance = 3;
   }
   // Low importance events
-  else if (eventTypeLower.includes("building permits") || 
-           eventTypeLower.includes("housing starts") ||
-           eventTypeLower.includes("factory orders")) {
+  else if (
+    eventTypeLower.includes("building permits") ||
+    eventTypeLower.includes("housing starts") ||
+    eventTypeLower.includes("factory orders")
+  ) {
     importance = 1;
   }
-  
-  // Handle actual, forecast, previous values
-  const actual = event.actual !== null && event.actual !== undefined ? String(event.actual) : undefined;
-  const forecast = event.estimate !== null && event.estimate !== undefined ? String(event.estimate) :
-                  event.forecast !== null && event.forecast !== undefined ? String(event.forecast) : undefined;
-  const previous = event.previous !== null && event.previous !== undefined ? String(event.previous) : undefined;
 
-  console.log(`Transforming event: ${eventName} on ${formattedDate} for ${country}`);
+  // Handle actual, forecast, previous values
+  const actual =
+    event.actual !== null && event.actual !== undefined
+      ? String(event.actual)
+      : undefined;
+  const forecast =
+    event.estimate !== null && event.estimate !== undefined
+      ? String(event.estimate)
+      : event.forecast !== null && event.forecast !== undefined
+        ? String(event.forecast)
+        : undefined;
+  const previous =
+    event.previous !== null && event.previous !== undefined
+      ? String(event.previous)
+      : undefined;
+
+  console.log(
+    `Transforming event: ${eventName} on ${formattedDate} for ${country}`,
+  );
 
   return {
     date: formattedDate,
