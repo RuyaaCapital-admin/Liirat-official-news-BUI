@@ -151,7 +151,7 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
       error: errorMessage,
       analysis:
         language === "ar"
-          ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
+          ? "تحليل الذكاء الاصطنا��ي غير متاح حاليًا"
           : "AI analysis currently unavailable",
     });
   }
@@ -167,6 +167,14 @@ export const handleTranslation: RequestHandler = async (req, res) => {
     if (!text) {
       return res.status(400).json({
         error: "Text is required for translation",
+        translatedText: "",
+      });
+    }
+
+    if (!openaiApiKey) {
+      return res.status(500).json({
+        error: "OpenAI API key not configured",
+        translatedText: text, // Return original text as fallback
       });
     }
 
