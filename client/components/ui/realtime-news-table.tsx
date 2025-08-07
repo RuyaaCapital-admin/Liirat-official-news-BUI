@@ -324,7 +324,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       Oil: "النفط",
       Bitcoin: "البتكوين",
       News: "الأخبار",
-      Report: "الت��رير",
+      Report: "التقرير",
       Analysis: "التحليل",
       Growth: "النمو",
       Rise: "الارتفاع",
@@ -373,63 +373,6 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     }));
     return offlineTranslation;
 
-    setLoadingTranslation((prev) => ({ ...prev, [article.id]: true }));
-
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-      const response = await fetch("/api/translate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: article.title,
-          targetLanguage: "ar",
-        }),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const data = await response.json();
-        const translated = data.translatedText || article.title;
-        setTranslatedTitles((prev) => ({ ...prev, [article.id]: translated }));
-        return translated;
-      } else {
-        console.warn(`Translation failed with status: ${response.status}`);
-      }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-
-      if (error instanceof Error && error.name === "AbortError") {
-        console.warn(
-          `[NEWS] Translation request timed out for article ${article.id}`,
-        );
-      } else if (
-        errorMessage.includes("Failed to fetch") ||
-        errorMessage.includes("NetworkError")
-      ) {
-        console.warn(
-          `[NEWS] Network error during translation for article ${article.id}: ${errorMessage}`,
-        );
-      } else {
-        console.error(
-          `[NEWS] Translation error for article ${article.id}:`,
-          errorMessage,
-        );
-      }
-
-      // Cache original title to avoid repeated failed attempts
-      setTranslatedTitles((prev) => ({ ...prev, [article.id]: article.title }));
-    } finally {
-      setLoadingTranslation((prev) => ({ ...prev, [article.id]: false }));
-    }
-
-    return article.title; // Fallback to original
   };
 
   // Request AI analysis for an article with better error handling
