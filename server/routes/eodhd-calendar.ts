@@ -21,6 +21,29 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
     // Extract query parameters
     const { country, importance, from, to, limit = "50" } = req.query;
 
+    // Get client ID for rate limiting
+    const clientId = getClientId(req);
+
+    // Check rate limit
+    if (!apiOptimizer.checkRateLimit(clientId, 'calendar')) {
+      return res.status(429).json({
+        error: "Rate limit exceeded. Please try again later.",
+        events: [],
+        retryAfter: 60
+      });
+    }
+
+    // Generate cache key
+    const cacheKey = generateCacheKey('calendar', {
+      country, importance, from, to, limit
+    });
+
+    // Check cache first
+    const cachedData = apiOptimizer.getCached(cacheKey, 'calendar');
+    if (cachedData) {
+      return res.json(cachedData);
+    }
+
     // Build EODHD API URL
     const apiUrl = new URL("https://eodhd.com/api/economic-events");
     apiUrl.searchParams.append("api_token", apiKey);
