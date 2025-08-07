@@ -56,6 +56,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
   const [filteredArticles, setFilteredArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [itemsToShow, setItemsToShow] = useState(10);
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
