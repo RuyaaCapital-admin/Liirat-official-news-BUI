@@ -132,13 +132,24 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        const errorText = await response.text().catch(() => "No response body");
+        let errorDetails = "No response body";
+        try {
+          const errorText = await response.text();
+          errorDetails = errorText || "Empty response";
+        } catch (e) {
+          errorDetails = "Failed to read response";
+        }
+
         console.error(
           `[TICKER] API error for batch: ${response.status} - ${response.statusText}`,
-          errorText.substring(0, 200),
+          errorDetails.substring(0, 200),
         );
 
-        if (
+        // For authentication errors (502 with upstream error), don't retry
+        if (response.status === 502 && errorDetails.includes('Unauthenticated')) {
+          console.log(`[TICKER] Authentication error - using demo API key, skipping retries`);
+          // Set disconnected status but don't retry
+        } else if (
           (response.status >= 500 ||
             response.status === 429 ||
             response.status === 0) &&
