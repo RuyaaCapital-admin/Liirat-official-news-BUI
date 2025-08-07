@@ -176,6 +176,34 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     setShowSuggestions(searchQuery.length > 0 && !selectedPair);
   }, [searchQuery, selectedPair]);
 
+  // Fetch real-time price when pair is selected
+  useEffect(() => {
+    if (selectedPair) {
+      const fetchRealTimePrice = async () => {
+        try {
+          const response = await fetch(`/api/eodhd-price?symbol=${selectedPair.symbol}`);
+          if (response.ok) {
+            const data = await response.json();
+            const priceData = data.prices?.[0];
+            if (priceData) {
+              // Update the selected pair with real-time price
+              setSelectedPair(prev => prev ? {
+                ...prev,
+                currentPrice: priceData.price || prev.currentPrice,
+                change: priceData.change || prev.change,
+                changePercent: priceData.change_percent || prev.changePercent,
+              } : null);
+            }
+          }
+        } catch (error) {
+          console.warn(`Failed to fetch real-time price for ${selectedPair.symbol}:`, error);
+        }
+      };
+
+      fetchRealTimePrice();
+    }
+  }, [selectedPair?.symbol]);
+
   // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
