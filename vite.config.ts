@@ -32,42 +32,43 @@ function expressPlugin(): Plugin {
       // This runs immediately when configuring server
       console.log("🔧 Configuring Express plugin...");
 
-      import("./server/index.ts")
-        .then(({ createServer }) => {
-          console.log("✅ Successfully imported server module");
+      // Add middleware before importing to ensure it's ready
+      server.middlewares.use("/api", async (req, res, next) => {
+        try {
+          console.log("🔍 API Request:", req.method, req.url);
+
+          // Dynamically import and create the Express app
+          const { createServer } = await import("./server/index.ts");
           const app = createServer();
-          console.log("✅ Express app created");
 
-          // Add middleware immediately to handle API requests
-          server.middlewares.use((req, res, next) => {
-            console.log("🔍 Request:", req.method, req.url);
-            if (req.url?.startsWith("/api")) {
-              console.log("🚀 API request intercepted:", req.method, req.url);
-              console.log("🎯 Available routes:", [
-                "/api/ping",
-                "/api/demo",
-                "/api/chat",
-                "/api/ai-chat",
-                "/api/market-data",
-                "/api/news-trading",
-                "/api/chart-indicator",
-                "/api/technical-analysis",
-                "/api/economic-events",
-                "/api/news",
-                "/api/marketaux-news",
-                "/api/price-alert",
-              ]);
-              return app(req, res, next);
-            } else {
-              next();
-            }
-          });
+          console.log("🚀 API request intercepted:", req.method, req.url);
+          console.log("🎯 Available routes:", [
+            "/api/ping",
+            "/api/demo",
+            "/api/chat",
+            "/api/ai-chat",
+            "/api/market-data",
+            "/api/news-trading",
+            "/api/chart-indicator",
+            "/api/technical-analysis",
+            "/api/economic-events",
+            "/api/news",
+            "/api/marketaux-news",
+            "/api/price-alert",
+            "/api/eodhd-calendar",
+            "/api/eodhd-price",
+          ]);
 
-          console.log("✅ Express server integrated with Vite dev server");
-        })
-        .catch((error) => {
-          console.error("❌ Failed to setup Express server:", error);
-        });
+          // Use the Express app to handle the request
+          app(req, res, next);
+        } catch (error) {
+          console.error("❌ Error handling API request:", error);
+          res.statusCode = 500;
+          res.end("Internal Server Error");
+        }
+      });
+
+      console.log("✅ Express API middleware registered");
     },
   };
 }

@@ -53,35 +53,87 @@ export function PriceTicker({
     }));
   };
 
-  // Generate realistic market data simulation
-  const fetchAssetData = () => {
+  // Fetch real market data from EODHD API
+  const fetchAssetData = async () => {
     try {
-      // Simulate realistic market data with small fluctuations
-      const updatedAssets: AssetData[] = assetConfigs.map((config) => {
-        const basePrice = getBasePriceForAsset(config.symbol);
+      setIsLoading(true);
 
-        // Create realistic price movements
-        const volatility = getVolatilityForAsset(config.symbol);
-        const changePercent = (Math.random() - 0.5) * volatility * 2; // Random movement within volatility range
-        const price = basePrice * (1 + changePercent / 100);
-        const change = price - basePrice;
+      // Map symbols to EODHD format
+      const symbolMapping: { [key: string]: string } = {
+        "BTC/USD": "BTC-USD",
+        "ETH/USD": "ETH-USD",
+        "EUR/USD": "EURUSD.FOREX",
+        "GBP/USD": "GBPUSD.FOREX",
+        "USD/JPY": "USDJPY.FOREX",
+        "XAU/USD": "XAUUSD.FOREX",
+        WTI: "CL.COMM",
+        NASDAQ: "IXIC.INDX",
+        DOW: "DJI.INDX",
+        "S&P 500": "GSPC.INDX",
+      };
 
-        return {
-          symbol: config.symbol,
-          name: config.name,
-          price: price,
-          change: change,
-          changePercent: changePercent,
-        };
-      });
+      const updatedAssets: AssetData[] = [];
 
-      setAssets(updatedAssets);
+      // Fetch data for each asset
+      for (const config of assetConfigs) {
+        try {
+          const eodhSymbol = symbolMapping[config.symbol] || config.symbol;
+          const response = await fetch(`/api/eodhd-price?symbol=${eodhSymbol}`);
+
+          if (response.ok) {
+            const data = await response.json();
+            const priceData = data.prices?.[0];
+
+            if (priceData) {
+              updatedAssets.push({
+                symbol: config.symbol,
+                name: config.name,
+                price: priceData.price || 0,
+                change: priceData.change || 0,
+                changePercent: priceData.change_percent || 0,
+              });
+            } else {
+              // Fallback to mock data for this asset
+              updatedAssets.push(generateMockDataForAsset(config));
+            }
+          } else {
+            // Fallback to mock data for this asset
+            updatedAssets.push(generateMockDataForAsset(config));
+          }
+        } catch (error) {
+          console.warn(`Failed to fetch data for ${config.symbol}:`, error);
+          // Fallback to mock data for this asset
+          updatedAssets.push(generateMockDataForAsset(config));
+        }
+      }
+
+      setAssets(updatedAssets.length > 0 ? updatedAssets : generateMockData());
       setIsLoading(false);
     } catch (error) {
-      console.warn("Data generation failed, using fallback:", error);
+      console.warn("Data fetch failed, using fallback:", error);
       setAssets(generateMockData());
       setIsLoading(false);
     }
+  };
+
+  // Generate mock data for a single asset
+  const generateMockDataForAsset = (config: {
+    symbol: string;
+    name: string;
+  }): AssetData => {
+    const basePrice = getBasePriceForAsset(config.symbol);
+    const volatility = getVolatilityForAsset(config.symbol);
+    const changePercent = (Math.random() - 0.5) * volatility * 2;
+    const price = basePrice * (1 + changePercent / 100);
+    const change = price - basePrice;
+
+    return {
+      symbol: config.symbol,
+      name: config.name,
+      price: price,
+      change: change,
+      changePercent: changePercent,
+    };
   };
 
   // Get realistic base prices for different assets

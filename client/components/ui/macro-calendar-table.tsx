@@ -42,6 +42,7 @@ interface MacroCalendarTableProps {
   className?: string;
   language?: "ar" | "en";
   dir?: "rtl" | "ltr";
+  onRefresh?: () => void;
 }
 
 // Top economic countries that frequently affect markets
@@ -150,13 +151,21 @@ const getImportanceLabel = (importance: number, language: string) => {
 const getCountryFlag = (country: string) => {
   const flagMap: Record<string, string> = {
     US: "🇺🇸",
+    USA: "🇺🇸",
     EUR: "🇪🇺",
+    EU: "🇪🇺",
     GB: "🇬🇧",
+    UK: "🇬🇧",
     JP: "🇯🇵",
+    JPY: "🇯🇵",
     CA: "🇨🇦",
+    CAD: "🇨🇦",
     AU: "🇦🇺",
+    AUD: "🇦🇺",
     CHF: "🇨🇭",
+    CH: "🇨🇭",
     DE: "🇩🇪",
+    GER: "🇩🇪",
     FR: "🇫🇷",
     IT: "🇮🇹",
     ES: "🇪🇸",
@@ -167,7 +176,7 @@ const getCountryFlag = (country: string) => {
     IE: "🇮🇪",
     FI: "🇫🇮",
     GR: "🇬🇷",
-    CZ: "����🇿",
+    CZ: "🇨🇿",
     PL: "🇵🇱",
     HU: "🇭🇺",
     SK: "🇸🇰",
@@ -176,10 +185,15 @@ const getCountryFlag = (country: string) => {
     LV: "🇱🇻",
     LT: "🇱🇹",
     CN: "🇨🇳",
+    CHN: "🇨🇳",
     IN: "🇮🇳",
+    IND: "🇮🇳",
     BR: "🇧🇷",
+    BRA: "🇧🇷",
     MX: "🇲🇽",
-    RU: "🇷���",
+    MEX: "🇲🇽",
+    RU: "🇷🇺",
+    RUS: "🇷🇺",
     ZA: "🇿🇦",
     KR: "🇰🇷",
     SG: "🇸🇬",
@@ -189,7 +203,7 @@ const getCountryFlag = (country: string) => {
     ID: "🇮🇩",
     PH: "🇵🇭",
     VN: "🇻🇳",
-    NO: "���🇴",
+    NO: "🇳🇴",
     SE: "🇸🇪",
     DK: "🇩🇰",
     IS: "🇮🇸",
@@ -197,8 +211,22 @@ const getCountryFlag = (country: string) => {
     IL: "🇮🇱",
     SA: "🇸🇦",
     AE: "🇦🇪",
+    NZ: "🇳🇿",
+    // Additional mappings for common variations
+    "United States": "🇺🇸",
+    Eurozone: "🇪🇺",
+    "United Kingdom": "🇬🇧",
+    Japan: "🇯🇵",
+    Canada: "🇨🇦",
+    Australia: "🇦🇺",
+    Switzerland: "🇨🇭",
+    Germany: "🇩🇪",
+    France: "🇫🇷",
+    China: "🇨🇳",
   };
-  return flagMap[country] || "🌍";
+
+  // Try direct match first, then uppercase
+  return flagMap[country] || flagMap[country?.toUpperCase()] || "🌍";
 };
 
 const getCountryName = (country: string, language: string) => {
@@ -208,7 +236,7 @@ const getCountryName = (country: string, language: string) => {
     GB: { en: "United Kingdom", ar: "المملكة المتحدة" },
     JP: { en: "Japan", ar: "اليابان" },
     CA: { en: "Canada", ar: "كندا" },
-    AU: { en: "Australia", ar: "أستراليا" },
+    AU: { en: "Australia", ar: "��ستراليا" },
     CHF: { en: "Switzerland", ar: "سويسرا" },
     DE: { en: "Germany", ar: "ألمانيا" },
     FR: { en: "France", ar: "فرنسا" },
@@ -221,13 +249,24 @@ const getCountryName = (country: string, language: string) => {
 const formatDate = (dateStr: string, language: string) => {
   try {
     const date = new Date(dateStr);
-    const locale = language === "ar" ? "ar-SA" : "en-US";
-    return date.toLocaleDateString(locale, {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    if (language === "ar") {
+      // Use Gregorian calendar for Arabic to avoid Islamic calendar months like "صفر"
+      return date.toLocaleDateString("ar-SA-u-ca-gregory", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+    } else {
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+    }
   } catch {
     return dateStr;
   }
@@ -238,6 +277,7 @@ export function MacroCalendarTable({
   className,
   language = "en",
   dir = "ltr",
+  onRefresh,
 }: MacroCalendarTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [countrySearchTerm, setCountrySearchTerm] = useState("");
@@ -344,9 +384,10 @@ export function MacroCalendarTable({
   const handleUpdate = () => {
     // Update online status from navigator
     setIsOnline(navigator.onLine);
-    // This will trigger a refresh of the calendar data
-    // In production, this would call the API to fetch fresh data
-    window.location.reload();
+    // Call refresh callback if provided
+    if (onRefresh) {
+      onRefresh();
+    }
   };
 
   const clearFilters = () => {
@@ -456,7 +497,7 @@ export function MacroCalendarTable({
                           setIsCalendarOpen(false);
                         }}
                       >
-                        {t("Next Week", "الأسبوع القادم")}
+                        {t("Next Week", "الأس��وع القادم")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -519,7 +560,7 @@ export function MacroCalendarTable({
                       setIsCountryOpen(false);
                     }}
                   >
-                    {t("All Countries", "جميع البلدان")}
+                    {t("All Countries", "جم��ع البلدان")}
                   </div>
 
                   {/* Top Countries Section */}
@@ -705,7 +746,9 @@ export function MacroCalendarTable({
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">{getCountryFlag(event.country)}</span>
+                    <span className="text-lg">
+                      {getCountryFlag(event.country)}
+                    </span>
                     <span className="font-medium text-sm">{event.country}</span>
                   </div>
                   <Badge

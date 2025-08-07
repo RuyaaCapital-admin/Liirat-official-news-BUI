@@ -13,6 +13,9 @@ import { handleChat } from "./routes/chat";
 import { getEconomicEvents, getNews } from "./routes/eodhd";
 import { handlePriceAlert } from "./routes/price-alert";
 import { handleMarketauxNews } from "./routes/marketaux-news";
+import { handleEODHDCalendar } from "./routes/eodhd-calendar";
+import { handleEODHDPrice } from "./routes/eodhd-price";
+import eodhd_news from "./routes/eodhd-news";
 
 export function createServer() {
   const app = express();
@@ -22,34 +25,39 @@ export function createServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // API routes with consistent /api prefix
-  app.get("/api/ping", (_req, res) => {
+  // API routes (without /api prefix since middleware handles it)
+  app.get("/ping", (_req, res) => {
     console.log("Ping endpoint hit!");
     const ping = process.env.PING_MESSAGE ?? "ping";
     res.json({ message: ping });
   });
 
-  app.get("/api/demo", handleDemo);
+  app.get("/demo", handleDemo);
 
   // Chat widget route
-  app.post("/api/chat", handleChat);
+  app.post("/chat", handleChat);
 
   // AI Trading Assistant routes
-  app.post("/api/ai-chat", handleAIChat);
-  app.get("/api/market-data", handleMarketData);
-  app.get("/api/news-trading", handleNews); // Renamed to avoid conflict
-  app.post("/api/chart-indicator", handleChartIndicator);
-  app.post("/api/technical-analysis", handleTechnicalAnalysis);
+  app.post("/ai-chat", handleAIChat);
+  app.get("/market-data", handleMarketData);
+  app.get("/news-trading", handleNews); // Renamed to avoid conflict
+  app.post("/chart-indicator", handleChartIndicator);
+  app.post("/technical-analysis", handleTechnicalAnalysis);
 
   // EODHD API routes
-  app.get("/api/economic-events", getEconomicEvents);
-  app.get("/api/news", getNews);
+  app.get("/economic-events", getEconomicEvents);
+  app.get("/news", getNews);
 
   // Marketaux News API route
-  app.get("/api/marketaux-news", handleMarketauxNews);
+  app.get("/marketaux-news", handleMarketauxNews);
 
   // Price alert route
-  app.get("/api/price-alert", handlePriceAlert);
+  app.get("/price-alert", handlePriceAlert);
+
+  // EODHD API routes
+  app.get("/eodhd-calendar", handleEODHDCalendar);
+  app.get("/eodhd-price", handleEODHDPrice);
+  app.use("/", eodhd_news);
 
   return app;
 }

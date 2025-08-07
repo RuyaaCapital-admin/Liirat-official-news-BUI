@@ -44,6 +44,7 @@ const getMockNews = () => [
 ];
 
 const EODHD_API_TOKEN =
+  process.env.EODHD_API_KEY ||
   process.env.NEXT_PUBLIC_EODHD_API_KEY ||
   process.env.EODHD_API_TOKEN ||
   "demo"; // Use demo token as fallback
@@ -68,17 +69,23 @@ export const getEconomicEvents: RequestHandler = async (req, res) => {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.warn(`EODHD API returned status: ${response.status}`);
-      // Return mock events instead of empty
-      const result: EconomicEventsResponse = { events: getMockEvents() };
+      console.error(`EODHD API returned status: ${response.status}`);
+      // Return error instead of mock data
+      const result: EconomicEventsResponse = {
+        events: [],
+        error: `EODHD API Error: ${response.status} - ${response.statusText}`,
+      };
       return res.json(result);
     }
 
     // Check if response is JSON before parsing
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
-      console.warn(`EODHD API returned non-JSON content: ${contentType}`);
-      const result: EconomicEventsResponse = { events: getMockEvents() };
+      console.error(`EODHD API returned non-JSON content: ${contentType}`);
+      const result: EconomicEventsResponse = {
+        events: [],
+        error: "Invalid response format from EODHD API",
+      };
       return res.json(result);
     }
 
@@ -103,8 +110,14 @@ export const getEconomicEvents: RequestHandler = async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error("Error fetching economic events:", error);
-    // Return mock data instead of empty array
-    const result: EconomicEventsResponse = { events: getMockEvents() };
+    // Return empty array with error message instead of mock data
+    const result: EconomicEventsResponse = {
+      events: [],
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch economic events",
+    };
     res.json(result);
   }
 };
@@ -130,17 +143,17 @@ export const getNews: RequestHandler = async (req, res) => {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.warn(`EODHD News API returned status: ${response.status}`);
-      // Return mock news instead of empty
-      const result: NewsResponse = { news: getMockNews() };
+      console.error(`EODHD News API returned status: ${response.status}`);
+      // Return empty instead of mock news
+      const result: NewsResponse = { news: [] };
       return res.json(result);
     }
 
     // Check if response is JSON before parsing
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
-      console.warn(`EODHD News API returned non-JSON content: ${contentType}`);
-      const result: NewsResponse = { news: getMockNews() };
+      console.error(`EODHD News API returned non-JSON content: ${contentType}`);
+      const result: NewsResponse = { news: [] };
       return res.json(result);
     }
 
@@ -168,8 +181,8 @@ export const getNews: RequestHandler = async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error("Error fetching news:", error);
-    // Return mock data instead of empty array
-    const result: NewsResponse = { news: getMockNews() };
+    // Return empty array instead of mock data
+    const result: NewsResponse = { news: [] };
     res.json(result);
   }
 };
