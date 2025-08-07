@@ -36,8 +36,11 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
 
     // Check rate limit
     if (!apiOptimizer.checkRateLimit(clientId, "analysis")) {
+      const errorMessage = language === "ar"
+        ? "تجاوز الحد المسموح من الطلبات. يرجى المحاولة لاحقاً."
+        : "Rate limit exceeded. Please try again later.";
       return res.status(429).json({
-        error: "Rate limit exceeded. Please try again later.",
+        error: errorMessage,
         analysis:
           language === "ar"
             ? "تجاوز الحد المسموح من الطلبات"
