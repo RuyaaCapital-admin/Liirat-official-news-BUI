@@ -871,7 +871,7 @@ export function MacroCalendarTable({
                   },
                   {
                     value: "1",
-                    label: t("Low Impact", "من��فض التأثير"),
+                    label: t("Low Impact", "منخفض التأثير"),
                     color: "text-green-600",
                   },
                 ].map((importance) => (
