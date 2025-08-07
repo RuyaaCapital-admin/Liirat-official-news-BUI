@@ -33,6 +33,7 @@ const TICKER_CONFIG = [
   { symbol: "XAUUSD.FOREX", displayName: "XAU/USD" },
   { symbol: "XAGUSD.FOREX", displayName: "XAG/USD" },
   { symbol: "GSPC.INDX", displayName: "S&P 500" },
+  { symbol: "IXIC.INDX", displayName: "NASDAQ" },
 ];
 
 export default function EnhancedPriceTicker({ className }: TickerProps) {
