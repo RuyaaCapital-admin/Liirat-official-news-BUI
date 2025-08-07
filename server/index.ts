@@ -18,6 +18,7 @@ import { handleEODHDPrice } from "./routes/eodhd-price";
 import eodhd_news from "./routes/eodhd-news";
 import { handleAIAnalysis, handleTranslation } from "./routes/ai-analysis";
 import { handleRealtimeNews } from "./routes/realtime-news";
+import { handleStatus } from "./routes/status";
 
 export function createServer() {
   const app = express();
