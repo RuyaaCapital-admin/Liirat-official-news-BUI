@@ -97,7 +97,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
         id: (Date.now() + 1).toString(),
         content:
           language === "ar"
-            ? "عذراً، حدث خطأ في الاتصال. يرجى المحاو��ة مرة أخرى."
+            ? "عذراً، حدث خطأ في ا��اتصال. يرجى المحاولة مرة أخرى."
             : "Sorry, there was a connection error. Please try again.",
         role: "assistant",
         timestamp: new Date(),
