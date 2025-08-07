@@ -493,10 +493,39 @@ export default function Index() {
                               "type:",
                               type,
                             );
-                            // Scroll to alerts section to create the alert
-                            document
-                              .getElementById("alerts")
-                              ?.scrollIntoView({ behavior: "smooth" });
+
+                            // Create an actual alert for the economic event
+                            const message = language === "ar"
+                              ? `تنبيه حدث اقتصادي: ${event.event} - ${event.country} - الوقت: ${event.time || "غير محدد"}`
+                              : `Economic Event Alert: ${event.event} - ${event.country} - Time: ${event.time || "TBD"}`;
+
+                            const eventName = language === "ar"
+                              ? `حدث اقتصادي: ${event.event}`
+                              : `Economic Event: ${event.event}`;
+
+                            // Add the alert using the alert context
+                            addAlert({
+                              eventName,
+                              message,
+                              importance: event.importance || 2,
+                              eventData: {
+                                type: "economic_event",
+                                event,
+                                country: event.country,
+                                time: event.time,
+                              },
+                            });
+
+                            // Show success feedback
+                            const successMessage = language === "ar"
+                              ? `تم إنشاء تنبيه للحدث الاقتصادي: ${event.event}`
+                              : `Alert created for economic event: ${event.event}`;
+
+                            addAlert({
+                              eventName: language === "ar" ? "تأكيد التنبيه" : "Alert Confirmation",
+                              message: successMessage,
+                              importance: 1,
+                            });
                           }}
                         />
                       </div>
