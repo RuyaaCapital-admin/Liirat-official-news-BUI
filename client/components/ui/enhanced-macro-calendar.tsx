@@ -337,8 +337,9 @@ export default function EnhancedMacroCalendar({
 
   // Auto-translate events when language changes to Arabic (with debouncing)
   useEffect(() => {
-    // Enable translation for Arabic mode with proper API configuration
-    if (language === "ar" && displayedEvents.length > 0) {
+    // Temporarily disable auto-translation until valid OpenAI API key is configured
+    // Translation functionality will be enabled once a valid API key is set
+    if (false && language === "ar" && displayedEvents.length > 0) {
       // Debounce translation requests to avoid overwhelming the API
       const timer = setTimeout(() => {
         displayedEvents.slice(0, 5).forEach((event, index) => {
