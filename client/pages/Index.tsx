@@ -264,7 +264,7 @@ export default function Index() {
 
           {/* Floating Navigation Header */}
           <header
-            className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? "top-16" : "-top-16"} mx-2 max-w-[calc(100vw-1rem)]`}
+            className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? "top-16" : "top-16"} mx-2 max-w-[calc(100vw-1rem)]`}
           >
             <div className="neumorphic-card bg-background/95 backdrop-blur-md rounded-full px-2 sm:px-4 lg:px-6 py-2 sm:py-3 flex items-center justify-between shadow-lg border border-border/50 w-full max-w-full">
               <div className="flex items-center">
