@@ -87,20 +87,8 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         }));
       }
 
-      // Check network connectivity first
-      const isOnline = await checkNetworkConnectivity();
-      if (!isOnline && retryCount === 0) {
-        console.warn(`No network connectivity detected for ${symbol}`);
-        setPriceData((prev) => ({
-          ...prev,
-          [symbol]: {
-            ...prev[symbol],
-            status: "disconnected",
-            lastUpdate: new Date(),
-          },
-        }));
-        return;
-      }
+      // Always try to fetch - don't block on connectivity check
+      console.log(`[TICKER] Attempting to fetch ${symbol}...`);
 
       // Create fetch with shorter timeout for production
       const controller = new AbortController();
