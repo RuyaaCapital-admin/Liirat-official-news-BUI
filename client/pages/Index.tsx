@@ -462,6 +462,11 @@ export default function Index() {
                             console.log('Refreshing with filters:', filters);
                             fetchEconomicEvents(language, filters);
                           }}
+                          onCreateAlert={(event) => {
+                            console.log('Creating alert for event:', event);
+                            // Scroll to alerts section to create the alert
+                            document.getElementById('alerts')?.scrollIntoView({ behavior: 'smooth' });
+                          }}
                         />
                       </div>
                     </div>
