@@ -130,10 +130,13 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
           },
         );
       } catch (fetchError) {
-        console.error(`[TICKER] Fetch failed for ${symbol}:`, fetchError);
-        throw new Error(
-          `Network request failed: ${fetchError instanceof Error ? fetchError.message : String(fetchError)}`,
-        );
+        console.warn(`[TICKER] Fetch failed for ${symbol}:`, fetchError);
+        // Return early for network errors to avoid retry storms
+        setPriceData((prev) => ({
+          ...prev,
+          [symbol]: { ...prev[symbol], status: "disconnected" },
+        }));
+        return;
       }
 
       clearTimeout(timeoutId);
