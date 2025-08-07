@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import EnhancedPriceTicker from "@/components/ui/enhanced-price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
-import EnhancedMacroCalendar from "@/components/ui/enhanced-macro-calendar";
+import EnhancedCalendarTable from "@/components/ui/enhanced-calendar-table";
 import RealtimeNewsTable from "@/components/ui/realtime-news-table";
 import DynamicAlertSystem from "@/components/ui/dynamic-alert-system";
 import { EconomicEventsResponse, EconomicEvent } from "@shared/api";
@@ -617,7 +617,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيهات ذكية لأي رمز مالي مع مراقبة الأسعار في الوقت الفعلي"
+                    ? "قم بإنشاء تنبيهات ذكية لأي رمز ما��ي مع مراقبة الأسعار في الوقت الفعلي"
                     : "Create intelligent alerts for any financial symbol with real-time price monitoring"}
                 </p>
               </div>
