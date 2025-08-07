@@ -67,6 +67,7 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       symbolStr.includes("BTC") ||
       symbolStr.includes("ETH");
     const isIndex = symbolStr === "GSPC" || symbolStr.includes(".INDX");
+    const isGold = symbolStr.includes("XAUUSD") || symbolStr.includes("XAU");
 
     let apiUrl: URL;
     let finalSymbol = symbolStr;
@@ -82,6 +83,11 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       finalSymbol = symbolStr.includes(".INDX")
         ? symbolStr
         : symbolStr + ".INDX";
+    } else if (isGold) {
+      // Gold - try stocks endpoint first, then forex as fallback
+      apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
+      // Try different gold symbol that might work better
+      finalSymbol = "XAUUSD.FOREX"; // Keep original format but use stocks endpoint
     } else {
       // Forex API endpoint - default for currency pairs
       apiUrl = new URL("https://eodhd.com/api/real-time/forex");
