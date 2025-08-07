@@ -174,7 +174,7 @@ export default function Index() {
 
   return (
     <div
-      className={`min-h-screen bg-background relative overflow-x-hidden ${language === "ar" ? "arabic" : "english"}`}
+      className={`min-h-screen bg-background relative overflow-x-hidden w-full max-w-full ${language === "ar" ? "arabic" : "english"}`}
     >
       {/* Global Background Image */}
       <div className="fixed inset-0 z-0">
@@ -195,9 +195,9 @@ export default function Index() {
 
           {/* Floating Navigation Header */}
           <header
-            className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? "translate-y-20" : "-translate-y-20"} top-4`}
+            className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? "translate-y-20" : "-translate-y-20"} top-4 mx-2 max-w-[calc(100vw-1rem)]`}
           >
-            <div className="neumorphic-card bg-background/95 backdrop-blur-md rounded-full px-6 py-3 flex items-center justify-between shadow-lg border border-border/50">
+            <div className="neumorphic-card bg-background/95 backdrop-blur-md rounded-full px-2 sm:px-4 lg:px-6 py-2 sm:py-3 flex items-center justify-between shadow-lg border border-border/50 w-full max-w-full">
               <div className="flex items-center">
                 <img
                   src="/liirat-logo-new.png"
@@ -247,7 +247,7 @@ export default function Index() {
                 </a>
               </nav>
 
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-0.5 sm:space-x-1">
                 <NotificationDropdown className="h-8 w-8" />
                 <SimpleLanguageToggle />
                 <NewLiquidToggle />
@@ -256,23 +256,23 @@ export default function Index() {
           </header>
 
           {/* Hero Section */}
-          <section className="pt-20 pb-12 sm:py-20 lg:py-32 relative overflow-hidden">
+          <section className="pt-20 pb-12 sm:py-20 lg:py-32 relative overflow-hidden px-2 sm:px-0">
             {/* Official Logo Background Pattern */}
             <div className="absolute inset-0">
               <div className="w-full h-full bg-gradient-to-br from-primary/5 via-background to-primary/10"></div>
               <div className="absolute inset-0 bg-[url('/liirat-logo-new.png')] bg-center bg-no-repeat bg-contain opacity-[0.03]"></div>
             </div>
             <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-primary/5"></div>
-            <div className="container mx-auto px-2 sm:px-4 relative">
+            <div className="container mx-auto px-2 sm:px-4 lg:px-8 relative max-w-full">
               <div className="text-center max-w-4xl mx-auto">
-                <div className="neumorphic-lg bg-card/90 rounded-3xl p-6 sm:p-12 mb-8">
-                  <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6 leading-tight text-foreground">
+                <div className="neumorphic-lg bg-card/90 rounded-3xl p-4 sm:p-8 lg:p-12 mb-8 mx-2 sm:mx-0">
+                  <h1 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight text-foreground">
                     {t("hero.title")}
                     <span className="text-primary block">
                       {t("hero.subtitle")}
                     </span>
                   </h1>
-                  <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-6 sm:mb-8 leading-relaxed">
+                  <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 sm:mb-8 leading-relaxed">
                     {t("hero.description")}
                   </p>
                 </div>
