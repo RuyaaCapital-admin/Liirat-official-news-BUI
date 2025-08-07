@@ -460,7 +460,10 @@ export default function Index() {
                         className="rounded-lg overflow-hidden"
                         language={language}
                         dir={dir}
-                        onRefresh={(filters) => fetchEconomicEvents(language, filters)}
+                        onRefresh={(filters) => {
+                          console.log('Refreshing with filters:', filters);
+                          fetchEconomicEvents(language, filters);
+                        }}
                       />
                     </div>
                   )}
