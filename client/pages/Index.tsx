@@ -526,6 +526,25 @@ export default function Index() {
             </div>
           </section>
 
+          {/* Real-Time News Section */}
+          <section id="news" className="py-12 sm:py-20">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  {language === "ar"
+                    ? "الأخبار المالية المباشرة"
+                    : "Real-Time Financial News"}
+                </h2>
+                <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                  {language === "ar"
+                    ? "تابع آخر الأخبار المالية والاقتصادية مع تحليل الذكاء الاصطناعي"
+                    : "Follow the latest financial and economic news with AI analysis"}
+                </p>
+              </div>
+              <RealtimeNewsTable />
+            </div>
+          </section>
+
           {/* Advanced Alert System Section */}
           <section id="alerts" className="py-12 sm:py-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full">
