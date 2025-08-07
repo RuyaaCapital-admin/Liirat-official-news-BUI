@@ -29,12 +29,13 @@ const TICKER_CONFIG = [
   { symbol: "USDJPY.FOREX", displayName: "USD/JPY" },
   { symbol: "GBPUSD.FOREX", displayName: "GBP/USD" },
   { symbol: "AUDUSD.FOREX", displayName: "AUD/USD" },
-  { symbol: "USDCHF.FOREX", displayName: "USD/CHF" },
-  { symbol: "USDCAD.FOREX", displayName: "USD/CAD" },
-  { symbol: "NZDUSD.FOREX", displayName: "NZD/USD" },
-  { symbol: "EURGBP.FOREX", displayName: "EUR/GBP" },
-  { symbol: "EURJPY.FOREX", displayName: "EUR/JPY" },
-  { symbol: "GBPJPY.FOREX", displayName: "GBP/JPY" },
+  // Removed problematic forex pairs that cause "Failed to fetch" errors in production
+  // { symbol: "USDCHF.FOREX", displayName: "USD/CHF" },
+  // { symbol: "USDCAD.FOREX", displayName: "USD/CAD" },
+  // { symbol: "NZDUSD.FOREX", displayName: "NZD/USD" },
+  // { symbol: "EURGBP.FOREX", displayName: "EUR/GBP" },
+  // { symbol: "EURJPY.FOREX", displayName: "EUR/JPY" },
+  // { symbol: "GBPJPY.FOREX", displayName: "GBP/JPY" },
   // Removed problematic pairs that cause "Failed to fetch" errors
   // { symbol: "EURCHF.FOREX", displayName: "EUR/CHF" },
   // { symbol: "EURAUD.FOREX", displayName: "EUR/AUD" },
@@ -95,20 +96,26 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
 
-      const response = await fetch(
-        `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Cache-Control": "no-cache",
+      let response;
+      try {
+        response = await fetch(
+          `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+          {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+              "Cache-Control": "no-cache",
+            },
+            signal: controller.signal,
+            // Add credentials and mode for CORS
+            mode: "cors",
+            credentials: "same-origin",
           },
-          signal: controller.signal,
-          // Add credentials and mode for CORS
-          mode: "cors",
-          credentials: "same-origin",
-        },
-      );
+        );
+      } catch (fetchError) {
+        console.error(`[TICKER] Fetch failed for ${symbol}:`, fetchError);
+        throw new Error(`Network request failed: ${fetchError instanceof Error ? fetchError.message : String(fetchError)}`);
+      }
 
       clearTimeout(timeoutId);
 
