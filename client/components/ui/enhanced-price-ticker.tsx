@@ -18,43 +18,29 @@ interface TickerProps {
 }
 
 // Configuration for ONLY the most reliable symbols that work 100% in production
+// Priority tiers for fetching - fetch most important first
 const TICKER_CONFIG = [
-  // Metals - FIRST
-  { symbol: "XAUUSD.FOREX", displayName: "GOLD" },
-  { symbol: "XAGUSD.FOREX", displayName: "SILVER" },
+  // TIER 1: Most reliable and important symbols
+  { symbol: "BTC-USD.CC", displayName: "BTC/USD", priority: 1 },
+  { symbol: "ETH-USD.CC", displayName: "ETH/USD", priority: 1 },
+  { symbol: "EURUSD.FOREX", displayName: "EUR/USD", priority: 1 },
+  { symbol: "GBPUSD.FOREX", displayName: "GBP/USD", priority: 1 },
+  { symbol: "USDJPY.FOREX", displayName: "USD/JPY", priority: 1 },
 
-  // Crypto - ONLY BTC AND ETH as requested
-  { symbol: "BTC-USD.CC", displayName: "BTC/USD" },
-  { symbol: "ETH-USD.CC", displayName: "ETH/USD" },
+  // TIER 2: Important but can load slower
+  { symbol: "XAUUSD.FOREX", displayName: "GOLD", priority: 2 },
+  { symbol: "AAPL.US", displayName: "APPLE", priority: 2 },
+  { symbol: "MSFT.US", displayName: "MICROSOFT", priority: 2 },
+  { symbol: "NVDA.US", displayName: "NVIDIA", priority: 2 },
+  { symbol: "TSLA.US", displayName: "TESLA", priority: 2 },
 
-  // Forex Major Pairs - Official symbols
-  { symbol: "EURUSD.FOREX", displayName: "EUR/USD" },
-  { symbol: "GBPUSD.FOREX", displayName: "GBP/USD" },
-  { symbol: "USDJPY.FOREX", displayName: "USD/JPY" },
-  { symbol: "USDCHF.FOREX", displayName: "USD/CHF" },
-  { symbol: "USDCAD.FOREX", displayName: "USD/CAD" },
-  { symbol: "AUDUSD.FOREX", displayName: "AUD/USD" },
-  { symbol: "NZDUSD.FOREX", displayName: "NZD/USD" },
-
-  // Indices - Major Global
-  { symbol: "GSPC.INDX", displayName: "S&P 500" },
-  { symbol: "IXIC.INDX", displayName: "NASDAQ" },
-  { symbol: "DJI.INDX", displayName: "DOW JONES" },
-  { symbol: "FTSE.INDX", displayName: "FTSE 100" },
-  { symbol: "DAX.INDX", displayName: "DAX" },
-  { symbol: "N225.INDX", displayName: "NIKKEI 225" },
-
-  // Commodities
-  { symbol: "CL.F", displayName: "CRUDE OIL" },
-  { symbol: "NG.F", displayName: "NATURAL GAS" },
-
-  // US Stocks - Most Traded
-  { symbol: "AAPL.US", displayName: "APPLE" },
-  { symbol: "MSFT.US", displayName: "MICROSOFT" },
-  { symbol: "GOOGL.US", displayName: "GOOGLE" },
-  { symbol: "AMZN.US", displayName: "AMAZON" },
-  { symbol: "TSLA.US", displayName: "TESLA" },
-  { symbol: "NVDA.US", displayName: "NVIDIA" },
+  // TIER 3: Additional symbols (load last)
+  { symbol: "XAGUSD.FOREX", displayName: "SILVER", priority: 3 },
+  { symbol: "USDCHF.FOREX", displayName: "USD/CHF", priority: 3 },
+  { symbol: "USDCAD.FOREX", displayName: "USD/CAD", priority: 3 },
+  { symbol: "AUDUSD.FOREX", displayName: "AUD/USD", priority: 3 },
+  { symbol: "GOOGL.US", displayName: "GOOGLE", priority: 3 },
+  { symbol: "AMZN.US", displayName: "AMAZON", priority: 3 },
 ];
 
 export default function EnhancedPriceTicker({ className }: TickerProps) {
