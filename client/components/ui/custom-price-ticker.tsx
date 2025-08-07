@@ -48,7 +48,7 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
           if (response.ok) {
             const data = await response.json();
             const priceInfo = data.prices?.[0];
-            
+
             if (priceInfo) {
               return {
                 symbol,
@@ -60,7 +60,7 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
               };
             }
           }
-          
+
           // Return null if API fails - NO MOCK DATA
           console.warn(`API failed for ${symbol}, no fallback data provided`);
           return null;
@@ -72,7 +72,9 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
       });
 
       const results = await Promise.all(promises);
-      const validResults = results.filter((result): result is PriceData => result !== null);
+      const validResults = results.filter(
+        (result): result is PriceData => result !== null,
+      );
       setPriceData(validResults);
     } catch (error) {
       console.error("Error fetching price data:", error);
@@ -81,11 +83,13 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
     }
   };
 
-
   const formatPrice = (price: number, symbol: string): string => {
     if (symbol.includes("JPY")) {
       return price.toFixed(2);
-    } else if (symbol.includes("USD") && (symbol.includes("BTC") || symbol.includes("ETH"))) {
+    } else if (
+      symbol.includes("USD") &&
+      (symbol.includes("BTC") || symbol.includes("ETH"))
+    ) {
       return price.toLocaleString("en-US", { maximumFractionDigits: 0 });
     }
     return price.toFixed(4);
@@ -98,7 +102,7 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
 
   useEffect(() => {
     fetchPriceData();
-    
+
     // Update every 30 seconds
     const interval = setInterval(fetchPriceData, 30000);
     return () => clearInterval(interval);
@@ -106,16 +110,30 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
 
   if (isLoading) {
     return (
-      <div className={cn("w-full h-[50px] sm:h-[60px] bg-card border-b border-border flex items-center justify-center", className)}>
-        <div className="animate-pulse text-xs sm:text-sm text-muted-foreground">Loading real-time EODHD market data...</div>
+      <div
+        className={cn(
+          "w-full h-[50px] sm:h-[60px] bg-card border-b border-border flex items-center justify-center",
+          className,
+        )}
+      >
+        <div className="animate-pulse text-xs sm:text-sm text-muted-foreground">
+          Loading real-time EODHD market data...
+        </div>
       </div>
     );
   }
 
   if (priceData.length === 0) {
     return (
-      <div className={cn("w-full h-[50px] sm:h-[60px] bg-card border-b border-border flex items-center justify-center", className)}>
-        <div className="text-xs sm:text-sm text-muted-foreground">EODHD API access restricted - no market data available</div>
+      <div
+        className={cn(
+          "w-full h-[50px] sm:h-[60px] bg-card border-b border-border flex items-center justify-center",
+          className,
+        )}
+      >
+        <div className="text-xs sm:text-sm text-muted-foreground">
+          EODHD API access restricted - no market data available
+        </div>
       </div>
     );
   }
@@ -124,7 +142,7 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
     <div
       className={cn(
         "w-full h-[50px] sm:h-[60px] bg-card border-b border-border overflow-hidden relative",
-        className
+        className,
       )}
     >
       {/* Scrolling Container */}
@@ -142,7 +160,7 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
               <div
                 className={cn(
                   "flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs",
-                  item.changePercent >= 0 ? "text-green-500" : "text-red-500"
+                  item.changePercent >= 0 ? "text-green-500" : "text-red-500",
                 )}
               >
                 {item.changePercent >= 0 ? (
@@ -150,7 +168,9 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
                 ) : (
                   <TrendingDown className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                 )}
-                <span className="whitespace-nowrap">{formatChange(item.change, item.changePercent)}</span>
+                <span className="whitespace-nowrap">
+                  {formatChange(item.change, item.changePercent)}
+                </span>
               </div>
             </div>
             {/* Separator */}
@@ -159,7 +179,7 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
             )}
           </React.Fragment>
         ))}
-        
+
         {/* Duplicate Set for Seamless Loop */}
         {priceData.map((item, index) => (
           <React.Fragment key={`${item.symbol}-2-${index}`}>
@@ -173,7 +193,7 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
               <div
                 className={cn(
                   "flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs",
-                  item.changePercent >= 0 ? "text-green-500" : "text-red-500"
+                  item.changePercent >= 0 ? "text-green-500" : "text-red-500",
                 )}
               >
                 {item.changePercent >= 0 ? (
@@ -181,7 +201,9 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
                 ) : (
                   <TrendingDown className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                 )}
-                <span className="whitespace-nowrap">{formatChange(item.change, item.changePercent)}</span>
+                <span className="whitespace-nowrap">
+                  {formatChange(item.change, item.changePercent)}
+                </span>
               </div>
             </div>
             {/* Separator */}

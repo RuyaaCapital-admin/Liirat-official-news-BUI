@@ -42,8 +42,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Check if user is asking for real-time price data
-    const isPriceQuery = /\b(price|سعر|أسعار|EUR|USD|GBP|JPY|BTC|ETH|bitcoin|forex)\b/i.test(message);
-    const isNewsQuery = /\b(news|أخبار|events|أحداث|calendar|تقويم)\b/i.test(message);
+    const isPriceQuery =
+      /\b(price|سعر|أسعار|EUR|USD|GBP|JPY|BTC|ETH|bitcoin|forex)\b/i.test(
+        message,
+      );
+    const isNewsQuery = /\b(news|أخبار|events|أحداث|calendar|تقويم)\b/i.test(
+      message,
+    );
 
     let realTimeData = "";
 
@@ -54,7 +59,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const symbols = ["EURUSD", "GBPUSD", "USDJPY", "BTCUSD"];
         const pricePromises = symbols.map(async (symbol) => {
           try {
-            const response = await fetch(`${req.headers.origin || 'http://localhost:5000'}/api/eodhd-price?symbol=${symbol}`);
+            const response = await fetch(
+              `${req.headers.origin || "http://localhost:5000"}/api/eodhd-price?symbol=${symbol}`,
+            );
             if (response.ok) {
               const data = await response.json();
               return data.prices?.[0];
@@ -69,11 +76,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const validPrices = priceResults.filter(Boolean);
 
         if (validPrices.length > 0) {
-          realTimeData = language === "ar"
-            ? `البيانات المباشرة من EODHD (${new Date().toLocaleString('ar-SA')}):
-${validPrices.map(p => `• ${p.symbol}: ${p.price?.toFixed(4) || 'N/A'} (${p.change_percent >= 0 ? '+' : ''}${p.change_percent?.toFixed(2) || '0'}%)`).join('\n')}`
-            : `Live EODHD data (${new Date().toLocaleString()}):
-${validPrices.map(p => `• ${p.symbol}: ${p.price?.toFixed(4) || 'N/A'} (${p.change_percent >= 0 ? '+' : ''}${p.change_percent?.toFixed(2) || '0'}%)`).join('\n')}`;
+          realTimeData =
+            language === "ar"
+              ? `البيانات المباشرة من EODHD (${new Date().toLocaleString("ar-SA")}):
+${validPrices.map((p) => `• ${p.symbol}: ${p.price?.toFixed(4) || "N/A"} (${p.change_percent >= 0 ? "+" : ""}${p.change_percent?.toFixed(2) || "0"}%)`).join("\n")}`
+              : `Live EODHD data (${new Date().toLocaleString()}):
+${validPrices.map((p) => `• ${p.symbol}: ${p.price?.toFixed(4) || "N/A"} (${p.change_percent >= 0 ? "+" : ""}${p.change_percent?.toFixed(2) || "0"}%)`).join("\n")}`;
         }
       } catch (error) {
         console.error("Error fetching price data:", error);
@@ -83,15 +91,31 @@ ${validPrices.map(p => `• ${p.symbol}: ${p.price?.toFixed(4) || 'N/A'} (${p.ch
     // Fetch real EODHD economic events for news queries
     if (isNewsQuery) {
       try {
-        const response = await fetch(`${req.headers.origin || 'http://localhost:5000'}/api/eodhd-calendar?limit=5&importance=3`);
+        const response = await fetch(
+          `${req.headers.origin || "http://localhost:5000"}/api/eodhd-calendar?limit=5&importance=3`,
+        );
         if (response.ok) {
           const data = await response.json();
           if (data.events && data.events.length > 0) {
-            realTimeData += (realTimeData ? '\n\n' : '') + (language === "ar"
-              ? `أحداث اقتصادية مهمة من EODHD:
-${data.events.slice(0, 3).map((e: any) => `• ${e.event} (${e.country}) - ${new Date(e.date).toLocaleDateString('ar-SA')}`).join('\n')}`
-              : `Important economic events from EODHD:
-${data.events.slice(0, 3).map((e: any) => `• ${e.event} (${e.country}) - ${new Date(e.date).toLocaleDateString()}`).join('\n')}`);
+            realTimeData +=
+              (realTimeData ? "\n\n" : "") +
+              (language === "ar"
+                ? `أحداث اقتصادية مهمة من EODHD:
+${data.events
+  .slice(0, 3)
+  .map(
+    (e: any) =>
+      `• ${e.event} (${e.country}) - ${new Date(e.date).toLocaleDateString("ar-SA")}`,
+  )
+  .join("\n")}`
+                : `Important economic events from EODHD:
+${data.events
+  .slice(0, 3)
+  .map(
+    (e: any) =>
+      `• ${e.event} (${e.country}) - ${new Date(e.date).toLocaleDateString()}`,
+  )
+  .join("\n")}`);
           }
         }
       } catch (error) {

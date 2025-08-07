@@ -88,7 +88,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.error(
         `EODHD News API error: ${response.status} - ${response.statusText}`,
       );
-      
+
       // Return empty array instead of mock data for 401/403 errors
       if (response.status === 401 || response.status === 403) {
         return res.status(200).json({
@@ -98,7 +98,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           filters: { s, from, to, limit, offset },
         });
       }
-      
+
       return res.status(response.status).json({
         error: `EODHD News API Error: ${response.status} - ${response.statusText}`,
         articles: [],
@@ -149,7 +149,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let errorMessage = "Failed to fetch economic news";
     if (error instanceof Error) {
       if (error.name === "AbortError") {
-        errorMessage = "Request timeout - EODHD News API took too long to respond";
+        errorMessage =
+          "Request timeout - EODHD News API took too long to respond";
       } else {
         errorMessage = error.message;
       }

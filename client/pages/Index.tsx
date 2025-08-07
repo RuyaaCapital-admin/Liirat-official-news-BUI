@@ -106,13 +106,16 @@ export default function Index() {
       }
 
       // Fetch from EODHD calendar endpoint
-      const response = await fetch(`/api/eodhd-calendar?limit=50&importance=3,2`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `/api/eodhd-calendar?limit=50&importance=3,2`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
 
       if (response.ok) {
         const contentType = response.headers.get("content-type");

@@ -90,7 +90,9 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
       try {
         const pricePromises = supportedSymbols.map(async (symbol) => {
           try {
-            const response = await fetch(`/api/eodhd-price?symbol=${symbol.symbol}`);
+            const response = await fetch(
+              `/api/eodhd-price?symbol=${symbol.symbol}`,
+            );
             if (response.ok) {
               const data = await response.json();
               const priceData = data.prices?.[0];
@@ -114,7 +116,9 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
         });
 
         const results = await Promise.all(pricePromises);
-        const validPairs = results.filter((pair): pair is CurrencyPair => pair !== null);
+        const validPairs = results.filter(
+          (pair): pair is CurrencyPair => pair !== null,
+        );
         setCurrencyPairs(validPairs);
       } catch (error) {
         console.error("Error fetching currency pair prices:", error);
