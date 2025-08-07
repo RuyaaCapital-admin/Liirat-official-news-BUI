@@ -65,31 +65,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       symbolStr.includes("ETH");
     const isIndex = symbolStr === "GSPC" || symbolStr.includes(".INDX");
 
-    let apiUrl: URL;
-    let finalSymbol = symbolStr;
-
-    if (isCrypto) {
-      // Crypto API endpoint
-      apiUrl = new URL("https://eodhd.com/api/real-time/crypto");
-      // For crypto, EODHD expects symbols like BTC-USD, ETH-USD
-      finalSymbol = symbolStr;
-    } else if (isIndex) {
-      // Index API endpoint - use stocks endpoint for indices
-      apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
-      finalSymbol = symbolStr.includes(".INDX")
-        ? symbolStr
-        : symbolStr + ".INDX";
-    } else {
-      // Forex API endpoint - default for currency pairs
-      apiUrl = new URL("https://eodhd.com/api/real-time/forex");
-      // For forex, EODHD expects symbols like EURUSD.FOREX
-      finalSymbol = symbolStr.includes(".FOREX")
-        ? symbolStr
-        : symbolStr + ".FOREX";
-    }
-
-    // Add API parameters
-    apiUrl.searchParams.append("s", finalSymbol);
+    // Use the official real-time API endpoint format
+    const apiUrl = new URL(`https://eodhd.com/api/real-time/${symbolStr}`);
     apiUrl.searchParams.append("api_token", apiKey);
     apiUrl.searchParams.append("fmt", fmt as string);
 
