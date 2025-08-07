@@ -65,7 +65,7 @@ const EVENT_CATEGORIES = [
     labelAr: "البنوك المركزية",
   },
   { value: "gdp", labelEn: "GDP", labelAr: "الناتج المحلي" },
-  { value: "retail", labelEn: "Retail Sales", labelAr: "مبيعات التجزئة" },
+  { value: "retail", labelEn: "Retail Sales", labelAr: "مبي��ات التجزئة" },
   { value: "manufacturing", labelEn: "Manufacturing", labelAr: "التصنيع" },
   { value: "housing", labelEn: "Housing", labelAr: "الإسكان" },
   { value: "earnings", labelEn: "Earnings", labelAr: "الأرباح" },
@@ -85,7 +85,7 @@ const TIMEZONES = [
 
 // Time period options
 const TIME_PERIODS = [
-  { value: "this_week", labelEn: "This Week", labelAr: "هذا الأس��وع" },
+  { value: "this_week", labelEn: "This Week", labelAr: "هذا الأسبوع" },
   { value: "next_week", labelEn: "Next Week", labelAr: "الأسبوع القادم" },
   { value: "this_month", labelEn: "This Month", labelAr: "هذا الشهر" },
   { value: "custom", labelEn: "Custom Range", labelAr: "فترة مخصصة" },
@@ -714,7 +714,7 @@ export default function EnhancedMacroCalendar({
                   "px-4 py-3 text-sm font-medium w-[140px]",
                   dir === "rtl" ? "text-right" : "text-left"
                 )}>
-                  {language === "ar" ? "��لتاريخ والوقت" : "Date & Time"}
+                  {language === "ar" ? "التاريخ والوقت" : "Date & Time"}
                 </th>
                 <th className={cn(
                   "px-4 py-3 text-sm font-medium w-[100px]",

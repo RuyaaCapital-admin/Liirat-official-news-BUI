@@ -346,7 +346,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       case 3:
         return language === "ar" ? "عالي" : "High";
       case 2:
-        return language === "ar" ? "مت��سط" : "Medium";
+        return language === "ar" ? "متوسط" : "Medium";
       case 1:
         return language === "ar" ? "منخفض" : "Low";
       default:
@@ -587,88 +587,6 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                         </span>
                       </Button>
 
-                      {/* Manual Translation Button (only in Arabic mode) */}
-                      {language === "ar" && !translatedTitles[article.id] && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => translateTitle(article)}
-                          disabled={loadingTranslation[article.id]}
-                          className="flex items-center gap-1"
-                        >
-                          <span className={cn(
-                            "text-xs",
-                            loadingTranslation[article.id] && "animate-pulse"
-                          )}>
-                            {loadingTranslation[article.id] ? "جاري..." : "ترجمة"}
-                          </span>
-                        </Button>
-                      )}
-
-                      {/* Read More Dialog */}
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="sm">
-                            {language === "ar" ? "اقرأ المزيد" : "Read More"}
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                          <DialogHeader>
-                            <DialogTitle className="text-right" dir={dir}>
-                              {article.title}
-                            </DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4" dir={dir}>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Clock className="w-4 h-4" />
-                              {formatDate(article.date)}
-                              <Badge
-                                className={getImportanceColor(
-                                  article.importance,
-                                )}
-                              >
-                                {getImportanceLabel(article.importance)}
-                              </Badge>
-                            </div>
-
-                            <p className="text-sm leading-relaxed">
-                              {article.content}
-                            </p>
-
-                            {article.symbols.length > 0 && (
-                              <div>
-                                <h4 className="font-medium mb-2">
-                                  {language === "ar"
-                                    ? "الرموز المتأثرة:"
-                                    : "Related Symbols:"}
-                                </h4>
-                                <div className="flex flex-wrap gap-1">
-                                  {article.symbols.map((symbol, idx) => (
-                                    <Badge key={idx} variant="secondary">
-                                      {symbol}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-
-                            {article.link && (
-                              <Button
-                                variant="outline"
-                                className="w-full flex items-center gap-2"
-                                onClick={() =>
-                                  window.open(article.link, "_blank")
-                                }
-                              >
-                                <ExternalLink className="w-4 h-4" />
-                                {language === "ar"
-                                  ? "المصدر الأصلي"
-                                  : "Original Source"}
-                              </Button>
-                            )}
-                          </div>
-                        </DialogContent>
-                      </Dialog>
                     </div>
                   </div>
                 </div>
