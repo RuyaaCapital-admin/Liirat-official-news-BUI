@@ -221,9 +221,10 @@ function transformPriceData(item: any, originalSymbol: string): PriceData {
   let price = parseFloat(item.close || item.price || item.last || item.value || 0);
   const previousClose = parseFloat(item.previousClose || item.previous_close || 0);
 
-  // Special handling for gold when close is NA but previousClose exists
+  // Special handling for metals and other symbols when close is NA but previousClose exists
   if ((price === 0 || isNaN(price) || item.close === "NA") && previousClose > 0) {
     price = previousClose;
+    // For metals, set minimal change to show it's using previous close
     console.log(`Using previousClose for ${item.code}: ${price}`);
   }
 
