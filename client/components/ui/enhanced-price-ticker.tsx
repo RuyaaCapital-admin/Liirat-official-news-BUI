@@ -79,12 +79,11 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
           );
           if (response.ok) {
             const data = await response.json();
-            if (data.price) {
+            if (data.prices && data.prices.length > 0) {
+              const priceInfo = data.prices[0];
               const currentData = priceData[config.symbol];
-              const change = data.price - (currentData?.price || data.price);
-              const changePercent = currentData?.price
-                ? (change / currentData.price) * 100
-                : 0;
+              const change = priceInfo.change || 0;
+              const changePercent = priceInfo.change_percent || 0;
 
               setPriceData((prev) => ({
                 ...prev,
