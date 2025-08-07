@@ -19,25 +19,42 @@ interface TickerProps {
 
 // Configuration for ONLY the most reliable symbols that work 100% in production
 const TICKER_CONFIG = [
-  // Gold (XAU) - FIRST as user specifically requested - XAUUSD.FOREX
+  // Metals - FIRST
   { symbol: "XAUUSD.FOREX", displayName: "GOLD" },
-  // Major Cryptocurrencies
+  { symbol: "XAGUSD.FOREX", displayName: "SILVER" },
+
+  // Crypto - ONLY BTC AND ETH as requested
   { symbol: "BTC-USD.CC", displayName: "BTC/USD" },
   { symbol: "ETH-USD.CC", displayName: "ETH/USD" },
-  { symbol: "ADA-USD.CC", displayName: "ADA/USD" },
-  { symbol: "SOL-USD.CC", displayName: "SOL/USD" },
-  // Major Forex Pairs
+
+  // Forex Major Pairs - Official symbols
   { symbol: "EURUSD.FOREX", displayName: "EUR/USD" },
-  { symbol: "USDJPY.FOREX", displayName: "USD/JPY" },
   { symbol: "GBPUSD.FOREX", displayName: "GBP/USD" },
-  { symbol: "AUDUSD.FOREX", displayName: "AUD/USD" },
-  { symbol: "USDCAD.FOREX", displayName: "USD/CAD" },
+  { symbol: "USDJPY.FOREX", displayName: "USD/JPY" },
   { symbol: "USDCHF.FOREX", displayName: "USD/CHF" },
-  { symbol: "EURGBP.FOREX", displayName: "EUR/GBP" },
-  { symbol: "EURJPY.FOREX", displayName: "EUR/JPY" },
-  { symbol: "GBPJPY.FOREX", displayName: "GBP/JPY" },
-  // Oil/Commodities
-  { symbol: "BRENT.CC", displayName: "BRENT OIL" },
+  { symbol: "USDCAD.FOREX", displayName: "USD/CAD" },
+  { symbol: "AUDUSD.FOREX", displayName: "AUD/USD" },
+  { symbol: "NZDUSD.FOREX", displayName: "NZD/USD" },
+
+  // Indices - Major Global
+  { symbol: "GSPC.INDX", displayName: "S&P 500" },
+  { symbol: "IXIC.INDX", displayName: "NASDAQ" },
+  { symbol: "DJI.INDX", displayName: "DOW JONES" },
+  { symbol: "FTSE.INDX", displayName: "FTSE 100" },
+  { symbol: "DAX.INDX", displayName: "DAX" },
+  { symbol: "N225.INDX", displayName: "NIKKEI 225" },
+
+  // Commodities
+  { symbol: "CL.F", displayName: "CRUDE OIL" },
+  { symbol: "NG.F", displayName: "NATURAL GAS" },
+
+  // US Stocks - Most Traded
+  { symbol: "AAPL.US", displayName: "APPLE" },
+  { symbol: "MSFT.US", displayName: "MICROSOFT" },
+  { symbol: "GOOGL.US", displayName: "GOOGLE" },
+  { symbol: "AMZN.US", displayName: "AMAZON" },
+  { symbol: "TSLA.US", displayName: "TESLA" },
+  { symbol: "NVDA.US", displayName: "NVIDIA" },
 ];
 
 export default function EnhancedPriceTicker({ className }: TickerProps) {
