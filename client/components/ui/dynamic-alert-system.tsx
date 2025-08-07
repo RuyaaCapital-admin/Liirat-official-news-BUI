@@ -253,7 +253,7 @@ export default function DynamicAlertSystem({
         console.error("Error fetching symbol price:", error);
         toast.error(
           language === "ar"
-            ? "خطأ في جلب السعر الحالي"
+            ? "خطأ في جلب السعر ال��الي"
             : "Error fetching current price",
         );
       } finally {
@@ -282,12 +282,12 @@ export default function DynamicAlertSystem({
     for (const alert of activeAlerts) {
       try {
         const response = await fetch(
-          `/api/eodhd-price?symbol=${encodeURIComponent(alert.symbol)}`,
+          `/api/eodhd/price?symbols=${encodeURIComponent(alert.symbol)}`,
         );
         if (response.ok) {
           const data = await response.json();
-          if (data.prices && data.prices.length > 0) {
-            const currentPrice = data.prices[0].price;
+          if (data.ok && data.items && data.items.length > 0) {
+            const currentPrice = data.items[0].price;
             const targetPrice = alert.targetPrice;
 
             let shouldTrigger = false;
