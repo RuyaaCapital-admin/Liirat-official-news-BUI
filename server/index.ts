@@ -10,7 +10,6 @@ import {
   handleTechnicalAnalysis,
 } from "./routes/ai-trading";
 import { handleChat } from "./routes/chat";
-import { getEconomicEvents, getNews } from "./routes/eodhd";
 import { handlePriceAlert } from "./routes/price-alert";
 import { handleMarketauxNews } from "./routes/marketaux-news";
 import { handleAIAnalysis, handleTranslation } from "./routes/ai-analysis";
