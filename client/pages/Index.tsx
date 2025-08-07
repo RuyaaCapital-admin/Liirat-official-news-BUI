@@ -487,7 +487,12 @@ export default function Index() {
                             fetchEconomicEvents(language, filters);
                           }}
                           onCreateAlert={(event, type) => {
-                            console.log("Creating alert for event:", event, "type:", type);
+                            console.log(
+                              "Creating alert for event:",
+                              event,
+                              "type:",
+                              type,
+                            );
                             // Scroll to alerts section to create the alert
                             document
                               .getElementById("alerts")

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
 
 interface PriceData {
   symbol: string;
@@ -7,7 +7,7 @@ interface PriceData {
   change: number;
   changePercent: number;
   lastUpdate: Date;
-  status: 'connected' | 'connecting' | 'disconnected';
+  status: "connected" | "connecting" | "disconnected";
 }
 
 interface UsePriceDataOptions {
@@ -21,7 +21,11 @@ const globalPriceCache = new Map<string, PriceData>();
 const pendingRequests = new Set<string>();
 const subscribers = new Map<string, Set<(data: PriceData) => void>>();
 
-export function usePriceData({ symbols, updateInterval = 60000, enabled = true }: UsePriceDataOptions) {
+export function usePriceData({
+  symbols,
+  updateInterval = 60000,
+  enabled = true,
+}: UsePriceDataOptions) {
   const [priceData, setPriceData] = useState<Record<string, PriceData>>({});
   const [isLoading, setIsLoading] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout>();
@@ -29,7 +33,7 @@ export function usePriceData({ symbols, updateInterval = 60000, enabled = true }
   // Initialize price data
   useEffect(() => {
     const initialData: Record<string, PriceData> = {};
-    symbols.forEach(config => {
+    symbols.forEach((config) => {
       initialData[config.symbol] = {
         symbol: config.symbol,
         displayName: config.displayName,
@@ -37,7 +41,7 @@ export function usePriceData({ symbols, updateInterval = 60000, enabled = true }
         change: 0,
         changePercent: 0,
         lastUpdate: new Date(),
-        status: 'connecting',
+        status: "connecting",
       };
     });
     setPriceData(initialData);
@@ -48,7 +52,7 @@ export function usePriceData({ symbols, updateInterval = 60000, enabled = true }
     if (!enabled) return;
 
     const handlePriceUpdate = (symbol: string) => (data: PriceData) => {
-      setPriceData(prev => ({
+      setPriceData((prev) => ({
         ...prev,
         [symbol]: data,
       }));
@@ -85,11 +89,11 @@ export function usePriceData({ symbols, updateInterval = 60000, enabled = true }
       const symbolsToFetch = symbols.filter(({ symbol }) => {
         const cached = globalPriceCache.get(symbol);
         if (!cached) return true;
-        
+
         // Check if data is stale (older than update interval)
         const now = Date.now();
         const lastUpdate = cached.lastUpdate.getTime();
-        return (now - lastUpdate) > updateInterval;
+        return now - lastUpdate > updateInterval;
       });
 
       if (symbolsToFetch.length === 0) {
@@ -107,18 +111,20 @@ export function usePriceData({ symbols, updateInterval = 60000, enabled = true }
       for (const batch of batches) {
         // Process batch in parallel
         await Promise.all(
-          batch.map(({ symbol, displayName }) => fetchSinglePrice(symbol, displayName))
+          batch.map(({ symbol, displayName }) =>
+            fetchSinglePrice(symbol, displayName),
+          ),
         );
-        
+
         // Small delay between batches to respect rate limits
         if (batches.length > 1) {
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          await new Promise((resolve) => setTimeout(resolve, 2000));
         }
       }
 
       setIsLoading(false);
     } catch (error) {
-      console.error('Error fetching batch prices:', error);
+      console.error("Error fetching batch prices:", error);
       setIsLoading(false);
     }
   };
@@ -134,7 +140,7 @@ export function usePriceData({ symbols, updateInterval = 60000, enabled = true }
 
     try {
       const response = await fetch(`/api/eodhd-price?symbol=${symbol}`);
-      
+
       if (response.status === 429) {
         // Rate limited - update status and retry later
         updateSubscribers(symbol, {
@@ -144,7 +150,7 @@ export function usePriceData({ symbols, updateInterval = 60000, enabled = true }
           change: 0,
           changePercent: 0,
           lastUpdate: new Date(),
-          status: 'disconnected',
+          status: "disconnected",
         });
         return;
       }
@@ -154,10 +160,13 @@ export function usePriceData({ symbols, updateInterval = 60000, enabled = true }
         if (data.prices && data.prices.length > 0) {
           const priceInfo = data.prices[0];
           const currentData = globalPriceCache.get(symbol);
-          const change = currentData ? priceInfo.price - currentData.price : priceInfo.change || 0;
-          const changePercent = currentData && currentData.price > 0 
-            ? (change / currentData.price) * 100 
-            : priceInfo.change_percent || 0;
+          const change = currentData
+            ? priceInfo.price - currentData.price
+            : priceInfo.change || 0;
+          const changePercent =
+            currentData && currentData.price > 0
+              ? (change / currentData.price) * 100
+              : priceInfo.change_percent || 0;
 
           const newData: PriceData = {
             symbol,
@@ -166,12 +175,12 @@ export function usePriceData({ symbols, updateInterval = 60000, enabled = true }
             change,
             changePercent,
             lastUpdate: new Date(),
-            status: 'connected',
+            status: "connected",
           };
 
           // Update global cache
           globalPriceCache.set(symbol, newData);
-          
+
           // Notify subscribers
           updateSubscribers(symbol, newData);
         }
@@ -184,7 +193,7 @@ export function usePriceData({ symbols, updateInterval = 60000, enabled = true }
           change: 0,
           changePercent: 0,
           lastUpdate: new Date(),
-          status: 'disconnected',
+          status: "disconnected",
         });
       }
     } catch (error) {
@@ -196,7 +205,7 @@ export function usePriceData({ symbols, updateInterval = 60000, enabled = true }
         change: 0,
         changePercent: 0,
         lastUpdate: new Date(),
-        status: 'disconnected',
+        status: "disconnected",
       });
     } finally {
       pendingRequests.delete(symbol);
@@ -207,7 +216,7 @@ export function usePriceData({ symbols, updateInterval = 60000, enabled = true }
   const updateSubscribers = (symbol: string, data: PriceData) => {
     const symbolSubscribers = subscribers.get(symbol);
     if (symbolSubscribers) {
-      symbolSubscribers.forEach(callback => callback(data));
+      symbolSubscribers.forEach((callback) => callback(data));
     }
   };
 

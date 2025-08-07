@@ -1,5 +1,9 @@
 import { RequestHandler } from "express";
-import { apiOptimizer, generateCacheKey, getClientId } from "../utils/rate-limiter";
+import {
+  apiOptimizer,
+  generateCacheKey,
+  getClientId,
+} from "../utils/rate-limiter";
 
 interface EconomicEvent {
   date: string;
@@ -25,21 +29,25 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
     const clientId = getClientId(req);
 
     // Check rate limit
-    if (!apiOptimizer.checkRateLimit(clientId, 'calendar')) {
+    if (!apiOptimizer.checkRateLimit(clientId, "calendar")) {
       return res.status(429).json({
         error: "Rate limit exceeded. Please try again later.",
         events: [],
-        retryAfter: 60
+        retryAfter: 60,
       });
     }
 
     // Generate cache key
-    const cacheKey = generateCacheKey('calendar', {
-      country, importance, from, to, limit
+    const cacheKey = generateCacheKey("calendar", {
+      country,
+      importance,
+      from,
+      to,
+      limit,
     });
 
     // Check cache first
-    const cachedData = apiOptimizer.getCached(cacheKey, 'calendar');
+    const cachedData = apiOptimizer.getCached(cacheKey, "calendar");
     if (cachedData) {
       return res.json(cachedData);
     }
@@ -208,7 +216,7 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
     };
 
     // Cache the successful response
-    apiOptimizer.setCache(cacheKey, responseData, 'calendar');
+    apiOptimizer.setCache(cacheKey, responseData, "calendar");
 
     res.json(responseData);
   } catch (error) {

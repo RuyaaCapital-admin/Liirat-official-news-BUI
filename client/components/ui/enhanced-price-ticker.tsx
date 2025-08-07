@@ -9,7 +9,7 @@ interface PriceData {
   change: number;
   changePercent: number;
   lastUpdate: Date;
-  status: 'connected' | 'connecting' | 'disconnected';
+  status: "connected" | "connecting" | "disconnected";
 }
 
 interface TickerProps {
@@ -42,7 +42,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
   // Initialize price data
   useEffect(() => {
     const initialData: Record<string, PriceData> = {};
-    TICKER_CONFIG.forEach(config => {
+    TICKER_CONFIG.forEach((config) => {
       initialData[config.symbol] = {
         symbol: config.symbol,
         displayName: config.displayName,
@@ -50,14 +50,14 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         change: 0,
         changePercent: 0,
         lastUpdate: new Date(),
-        status: 'connecting',
+        status: "connecting",
       };
     });
     setPriceData(initialData);
   }, []);
 
   // Connect to WebSocket for a specific symbol
-  const connectWebSocket = (config: typeof TICKER_CONFIG[0]) => {
+  const connectWebSocket = (config: (typeof TICKER_CONFIG)[0]) => {
     try {
       // Clear existing connection and timeout
       if (wsConnections.current[config.symbol]) {
@@ -74,15 +74,19 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
       // Instead of WebSocket, we'll use periodic REST API calls
       const fetchPrice = async () => {
         try {
-          const response = await fetch(`/api/eodhd-price?symbol=${config.symbol}`);
+          const response = await fetch(
+            `/api/eodhd-price?symbol=${config.symbol}`,
+          );
           if (response.ok) {
             const data = await response.json();
             if (data.price) {
               const currentData = priceData[config.symbol];
               const change = data.price - (currentData?.price || data.price);
-              const changePercent = currentData?.price ? (change / currentData.price) * 100 : 0;
+              const changePercent = currentData?.price
+                ? (change / currentData.price) * 100
+                : 0;
 
-              setPriceData(prev => ({
+              setPriceData((prev) => ({
                 ...prev,
                 [config.symbol]: {
                   ...prev[config.symbol],
@@ -90,18 +94,18 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
                   change,
                   changePercent,
                   lastUpdate: new Date(),
-                  status: 'connected',
+                  status: "connected",
                 },
               }));
             }
           }
         } catch (error) {
           console.error(`Failed to fetch price for ${config.symbol}:`, error);
-          setPriceData(prev => ({
+          setPriceData((prev) => ({
             ...prev,
             [config.symbol]: {
               ...prev[config.symbol],
-              status: 'disconnected',
+              status: "disconnected",
             },
           }));
         }
@@ -114,18 +118,21 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
       const priceInterval = setInterval(fetchPrice, 60000);
 
       // Store interval for cleanup
-      wsConnections.current[config.symbol] = { close: () => clearInterval(priceInterval) } as any;
+      wsConnections.current[config.symbol] = {
+        close: () => clearInterval(priceInterval),
+      } as any;
 
       return;
-
-
     } catch (error) {
-      console.error(`Failed to setup price updates for ${config.symbol}:`, error);
-      setPriceData(prev => ({
+      console.error(
+        `Failed to setup price updates for ${config.symbol}:`,
+        error,
+      );
+      setPriceData((prev) => ({
         ...prev,
         [config.symbol]: {
           ...prev[config.symbol],
-          status: 'disconnected',
+          status: "disconnected",
         },
       }));
     }
@@ -133,18 +140,18 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
 
   // Connect to all price feeds
   useEffect(() => {
-    TICKER_CONFIG.forEach(config => {
+    TICKER_CONFIG.forEach((config) => {
       connectWebSocket(config);
     });
 
     // Cleanup on unmount
     return () => {
-      Object.values(wsConnections.current).forEach(connection => {
-        if (connection && typeof connection.close === 'function') {
+      Object.values(wsConnections.current).forEach((connection) => {
+        if (connection && typeof connection.close === "function") {
           connection.close();
         }
       });
-      Object.values(reconnectTimeouts.current).forEach(timeout => {
+      Object.values(reconnectTimeouts.current).forEach((timeout) => {
         clearTimeout(timeout);
       });
     };
@@ -153,7 +160,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
   // Auto-scroll through tickers (increased interval to reduce processing)
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % TICKER_CONFIG.length);
+      setCurrentIndex((prev) => (prev + 1) % TICKER_CONFIG.length);
     }, 5000); // Change every 5 seconds to reduce processing
 
     return () => clearInterval(interval);
@@ -168,9 +175,11 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         if (data.price) {
           const currentData = priceData[symbol];
           const change = data.price - (currentData?.price || data.price);
-          const changePercent = currentData?.price ? (change / currentData.price) * 100 : 0;
+          const changePercent = currentData?.price
+            ? (change / currentData.price) * 100
+            : 0;
 
-          setPriceData(prev => ({
+          setPriceData((prev) => ({
             ...prev,
             [symbol]: {
               ...prev[symbol],
@@ -178,7 +187,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
               change,
               changePercent,
               lastUpdate: new Date(),
-              status: 'connected',
+              status: "connected",
             },
           }));
         }
@@ -192,7 +201,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
   useEffect(() => {
     const fallbackInterval = setInterval(() => {
       Object.entries(priceData).forEach(([symbol, data]) => {
-        if (data.status === 'disconnected') {
+        if (data.status === "disconnected") {
           fetchFallbackPrice(symbol);
         }
       });
@@ -203,7 +212,10 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
 
   const formatPrice = (price: number, symbol: string) => {
     if (symbol.includes("BTC") || symbol.includes("ETH")) {
-      return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return price.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     } else if (symbol.includes("JPY")) {
       return price.toFixed(3);
     } else {
@@ -221,7 +233,12 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
 
   if (!currentData) {
     return (
-      <div className={cn("bg-primary/10 py-2 px-4 border-b border-border", className)}>
+      <div
+        className={cn(
+          "bg-primary/10 py-2 px-4 border-b border-border",
+          className,
+        )}
+      >
         <div className="flex items-center justify-center text-sm text-muted-foreground">
           Loading market data...
         </div>
@@ -230,54 +247,78 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
   }
 
   return (
-    <div className={cn("bg-background/95 backdrop-blur-sm py-2 px-4 border-b border-border", className)}>
+    <div
+      className={cn(
+        "bg-background/95 backdrop-blur-sm py-2 px-4 border-b border-border",
+        className,
+      )}
+    >
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         {/* Current Ticker Display */}
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
-            <span className="font-semibold text-sm">{currentData.displayName}</span>
-            <div className={cn(
-              "w-2 h-2 rounded-full",
-              currentData.status === 'connected' ? "bg-green-500" :
-              currentData.status === 'connecting' ? "bg-yellow-500" :
-              "bg-red-500"
-            )} />
+            <span className="font-semibold text-sm">
+              {currentData.displayName}
+            </span>
+            <div
+              className={cn(
+                "w-2 h-2 rounded-full",
+                currentData.status === "connected"
+                  ? "bg-green-500"
+                  : currentData.status === "connecting"
+                    ? "bg-yellow-500"
+                    : "bg-red-500",
+              )}
+            />
           </div>
-          
+
           <div className="text-lg font-bold">
-            {currentData.price > 0 ? formatPrice(currentData.price, currentData.symbol) : "--"}
+            {currentData.price > 0
+              ? formatPrice(currentData.price, currentData.symbol)
+              : "--"}
           </div>
-          
+
           {currentData.price > 0 && (
-            <div className={cn(
-              "flex items-center space-x-1 text-sm font-medium",
-              currentData.change >= 0 ? "text-green-600" : "text-red-600"
-            )}>
+            <div
+              className={cn(
+                "flex items-center space-x-1 text-sm font-medium",
+                currentData.change >= 0 ? "text-green-600" : "text-red-600",
+              )}
+            >
               {currentData.change >= 0 ? (
                 <TrendingUp className="w-3 h-3" />
               ) : (
                 <TrendingDown className="w-3 h-3" />
               )}
-              <span>{formatChange(currentData.change, currentData.changePercent)}</span>
+              <span>
+                {formatChange(currentData.change, currentData.changePercent)}
+              </span>
             </div>
           )}
         </div>
 
         {/* Mini ticker strip for all symbols */}
         <div className="hidden lg:flex items-center space-x-6 text-xs">
-          {TICKER_CONFIG.slice(0, 5).map(config => {
+          {TICKER_CONFIG.slice(0, 5).map((config) => {
             const data = priceData[config.symbol];
             if (!data || data.price === 0) return null;
-            
+
             return (
               <div key={config.symbol} className="flex items-center space-x-1">
-                <span className="text-muted-foreground">{config.displayName}:</span>
-                <span className="font-semibold">{formatPrice(data.price, config.symbol)}</span>
-                <span className={cn(
-                  "text-xs",
-                  data.change >= 0 ? "text-green-600" : "text-red-600"
-                )}>
-                  {data.change >= 0 ? "+" : ""}{data.changePercent.toFixed(1)}%
+                <span className="text-muted-foreground">
+                  {config.displayName}:
+                </span>
+                <span className="font-semibold">
+                  {formatPrice(data.price, config.symbol)}
+                </span>
+                <span
+                  className={cn(
+                    "text-xs",
+                    data.change >= 0 ? "text-green-600" : "text-red-600",
+                  )}
+                >
+                  {data.change >= 0 ? "+" : ""}
+                  {data.changePercent.toFixed(1)}%
                 </span>
               </div>
             );

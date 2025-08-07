@@ -13,21 +13,21 @@ interface RateLimitEntry {
 class APIOptimizer {
   private cache = new Map<string, CacheEntry>();
   private rateLimits = new Map<string, RateLimitEntry>();
-  
+
   // Cache TTL settings (in milliseconds)
   private readonly CACHE_TTL = {
-    prices: 30000,        // 30 seconds for price data
-    news: 300000,         // 5 minutes for news
-    calendar: 600000,     // 10 minutes for economic calendar
-    analysis: 1800000,    // 30 minutes for AI analysis
+    prices: 30000, // 30 seconds for price data
+    news: 300000, // 5 minutes for news
+    calendar: 600000, // 10 minutes for economic calendar
+    analysis: 1800000, // 30 minutes for AI analysis
   };
 
   // Rate limit settings (requests per minute)
   private readonly RATE_LIMITS = {
-    prices: 60,           // 60 price requests per minute (1 per second)
-    news: 12,             // 12 news requests per minute (1 per 5 seconds)
-    calendar: 6,          // 6 calendar requests per minute (1 per 10 seconds)
-    analysis: 20,         // 20 AI analysis requests per minute
+    prices: 60, // 60 price requests per minute (1 per second)
+    news: 12, // 12 news requests per minute (1 per 5 seconds)
+    calendar: 6, // 6 calendar requests per minute (1 per 10 seconds)
+    analysis: 20, // 20 AI analysis requests per minute
   };
 
   // Get cached data if available and not expired
@@ -49,7 +49,7 @@ class APIOptimizer {
   setCache(key: string, data: any, type: keyof typeof this.CACHE_TTL): void {
     const now = Date.now();
     const ttl = this.CACHE_TTL[type];
-    
+
     this.cache.set(key, {
       data,
       timestamp: now,
@@ -63,11 +63,14 @@ class APIOptimizer {
   }
 
   // Check if API call is allowed under rate limit
-  checkRateLimit(clientId: string, type: keyof typeof this.RATE_LIMITS): boolean {
+  checkRateLimit(
+    clientId: string,
+    type: keyof typeof this.RATE_LIMITS,
+  ): boolean {
     const now = Date.now();
     const windowMs = 60000; // 1 minute window
     const limit = this.RATE_LIMITS[type];
-    
+
     const key = `${clientId}:${type}`;
     const entry = this.rateLimits.get(key);
 
@@ -81,7 +84,9 @@ class APIOptimizer {
     }
 
     if (entry.count >= limit) {
-      console.warn(`Rate limit exceeded for ${clientId}:${type} (${entry.count}/${limit})`);
+      console.warn(
+        `Rate limit exceeded for ${clientId}:${type} (${entry.count}/${limit})`,
+      );
       return false;
     }
 
@@ -94,14 +99,14 @@ class APIOptimizer {
   private cleanupCache(): void {
     const now = Date.now();
     let cleaned = 0;
-    
+
     for (const [key, entry] of this.cache.entries()) {
       if (now > entry.expiry) {
         this.cache.delete(key);
         cleaned++;
       }
     }
-    
+
     console.log(`Cleaned up ${cleaned} expired cache entries`);
   }
 
@@ -117,14 +122,14 @@ class APIOptimizer {
   cleanupRateLimits(): void {
     const now = Date.now();
     let cleaned = 0;
-    
+
     for (const [key, entry] of this.rateLimits.entries()) {
       if (now > entry.resetTime) {
         this.rateLimits.delete(key);
         cleaned++;
       }
     }
-    
+
     if (cleaned > 0) {
       console.log(`Cleaned up ${cleaned} expired rate limit entries`);
     }
@@ -140,15 +145,18 @@ setInterval(() => {
 }, 300000);
 
 // Helper function to generate cache keys
-export function generateCacheKey(type: string, params: Record<string, any>): string {
+export function generateCacheKey(
+  type: string,
+  params: Record<string, any>,
+): string {
   const sortedParams = Object.keys(params)
     .sort()
-    .map(key => `${key}=${params[key]}`)
-    .join('&');
+    .map((key) => `${key}=${params[key]}`)
+    .join("&");
   return `${type}:${sortedParams}`;
 }
 
 // Helper function to get client identifier
 export function getClientId(req: any): string {
-  return req.ip || req.connection.remoteAddress || 'unknown';
+  return req.ip || req.connection.remoteAddress || "unknown";
 }

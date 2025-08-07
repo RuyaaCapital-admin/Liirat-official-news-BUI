@@ -1,5 +1,9 @@
 import { RequestHandler } from "express";
-import { apiOptimizer, generateCacheKey, getClientId } from "../utils/rate-limiter";
+import {
+  apiOptimizer,
+  generateCacheKey,
+  getClientId,
+} from "../utils/rate-limiter";
 
 interface NewsArticle {
   id: string;
@@ -39,31 +43,47 @@ export const handleRealtimeNews: RequestHandler = async (req, res) => {
       to,
       limit = "20",
       offset = "0",
-      search
+      search,
     } = req.query;
 
-    console.log("Real-time news request with filters:", { category, symbol, tag, from, to, limit, offset, search });
+    console.log("Real-time news request with filters:", {
+      category,
+      symbol,
+      tag,
+      from,
+      to,
+      limit,
+      offset,
+      search,
+    });
 
     // Get client ID for rate limiting
     const clientId = getClientId(req);
 
     // Check rate limit
-    if (!apiOptimizer.checkRateLimit(clientId, 'news')) {
+    if (!apiOptimizer.checkRateLimit(clientId, "news")) {
       return res.status(429).json({
         articles: [],
         total: 0,
         error: "Rate limit exceeded. Please try again later.",
-        retryAfter: 60
+        retryAfter: 60,
       });
     }
 
     // Generate cache key
-    const cacheKey = generateCacheKey('news', {
-      category, symbol, tag, from, to, limit, offset, search
+    const cacheKey = generateCacheKey("news", {
+      category,
+      symbol,
+      tag,
+      from,
+      to,
+      limit,
+      offset,
+      search,
     });
 
     // Check cache first
-    const cachedData = apiOptimizer.getCached(cacheKey, 'news');
+    const cachedData = apiOptimizer.getCached(cacheKey, "news");
     if (cachedData) {
       return res.json(cachedData);
     }
@@ -72,11 +92,11 @@ export const handleRealtimeNews: RequestHandler = async (req, res) => {
     const apiUrl = new URL("https://eodhd.com/api/news");
     apiUrl.searchParams.append("api_token", apiKey);
     apiUrl.searchParams.append("fmt", "json");
-    
+
     // Set reasonable limits
     const newsLimit = Math.min(parseInt(limit as string) || 20, 100);
     const newsOffset = Math.max(parseInt(offset as string) || 0, 0);
-    
+
     apiUrl.searchParams.append("limit", newsLimit.toString());
     apiUrl.searchParams.append("offset", newsOffset.toString());
 
@@ -118,7 +138,9 @@ export const handleRealtimeNews: RequestHandler = async (req, res) => {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.error(`EODHD News API error: ${response.status} - ${response.statusText}`);
+      console.error(
+        `EODHD News API error: ${response.status} - ${response.statusText}`,
+      );
 
       // Log response body for debugging
       try {
@@ -132,7 +154,15 @@ export const handleRealtimeNews: RequestHandler = async (req, res) => {
         articles: [],
         total: 0,
         error: `News API Error: ${response.status}`,
-        filters: { category, symbol, tag, from, to, limit: newsLimit, offset: newsOffset },
+        filters: {
+          category,
+          symbol,
+          tag,
+          from,
+          to,
+          limit: newsLimit,
+          offset: newsOffset,
+        },
         timestamp: new Date().toISOString(),
       });
     }
@@ -151,11 +181,16 @@ export const handleRealtimeNews: RequestHandler = async (req, res) => {
     }
 
     const data = await response.json();
-    console.log("Raw EODHD News response (first 2 items):", JSON.stringify(data.slice ? data.slice(0, 2) : data, null, 2));
+    console.log(
+      "Raw EODHD News response (first 2 items):",
+      JSON.stringify(data.slice ? data.slice(0, 2) : data, null, 2),
+    );
 
     // Transform EODHD response to our format
     const articles: NewsArticle[] = Array.isArray(data)
-      ? data.map((article: any, index: number) => transformNewsData(article, index))
+      ? data.map((article: any, index: number) =>
+          transformNewsData(article, index),
+        )
       : [];
 
     // Apply client-side filters for category, tag, and search
@@ -164,41 +199,51 @@ export const handleRealtimeNews: RequestHandler = async (req, res) => {
     // Filter by category
     if (category && category !== "all") {
       const categoryLower = (category as string).toLowerCase();
-      filteredArticles = filteredArticles.filter(article => 
-        article.category.toLowerCase().includes(categoryLower) ||
-        article.tags.some(tag => tag.toLowerCase().includes(categoryLower))
+      filteredArticles = filteredArticles.filter(
+        (article) =>
+          article.category.toLowerCase().includes(categoryLower) ||
+          article.tags.some((tag) => tag.toLowerCase().includes(categoryLower)),
       );
     }
 
     // Filter by tag
     if (tag && tag !== "all") {
       const tagLower = (tag as string).toLowerCase();
-      filteredArticles = filteredArticles.filter(article =>
-        article.tags.some(articleTag => articleTag.toLowerCase().includes(tagLower)) ||
-        article.category.toLowerCase().includes(tagLower)
+      filteredArticles = filteredArticles.filter(
+        (article) =>
+          article.tags.some((articleTag) =>
+            articleTag.toLowerCase().includes(tagLower),
+          ) || article.category.toLowerCase().includes(tagLower),
       );
     }
 
     // Filter by search term
     if (search) {
       const searchLower = (search as string).toLowerCase();
-      filteredArticles = filteredArticles.filter(article =>
-        article.title.toLowerCase().includes(searchLower) ||
-        article.content.toLowerCase().includes(searchLower) ||
-        article.symbols.some(sym => sym.toLowerCase().includes(searchLower))
+      filteredArticles = filteredArticles.filter(
+        (article) =>
+          article.title.toLowerCase().includes(searchLower) ||
+          article.content.toLowerCase().includes(searchLower) ||
+          article.symbols.some((sym) =>
+            sym.toLowerCase().includes(searchLower),
+          ),
       );
     }
 
     // Sort by date (newest first)
-    filteredArticles.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    filteredArticles.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
 
-    console.log(`Returning ${filteredArticles.length} filtered news articles out of ${articles.length} total`);
+    console.log(
+      `Returning ${filteredArticles.length} filtered news articles out of ${articles.length} total`,
+    );
 
     const responseData = {
       articles: filteredArticles,
       total: filteredArticles.length,
-      availableCategories: [...new Set(articles.map(a => a.category))],
-      availableTags: [...new Set(articles.flatMap(a => a.tags))].slice(0, 20), // Top 20 tags
+      availableCategories: [...new Set(articles.map((a) => a.category))],
+      availableTags: [...new Set(articles.flatMap((a) => a.tags))].slice(0, 20), // Top 20 tags
       filters: {
         category,
         symbol,
@@ -213,10 +258,9 @@ export const handleRealtimeNews: RequestHandler = async (req, res) => {
     };
 
     // Cache the successful response
-    apiOptimizer.setCache(cacheKey, responseData, 'news');
+    apiOptimizer.setCache(cacheKey, responseData, "news");
 
     res.json(responseData);
-
   } catch (error) {
     console.error("Error fetching real-time news:", error);
 
@@ -244,51 +288,89 @@ function transformNewsData(article: any, index: number): NewsArticle {
   const id = article.id || `news_${Date.now()}_${index}`;
 
   // Parse date
-  const date = article.date || article.datetime || article.published || new Date().toISOString();
-  
+  const date =
+    article.date ||
+    article.datetime ||
+    article.published ||
+    new Date().toISOString();
+
   // Extract title
   const title = article.title || article.headline || "Financial News Update";
-  
+
   // Extract content
-  const content = article.content || article.description || article.summary || "";
-  
+  const content =
+    article.content || article.description || article.summary || "";
+
   // Extract symbols/tickers
-  const symbols = Array.isArray(article.symbols) ? article.symbols : 
-                 article.symbols ? [article.symbols] :
-                 article.tickers ? (Array.isArray(article.tickers) ? article.tickers : [article.tickers]) :
-                 [];
+  const symbols = Array.isArray(article.symbols)
+    ? article.symbols
+    : article.symbols
+      ? [article.symbols]
+      : article.tickers
+        ? Array.isArray(article.tickers)
+          ? article.tickers
+          : [article.tickers]
+        : [];
 
   // Extract tags
-  const tags = Array.isArray(article.tags) ? article.tags :
-              article.tags ? [article.tags] :
-              article.keywords ? (Array.isArray(article.keywords) ? article.keywords : [article.keywords]) :
-              [];
+  const tags = Array.isArray(article.tags)
+    ? article.tags
+    : article.tags
+      ? [article.tags]
+      : article.keywords
+        ? Array.isArray(article.keywords)
+          ? article.keywords
+          : [article.keywords]
+        : [];
 
   // Determine category based on content and tags
   let category = article.category || "Financial";
-  
+
   const titleLower = title.toLowerCase();
   const contentLower = content.toLowerCase();
-  
+
   if (titleLower.includes("earnings") || contentLower.includes("earnings")) {
     category = "Earnings";
-  } else if (titleLower.includes("central bank") || titleLower.includes("fed") || titleLower.includes("interest rate")) {
+  } else if (
+    titleLower.includes("central bank") ||
+    titleLower.includes("fed") ||
+    titleLower.includes("interest rate")
+  ) {
     category = "Central Banks";
-  } else if (titleLower.includes("inflation") || titleLower.includes("cpi") || titleLower.includes("ppi")) {
+  } else if (
+    titleLower.includes("inflation") ||
+    titleLower.includes("cpi") ||
+    titleLower.includes("ppi")
+  ) {
     category = "Inflation";
-  } else if (titleLower.includes("employment") || titleLower.includes("jobs") || titleLower.includes("unemployment")) {
+  } else if (
+    titleLower.includes("employment") ||
+    titleLower.includes("jobs") ||
+    titleLower.includes("unemployment")
+  ) {
     category = "Labor";
-  } else if (titleLower.includes("gdp") || titleLower.includes("economic growth")) {
+  } else if (
+    titleLower.includes("gdp") ||
+    titleLower.includes("economic growth")
+  ) {
     category = "Economic Indicators";
-  } else if (titleLower.includes("crypto") || titleLower.includes("bitcoin") || titleLower.includes("ethereum")) {
+  } else if (
+    titleLower.includes("crypto") ||
+    titleLower.includes("bitcoin") ||
+    titleLower.includes("ethereum")
+  ) {
     category = "Cryptocurrency";
-  } else if (titleLower.includes("forex") || titleLower.includes("currency") || symbols.some(s => s.includes("USD"))) {
+  } else if (
+    titleLower.includes("forex") ||
+    titleLower.includes("currency") ||
+    symbols.some((s) => s.includes("USD"))
+  ) {
     category = "Forex";
   }
 
   // Determine importance (1-3 scale)
   let importance = 2; // Default medium
-  
+
   // High importance keywords
   if (
     titleLower.includes("breaking") ||

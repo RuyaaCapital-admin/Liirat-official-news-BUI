@@ -2,21 +2,33 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { 
-  Newspaper, 
-  Search, 
-  Filter, 
-  RefreshCw, 
-  ExternalLink, 
-  Bot, 
+import {
+  Newspaper,
+  Search,
+  Filter,
+  RefreshCw,
+  ExternalLink,
+  Bot,
   Clock,
   TrendingUp,
   AlertTriangle,
-  Globe
+  Globe,
 } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
 
@@ -44,20 +56,22 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
   const [filteredArticles, setFilteredArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedSymbol, setSelectedSymbol] = useState<string>("all");
   const [selectedTimeframe, setSelectedTimeframe] = useState<string>("24h");
-  
+
   // Available filter options
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [availableSymbols, setAvailableSymbols] = useState<string[]>([]);
-  
+
   // AI Analysis
   const [aiAnalysis, setAiAnalysis] = useState<Record<string, string>>({});
-  const [loadingAnalysis, setLoadingAnalysis] = useState<Record<string, boolean>>({});
+  const [loadingAnalysis, setLoadingAnalysis] = useState<
+    Record<string, boolean>
+  >({});
 
   // Timezone selector
   const [selectedTimezone, setSelectedTimezone] = useState("UTC");
@@ -78,10 +92,10 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       setError(null);
 
       // Calculate date range based on timeframe
-      const to = new Date().toISOString().split('T')[0];
+      const to = new Date().toISOString().split("T")[0];
       let from = "";
       const fromDate = new Date();
-      
+
       switch (selectedTimeframe) {
         case "24h":
           fromDate.setDate(fromDate.getDate() - 1);
@@ -98,8 +112,8 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         default:
           fromDate.setDate(fromDate.getDate() - 1);
       }
-      
-      from = fromDate.toISOString().split('T')[0];
+
+      from = fromDate.toISOString().split("T")[0];
 
       const params = new URLSearchParams({
         from,
@@ -125,7 +139,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       }
 
       const data = await response.json();
-      
+
       if (data.error) {
         setError(data.error);
         setArticles([]);
@@ -157,11 +171,14 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     // Search filter
     if (searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase();
-      filtered = filtered.filter(article =>
-        article.title.toLowerCase().includes(searchLower) ||
-        article.content.toLowerCase().includes(searchLower) ||
-        article.symbols.some(symbol => symbol.toLowerCase().includes(searchLower)) ||
-        article.tags.some(tag => tag.toLowerCase().includes(searchLower))
+      filtered = filtered.filter(
+        (article) =>
+          article.title.toLowerCase().includes(searchLower) ||
+          article.content.toLowerCase().includes(searchLower) ||
+          article.symbols.some((symbol) =>
+            symbol.toLowerCase().includes(searchLower),
+          ) ||
+          article.tags.some((tag) => tag.toLowerCase().includes(searchLower)),
       );
     }
 
@@ -174,42 +191,44 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       return; // Already have analysis or loading
     }
 
-    setLoadingAnalysis(prev => ({ ...prev, [article.id]: true }));
+    setLoadingAnalysis((prev) => ({ ...prev, [article.id]: true }));
 
     try {
-      const response = await fetch('/api/ai-analysis', {
-        method: 'POST',
+      const response = await fetch("/api/ai-analysis", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           text: `${article.title}. ${article.content.substring(0, 300)}`,
           language: language,
-          type: 'news',
+          type: "news",
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        setAiAnalysis(prev => ({ ...prev, [article.id]: data.analysis }));
+        setAiAnalysis((prev) => ({ ...prev, [article.id]: data.analysis }));
       } else {
-        setAiAnalysis(prev => ({ 
-          ...prev, 
-          [article.id]: language === "ar" 
-            ? "��حليل الذكاء الاصطناعي غير متاح حاليًا"
-            : "AI analysis currently unavailable"
+        setAiAnalysis((prev) => ({
+          ...prev,
+          [article.id]:
+            language === "ar"
+              ? "��حليل الذكاء الاصطناعي غير متاح حاليًا"
+              : "AI analysis currently unavailable",
         }));
       }
     } catch (error) {
       console.error("AI analysis error:", error);
-      setAiAnalysis(prev => ({ 
-        ...prev, 
-        [article.id]: language === "ar" 
-          ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
-          : "AI analysis currently unavailable"
+      setAiAnalysis((prev) => ({
+        ...prev,
+        [article.id]:
+          language === "ar"
+            ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
+            : "AI analysis currently unavailable",
       }));
     } finally {
-      setLoadingAnalysis(prev => ({ ...prev, [article.id]: false }));
+      setLoadingAnalysis((prev) => ({ ...prev, [article.id]: false }));
     }
   };
 
@@ -229,19 +248,27 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
   // Get importance color
   const getImportanceColor = (importance: number) => {
     switch (importance) {
-      case 3: return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
-      case 2: return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
-      case 1: return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
-      default: return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
+      case 3:
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+      case 2:
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+      case 1:
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
     }
   };
 
   const getImportanceLabel = (importance: number) => {
     switch (importance) {
-      case 3: return language === "ar" ? "عالي" : "High";
-      case 2: return language === "ar" ? "متوسط" : "Medium";  
-      case 1: return language === "ar" ? "منخفض" : "Low";
-      default: return language === "ar" ? "غير محدد" : "Unknown";
+      case 3:
+        return language === "ar" ? "عالي" : "High";
+      case 2:
+        return language === "ar" ? "متوسط" : "Medium";
+      case 1:
+        return language === "ar" ? "منخفض" : "Low";
+      default:
+        return language === "ar" ? "غير محدد" : "Unknown";
     }
   };
 
@@ -250,9 +277,11 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Newspaper className="w-5 h-5 text-primary" />
-          {language === "ar" ? "الأخبار المالية المباشرة" : "Real-Time Financial News"}
+          {language === "ar"
+            ? "الأخبار المالية المباشرة"
+            : "Real-Time Financial News"}
         </CardTitle>
-        
+
         {/* Filters Row */}
         <div className="flex flex-wrap gap-4 mt-4">
           {/* Search */}
@@ -260,7 +289,9 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder={language === "ar" ? "البحث في الأخبار..." : "Search news..."}
+                placeholder={
+                  language === "ar" ? "البحث في الأخبار..." : "Search news..."
+                }
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -271,26 +302,43 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
           {/* Category Filter */}
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
             <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder={language === "ar" ? "الفئة" : "Category"} />
+              <SelectValue
+                placeholder={language === "ar" ? "الفئة" : "Category"}
+              />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{language === "ar" ? "جميع الفئات" : "All Categories"}</SelectItem>
-              {availableCategories.map(category => (
-                <SelectItem key={category} value={category}>{category}</SelectItem>
+              <SelectItem value="all">
+                {language === "ar" ? "جميع الفئات" : "All Categories"}
+              </SelectItem>
+              {availableCategories.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
 
           {/* Timeframe Filter */}
-          <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
+          <Select
+            value={selectedTimeframe}
+            onValueChange={setSelectedTimeframe}
+          >
             <SelectTrigger className="w-[150px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="24h">{language === "ar" ? "آخر 24 ساعة" : "Last 24h"}</SelectItem>
-              <SelectItem value="3d">{language === "ar" ? "آخر 3 أيام" : "Last 3 days"}</SelectItem>
-              <SelectItem value="1w">{language === "ar" ? "آخر أسبوع" : "Last week"}</SelectItem>
-              <SelectItem value="1m">{language === "ar" ? "آخر شهر" : "Last month"}</SelectItem>
+              <SelectItem value="24h">
+                {language === "ar" ? "آخر 24 ساعة" : "Last 24h"}
+              </SelectItem>
+              <SelectItem value="3d">
+                {language === "ar" ? "آخر 3 أيام" : "Last 3 days"}
+              </SelectItem>
+              <SelectItem value="1w">
+                {language === "ar" ? "آخر أسبوع" : "Last week"}
+              </SelectItem>
+              <SelectItem value="1m">
+                {language === "ar" ? "آخر شهر" : "Last month"}
+              </SelectItem>
             </SelectContent>
           </Select>
 
@@ -300,8 +348,10 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {timezones.map(tz => (
-                <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
+              {timezones.map((tz) => (
+                <SelectItem key={tz.value} value={tz.value}>
+                  {tz.label}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -340,7 +390,9 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         ) : filteredArticles.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <Newspaper className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p>{language === "ar" ? "لا توجد أخبار متاحة" : "No news available"}</p>
+            <p>
+              {language === "ar" ? "لا توجد أخبار متاحة" : "No news available"}
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -357,17 +409,20 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                       </Badge>
                       <Badge variant="outline">{article.category}</Badge>
                       {article.country && (
-                        <Badge variant="outline" className="flex items-center gap-1">
+                        <Badge
+                          variant="outline"
+                          className="flex items-center gap-1"
+                        >
                           <Globe className="w-3 h-3" />
                           {article.country}
                         </Badge>
                       )}
                     </div>
-                    
+
                     <h3 className="font-semibold text-lg mb-2 line-clamp-2">
                       {article.title}
                     </h3>
-                    
+
                     <p className="text-muted-foreground text-sm mb-3 line-clamp-3">
                       {article.content}
                     </p>
@@ -375,7 +430,11 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                     {/* Symbols and Tags */}
                     <div className="flex flex-wrap gap-1 mb-3">
                       {article.symbols.slice(0, 3).map((symbol, idx) => (
-                        <Badge key={idx} variant="secondary" className="text-xs">
+                        <Badge
+                          key={idx}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           {symbol}
                         </Badge>
                       ))}
@@ -392,10 +451,14 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                         <div className="flex items-center gap-2 mb-2">
                           <Bot className="w-4 h-4 text-primary" />
                           <span className="text-sm font-medium text-primary">
-                            {language === "ar" ? "تحليل الذكاء الاصطناعي" : "AI Analysis"}
+                            {language === "ar"
+                              ? "تحليل الذكاء الاصطناعي"
+                              : "AI Analysis"}
                           </span>
                         </div>
-                        <p className="text-sm text-muted-foreground">{aiAnalysis[article.id]}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {aiAnalysis[article.id]}
+                        </p>
                       </div>
                     )}
                   </div>
@@ -405,7 +468,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                       <Clock className="w-3 h-3" />
                       {formatDate(article.date)}
                     </div>
-                    
+
                     <div className="flex gap-2">
                       {/* AI Analysis Button */}
                       <Button
@@ -415,7 +478,12 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                         disabled={loadingAnalysis[article.id]}
                         className="flex items-center gap-1"
                       >
-                        <Bot className={cn("w-3 h-3", loadingAnalysis[article.id] && "animate-spin")} />
+                        <Bot
+                          className={cn(
+                            "w-3 h-3",
+                            loadingAnalysis[article.id] && "animate-spin",
+                          )}
+                        />
                         {language === "ar" ? "تحليل ذكي" : "AI Analysis"}
                       </Button>
 
@@ -436,21 +504,31 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                               <Clock className="w-4 h-4" />
                               {formatDate(article.date)}
-                              <Badge className={getImportanceColor(article.importance)}>
+                              <Badge
+                                className={getImportanceColor(
+                                  article.importance,
+                                )}
+                              >
                                 {getImportanceLabel(article.importance)}
                               </Badge>
                             </div>
-                            
-                            <p className="text-sm leading-relaxed">{article.content}</p>
-                            
+
+                            <p className="text-sm leading-relaxed">
+                              {article.content}
+                            </p>
+
                             {article.symbols.length > 0 && (
                               <div>
                                 <h4 className="font-medium mb-2">
-                                  {language === "ar" ? "الرموز المتأثرة:" : "Related Symbols:"}
+                                  {language === "ar"
+                                    ? "الرموز المتأثرة:"
+                                    : "Related Symbols:"}
                                 </h4>
                                 <div className="flex flex-wrap gap-1">
                                   {article.symbols.map((symbol, idx) => (
-                                    <Badge key={idx} variant="secondary">{symbol}</Badge>
+                                    <Badge key={idx} variant="secondary">
+                                      {symbol}
+                                    </Badge>
                                   ))}
                                 </div>
                               </div>
@@ -460,10 +538,14 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                               <Button
                                 variant="outline"
                                 className="w-full flex items-center gap-2"
-                                onClick={() => window.open(article.link, '_blank')}
+                                onClick={() =>
+                                  window.open(article.link, "_blank")
+                                }
                               >
                                 <ExternalLink className="w-4 h-4" />
-                                {language === "ar" ? "المصدر الأصلي" : "Original Source"}
+                                {language === "ar"
+                                  ? "المصدر الأصلي"
+                                  : "Original Source"}
                               </Button>
                             )}
                           </div>
@@ -480,10 +562,9 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         {/* News Count Footer */}
         {!loading && filteredArticles.length > 0 && (
           <div className="mt-6 pt-4 border-t border-border text-center text-sm text-muted-foreground">
-            {language === "ar" 
+            {language === "ar"
               ? `عرض ${filteredArticles.length} من ${articles.length} خبر`
-              : `Showing ${filteredArticles.length} of ${articles.length} articles`
-            }
+              : `Showing ${filteredArticles.length} of ${articles.length} articles`}
           </div>
         )}
       </CardContent>

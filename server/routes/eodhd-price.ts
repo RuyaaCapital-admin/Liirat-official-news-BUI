@@ -1,5 +1,9 @@
 import { RequestHandler } from "express";
-import { apiOptimizer, generateCacheKey, getClientId } from "../utils/rate-limiter";
+import {
+  apiOptimizer,
+  generateCacheKey,
+  getClientId,
+} from "../utils/rate-limiter";
 
 interface PriceData {
   symbol: string;
@@ -35,20 +39,24 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     const clientId = getClientId(req);
 
     // Check rate limit
-    if (!apiOptimizer.checkRateLimit(clientId, 'prices')) {
+    if (!apiOptimizer.checkRateLimit(clientId, "prices")) {
       return res.status(429).json({
         error: "Rate limit exceeded. Please try again later.",
         prices: [],
-        retryAfter: 60
+        retryAfter: 60,
       });
     }
 
     // Generate cache key
     const symbolStr = (symbol || symbols) as string;
-    const cacheKey = generateCacheKey('price', { symbol: symbolStr, fmt, filter });
+    const cacheKey = generateCacheKey("price", {
+      symbol: symbolStr,
+      fmt,
+      filter,
+    });
 
     // Check cache first
-    const cachedData = apiOptimizer.getCached(cacheKey, 'prices');
+    const cachedData = apiOptimizer.getCached(cacheKey, "prices");
     if (cachedData) {
       return res.json(cachedData);
     }
@@ -169,7 +177,7 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     };
 
     // Cache the successful response
-    apiOptimizer.setCache(cacheKey, responseData, 'prices');
+    apiOptimizer.setCache(cacheKey, responseData, "prices");
 
     res.json(responseData);
   } catch (error) {

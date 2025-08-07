@@ -51,7 +51,7 @@ interface EnhancedMacroCalendarProps {
     to?: string;
     category?: string;
   }) => void;
-  onCreateAlert?: (event: EconomicEvent, type: 'event') => void;
+  onCreateAlert?: (event: EconomicEvent, type: "event") => void;
 }
 
 // Economic event categories
@@ -59,7 +59,11 @@ const EVENT_CATEGORIES = [
   { value: "all", labelEn: "All Categories", labelAr: "جميع الفئات" },
   { value: "inflation", labelEn: "Inflation", labelAr: "التضخم" },
   { value: "employment", labelEn: "Employment", labelAr: "التوظيف" },
-  { value: "central_bank", labelEn: "Central Banks", labelAr: "البنوك المركزية" },
+  {
+    value: "central_bank",
+    labelEn: "Central Banks",
+    labelAr: "البنوك المركزية",
+  },
   { value: "gdp", labelEn: "GDP", labelAr: "الناتج المحلي" },
   { value: "retail", labelEn: "Retail Sales", labelAr: "مبيعات التجزئة" },
   { value: "manufacturing", labelEn: "Manufacturing", labelAr: "التصنيع" },
@@ -89,56 +93,87 @@ const TIME_PERIODS = [
 
 // Top economic countries
 const COUNTRIES = [
-  "US", "EUR", "GB", "JP", "CA", "AU", "DE", "FR", "CN", "CH", "IT", "ES", "NL", "SE", "NO", "DK"
+  "US",
+  "EUR",
+  "GB",
+  "JP",
+  "CA",
+  "AU",
+  "DE",
+  "FR",
+  "CN",
+  "CH",
+  "IT",
+  "ES",
+  "NL",
+  "SE",
+  "NO",
+  "DK",
 ];
 
-export default function EnhancedMacroCalendar({ 
-  events, 
-  className, 
-  onRefresh, 
-  onCreateAlert 
+export default function EnhancedMacroCalendar({
+  events,
+  className,
+  onRefresh,
+  onCreateAlert,
 }: EnhancedMacroCalendarProps) {
   const { language, dir } = useLanguage();
-  
+
   // State management
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
-  const [selectedImportance, setSelectedImportance] = useState<number[]>([1, 2, 3]);
+  const [selectedImportance, setSelectedImportance] = useState<number[]>([
+    1, 2, 3,
+  ]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedTimezone, setSelectedTimezone] = useState("UTC");
   const [selectedPeriod, setSelectedPeriod] = useState("this_week");
   const [dateFrom, setDateFrom] = useState<Date>();
   const [dateTo, setDateTo] = useState<Date>();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  
+
   // AI Analysis state
   const [aiAnalysis, setAiAnalysis] = useState<Record<string, string>>({});
-  const [loadingAnalysis, setLoadingAnalysis] = useState<Record<string, boolean>>({});
+  const [loadingAnalysis, setLoadingAnalysis] = useState<
+    Record<string, boolean>
+  >({});
 
   // Helper functions
   const getImportanceColor = (importance: number) => {
     switch (importance) {
-      case 3: return "bg-red-500 text-white";
-      case 2: return "bg-yellow-500 text-white";
-      case 1: return "bg-green-500 text-white";
-      default: return "bg-gray-500 text-white";
+      case 3:
+        return "bg-red-500 text-white";
+      case 2:
+        return "bg-yellow-500 text-white";
+      case 1:
+        return "bg-green-500 text-white";
+      default:
+        return "bg-gray-500 text-white";
     }
   };
 
   const getImportanceLabel = (importance: number) => {
     if (language === "ar") {
       switch (importance) {
-        case 3: return "عالي";
-        case 2: return "متوسط";
-        case 1: return "منخفض";
-        default: return "غير محدد";
+        case 3:
+          return "عالي";
+        case 2:
+          return "متوسط";
+        case 1:
+          return "منخفض";
+        default:
+          return "غير محدد";
       }
     } else {
       switch (importance) {
-        case 3: return "High";
-        case 2: return "Medium";
-        case 1: return "Low";
-        default: return "Unknown";
+        case 3:
+          return "High";
+        case 2:
+          return "Medium";
+        case 1:
+          return "Low";
+        default:
+          return "Unknown";
       }
     }
   };
@@ -147,7 +182,7 @@ export default function EnhancedMacroCalendar({
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return dateString;
-      
+
       return new Intl.DateTimeFormat(language === "ar" ? "ar-SA" : "en-US", {
         timeZone: selectedTimezone,
         month: "short",
@@ -164,27 +199,57 @@ export default function EnhancedMacroCalendar({
   // Category filter function
   const matchesCategory = (event: EconomicEvent, category: string) => {
     if (category === "all") return true;
-    
+
     const eventLower = event.event.toLowerCase();
     const categoryLower = event.category?.toLowerCase() || "";
-    
+
     switch (category) {
       case "inflation":
-        return eventLower.includes("inflation") || eventLower.includes("cpi") || eventLower.includes("ppi");
+        return (
+          eventLower.includes("inflation") ||
+          eventLower.includes("cpi") ||
+          eventLower.includes("ppi")
+        );
       case "employment":
-        return eventLower.includes("employment") || eventLower.includes("unemployment") || eventLower.includes("jobs") || eventLower.includes("payroll");
+        return (
+          eventLower.includes("employment") ||
+          eventLower.includes("unemployment") ||
+          eventLower.includes("jobs") ||
+          eventLower.includes("payroll")
+        );
       case "central_bank":
-        return eventLower.includes("interest rate") || eventLower.includes("fed") || eventLower.includes("ecb") || eventLower.includes("boe") || categoryLower.includes("monetary");
+        return (
+          eventLower.includes("interest rate") ||
+          eventLower.includes("fed") ||
+          eventLower.includes("ecb") ||
+          eventLower.includes("boe") ||
+          categoryLower.includes("monetary")
+        );
       case "gdp":
-        return eventLower.includes("gdp") || eventLower.includes("gross domestic");
+        return (
+          eventLower.includes("gdp") || eventLower.includes("gross domestic")
+        );
       case "retail":
-        return eventLower.includes("retail sales") || eventLower.includes("consumer spending");
+        return (
+          eventLower.includes("retail sales") ||
+          eventLower.includes("consumer spending")
+        );
       case "manufacturing":
-        return eventLower.includes("manufacturing") || eventLower.includes("pmi") || eventLower.includes("industrial");
+        return (
+          eventLower.includes("manufacturing") ||
+          eventLower.includes("pmi") ||
+          eventLower.includes("industrial")
+        );
       case "housing":
-        return eventLower.includes("housing") || eventLower.includes("building permits") || eventLower.includes("home sales");
+        return (
+          eventLower.includes("housing") ||
+          eventLower.includes("building permits") ||
+          eventLower.includes("home sales")
+        );
       case "earnings":
-        return eventLower.includes("earnings") || categoryLower.includes("earnings");
+        return (
+          eventLower.includes("earnings") || categoryLower.includes("earnings")
+        );
       default:
         return true;
     }
@@ -192,28 +257,34 @@ export default function EnhancedMacroCalendar({
 
   // Filter and sort events
   const filteredEvents = useMemo(() => {
-    let filtered = events.filter(event => {
+    let filtered = events.filter((event) => {
       // Search filter
-      if (searchTerm && !event.event.toLowerCase().includes(searchTerm.toLowerCase()) && 
-          !event.country.toLowerCase().includes(searchTerm.toLowerCase())) {
+      if (
+        searchTerm &&
+        !event.event.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !event.country.toLowerCase().includes(searchTerm.toLowerCase())
+      ) {
         return false;
       }
-      
+
       // Country filter
-      if (selectedCountries.length > 0 && !selectedCountries.includes(event.country)) {
+      if (
+        selectedCountries.length > 0 &&
+        !selectedCountries.includes(event.country)
+      ) {
         return false;
       }
-      
+
       // Importance filter
       if (!selectedImportance.includes(event.importance)) {
         return false;
       }
-      
+
       // Category filter
       if (!matchesCategory(event, selectedCategory)) {
         return false;
       }
-      
+
       return true;
     });
 
@@ -224,15 +295,21 @@ export default function EnhancedMacroCalendar({
       if (dateA !== dateB) return dateA - dateB;
       return b.importance - a.importance; // Higher importance first
     });
-  }, [events, searchTerm, selectedCountries, selectedImportance, selectedCategory]);
+  }, [
+    events,
+    searchTerm,
+    selectedCountries,
+    selectedImportance,
+    selectedCategory,
+  ]);
 
   // Handle time period changes
   const handlePeriodChange = (period: string) => {
     setSelectedPeriod(period);
-    
+
     const today = new Date();
     let from: Date, to: Date;
-    
+
     switch (period) {
       case "this_week":
         from = new Date(today);
@@ -253,15 +330,18 @@ export default function EnhancedMacroCalendar({
       default:
         return;
     }
-    
+
     setDateFrom(from);
     setDateTo(to);
-    
+
     if (onRefresh) {
       onRefresh({
-        from: from.toISOString().split('T')[0],
-        to: to.toISOString().split('T')[0],
-        country: selectedCountries.length > 0 ? selectedCountries.join(',') : undefined,
+        from: from.toISOString().split("T")[0],
+        to: to.toISOString().split("T")[0],
+        country:
+          selectedCountries.length > 0
+            ? selectedCountries.join(",")
+            : undefined,
         importance: selectedImportance.map(String),
         category: selectedCategory !== "all" ? selectedCategory : undefined,
       });
@@ -274,42 +354,44 @@ export default function EnhancedMacroCalendar({
       return;
     }
 
-    setLoadingAnalysis(prev => ({ ...prev, [event.event]: true }));
+    setLoadingAnalysis((prev) => ({ ...prev, [event.event]: true }));
 
     try {
-      const response = await fetch('/api/ai-analysis', {
-        method: 'POST',
+      const response = await fetch("/api/ai-analysis", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          text: `${event.event} - ${event.country}. Previous: ${event.previous || 'N/A'}, Forecast: ${event.forecast || 'N/A'}, Actual: ${event.actual || 'N/A'}`,
+          text: `${event.event} - ${event.country}. Previous: ${event.previous || "N/A"}, Forecast: ${event.forecast || "N/A"}, Actual: ${event.actual || "N/A"}`,
           language: language,
-          type: 'event',
+          type: "event",
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        setAiAnalysis(prev => ({ ...prev, [event.event]: data.analysis }));
+        setAiAnalysis((prev) => ({ ...prev, [event.event]: data.analysis }));
       } else {
-        setAiAnalysis(prev => ({ 
-          ...prev, 
-          [event.event]: language === "ar" 
-            ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
-            : "AI analysis currently unavailable"
+        setAiAnalysis((prev) => ({
+          ...prev,
+          [event.event]:
+            language === "ar"
+              ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
+              : "AI analysis currently unavailable",
         }));
       }
     } catch (error) {
       console.error("AI analysis error:", error);
-      setAiAnalysis(prev => ({ 
-        ...prev, 
-        [event.event]: language === "ar" 
-          ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
-          : "AI analysis currently unavailable"
+      setAiAnalysis((prev) => ({
+        ...prev,
+        [event.event]:
+          language === "ar"
+            ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
+            : "AI analysis currently unavailable",
       }));
     } finally {
-      setLoadingAnalysis(prev => ({ ...prev, [event.event]: false }));
+      setLoadingAnalysis((prev) => ({ ...prev, [event.event]: false }));
     }
   };
 
@@ -324,7 +406,7 @@ export default function EnhancedMacroCalendar({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {TIME_PERIODS.map(period => (
+              {TIME_PERIODS.map((period) => (
                 <SelectItem key={period.value} value={period.value}>
                   {language === "ar" ? period.labelAr : period.labelEn}
                 </SelectItem>
@@ -338,8 +420,10 @@ export default function EnhancedMacroCalendar({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {TIMEZONES.map(tz => (
-                <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
+              {TIMEZONES.map((tz) => (
+                <SelectItem key={tz.value} value={tz.value}>
+                  {tz.label}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -357,8 +441,10 @@ export default function EnhancedMacroCalendar({
             </PopoverTrigger>
             <PopoverContent className="w-80" align="end">
               <div className="space-y-4">
-                <h4 className="font-medium">{language === "ar" ? "خيارات الفلترة" : "Filter Options"}</h4>
-                
+                <h4 className="font-medium">
+                  {language === "ar" ? "خيارات الفلترة" : "Filter Options"}
+                </h4>
+
                 {/* Search */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">
@@ -367,7 +453,11 @@ export default function EnhancedMacroCalendar({
                   <div className="relative">
                     <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                     <Input
-                      placeholder={language === "ar" ? "البحث في الأحداث..." : "Search events..."}
+                      placeholder={
+                        language === "ar"
+                          ? "البحث في الأحداث..."
+                          : "Search events..."
+                      }
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10"
@@ -380,14 +470,19 @@ export default function EnhancedMacroCalendar({
                   <label className="text-sm font-medium">
                     {language === "ar" ? "الفئة" : "Category"}
                   </label>
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <Select
+                    value={selectedCategory}
+                    onValueChange={setSelectedCategory}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {EVENT_CATEGORIES.map(category => (
+                      {EVENT_CATEGORIES.map((category) => (
                         <SelectItem key={category.value} value={category.value}>
-                          {language === "ar" ? category.labelAr : category.labelEn}
+                          {language === "ar"
+                            ? category.labelAr
+                            : category.labelEn}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -401,27 +496,33 @@ export default function EnhancedMacroCalendar({
                   </label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="w-full justify-between">
-                        {selectedCountries.length === 0 
-                          ? (language === "ar" ? "جميع الدول" : "All Countries")
-                          : `${selectedCountries.length} ${language === "ar" ? "دولة مختارة" : "selected"}`
-                        }
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between"
+                      >
+                        {selectedCountries.length === 0
+                          ? language === "ar"
+                            ? "جميع الدول"
+                            : "All Countries"
+                          : `${selectedCountries.length} ${language === "ar" ? "دولة مختارة" : "selected"}`}
                         <ChevronDown className="w-4 h-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56">
-                      <DropdownMenuItem onClick={() => setSelectedCountries([])}>
+                      <DropdownMenuItem
+                        onClick={() => setSelectedCountries([])}
+                      >
                         {language === "ar" ? "جميع الدول" : "All Countries"}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      {COUNTRIES.map(country => (
+                      {COUNTRIES.map((country) => (
                         <DropdownMenuItem
                           key={country}
                           onClick={() => {
-                            setSelectedCountries(prev =>
+                            setSelectedCountries((prev) =>
                               prev.includes(country)
-                                ? prev.filter(c => c !== country)
-                                : [...prev, country]
+                                ? prev.filter((c) => c !== country)
+                                : [...prev, country],
                             );
                           }}
                         >
@@ -429,7 +530,11 @@ export default function EnhancedMacroCalendar({
                             checked={selectedCountries.includes(country)}
                             className="mr-2"
                           />
-                          <ReactCountryFlag countryCode={country} svg className="mr-2" />
+                          <ReactCountryFlag
+                            countryCode={country}
+                            svg
+                            className="mr-2"
+                          />
                           {country}
                         </DropdownMenuItem>
                       ))}
@@ -443,19 +548,27 @@ export default function EnhancedMacroCalendar({
                     {language === "ar" ? "مستوى الأهمية" : "Importance Level"}
                   </label>
                   <div className="flex gap-2">
-                    {[3, 2, 1].map(level => (
+                    {[3, 2, 1].map((level) => (
                       <Button
                         key={level}
-                        variant={selectedImportance.includes(level) ? "default" : "outline"}
+                        variant={
+                          selectedImportance.includes(level)
+                            ? "default"
+                            : "outline"
+                        }
                         size="sm"
                         onClick={() => {
-                          setSelectedImportance(prev =>
+                          setSelectedImportance((prev) =>
                             prev.includes(level)
-                              ? prev.filter(l => l !== level)
-                              : [...prev, level]
+                              ? prev.filter((l) => l !== level)
+                              : [...prev, level],
                           );
                         }}
-                        className={selectedImportance.includes(level) ? getImportanceColor(level) : ""}
+                        className={
+                          selectedImportance.includes(level)
+                            ? getImportanceColor(level)
+                            : ""
+                        }
                       >
                         {getImportanceLabel(level)}
                       </Button>
@@ -512,8 +625,13 @@ export default function EnhancedMacroCalendar({
             <tbody>
               {filteredEvents.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
-                    {language === "ar" ? "لا توجد أحداث اقتصادية متاحة" : "No economic events available"}
+                  <td
+                    colSpan={8}
+                    className="px-4 py-8 text-center text-muted-foreground"
+                  >
+                    {language === "ar"
+                      ? "لا توجد أحداث اقتصادية متاحة"
+                      : "No economic events available"}
                   </td>
                 </tr>
               ) : (
@@ -528,7 +646,11 @@ export default function EnhancedMacroCalendar({
                       </td>
                       <td className="px-4 py-3 text-sm">
                         <div className="flex items-center gap-2">
-                          <ReactCountryFlag countryCode={event.country} svg className="w-4 h-3" />
+                          <ReactCountryFlag
+                            countryCode={event.country}
+                            svg
+                            className="w-4 h-3"
+                          />
                           <span>{event.country}</span>
                         </div>
                       </td>
@@ -564,16 +686,27 @@ export default function EnhancedMacroCalendar({
                             onClick={() => requestAIAnalysis(event)}
                             disabled={loadingAnalysis[event.event]}
                             className="h-8 w-8 p-0"
-                            title={language === "ar" ? "تحليل ذكي" : "AI Analysis"}
+                            title={
+                              language === "ar" ? "تحليل ذكي" : "AI Analysis"
+                            }
                           >
-                            <Bot className={cn("w-4 h-4", loadingAnalysis[event.event] && "animate-spin")} />
+                            <Bot
+                              className={cn(
+                                "w-4 h-4",
+                                loadingAnalysis[event.event] && "animate-spin",
+                              )}
+                            />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => onCreateAlert && onCreateAlert(event, 'event')}
+                            onClick={() =>
+                              onCreateAlert && onCreateAlert(event, "event")
+                            }
                             className="h-8 w-8 p-0"
-                            title={language === "ar" ? "إنشاء تنبيه" : "Create Alert"}
+                            title={
+                              language === "ar" ? "إنشاء تنبيه" : "Create Alert"
+                            }
                           >
                             <Bell className="w-4 h-4" />
                           </Button>
@@ -588,7 +721,9 @@ export default function EnhancedMacroCalendar({
                             <Bot className="w-4 h-4 text-primary mt-0.5" />
                             <div className="flex-1">
                               <div className="text-xs font-medium text-primary mb-1">
-                                {language === "ar" ? "تحليل الذكاء الاصطناعي:" : "AI Analysis:"}
+                                {language === "ar"
+                                  ? "تحليل الذكاء الاصطناعي:"
+                                  : "AI Analysis:"}
                               </div>
                               <div className="text-sm text-muted-foreground">
                                 {aiAnalysis[event.event]}
@@ -609,10 +744,9 @@ export default function EnhancedMacroCalendar({
       {/* Results Summary */}
       {filteredEvents.length > 0 && (
         <div className="text-sm text-muted-foreground text-center">
-          {language === "ar" 
+          {language === "ar"
             ? `عرض ${filteredEvents.length} من ${events.length} حدث اقتصادي`
-            : `Showing ${filteredEvents.length} of ${events.length} economic events`
-          }
+            : `Showing ${filteredEvents.length} of ${events.length} economic events`}
         </div>
       )}
     </div>
