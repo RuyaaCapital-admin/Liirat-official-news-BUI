@@ -948,9 +948,9 @@ export function MacroCalendarTable({
                       )}
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-lg">
+                        <div className="flex items-center">
                           {getCountryFlag(event.country)}
-                        </span>
+                        </div>
                         <span className="font-medium">{event.country}</span>
                       </div>
                     </td>
