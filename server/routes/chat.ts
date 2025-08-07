@@ -1,6 +1,43 @@
 import { Request, Response } from "express";
 import OpenAI from "openai";
 
+// Fallback response generator when OpenAI is not available
+function generateFallbackResponse(message: string, language: string): string {
+  const lowerMessage = message.toLowerCase();
+
+  if (language === "ar") {
+    // Arabic responses
+    if (lowerMessage.includes("مرحبا") || lowerMessage.includes("السلام") || lowerMessage.includes("أهلا")) {
+      return "مرحباً، أنا مساعد ليرات للأخبار الاقتصادية. كيف يمكنني مساعدتك اليوم؟";
+    }
+    if (lowerMessage.includes("سعر") || lowerMessage.includes("أسعار") || lowerMessage.includes("دولار") || lowerMessage.includes("يورو")) {
+      return "يمكنك متابعة الأسعار المباشرة من خلال شريط الأسعار في أعلى الصفحة. للحصول على تحليل مفصل، يرجى تحديد الرمز المطلوب.";
+    }
+    if (lowerMessage.includes("تقويم") || lowerMessage.includes("أحداث") || lowerMessage.includes("اقتصادي")) {
+      return "يمكنك الاطلاع على التقويم الاقتصادي أسفل الصفحة لمتابعة الأحداث الاقتصادية المهمة والمؤثرة على الأسواق.";
+    }
+    if (lowerMessage.includes("أ��بار") || lowerMessage.includes("خبر")) {
+      return "تابع آخر الأخبار الاقتصادية والمالية من مصادر موثوقة. يمكنك استخدام المرشحات للحصول على الأخبار المتعلقة بقطاع معين.";
+    }
+    return "أنا هنا لمساعدتك في الأمور الاقتصادية والمالية. يمكنني مساعدتك في متابعة الأسعار والتقويم الاقتصادي والأخبار المالية.";
+  } else {
+    // English responses
+    if (lowerMessage.includes("hello") || lowerMessage.includes("hi") || lowerMessage.includes("hey")) {
+      return "Hi, I'm Liirat News AI Assistant. How can I help you today?";
+    }
+    if (lowerMessage.includes("price") || lowerMessage.includes("usd") || lowerMessage.includes("eur") || lowerMessage.includes("gold")) {
+      return "You can track live prices using the ticker at the top of the page. For detailed analysis, please specify the symbol you're interested in.";
+    }
+    if (lowerMessage.includes("calendar") || lowerMessage.includes("events") || lowerMessage.includes("economic")) {
+      return "Check the Economic Calendar below to stay updated with important economic events that impact the markets.";
+    }
+    if (lowerMessage.includes("news")) {
+      return "Stay updated with the latest economic and financial news from trusted sources. You can use filters to get news for specific sectors.";
+    }
+    return "I'm here to help with economic and financial matters. I can assist with price tracking, economic calendar, and financial news.";
+  }
+}
+
 const openai = process.env.OPENAI_API_KEY
   ? new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
