@@ -194,7 +194,7 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
       `Returning ${filteredEvents.length} filtered events out of ${events.length} total events`,
     );
 
-    res.json({
+    const responseData = {
       events: filteredEvents,
       total: filteredEvents.length,
       filters: {
@@ -205,7 +205,12 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
         limit: eventLimit,
       },
       timestamp: new Date().toISOString(),
-    });
+    };
+
+    // Cache the successful response
+    apiOptimizer.setCache(cacheKey, responseData, 'calendar');
+
+    res.json(responseData);
   } catch (error) {
     console.error("Error fetching EODHD economic events:", error);
 
