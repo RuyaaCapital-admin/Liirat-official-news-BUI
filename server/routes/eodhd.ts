@@ -110,8 +110,11 @@ export const getEconomicEvents: RequestHandler = async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error("Error fetching economic events:", error);
-    // Return mock data instead of empty array
-    const result: EconomicEventsResponse = { events: getMockEvents() };
+    // Return empty array with error message instead of mock data
+    const result: EconomicEventsResponse = {
+      events: [],
+      error: error instanceof Error ? error.message : "Failed to fetch economic events"
+    };
     res.json(result);
   }
 };
