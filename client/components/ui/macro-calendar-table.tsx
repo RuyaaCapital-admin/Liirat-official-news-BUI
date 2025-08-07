@@ -451,11 +451,34 @@ export function MacroCalendarTable({
   const handleUpdate = () => {
     // Update online status from navigator
     setIsOnline(navigator.onLine);
-    // Call refresh callback if provided
+    // Call refresh callback with current filters
     if (onRefresh) {
-      onRefresh();
+      const filters = {
+        country: selectedCountry === "all" ? undefined : selectedCountry,
+        importance: selectedImportances,
+        from: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
+        to: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
+      };
+      onRefresh(filters);
     }
   };
+
+  // Auto-refresh when filters change (with debounce)
+  React.useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (onRefresh) {
+        const filters = {
+          country: selectedCountry === "all" ? undefined : selectedCountry,
+          importance: selectedImportances,
+          from: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
+          to: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
+        };
+        onRefresh(filters);
+      }
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [selectedCountry, selectedImportances, selectedDate, onRefresh]);
 
   const clearFilters = () => {
     setSearchTerm("");
