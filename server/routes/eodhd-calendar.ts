@@ -121,17 +121,28 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
         console.error("Could not read error response body");
       }
 
-      // Return proper error response based on status
-      let errorMessage = "Failed to fetch economic calendar";
+      // Return proper error response based on status with localization
+      const isArabic = lang === "ar";
+      let errorMessage = isArabic
+        ? "فشل في جلب التقويم الاقتصادي"
+        : "Failed to fetch economic calendar";
+
       if (response.status === 403) {
-        errorMessage =
-          "API key authentication failed. Please check API key configuration.";
+        errorMessage = isArabic
+          ? "فشل في التحقق من مفتاح API. يرجى التحقق من إعدادات مفتاح API."
+          : "API key authentication failed. Please check API key configuration.";
       } else if (response.status === 401) {
-        errorMessage = "API key is invalid or expired.";
+        errorMessage = isArabic
+          ? "مفتاح API غير صحيح أو منتهي الصلاحية."
+          : "API key is invalid or expired.";
       } else if (response.status === 429) {
-        errorMessage = "API rate limit exceeded. Please try again later.";
+        errorMessage = isArabic
+          ? "تم تجاوز حد استخدام API. يرجى المحاولة لاحقاً."
+          : "API rate limit exceeded. Please try again later.";
       } else if (response.status === 404) {
-        errorMessage = "Economic calendar service not found.";
+        errorMessage = isArabic
+          ? "خدمة التقويم الاقتصادي غير موجودة."
+          : "Economic calendar service not found.";
       }
 
       return res.status(response.status).json({
@@ -220,13 +231,21 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
   } catch (error) {
     console.error("Error fetching EODHD economic calendar:", error);
 
-    // Handle specific error types
-    let errorMessage = "Failed to fetch economic calendar";
+    // Handle specific error types with localization
+    const isArabic = lang === "ar";
+    let errorMessage = isArabic
+      ? "فشل في جلب التقويم الاقتصادي"
+      : "Failed to fetch economic calendar";
+
     if (error instanceof Error) {
       if (error.name === "AbortError") {
-        errorMessage = "Request timeout - EODHD API took too long to respond";
+        errorMessage = isArabic
+          ? "انتهت مهلة الطلب - استغرق EODHD API وقتاً طويلاً للاستجابة"
+          : "Request timeout - EODHD API took too long to respond";
       } else if (error.message.includes("fetch")) {
-        errorMessage = "Network error connecting to EODHD API";
+        errorMessage = isArabic
+          ? "خطأ في الشبكة عند الاتصال بـ EODHD API"
+          : "Network error connecting to EODHD API";
       } else {
         errorMessage = error.message;
       }

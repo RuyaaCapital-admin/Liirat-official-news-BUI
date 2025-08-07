@@ -7,7 +7,11 @@ import {
 
 // OpenAI integration for news/event analysis
 export const handleAIAnalysis: RequestHandler = async (req, res) => {
-  const openaiApiKey = process.env.OPENAI_API_KEY;
+  // Try multiple environment variable names for flexibility
+  const openaiApiKey =
+    process.env.OPENAI_API_KEY ||
+    process.env.OPENAI_KEY ||
+    process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 
   try {
     const { text, language = "en", type = "news" } = req.body;
@@ -19,8 +23,12 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
     }
 
     if (!openaiApiKey) {
+      const errorMessage =
+        language === "ar"
+          ? "مفتا�� OpenAI غير مُعدّ"
+          : "OpenAI API key not configured";
       return res.status(500).json({
-        error: "OpenAI API key not configured",
+        error: errorMessage,
         analysis:
           language === "ar"
             ? "مفتاح OpenAI غير متوفر"
@@ -33,8 +41,12 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
 
     // Check rate limit
     if (!apiOptimizer.checkRateLimit(clientId, "analysis")) {
+      const errorMessage =
+        language === "ar"
+          ? "تجاوز الحد المسموح من الطلبات. يرجى المحاولة لاحقاً."
+          : "Rate limit exceeded. Please try again later.";
       return res.status(429).json({
-        error: "Rate limit exceeded. Please try again later.",
+        error: errorMessage,
         analysis:
           language === "ar"
             ? "تجاوز الحد المسموح من الطلبات"
@@ -159,12 +171,23 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
 
 // Translation endpoint using OpenAI
 export const handleTranslation: RequestHandler = async (req, res) => {
-  const openaiApiKey = process.env.OPENAI_API_KEY;
+  // Try multiple environment variable names for flexibility
+  const openaiApiKey =
+    process.env.OPENAI_API_KEY ||
+    process.env.OPENAI_KEY ||
+    process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 
   try {
     const { text, targetLanguage = "ar" } = req.body;
 
+    console.log(`[TRANSLATION] Request received:`, {
+      text: text?.substring(0, 50) + "...",
+      targetLanguage,
+      hasApiKey: !!openaiApiKey,
+    });
+
     if (!text) {
+      console.warn("[TRANSLATION] Missing text in request body");
       return res.status(400).json({
         error: "Text is required for translation",
         translatedText: "",
@@ -172,8 +195,13 @@ export const handleTranslation: RequestHandler = async (req, res) => {
     }
 
     if (!openaiApiKey) {
+      console.error("[TRANSLATION] OpenAI API key not configured");
+      const errorMessage =
+        targetLanguage === "ar"
+          ? "مفتاح OpenAI غير مُعدّ. لا يمكن تقديم الترجمة."
+          : "OpenAI API key not configured. Translation unavailable.";
       return res.status(500).json({
-        error: "OpenAI API key not configured",
+        error: errorMessage,
         translatedText: text, // Return original text as fallback
       });
     }
@@ -212,9 +240,20 @@ export const handleTranslation: RequestHandler = async (req, res) => {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.error(`OpenAI Translation API error: ${response.status}`);
+      const errorBody = await response
+        .text()
+        .catch(() => "Could not read error response");
+      console.error(`[TRANSLATION] OpenAI API error:`, {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorBody.substring(0, 200),
+      });
+      const errorMessage =
+        req.body.targetLanguage === "ar"
+          ? `خدمة الترجمة غير متاحة: ${response.status} ${response.statusText}`
+          : `Translation service unavailable: ${response.status} ${response.statusText}`;
       return res.status(500).json({
-        error: "Translation service unavailable",
+        error: errorMessage,
         translatedText: text, // Return original text as fallback
       });
     }
@@ -229,10 +268,19 @@ export const handleTranslation: RequestHandler = async (req, res) => {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error("Error in translation:", error);
+    console.error("[TRANSLATION] Error in translation:", {
+      error: error instanceof Error ? error.message : error,
+      stack: error instanceof Error ? error.stack : undefined,
+      text: req.body.text?.substring(0, 50) + "...",
+    });
+
+    const errorMessage =
+      req.body.targetLanguage === "ar"
+        ? `فشلت الترجمة: ${error instanceof Error ? error.message : "خطأ غير معروف"}`
+        : `Translation failed: ${error instanceof Error ? error.message : "Unknown error"}`;
 
     res.status(500).json({
-      error: "Translation failed",
+      error: errorMessage,
       translatedText: req.body.text, // Return original text as fallback
     });
   }

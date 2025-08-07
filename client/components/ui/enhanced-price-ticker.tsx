@@ -18,20 +18,29 @@ interface TickerProps {
 }
 
 // Configuration for ONLY the most reliable symbols that work 100% in production
+// Priority tiers for fetching - fetch most important first
 const TICKER_CONFIG = [
-  // Gold (XAU) - FIRST as user specifically requested - RELIABLE
-  { symbol: "XAUUSD.FOREX", displayName: "GOLD" },
-  // Crypto (BTC and ETH only) - MOST RELIABLE, always work
-  { symbol: "BTC-USD.CC", displayName: "BTC/USD" },
-  { symbol: "ETH-USD.CC", displayName: "ETH/USD" },
-  // Only the top 3 forex pairs that work consistently in production
-  { symbol: "EURUSD.FOREX", displayName: "EUR/USD" },
-  { symbol: "USDJPY.FOREX", displayName: "USD/JPY" },
-  { symbol: "GBPUSD.FOREX", displayName: "GBP/USD" },
-  // Removed all other forex pairs that cause "Failed to fetch" errors:
-  // { symbol: "AUDUSD.FOREX", displayName: "AUD/USD" },
-  // { symbol: "USDCAD.FOREX", displayName: "USD/CAD" }, // This was failing!
-  // { symbol: "EURGBP.FOREX", displayName: "EUR/GBP" },
+  // TIER 1: Most reliable and important symbols
+  { symbol: "BTC-USD.CC", displayName: "BTC/USD", priority: 1 },
+  { symbol: "ETH-USD.CC", displayName: "ETH/USD", priority: 1 },
+  { symbol: "EURUSD.FOREX", displayName: "EUR/USD", priority: 1 },
+  { symbol: "GBPUSD.FOREX", displayName: "GBP/USD", priority: 1 },
+  { symbol: "USDJPY.FOREX", displayName: "USD/JPY", priority: 1 },
+
+  // TIER 2: Important but can load slower
+  { symbol: "XAUUSD.FOREX", displayName: "GOLD", priority: 2 },
+  { symbol: "AAPL.US", displayName: "APPLE", priority: 2 },
+  { symbol: "MSFT.US", displayName: "MICROSOFT", priority: 2 },
+  { symbol: "NVDA.US", displayName: "NVIDIA", priority: 2 },
+  { symbol: "TSLA.US", displayName: "TESLA", priority: 2 },
+
+  // TIER 3: Additional symbols (load last)
+  { symbol: "XAGUSD.FOREX", displayName: "SILVER", priority: 3 },
+  { symbol: "USDCHF.FOREX", displayName: "USD/CHF", priority: 3 },
+  { symbol: "USDCAD.FOREX", displayName: "USD/CAD", priority: 3 },
+  { symbol: "AUDUSD.FOREX", displayName: "AUD/USD", priority: 3 },
+  { symbol: "GOOGL.US", displayName: "GOOGLE", priority: 3 },
+  { symbol: "AMZN.US", displayName: "AMAZON", priority: 3 },
 ];
 
 export default function EnhancedPriceTicker({ className }: TickerProps) {
@@ -44,11 +53,15 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
 
   // Network connectivity check
   const checkNetworkConnectivity = async (): Promise<boolean> => {
+    // Basic browser online check first
+    if (!navigator.onLine) {
+      return false;
+    }
+
     try {
       const response = await fetch("/api/status", {
         method: "GET",
-        cache: "no-cache",
-        signal: AbortSignal.timeout(5000),
+        signal: AbortSignal.timeout(3000), // Reduced timeout
       });
       return response.ok;
     } catch {
@@ -101,19 +114,19 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
             method: "GET",
             headers: {
               Accept: "application/json",
-              "Cache-Control": "no-cache",
+              "Content-Type": "application/json",
             },
             signal: controller.signal,
-            // Add credentials and mode for CORS
-            mode: "cors",
-            credentials: "same-origin",
           },
         );
       } catch (fetchError) {
-        console.error(`[TICKER] Fetch failed for ${symbol}:`, fetchError);
-        throw new Error(
-          `Network request failed: ${fetchError instanceof Error ? fetchError.message : String(fetchError)}`,
-        );
+        console.warn(`[TICKER] Fetch failed for ${symbol}:`, fetchError);
+        // Return early for network errors to avoid retry storms
+        setPriceData((prev) => ({
+          ...prev,
+          [symbol]: { ...prev[symbol], status: "disconnected" },
+        }));
+        return;
       }
 
       clearTimeout(timeoutId);
@@ -247,21 +260,44 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
   useEffect(() => {
     console.log("[TICKER] Starting price updates immediately");
 
-    // Start fetching price data for all symbols (staggered) - ALWAYS TRY
-    TICKER_CONFIG.forEach((config, index) => {
+    // Start fetching by priority tiers to reduce load
+    const tier1 = TICKER_CONFIG.filter((c) => c.priority === 1);
+    const tier2 = TICKER_CONFIG.filter((c) => c.priority === 2);
+    const tier3 = TICKER_CONFIG.filter((c) => c.priority === 3);
+
+    // Fetch tier 1 immediately (most important)
+    tier1.forEach((config, index) => {
       setTimeout(() => {
         fetchPriceData(config.symbol);
-      }, index * 1500); // 1.5 seconds between requests
+      }, index * 1000); // 1 second between tier 1
     });
 
-    // Set up interval for continuous updates
-    const interval = setInterval(() => {
-      TICKER_CONFIG.forEach((config, index) => {
+    // Fetch tier 2 after 10 seconds
+    setTimeout(() => {
+      tier2.forEach((config, index) => {
         setTimeout(() => {
           fetchPriceData(config.symbol);
-        }, index * 800); // 800ms between each update request
+        }, index * 2000); // 2 seconds between tier 2
       });
-    }, 60000); // Update every 60 seconds
+    }, 10000);
+
+    // Fetch tier 3 after 30 seconds
+    setTimeout(() => {
+      tier3.forEach((config, index) => {
+        setTimeout(() => {
+          fetchPriceData(config.symbol);
+        }, index * 3000); // 3 seconds between tier 3
+      });
+    }, 30000);
+
+    // Set up interval for updates - only tier 1 updates frequently
+    const interval = setInterval(() => {
+      tier1.forEach((config, index) => {
+        setTimeout(() => {
+          fetchPriceData(config.symbol);
+        }, index * 2000);
+      });
+    }, 120000); // Update tier 1 every 2 minutes
 
     return () => clearInterval(interval);
   }, []); // Remove dependency on network status

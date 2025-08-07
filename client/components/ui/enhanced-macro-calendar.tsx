@@ -62,7 +62,7 @@ const EVENT_CATEGORIES = [
   {
     value: "central_bank",
     labelEn: "Central Banks",
-    labelAr: "البنوك المركزي��",
+    labelAr: "البنوك المركزية",
   },
   { value: "gdp", labelEn: "GDP", labelAr: "الناتج المحلي" },
   { value: "retail", labelEn: "Retail Sales", labelAr: "مبيعات التجزئة" },
@@ -174,7 +174,7 @@ export default function EnhancedMacroCalendar({
         case 1:
           return "منخفض";
         default:
-          return "غير محدد";
+          return "غير م��دد";
       }
     } else {
       switch (importance) {
@@ -368,10 +368,7 @@ export default function EnhancedMacroCalendar({
         displayedEvents.slice(0, 5).forEach((event, index) => {
           // Stagger requests to avoid rate limiting and reduce API load
           setTimeout(() => {
-            translateContent(event).catch((error) => {
-              // Silently handle translation failures, fallback already handled in translateContent
-              console.debug("Translation failed for:", event.event);
-            });
+            translateContent(event);
           }, index * 2000); // 2 second delay between requests to reduce load
         });
       }, 1000);
@@ -501,14 +498,21 @@ export default function EnhancedMacroCalendar({
         setTranslatedContent((prev) => ({ ...prev, [eventKey]: translated }));
         return translated;
       } else {
-        // Log error but don't show fallback - try again later
-        console.error(`Translation API error: ${response.status}`);
-        throw new Error(`Translation failed: ${response.status}`);
+        // Log error but don't throw - use original text as fallback
+        console.warn(
+          `[TRANSLATION] API error ${response.status}, using original text as fallback`,
+        );
+        setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
+        return event.event;
       }
     } catch (error) {
-      console.error("Translation failed:", error);
-      // Re-throw error to trigger retry later instead of using fallback
-      throw error;
+      console.warn(
+        "[TRANSLATION] Error occurred, using original text as fallback:",
+        error,
+      );
+      // Always fallback to original text instead of throwing error
+      setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
+      return event.event;
     } finally {
       setLoadingTranslation((prev) => ({ ...prev, [eventKey]: false }));
     }
@@ -561,7 +565,7 @@ export default function EnhancedMacroCalendar({
             ...prev,
             [event.event]:
               language === "ar"
-                ? "⚠️ مفتاح OpenAI API غير صحيح أو غير مُعدّ. يرجى إعداد مفتاح صحيح في ��تغيرات البيئة."
+                ? "⚠️ مفتاح OpenAI API غير صحيح أو غير مُعدّ. يرجى إعداد مفتاح صحيح في متغيرات البيئة."
                 : "⚠️ OpenAI API key is invalid or not configured. Please set a valid API key in environment variables.",
           }));
           return; // Exit early to avoid throwing error
@@ -584,7 +588,7 @@ export default function EnhancedMacroCalendar({
         ...prev,
         [event.event]:
           language === "ar"
-            ? "❌ تحليل الذكاء الاصطناعي غير متاح حاليًا. يرج�� التحقق من إعدادات API."
+            ? "❌ تحليل الذكاء الاصطناعي غير متاح حاليًا. يرجى التحقق من إعدادات API."
             : "❌ AI analysis currently unavailable. Please check API configuration.",
       }));
     } finally {
@@ -854,7 +858,7 @@ export default function EnhancedMacroCalendar({
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-muted-foreground">
-                {language === "ar" ? "إلى ��اريخ" : "To Date"}
+                {language === "ar" ? "إلى تاريخ" : "To Date"}
               </label>
               <Popover>
                 <PopoverTrigger asChild>

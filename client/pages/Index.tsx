@@ -254,7 +254,7 @@ export default function Index() {
       } else {
         errorMessage =
           language === "ar"
-            ? "خط�� غير معروف. يرجى المحاولة مرة أخرى."
+            ? "خطأ غير معروف. يرجى المحاولة مرة أخرى."
             : "Unknown error. Please try again.";
       }
 
@@ -450,7 +450,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "تابع الأحداث الاقتصادية المهمة والأ��بار المالية في الوقت الفعلي"
+                    ? "تابع الأحداث الاقتصادية المهمة والأخبار المالية في الوقت الفعلي"
                     : "Track important economic events and real-time financial news"}
                 </p>
               </div>
@@ -466,7 +466,7 @@ export default function Index() {
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "الأحداث الا��تصادية المهمة والإعلانات المالية"
+                      ? "الأحداث الاقتصادية المهمة والإعلانات المالية"
                       : "Important economic events and financial announcements"}
                   </CardDescription>
                 </CardHeader>
@@ -488,7 +488,7 @@ export default function Index() {
                             <AlertTriangle className="w-4 h-4 mr-2" />
                             <span>
                               {language === "ar"
-                                ? "خطأ في تحميل التقويم الاق��صادي:"
+                                ? "خطأ في تحميل التقويم الاقتصادي:"
                                 : "Error loading economic calendar:"}{" "}
                               {eventsError.replace("API Error:", "Error")}
                             </span>
@@ -500,7 +500,7 @@ export default function Index() {
                               onClick={() => fetchEconomicEvents(language)}
                               className="text-xs"
                             >
-                              {t("Retry", "إعادة المحاولة")}
+                              {t("Retry", "إع��دة المحاولة")}
                             </Button>
                             <div className="text-xs text-muted-foreground">
                               {language === "ar"
@@ -517,7 +517,7 @@ export default function Index() {
                               <Bell className="w-4 h-4 mr-2" />
                               <span>
                                 {language === "ar"
-                                  ? "عرض بيانات تجريبية - سيتم التحديث عند استعادة الاتصال"
+                                  ? "عرض بيانات تجريبية - سيتم الت��ديث عن�� استعادة الاتصال"
                                   : "Showing demo data - will update when connection is restored"}
                               </span>
                             </div>
@@ -673,7 +673,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيهات ذكية لأي رمز ما��ي مع مراقبة الأسعار في الوقت الفعلي"
+                    ? "قم بإنشاء تنبيهات ذكية لأي رمز مالي مع مراقبة الأسعار في الوقت الفعلي"
                     : "Create intelligent alerts for any financial symbol with real-time price monitoring"}
                 </p>
               </div>

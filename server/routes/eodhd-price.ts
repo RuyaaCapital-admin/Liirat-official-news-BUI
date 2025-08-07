@@ -62,11 +62,13 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     }
 
     // Determine symbol type and format correctly for EODHD
-    const isCrypto =
-      symbolStr.includes("-USD") ||
-      symbolStr.includes("BTC") ||
-      symbolStr.includes("ETH");
-    const isIndex = symbolStr === "GSPC" || symbolStr.includes(".INDX");
+    const isCrypto = symbolStr.includes("-USD.CC");
+    const isIndex = symbolStr.includes(".INDX");
+    const isForex = symbolStr.includes(".FOREX");
+    const isUSStock = symbolStr.includes(".US");
+    const isCommodity = symbolStr.includes(".F");
+    const isMetal =
+      symbolStr.includes("XAUUSD") || symbolStr.includes("XAGUSD");
 
     let apiUrl: URL;
     let finalSymbol = symbolStr;
@@ -74,18 +76,26 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     if (isCrypto) {
       // Crypto API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/crypto");
-      // For crypto, EODHD expects symbols like BTC-USD, ETH-USD
       finalSymbol = symbolStr;
     } else if (isIndex) {
-      // Index API endpoint - use stocks endpoint for indices
+      // Indices API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
-      finalSymbol = symbolStr.includes(".INDX")
-        ? symbolStr
-        : symbolStr + ".INDX";
-    } else {
-      // Forex API endpoint - default for currency pairs
+      finalSymbol = symbolStr;
+    } else if (isUSStock) {
+      // US Stocks API endpoint
+      apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
+      finalSymbol = symbolStr;
+    } else if (isCommodity) {
+      // Commodities API endpoint
+      apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
+      finalSymbol = symbolStr;
+    } else if (isForex || isMetal) {
+      // Forex API endpoint for currency pairs and metals
       apiUrl = new URL("https://eodhd.com/api/real-time/forex");
-      // For forex, EODHD expects symbols like EURUSD.FOREX
+      finalSymbol = symbolStr;
+    } else {
+      // Default to forex endpoint
+      apiUrl = new URL("https://eodhd.com/api/real-time/forex");
       finalSymbol = symbolStr.includes(".FOREX")
         ? symbolStr
         : symbolStr + ".FOREX";
@@ -163,8 +173,12 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       }
     }
 
-    // Filter out invalid prices
-    prices = prices.filter((p) => p.price > 0);
+    // NO MOCK DATA - ONLY REAL DATA ALLOWED
+
+    // Filter out invalid prices (but keep prices that have valid previousClose for gold)
+    prices = prices.filter(
+      (p) => p.price > 0 || (p.previous_close && p.previous_close > 0),
+    );
 
     console.log("Transformed prices:", JSON.stringify(prices, null, 2));
 
@@ -182,13 +196,18 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
   } catch (error) {
     console.error("Error fetching EODHD price data:", error);
 
-    // Handle specific error types
+    // Handle specific error types with basic localization (no lang param available)
     let errorMessage = "Failed to fetch price data";
+    let errorMessageAr = "فشل في جلب بيانات الأسعار";
+
     if (error instanceof Error) {
       if (error.name === "AbortError") {
         errorMessage = "Request timeout - EODHD API took too long to respond";
+        errorMessageAr =
+          "انتهت مهلة الطلب - استغرق EODHD API وقتاً طويلاً للاستجابة";
       } else {
         errorMessage = error.message;
+        errorMessageAr = `خطأ: ${error.message}`;
       }
     }
 
@@ -196,6 +215,7 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       prices: [],
       total: 0,
       error: errorMessage,
+      errorAr: errorMessageAr, // Include Arabic error message
       timestamp: new Date().toISOString(),
     });
   }
@@ -203,19 +223,33 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
 
 function transformPriceData(item: any, originalSymbol: string): PriceData {
   // Parse values from EODHD response
-  const price = parseFloat(
+  // For gold (XAUUSD), use previousClose when close is "NA"
+  let price = parseFloat(
     item.close || item.price || item.last || item.value || 0,
   );
   const previousClose = parseFloat(
-    item.previousClose || item.previous_close || item.close || 0,
+    item.previousClose || item.previous_close || 0,
   );
-  const change = parseFloat(item.change || 0) || price - previousClose;
+
+  // Special handling for metals and other symbols when close is NA but previousClose exists
+  if (
+    (price === 0 || isNaN(price) || item.close === "NA") &&
+    previousClose > 0
+  ) {
+    price = previousClose;
+    // For metals, set minimal change to show it's using previous close
+    console.log(`Using previousClose for ${item.code}: ${price}`);
+  }
+
+  const change =
+    parseFloat(item.change || 0) ||
+    (price && previousClose ? price - previousClose : 0);
   const change_percent =
     parseFloat(item.change_p || item.change_percent || 0) ||
-    (previousClose > 0 ? (change / previousClose) * 100 : 0);
+    (previousClose > 0 && change !== 0 ? (change / previousClose) * 100 : 0);
 
   console.log(
-    `Transforming data for ${item.code}: price=${price}, change=${change}, change_p=${change_percent}`,
+    `Transforming data for ${item.code}: price=${price}, change=${change}, change_p=${change_percent}, previousClose=${previousClose}`,
   );
 
   return {
