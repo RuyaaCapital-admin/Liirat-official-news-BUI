@@ -65,7 +65,7 @@ const EVENT_CATEGORIES = [
     labelAr: "البنوك المركزية",
   },
   { value: "gdp", labelEn: "GDP", labelAr: "الناتج المحلي" },
-  { value: "retail", labelEn: "Retail Sales", labelAr: "مبي��ات التجزئة" },
+  { value: "retail", labelEn: "Retail Sales", labelAr: "مبيعات التجزئة" },
   { value: "manufacturing", labelEn: "Manufacturing", labelAr: "التصنيع" },
   { value: "housing", labelEn: "Housing", labelAr: "الإسكان" },
   { value: "earnings", labelEn: "Earnings", labelAr: "الأرباح" },
