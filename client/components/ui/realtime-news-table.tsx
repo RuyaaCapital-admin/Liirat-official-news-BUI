@@ -34,13 +34,13 @@ import { useLanguage } from "@/contexts/language-context";
 
 interface NewsArticle {
   id: string;
-  date: string;
+  datetimeIso: string | null;
   title: string;
   content: string;
   category: string;
   symbols: string[];
   tags: string[];
-  link?: string;
+  url?: string;
   source: string;
   importance: number;
   country?: string;
@@ -131,14 +131,14 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         limit: "50",
       });
 
-      if (selectedCategory !== "all") {
-        params.append("category", selectedCategory);
-      }
+      // EODHD API requires either 's' (symbol) or 't' (topic) parameter
       if (selectedSymbol !== "all") {
-        params.append("symbol", selectedSymbol);
-      }
-      if (searchTerm.trim()) {
-        params.append("search", searchTerm.trim());
+        params.append("s", selectedSymbol);
+      } else if (selectedCategory !== "all") {
+        params.append("t", selectedCategory);
+      } else {
+        // Default to general financial news
+        params.append("t", "financial");
       }
 
       console.log(`Fetching news with params: ${params.toString()}`);
@@ -154,9 +154,126 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         setError(data.error);
         setArticles([]);
       } else {
-        setArticles(data.articles || []);
-        setAvailableCategories(data.availableCategories || []);
-        setAvailableSymbols(data.availableTags || []);
+        // Transform server response to match client interface
+        const transformedArticles = (data.items || []).map(
+          (item: any, index: number) => {
+            // Calculate real importance based on available EODHD API data
+            let importance = 1; // Default to low
+
+            const title = item.title || "";
+            const symbols = item.symbols || [];
+            const source = item.source || "";
+
+            // High importance keywords in title (financial impact indicators)
+            const highImpactKeywords = [
+              "fed",
+              "federal reserve",
+              "interest rate",
+              "inflation",
+              "gdp",
+              "unemployment",
+              "central bank",
+              "monetary policy",
+              "recession",
+              "crisis",
+              "crash",
+              "surge",
+              "breakthrough",
+              "acquisition",
+              "merger",
+              "earnings",
+              "bankruptcy",
+              "ipo",
+            ];
+
+            const mediumImpactKeywords = [
+              "market",
+              "trading",
+              "stock",
+              "price",
+              "volatility",
+              "analysis",
+              "forecast",
+              "outlook",
+              "report",
+              "data",
+              "economic",
+              "financial",
+            ];
+
+            // Check title for impact keywords
+            const titleLower = title.toLowerCase();
+            const hasHighImpact = highImpactKeywords.some((keyword) =>
+              titleLower.includes(keyword),
+            );
+            const hasMediumImpact = mediumImpactKeywords.some((keyword) =>
+              titleLower.includes(keyword),
+            );
+
+            if (hasHighImpact) {
+              importance = 3; // High importance
+            } else if (hasMediumImpact) {
+              importance = 2; // Medium importance
+            }
+
+            // Boost importance for major financial symbols
+            const majorSymbols = [
+              "EURUSD",
+              "GBPUSD",
+              "USDJPY",
+              "USDCHF",
+              "AUDUSD",
+              "USDCAD",
+              "NZDUSD",
+              "XAUUSD",
+              "BTCUSD",
+              "ETHUSD",
+            ];
+            const hasImportantSymbols = symbols.some((symbol: string) =>
+              majorSymbols.some((major) =>
+                symbol.toUpperCase().includes(major.replace("USD", "")),
+              ),
+            );
+
+            if (hasImportantSymbols && importance < 2) {
+              importance = 2; // Boost importance for major financial instruments
+            }
+
+            // Boost importance for trusted news sources
+            const trustedSources = [
+              "reuters",
+              "bloomberg",
+              "cnbc",
+              "marketwatch",
+              "financial times",
+              "wsj",
+            ];
+            const isTrustedSource = trustedSources.some((trusted) =>
+              source.toLowerCase().includes(trusted),
+            );
+
+            if (isTrustedSource && importance < 2) {
+              importance = 2;
+            }
+
+            return {
+              id: `news-${Date.now()}-${index}`, // Unique ID with timestamp
+              datetimeIso: item.datetimeIso,
+              title: title,
+              content: item.content || title, // Use API content if available, fallback to title
+              category: item.category || "financial",
+              symbols: symbols,
+              tags: item.tags || symbols,
+              url: item.url,
+              source: source,
+              importance: importance, // Real importance based on content analysis
+              country: item.country || "",
+            };
+          },
+        );
+        setArticles(transformedArticles);
+        setAvailableCategories(["financial"]);
+        setAvailableSymbols([]);
       }
     } catch (err) {
       console.error("Error fetching news:", err);
@@ -252,13 +369,13 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       Investment: "الاستثمار",
       Bank: "البنك",
       Currency: "العملة",
-      Dollar: "الدولار",
+      Dollar: "ا��دولار",
       Euro: "اليورو",
       Gold: "الذهب",
       Oil: "النفط",
       Bitcoin: "البتكوين",
       News: "الأخبار",
-      Report: "ا��تقرير",
+      Report: "التقرير",
       Analysis: "التحليل",
       Growth: "النمو",
       Rise: "الارتفاع",
@@ -278,6 +395,12 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       return translatedTitles[article.id];
     }
 
+    // Skip empty or very short titles
+    if (!article.title || article.title.trim().length < 3) {
+      setTranslatedTitles((prev) => ({ ...prev, [article.id]: article.title }));
+      return article.title;
+    }
+
     // Check if title is already in Arabic (contains Arabic characters)
     const hasArabic = /[\u0600-\u06FF]/.test(article.title);
     if (hasArabic) {
@@ -290,89 +413,30 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       return article.title; // Return original if not Arabic mode
     }
 
-    // Try offline translation first for instant results
+    // Use offline translation for instant results without API calls
     const offlineTranslation = getOfflineTranslation(article.title);
-    if (offlineTranslation !== article.title) {
-      setTranslatedTitles((prev) => ({
-        ...prev,
-        [article.id]: offlineTranslation,
-      }));
-      return offlineTranslation;
-    }
-
-    // SKIP API TRANSLATION to prevent "Failed to fetch" errors
-    // Just cache and return the original title
     console.log(
-      `[NEWS] Skipping API translation to prevent fetch errors for: ${article.title}`,
+      `[NEWS] Translating offline: "${article.title}" -> "${offlineTranslation}"`,
     );
-    setTranslatedTitles((prev) => ({ ...prev, [article.id]: article.title }));
-    return article.title;
 
-    setLoadingTranslation((prev) => ({ ...prev, [article.id]: true }));
-
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-      const response = await fetch("/api/translate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: article.title,
-          targetLanguage: "ar",
-        }),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const data = await response.json();
-        const translated = data.translatedText || article.title;
-        setTranslatedTitles((prev) => ({ ...prev, [article.id]: translated }));
-        return translated;
-      } else {
-        console.warn(`Translation failed with status: ${response.status}`);
-      }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-
-      if (error instanceof Error && error.name === "AbortError") {
-        console.warn(
-          `[NEWS] Translation request timed out for article ${article.id}`,
-        );
-      } else if (
-        errorMessage.includes("Failed to fetch") ||
-        errorMessage.includes("NetworkError")
-      ) {
-        console.warn(
-          `[NEWS] Network error during translation for article ${article.id}: ${errorMessage}`,
-        );
-      } else {
-        console.error(
-          `[NEWS] Translation error for article ${article.id}:`,
-          errorMessage,
-        );
-      }
-
-      // Cache original title to avoid repeated failed attempts
-      setTranslatedTitles((prev) => ({ ...prev, [article.id]: article.title }));
-    } finally {
-      setLoadingTranslation((prev) => ({ ...prev, [article.id]: false }));
-    }
-
-    return article.title; // Fallback to original
+    // Always cache the translation result (even if unchanged)
+    setTranslatedTitles((prev) => ({
+      ...prev,
+      [article.id]: offlineTranslation,
+    }));
+    return offlineTranslation;
   };
 
   // Request AI analysis for an article with better error handling
   const requestAIAnalysis = async (article: NewsArticle) => {
+    // Ensure we only analyze the specific selected article
     if (aiAnalysis[article.id] || loadingAnalysis[article.id]) {
-      return; // Already have analysis or loading
+      return; // Already have analysis or loading for this specific article
     }
 
+    console.log(
+      `[AI ANALYSIS] Starting analysis for article: ${article.id} - ${article.title.substring(0, 50)}...`,
+    );
     setLoadingAnalysis((prev) => ({ ...prev, [article.id]: true }));
 
     try {
@@ -388,6 +452,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
           text: `${article.title}. ${article.content.substring(0, 300)}`,
           language: language,
           type: "news",
+          articleId: article.id, // Include article ID for tracking
         }),
         signal: controller.signal,
       });
@@ -397,6 +462,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       if (response.ok) {
         const data = await response.json();
         if (data.analysis) {
+          console.log(`[AI ANALYSIS] Completed for article: ${article.id}`);
           setAiAnalysis((prev) => ({ ...prev, [article.id]: data.analysis }));
         } else {
           throw new Error("No analysis received");
@@ -409,7 +475,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         throw new Error(`API error: ${response.status}`);
       }
     } catch (error) {
-      console.error("AI analysis error:", error);
+      console.error(`[AI ANALYSIS] Error for article ${article.id}:`, error);
       setAiAnalysis((prev) => ({
         ...prev,
         [article.id]:
@@ -422,18 +488,26 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     }
   };
 
+  // Safe date parsing utilities
+  function parseIso(input?: string | null) {
+    if (!input) return null;
+    const d = new Date(input);
+    return isNaN(+d) ? null : d;
+  }
+
+  function formatUtc(iso?: string | null, tz: string = "UTC") {
+    const d = parseIso(iso);
+    if (!d) return "—";
+    return new Intl.DateTimeFormat("en-US", {
+      dateStyle: "medium",
+      timeStyle: "short",
+      timeZone: tz,
+    }).format(d);
+  }
+
   // Format date with timezone - always use English format to avoid Hijri calendar
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("en-US", {
-      timeZone: selectedTimezone,
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }).format(date);
+    return formatUtc(dateString, selectedTimezone);
   };
 
   // Get importance color with better contrast for light mode
@@ -509,13 +583,13 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                   "Central Banks":
                     language === "ar" ? "البنوك المركزية" : "Central Banks",
                   Inflation: language === "ar" ? "التضخم" : "Inflation",
-                  Forex: language === "ar" ? "تداول العملات" : "Forex",
+                  Forex: language === "ar" ? "تداو�� العملات" : "Forex",
                   Economic: language === "ar" ? "اقتصادي" : "Economic",
                   Employment: language === "ar" ? "التوظيف" : "Employment",
                   Trade: language === "ar" ? "التجارة" : "Trade",
                   Manufacturing:
                     language === "ar" ? "التصنيع" : "Manufacturing",
-                  Services: language === "ar" ? "الخدمات" : "Services",
+                  Services: language === "ar" ? "الخدم��ت" : "Services",
                   Housing: language === "ar" ? "الإسكان" : "Housing",
                   Consumer: language === "ar" ? "المستهلك" : "Consumer",
                 };
@@ -697,7 +771,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                   <div className="flex flex-col items-end gap-2 ml-4">
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Clock className="w-3 h-3" />
-                      {formatDate(article.date)}
+                      {formatUtc(article.datetimeIso, selectedTimezone)}
                     </div>
 
                     <div className="flex gap-2">

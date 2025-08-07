@@ -383,7 +383,7 @@ export default function EnhancedAlertSystem({
             <DialogTrigger asChild>
               <Button className="neumorphic-button-small">
                 <Plus className="h-4 w-4 mr-2" />
-                {language === "ar" ? "إضافة تنبي��" : "Add Alert"}
+                {language === "ar" ? "إضافة تنبيه" : "Add Alert"}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
@@ -391,7 +391,7 @@ export default function EnhancedAlertSystem({
                 <DialogTitle>
                   {editingAlert
                     ? language === "ar"
-                      ? "تعديل التنبيه"
+                      ? "ت��ديل التنبيه"
                       : "Edit Alert"
                     : language === "ar"
                       ? "إنشاء تنبيه جديد"

@@ -132,6 +132,16 @@ export default function Index() {
       const params = new URLSearchParams();
       params.append("limit", "50"); // Limit to 50 events for better performance
 
+      // Add date range - these are REQUIRED by EODHD API
+      const fromDate = filters?.from || new Date().toISOString().split("T")[0]; // Today
+      const toDate =
+        filters?.to ||
+        new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split("T")[0]; // Next 7 days
+      params.append("from", fromDate);
+      params.append("to", toDate);
+
       // Add importance filter
       if (filters?.importance?.length) {
         params.append("importance", filters.importance.join(","));
@@ -142,14 +152,6 @@ export default function Index() {
       // Add country filter
       if (filters?.country) {
         params.append("country", filters.country);
-      }
-
-      // Add date range filters
-      if (filters?.from) {
-        params.append("from", filters.from);
-      }
-      if (filters?.to) {
-        params.append("to", filters.to);
       }
 
       // Fetch from EODHD calendar endpoint with robust error handling
@@ -205,7 +207,26 @@ export default function Index() {
             setEventsError(data.error);
             setEconomicEvents([]);
           } else {
-            setEconomicEvents(data.events || []);
+            // Transform server response to match client interface
+            const transformedEvents = (data.items || []).map((item: any) => ({
+              date: item.datetimeIso ? item.datetimeIso.split("T")[0] : "",
+              time: item.datetimeIso
+                ? item.datetimeIso.split("T")[1]?.replace("Z", "")
+                : "",
+              country: item.country || "",
+              event: item.event || "",
+              category: item.category || "",
+              importance:
+                item.importance === "high"
+                  ? 3
+                  : item.importance === "medium"
+                    ? 2
+                    : 1,
+              actual: item.actual || "",
+              forecast: item.forecast || "",
+              previous: item.previous || "",
+            }));
+            setEconomicEvents(transformedEvents);
             setEventsError(null);
           }
         } else {
@@ -228,7 +249,7 @@ export default function Index() {
         if (error.message.includes("Network connection failed")) {
           errorMessage =
             language === "ar"
-              ? "خطأ في الاتصال ب��لشبكة. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى."
+              ? "خطأ في الاتصال بالشبكة. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى."
               : "Network connection failed. Please check your internet connection and try again.";
         } else if (error.message.includes("Request timeout")) {
           errorMessage =
@@ -450,7 +471,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "تابع الأحداث الاقتصادية المهمة والأخبار المالية في الوقت الفعلي"
+                    ? "تابع الأحداث الاق��صادية المهمة والأخبار المالية في الوقت الفعلي"
                     : "Track important economic events and real-time financial news"}
                 </p>
               </div>
@@ -500,7 +521,7 @@ export default function Index() {
                               onClick={() => fetchEconomicEvents(language)}
                               className="text-xs"
                             >
-                              {t("Retry", "إع��دة المحاولة")}
+                              {t("Retry", "إعادة المحاولة")}
                             </Button>
                             <div className="text-xs text-muted-foreground">
                               {language === "ar"
@@ -517,7 +538,7 @@ export default function Index() {
                               <Bell className="w-4 h-4 mr-2" />
                               <span>
                                 {language === "ar"
-                                  ? "عرض بيانات تجريبية - سيتم الت��ديث عن�� استع��دة الاتصال"
+                                  ? "عرض بيانات تجريبية - سيتم التحديث عند استعادة الاتصال"
                                   : "Data will update when connection is restored"}
                               </span>
                             </div>
@@ -659,7 +680,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيهات ذكية لأي رمز مالي مع مر��قبة الأسعار في الوقت الفعلي"
+                    ? "قم بإنشاء تنبيهات ذكية لأي رمز مالي مع مراقبة الأسعار في الوقت الفعلي"
                     : "Create intelligent alerts for any financial symbol with real-time price monitoring"}
                 </p>
               </div>

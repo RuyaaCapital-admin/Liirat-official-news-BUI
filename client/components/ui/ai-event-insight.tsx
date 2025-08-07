@@ -163,7 +163,7 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
         : `${eventData.event} أقل من المتوقع، ضغط محتمل على ${eventData.country}.`;
 
       return {
-        summary: `${analysis}\n\n⚠️ هذا تحليل تجريبي. للحصول على تحليل حقيقي من الذكاء الاصطناعي، يرجى إعداد مفتاح OpenAI API في ��تغيرات البيئة.`,
+        summary: `${analysis}\n\n⚠️ هذا تحليل تجريبي. للحصول على تحليل حقيقي من الذكاء الاصطناعي، يرجى إعداد مفتاح OpenAI API في متغيرات البيئة.`,
         whatHappened: analysis,
         whyImportant: analysis,
         marketImpact: analysis,

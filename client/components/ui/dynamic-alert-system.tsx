@@ -253,7 +253,7 @@ export default function DynamicAlertSystem({
         console.error("Error fetching symbol price:", error);
         toast.error(
           language === "ar"
-            ? "خطأ في جلب السعر ال��الي"
+            ? "خطأ في جلب السعر الحالي"
             : "Error fetching current price",
         );
       } finally {
@@ -363,7 +363,7 @@ export default function DynamicAlertSystem({
     if (!selectedSymbol || !targetPrice) {
       toast.error(
         language === "ar"
-          ? "يرجى اختيار ا��رمز والسعر المستهدف"
+          ? "يرجى اختيار الرمز والسعر المستهدف"
           : "Please select symbol and target price",
       );
       return;
@@ -412,7 +412,7 @@ export default function DynamicAlertSystem({
   // Delete alert
   const deleteAlert = (id: string) => {
     setPriceAlerts((prev) => prev.filter((alert) => alert.id !== id));
-    toast.success(language === "ar" ? "تم حذف الت��بيه" : "Alert deleted");
+    toast.success(language === "ar" ? "تم حذف التنبيه" : "Alert deleted");
   };
 
   // Toggle alert active state
@@ -430,7 +430,7 @@ export default function DynamicAlertSystem({
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-2xl font-bold flex items-center gap-2">
             <Bell className="h-6 w-6 text-primary" />
-            {language === "ar" ? "نظام التنبيهات الذكي" : "Smart Alert System"}
+            {language === "ar" ? "نظام التنب��هات الذكي" : "Smart Alert System"}
           </CardTitle>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
@@ -439,7 +439,7 @@ export default function DynamicAlertSystem({
                 size="sm"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                {language === "ar" ? "إضافة تنب��ه" : "Add Alert"}
+                {language === "ar" ? "إضافة تنبيه" : "Add Alert"}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
@@ -653,7 +653,7 @@ export default function DynamicAlertSystem({
                 <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>
                   {language === "ar"
-                    ? "لا توج�� تنبيهات حالياً"
+                    ? "لا توجد تنبيهات حالياً"
                     : "No alerts yet"}
                 </p>
                 <p className="text-sm">

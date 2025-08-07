@@ -640,7 +640,7 @@ export default function SeparatedAlertSystem({
                         <div>
                           <Label>
                             {language === "ar"
-                              ? "��قائق قبل الحدث"
+                              ? "دقائق قبل الحدث"
                               : "Minutes Before Event"}
                           </Label>
                           <Input
@@ -788,7 +788,7 @@ export default function SeparatedAlertSystem({
                     <Button className="flex items-center gap-2">
                       <Plus className="w-4 h-4" />
                       {language === "ar"
-                        ? "إضاف�� تنبيه سعر"
+                        ? "إضافة تنبيه سعر"
                         : "Add Price Alert"}
                     </Button>
                   </DialogTrigger>
@@ -1053,7 +1053,7 @@ export default function SeparatedAlertSystem({
                             {alert.condition === "above" && (
                               <span>
                                 {language === "ar"
-                                  ? "تنبيه عندما يتجاو�� السعر"
+                                  ? "تنبيه عندما يتجاوز السعر"
                                   : "Alert when price goes above"}{" "}
                                 {alert.targetPrice}
                               </span>
@@ -1061,7 +1061,7 @@ export default function SeparatedAlertSystem({
                             {alert.condition === "below" && (
                               <span>
                                 {language === "ar"
-                                  ? "تن��يه عندما ينخفض السعر دون"
+                                  ? "تنبيه عندما ينخفض السعر دون"
                                   : "Alert when price goes below"}{" "}
                                 {alert.targetPrice}
                               </span>

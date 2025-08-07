@@ -1,7 +1,6 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { handleDemo } from "./routes/demo";
 import {
   handleAIChat,
   handleMarketData,
@@ -36,8 +35,6 @@ export function createServer() {
     const ping = process.env.PING_MESSAGE ?? "ping";
     res.json({ message: ping });
   });
-
-  app.get("/demo", handleDemo);
 
   // Chat widget route
   app.post("/chat", handleChat);

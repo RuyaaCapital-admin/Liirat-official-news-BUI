@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+import { toIsoUtc } from "../../src/server/date";
 const BASE = "https://eodhd.com/api";
 const key = process.env.EODHD_API_KEY;
 
@@ -63,13 +64,11 @@ export const handleEODHDSearch: RequestHandler = async (req, res) => {
     const data = await response.json();
     res.status(response.status).json(data);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        ok: false,
-        code: "INTERNAL_ERROR",
-        detail: error instanceof Error ? error.message : "Unknown error",
-      });
+    res.status(500).json({
+      ok: false,
+      code: "INTERNAL_ERROR",
+      detail: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
@@ -86,34 +85,73 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
   }
 
   try {
-    const base = symbolList[0].toUpperCase();
-    const response = await eodFetch(`/real-time/${encodeURIComponent(base)}`, {
-      s: symbolList.slice(1).join(","),
-    });
+    // Fetch each symbol individually to ensure reliability
+    const results = [];
 
-    const r = await response.json();
-    if (!r.ok) {
-      return res.status(502).json(r);
+    for (const symbol of symbolList) {
+      try {
+        const response = await eodFetch(
+          `/real-time/${encodeURIComponent(symbol.toUpperCase())}`,
+        );
+        const r = await response.json();
+
+        if (r.ok && r.data) {
+          const item = r.data;
+
+          // Handle cases where EODHD returns "NA" for current data
+          const close =
+            item.close === "NA" || item.close === null
+              ? item.previousClose
+              : item.close;
+          const change =
+            item.change === "NA" || item.change === null ? 0 : item.change;
+          const changePct =
+            item.change_p === "NA" || item.change_p === null
+              ? 0
+              : item.change_p;
+          const timestamp =
+            item.timestamp === "NA" || item.timestamp === null
+              ? Date.now()
+              : item.timestamp;
+
+          const priceData = {
+            symbol: symbol,
+            price: +(close ?? item.price ?? 0),
+            change: +(change ?? 0),
+            changePct: +(changePct ?? 0),
+            ts: +(timestamp ?? Date.now()),
+          };
+          results.push(priceData);
+        } else {
+          // Add placeholder for failed symbols
+          results.push({
+            symbol: symbol,
+            price: 0,
+            change: 0,
+            changePct: 0,
+            ts: Date.now(),
+          });
+        }
+      } catch (symbolError) {
+        console.warn(`Failed to fetch ${symbol}:`, symbolError);
+        // Add placeholder for failed symbols
+        results.push({
+          symbol: symbol,
+          price: 0,
+          change: 0,
+          changePct: 0,
+          ts: Date.now(),
+        });
+      }
     }
 
-    const arr = Array.isArray(r.data) ? r.data : [r.data];
-    const out = arr.map((x: any) => ({
-      symbol: x.code || x.symbol,
-      price: +(x.close ?? x.price),
-      change: +(x.change ?? 0),
-      changePct: +(x.change_p ?? x.change_percent ?? 0),
-      ts: +(x.timestamp ?? x.ts ?? 0),
-    }));
-
-    res.status(200).json({ ok: true, items: out });
+    res.status(200).json({ ok: true, items: results });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        ok: false,
-        code: "INTERNAL_ERROR",
-        detail: error instanceof Error ? error.message : "Unknown error",
-      });
+    res.status(500).json({
+      ok: false,
+      code: "INTERNAL_ERROR",
+      detail: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
@@ -139,12 +177,12 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
       return res.status(502).json(raw);
     }
 
-    const items = (raw.data || []).map((e: any) => ({
-      datetimeUtc: e.date || e.datetime,
-      country: e.country,
-      event: e.event,
-      category: e.category || e.type,
-      importance: (e.importance || "").toLowerCase(),
+    const items = (raw.data || raw || []).map((e: any) => ({
+      datetimeIso: toIsoUtc(e.date || e.datetime),
+      country: e.country || "",
+      event: e.event || "",
+      category: e.category || e.type || "",
+      importance: String(e.importance || "").toLowerCase(),
       previous: e.previous ?? "",
       forecast: e.estimate ?? e.forecast ?? "",
       actual: e.actual ?? "",
@@ -152,13 +190,11 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
 
     res.status(200).json({ ok: true, items });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        ok: false,
-        code: "INTERNAL_ERROR",
-        detail: error instanceof Error ? error.message : "Unknown error",
-      });
+    res.status(500).json({
+      ok: false,
+      code: "INTERNAL_ERROR",
+      detail: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
@@ -186,22 +222,24 @@ export const handleEODHDNews: RequestHandler = async (req, res) => {
     }
 
     const items = (raw.data || raw).map((n: any) => ({
-      datetime: n.date,
-      title: n.title,
-      source: (n.source || "").toString(),
+      datetimeIso: toIsoUtc(n.date || n.datetime || n.published_at || n.time),
+      title: String(n.title || ""),
+      content: String(n.content || n.description || n.title || ""),
+      source: String(n.source || ""),
       symbols: n.symbols || [],
+      tags: n.tags || n.symbols || [],
       url: n.link || n.url || "",
+      country: n.country || "",
+      category: n.category || "financial",
     }));
 
     res.status(200).json({ ok: true, items });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        ok: false,
-        code: "INTERNAL_ERROR",
-        detail: error instanceof Error ? error.message : "Unknown error",
-      });
+    res.status(500).json({
+      ok: false,
+      code: "INTERNAL_ERROR",
+      detail: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
