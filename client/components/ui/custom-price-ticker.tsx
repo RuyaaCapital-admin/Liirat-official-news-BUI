@@ -61,15 +61,9 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
             }
           }
           
-          // Fallback with mock data if API fails
-          return {
-            symbol,
-            displayName,
-            price: generateMockPrice(symbol),
-            change: (Math.random() - 0.5) * 0.01,
-            changePercent: (Math.random() - 0.5) * 2,
-            currency: type === "crypto" ? "USD" : undefined,
-          };
+          // Return null if API fails - NO MOCK DATA
+          console.warn(`API failed for ${symbol}, no fallback data provided`);
+          return null;
         } catch (error) {
           console.warn(`Failed to fetch price for ${symbol}:`, error);
           // Return mock data on error
