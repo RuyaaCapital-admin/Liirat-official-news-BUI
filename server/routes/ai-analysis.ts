@@ -7,8 +7,7 @@ import {
 
 // OpenAI integration for news/event analysis
 export const handleAIAnalysis: RequestHandler = async (req, res) => {
-  const openaiApiKey =
-    "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";
+  const openaiApiKey = process.env.OPENAI_API_KEY;
 
   try {
     const { text, language = "en", type = "news" } = req.body;
@@ -16,6 +15,16 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
     if (!text) {
       return res.status(400).json({
         error: "Text content is required for analysis",
+      });
+    }
+
+    if (!openaiApiKey) {
+      return res.status(500).json({
+        error: "OpenAI API key not configured",
+        analysis:
+          language === "ar"
+            ? "مفتاح OpenAI غير متوفر"
+            : "OpenAI API key not available",
       });
     }
 
@@ -47,17 +56,17 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
       return res.json(cachedData);
     }
 
-    // Create analysis prompt based on type
-    let prompt = "";
-    if (type === "event") {
-      prompt = `Give me a one-line summary of how this economic event might impact the market: "${text}"`;
-    } else {
-      prompt = `Give me a one-line summary of how this news might impact the market: "${text}"`;
-    }
+    // Create analysis prompt with the exact system prompt requested
+    const systemPrompt =
+      language === "ar"
+        ? "لخص هذا الحدث/الخبر وتأثيره المحتمل على السوق بطريقة قصيرة وصادقة وواضحة. اعتمد فقط على محتوى الحدث، لا تعشوائي أبداً، لا تخمن. ركز على ما يحتاج المتداول لمعرفته - قدم فائدة واضحة، بدون تعقيد."
+        : "Summarize this event/news and its likely market effect in a short, honest, and clear way. Only base analysis on the event content, never randomize, never guess. Focus on what a trader needs to know — deliver clear benefit, no complexity.";
 
-    // Add translation instruction for Arabic
-    if (language === "ar") {
-      prompt += " Please provide the response in Arabic.";
+    let userPrompt = "";
+    if (type === "event") {
+      userPrompt = `Economic Event: ${text}`;
+    } else {
+      userPrompt = `News: ${text}`;
     }
 
     console.log(`AI Analysis request: ${type} analysis for ${language}`);
@@ -74,15 +83,19 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
       },
       signal: controller.signal,
       body: JSON.stringify({
-        model: "gpt-3.5-turbo", // Using cheapest model as requested
+        model: "gpt-4o-mini",
         messages: [
           {
+            role: "system",
+            content: systemPrompt,
+          },
+          {
             role: "user",
-            content: prompt,
+            content: userPrompt,
           },
         ],
         max_tokens: 150,
-        temperature: 0.3,
+        temperature: 0.1,
       }),
     });
 
@@ -144,8 +157,7 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
 
 // Translation endpoint using OpenAI
 export const handleTranslation: RequestHandler = async (req, res) => {
-  const openaiApiKey =
-    "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";
+  const openaiApiKey = process.env.OPENAI_API_KEY;
 
   try {
     const { text, targetLanguage = "ar" } = req.body;
@@ -153,6 +165,14 @@ export const handleTranslation: RequestHandler = async (req, res) => {
     if (!text) {
       return res.status(400).json({
         error: "Text is required for translation",
+        translatedText: "",
+      });
+    }
+
+    if (!openaiApiKey) {
+      return res.status(500).json({
+        error: "OpenAI API key not configured",
+        translatedText: text, // Return original text as fallback
       });
     }
 
@@ -175,7 +195,7 @@ export const handleTranslation: RequestHandler = async (req, res) => {
       },
       signal: controller.signal,
       body: JSON.stringify({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "user",

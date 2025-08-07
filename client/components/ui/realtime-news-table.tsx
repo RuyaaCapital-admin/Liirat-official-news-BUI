@@ -74,6 +74,14 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     Record<string, boolean>
   >({});
 
+  // Translation state
+  const [translatedTitles, setTranslatedTitles] = useState<
+    Record<string, string>
+  >({});
+  const [loadingTranslation, setLoadingTranslation] = useState<
+    Record<string, boolean>
+  >({});
+
   // Timezone selector
   const [selectedTimezone, setSelectedTimezone] = useState("UTC");
   const timezones = [
@@ -86,7 +94,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     { value: "Australia/Sydney", label: "Sydney" },
   ];
 
-  // Fetch news data
+  // Fetch news data - ALWAYS fetch in English first
   const fetchNews = async () => {
     try {
       setLoading(true);
@@ -116,6 +124,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
 
       from = fromDate.toISOString().split("T")[0];
 
+      // ALWAYS fetch in English - never pass language to API
       const params = new URLSearchParams({
         from,
         to,
@@ -165,6 +174,25 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     return () => clearInterval(interval);
   }, [selectedTimeframe, selectedCategory, selectedSymbol]);
 
+  // Auto-translate articles when language changes to Arabic (with debouncing)
+  useEffect(() => {
+    if (language === "ar" && filteredArticles.length > 0) {
+      // Debounce translation requests to avoid overwhelming the API
+      const timer = setTimeout(() => {
+        filteredArticles
+          .slice(0, Math.min(5, itemsToShow))
+          .forEach((article, index) => {
+            // Stagger requests to avoid rate limiting
+            setTimeout(() => {
+              translateTitle(article);
+            }, index * 600);
+          });
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [language, filteredArticles, itemsToShow]);
+
   // Apply filters
   useEffect(() => {
     let filtered = [...articles];
@@ -187,7 +215,58 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     setItemsToShow(10); // Reset pagination when filters change
   }, [articles, searchTerm]);
 
-  // Request AI analysis for an article
+  // Handle translation request with better error handling
+  const translateTitle = async (article: NewsArticle) => {
+    if (translatedTitles[article.id] || loadingTranslation[article.id]) {
+      return translatedTitles[article.id];
+    }
+
+    if (language !== "ar") {
+      return article.title; // Return original if not Arabic mode
+    }
+
+    setLoadingTranslation((prev) => ({ ...prev, [article.id]: true }));
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+      const response = await fetch("/api/translate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: article.title,
+          targetLanguage: "ar",
+        }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const data = await response.json();
+        const translated = data.translatedText || article.title;
+        setTranslatedTitles((prev) => ({ ...prev, [article.id]: translated }));
+        return translated;
+      } else {
+        console.warn(`Translation failed with status: ${response.status}`);
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
+        console.warn("Translation request timed out");
+      } else {
+        console.error("Translation error:", error);
+      }
+    } finally {
+      setLoadingTranslation((prev) => ({ ...prev, [article.id]: false }));
+    }
+
+    return article.title; // Fallback to original
+  };
+
+  // Request AI analysis for an article with better error handling
   const requestAIAnalysis = async (article: NewsArticle) => {
     if (aiAnalysis[article.id] || loadingAnalysis[article.id]) {
       return; // Already have analysis or loading
@@ -196,6 +275,9 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     setLoadingAnalysis((prev) => ({ ...prev, [article.id]: true }));
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
       const response = await fetch("/api/ai-analysis", {
         method: "POST",
         headers: {
@@ -206,19 +288,24 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
           language: language,
           type: "news",
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const data = await response.json();
-        setAiAnalysis((prev) => ({ ...prev, [article.id]: data.analysis }));
+        if (data.analysis) {
+          setAiAnalysis((prev) => ({ ...prev, [article.id]: data.analysis }));
+        } else {
+          throw new Error("No analysis received");
+        }
       } else {
-        setAiAnalysis((prev) => ({
-          ...prev,
-          [article.id]:
-            language === "ar"
-              ? "��حليل الذكاء الاصطناعي غير متاح حاليًا"
-              : "AI analysis currently unavailable",
-        }));
+        // Don't read response body twice - just use status for error
+        console.error(
+          `AI Analysis API error: ${response.status} - ${response.statusText}`,
+        );
+        throw new Error(`API error: ${response.status}`);
       }
     } catch (error) {
       console.error("AI analysis error:", error);
@@ -226,7 +313,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         ...prev,
         [article.id]:
           language === "ar"
-            ? "تحليل الذكاء الاصطناعي غير متاح حال��ًا"
+            ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
             : "AI analysis currently unavailable",
       }));
     } finally {
@@ -248,17 +335,17 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     }).format(date);
   };
 
-  // Get importance color
+  // Get importance color with better contrast for light mode
   const getImportanceColor = (importance: number) => {
     switch (importance) {
       case 3:
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+        return "bg-red-500 text-white border-red-600";
       case 2:
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+        return "bg-yellow-500 text-white border-yellow-600";
       case 1:
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+        return "bg-green-500 text-white border-green-600";
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
+        return "bg-gray-500 text-white border-gray-600";
     }
   };
 
@@ -340,7 +427,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                 {language === "ar" ? "آخر أسبوع" : "Last week"}
               </SelectItem>
               <SelectItem value="1m">
-                {language === "ar" ? "آخر شهر" : "Last month"}
+                {language === "ar" ? "آخر ش��ر" : "Last month"}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -399,22 +486,35 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
           </div>
         ) : (
           <div className="space-y-4">
-            {filteredArticles.slice(0, itemsToShow).map((article) => (
+            {filteredArticles.slice(0, itemsToShow).map((article, index) => (
               <div
-                key={article.id}
+                key={`${article.id}-${index}`}
                 className="border border-border rounded-lg p-4 hover:bg-muted/30 transition-colors"
+                dir={dir}
               >
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge className={getImportanceColor(article.importance)}>
+                    <div
+                      className={cn(
+                        "flex items-center gap-2 mb-2 flex-wrap",
+                        dir === "rtl" ? "justify-start" : "justify-start",
+                      )}
+                    >
+                      <Badge
+                        className={cn(
+                          getImportanceColor(article.importance),
+                          "font-medium",
+                        )}
+                      >
                         {getImportanceLabel(article.importance)}
                       </Badge>
-                      <Badge variant="outline">{article.category}</Badge>
+                      <Badge variant="outline" className="font-medium">
+                        {article.category}
+                      </Badge>
                       {article.country && (
                         <Badge
                           variant="outline"
-                          className="flex items-center gap-1"
+                          className="flex items-center gap-1 font-medium"
                         >
                           <Globe className="w-3 h-3" />
                           {article.country}
@@ -423,7 +523,14 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                     </div>
 
                     <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                      {article.title}
+                      {language === "ar" && translatedTitles[article.id]
+                        ? translatedTitles[article.id]
+                        : article.title}
+                      {language === "ar" && loadingTranslation[article.id] && (
+                        <span className="ml-2 text-xs text-muted-foreground">
+                          (translating...)
+                        </span>
+                      )}
                     </h3>
 
                     <p className="text-muted-foreground text-sm mb-3 line-clamp-3">
@@ -475,85 +582,29 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                     <div className="flex gap-2">
                       {/* AI Analysis Button */}
                       <Button
-                        variant="outline"
+                        variant={aiAnalysis[article.id] ? "default" : "outline"}
                         size="sm"
                         onClick={() => requestAIAnalysis(article)}
                         disabled={loadingAnalysis[article.id]}
-                        className="flex items-center gap-1"
+                        className={cn(
+                          "flex items-center gap-2 font-medium transition-all duration-200 shadow-sm",
+                          aiAnalysis[article.id]
+                            ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg"
+                            : "hover:bg-primary/10 border-primary/20 hover:border-primary/40",
+                          loadingAnalysis[article.id] && "animate-pulse",
+                        )}
                       >
                         <Bot
                           className={cn(
-                            "w-3 h-3",
+                            "w-4 h-4",
                             loadingAnalysis[article.id] && "animate-spin",
+                            aiAnalysis[article.id] && "text-primary-foreground",
                           )}
                         />
-                        {language === "ar" ? "تحليل ذكي" : "AI Analysis"}
+                        <span className="text-xs font-medium">
+                          {language === "ar" ? "تحليل" : "AI"}
+                        </span>
                       </Button>
-
-                      {/* Read More Dialog */}
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="sm">
-                            {language === "ar" ? "اقرأ المزيد" : "Read More"}
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                          <DialogHeader>
-                            <DialogTitle className="text-right" dir={dir}>
-                              {article.title}
-                            </DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4" dir={dir}>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Clock className="w-4 h-4" />
-                              {formatDate(article.date)}
-                              <Badge
-                                className={getImportanceColor(
-                                  article.importance,
-                                )}
-                              >
-                                {getImportanceLabel(article.importance)}
-                              </Badge>
-                            </div>
-
-                            <p className="text-sm leading-relaxed">
-                              {article.content}
-                            </p>
-
-                            {article.symbols.length > 0 && (
-                              <div>
-                                <h4 className="font-medium mb-2">
-                                  {language === "ar"
-                                    ? "الرموز المتأثرة:"
-                                    : "Related Symbols:"}
-                                </h4>
-                                <div className="flex flex-wrap gap-1">
-                                  {article.symbols.map((symbol, idx) => (
-                                    <Badge key={idx} variant="secondary">
-                                      {symbol}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-
-                            {article.link && (
-                              <Button
-                                variant="outline"
-                                className="w-full flex items-center gap-2"
-                                onClick={() =>
-                                  window.open(article.link, "_blank")
-                                }
-                              >
-                                <ExternalLink className="w-4 h-4" />
-                                {language === "ar"
-                                  ? "المصدر الأصلي"
-                                  : "Original Source"}
-                              </Button>
-                            )}
-                          </div>
-                        </DialogContent>
-                      </Dialog>
                     </div>
                   </div>
                 </div>

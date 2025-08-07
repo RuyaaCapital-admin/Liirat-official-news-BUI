@@ -65,7 +65,7 @@ const EVENT_CATEGORIES = [
     labelAr: "البنوك المركزية",
   },
   { value: "gdp", labelEn: "GDP", labelAr: "الناتج المحلي" },
-  { value: "retail", labelEn: "Retail Sales", labelAr: "مبيعات التجزئة" },
+  { value: "retail", labelEn: "Retail Sales", labelAr: "مبي��ات التجزئة" },
   { value: "manufacturing", labelEn: "Manufacturing", labelAr: "التصنيع" },
   { value: "housing", labelEn: "Housing", labelAr: "الإسكان" },
   { value: "earnings", labelEn: "Earnings", labelAr: "الأرباح" },
@@ -132,9 +132,21 @@ export default function EnhancedMacroCalendar({
   const [dateTo, setDateTo] = useState<Date>();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
+  // Pagination state
+  const [showAll, setShowAll] = useState(false);
+  const [itemsPerPage] = useState(10);
+
   // AI Analysis state
   const [aiAnalysis, setAiAnalysis] = useState<Record<string, string>>({});
   const [loadingAnalysis, setLoadingAnalysis] = useState<
+    Record<string, boolean>
+  >({});
+
+  // Translation state
+  const [translatedContent, setTranslatedContent] = useState<
+    Record<string, string>
+  >({});
+  const [loadingTranslation, setLoadingTranslation] = useState<
     Record<string, boolean>
   >({});
 
@@ -317,6 +329,33 @@ export default function EnhancedMacroCalendar({
     selectedCategory,
   ]);
 
+  // Paginated events
+  const displayedEvents = useMemo(() => {
+    if (showAll) return filteredEvents;
+    return filteredEvents.slice(0, itemsPerPage);
+  }, [filteredEvents, showAll, itemsPerPage]);
+
+  // Auto-translate events when language changes to Arabic (with debouncing)
+  useEffect(() => {
+    // Translation temporarily disabled due to fetch errors - will re-enable once API is stable
+    if (false && language === "ar" && displayedEvents.length > 0) {
+      // Debounce translation requests to avoid overwhelming the API
+      const timer = setTimeout(() => {
+        displayedEvents.slice(0, 5).forEach((event, index) => {
+          // Stagger requests to avoid rate limiting and reduce API load
+          setTimeout(() => {
+            translateContent(event).catch((error) => {
+              // Silently handle translation failures, fallback already handled in translateContent
+              console.debug("Translation failed for:", event.event);
+            });
+          }, index * 2000); // 2 second delay between requests to reduce load
+        });
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [language, displayedEvents]);
+
   // Handle time period changes
   const handlePeriodChange = (period: string) => {
     setSelectedPeriod(period);
@@ -362,7 +401,19 @@ export default function EnhancedMacroCalendar({
     }
   };
 
-  // Handle AI analysis request
+  // Handle translation request - temporarily simplified to prevent fetch errors
+  const translateContent = async (event: EconomicEvent) => {
+    const eventKey = `${event.event}-${event.country}`;
+
+    // Always return original text for now to prevent fetch errors
+    // Translation functionality will be re-enabled once API connectivity is stable
+    setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
+    return event.event;
+
+    return event.event; // Fallback to original
+  };
+
+  // Handle AI analysis request with better error handling
   const requestAIAnalysis = async (event: EconomicEvent) => {
     if (aiAnalysis[event.event] || loadingAnalysis[event.event]) {
       return;
@@ -371,6 +422,9 @@ export default function EnhancedMacroCalendar({
     setLoadingAnalysis((prev) => ({ ...prev, [event.event]: true }));
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
       const response = await fetch("/api/ai-analysis", {
         method: "POST",
         headers: {
@@ -381,19 +435,24 @@ export default function EnhancedMacroCalendar({
           language: language,
           type: "event",
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const data = await response.json();
-        setAiAnalysis((prev) => ({ ...prev, [event.event]: data.analysis }));
+        if (data.analysis) {
+          setAiAnalysis((prev) => ({ ...prev, [event.event]: data.analysis }));
+        } else {
+          throw new Error("No analysis received");
+        }
       } else {
-        setAiAnalysis((prev) => ({
-          ...prev,
-          [event.event]:
-            language === "ar"
-              ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
-              : "AI analysis currently unavailable",
-        }));
+        // Don't read response body twice - just use status for error
+        console.error(
+          `AI Analysis API error: ${response.status} - ${response.statusText}`,
+        );
+        throw new Error(`API error: ${response.status}`);
       }
     } catch (error) {
       console.error("AI analysis error:", error);
@@ -401,7 +460,7 @@ export default function EnhancedMacroCalendar({
         ...prev,
         [event.event]:
           language === "ar"
-            ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
+            ? "تحليل الذكاء ��لاصطناعي غير متاح حاليًا"
             : "AI analysis currently unavailable",
       }));
     } finally {
@@ -412,187 +471,53 @@ export default function EnhancedMacroCalendar({
   return (
     <div className={cn("w-full space-y-4", className)}>
       {/* Header Controls - Always Visible */}
-      <div className="flex flex-wrap gap-4 items-center justify-between">
-        {/* Left side - Time period selector (always visible) */}
-        <div className="flex items-center gap-2">
-          <Select value={selectedPeriod} onValueChange={handlePeriodChange}>
-            <SelectTrigger className="w-[150px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {TIME_PERIODS.map((period) => (
-                <SelectItem key={period.value} value={period.value}>
-                  {language === "ar" ? period.labelAr : period.labelEn}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <div className="space-y-4">
+        {/* Primary Controls Row */}
+        <div className="flex flex-wrap gap-4 items-center justify-between">
+          {/* Left side - Time period and timezone (always visible) */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                {language === "ar" ? "الفترة:" : "Period:"}
+              </label>
+              <Select value={selectedPeriod} onValueChange={handlePeriodChange}>
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TIME_PERIODS.map((period) => (
+                    <SelectItem key={period.value} value={period.value}>
+                      {language === "ar" ? period.labelAr : period.labelEn}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <Select value={selectedTimezone} onValueChange={setSelectedTimezone}>
-            <SelectTrigger className="w-[180px]">
-              <Globe className="w-4 h-4 mr-2" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {TIMEZONES.map((tz) => (
-                <SelectItem key={tz.value} value={tz.value}>
-                  {tz.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                {language === "ar" ? "التوقيت:" : "Time:"}
+              </label>
+              <Select
+                value={selectedTimezone}
+                onValueChange={setSelectedTimezone}
+              >
+                <SelectTrigger className="w-[140px]">
+                  <Globe className="w-4 h-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TIMEZONES.map((tz) => (
+                    <SelectItem key={tz.value} value={tz.value}>
+                      {tz.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-        {/* Right side - Filter and Refresh */}
-        <div className="flex items-center gap-2">
-          <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2">
-                <Filter className="w-4 h-4" />
-                {language === "ar" ? "فلاتر" : "Filters"}
-                <ChevronDown className="w-4 h-4" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80" align="end">
-              <div className="space-y-4">
-                <h4 className="font-medium">
-                  {language === "ar" ? "خيارات الفلترة" : "Filter Options"}
-                </h4>
-
-                {/* Search */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {language === "ar" ? "البحث" : "Search"}
-                  </label>
-                  <div className="relative">
-                    <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      placeholder={
-                        language === "ar"
-                          ? "البحث في الأحداث..."
-                          : "Search events..."
-                      }
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                {/* Category Filter */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {language === "ar" ? "الفئة" : "Category"}
-                  </label>
-                  <Select
-                    value={selectedCategory}
-                    onValueChange={setSelectedCategory}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {EVENT_CATEGORIES.map((category) => (
-                        <SelectItem key={category.value} value={category.value}>
-                          {language === "ar"
-                            ? category.labelAr
-                            : category.labelEn}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Country Filter */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {language === "ar" ? "الدول" : "Countries"}
-                  </label>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-between"
-                      >
-                        {selectedCountries.length === 0
-                          ? language === "ar"
-                            ? "جميع الدول"
-                            : "All Countries"
-                          : `${selectedCountries.length} ${language === "ar" ? "دولة مختارة" : "selected"}`}
-                        <ChevronDown className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56">
-                      <DropdownMenuItem
-                        onClick={() => setSelectedCountries([])}
-                      >
-                        {language === "ar" ? "جميع الدول" : "All Countries"}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      {COUNTRIES.map((country) => (
-                        <DropdownMenuItem
-                          key={country}
-                          onClick={() => {
-                            setSelectedCountries((prev) =>
-                              prev.includes(country)
-                                ? prev.filter((c) => c !== country)
-                                : [...prev, country],
-                            );
-                          }}
-                        >
-                          <Checkbox
-                            checked={selectedCountries.includes(country)}
-                            className="mr-2"
-                          />
-                          <ReactCountryFlag
-                            countryCode={country}
-                            svg
-                            className="mr-2"
-                          />
-                          {country}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-
-                {/* Importance Filter */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {language === "ar" ? "مستوى الأهمية" : "Importance Level"}
-                  </label>
-                  <div className="flex gap-2">
-                    {[3, 2, 1].map((level) => (
-                      <Button
-                        key={level}
-                        variant={
-                          selectedImportance.includes(level)
-                            ? "default"
-                            : "outline"
-                        }
-                        size="sm"
-                        onClick={() => {
-                          setSelectedImportance((prev) =>
-                            prev.includes(level)
-                              ? prev.filter((l) => l !== level)
-                              : [...prev, level],
-                          );
-                        }}
-                        className={
-                          selectedImportance.includes(level)
-                            ? getImportanceColor(level)
-                            : ""
-                        }
-                      >
-                        {getImportanceLabel(level)}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-
+          {/* Right side - Refresh */}
           <Button
             variant="outline"
             onClick={() => onRefresh && onRefresh()}
@@ -602,36 +527,217 @@ export default function EnhancedMacroCalendar({
             {language === "ar" ? "تحديث" : "Refresh"}
           </Button>
         </div>
+
+        {/* Filters Row - Always Visible */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg">
+          <div className="md:col-span-4 mb-2">
+            <h4 className="font-medium text-sm">
+              {language === "ar" ? "فلاتر" : "Filters"}
+              {(searchTerm ||
+                selectedCountries.length > 0 ||
+                selectedImportance.length < 3 ||
+                selectedCategory !== "all") && (
+                <Badge variant="secondary" className="ml-2 text-xs">
+                  {language === "ar" ? "نشط" : "Active"}
+                </Badge>
+              )}
+            </h4>
+          </div>
+
+          {/* Search */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">
+              {language === "ar" ? "البحث" : "Search"}
+            </label>
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder={
+                  language === "ar" ? "البحث في الأحداث..." : "Search events..."
+                }
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 h-9"
+              />
+            </div>
+          </div>
+
+          {/* Category Filter */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">
+              {language === "ar" ? "الفئة" : "Category"}
+            </label>
+            <Select
+              value={selectedCategory}
+              onValueChange={setSelectedCategory}
+            >
+              <SelectTrigger className="h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {EVENT_CATEGORIES.map((category) => (
+                  <SelectItem key={category.value} value={category.value}>
+                    {language === "ar" ? category.labelAr : category.labelEn}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Countries */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">
+              {language === "ar" ? "الدول" : "Countries"}
+            </label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-between h-9 text-sm"
+                >
+                  {selectedCountries.length === 0
+                    ? language === "ar"
+                      ? "جميع الدول"
+                      : "All Countries"
+                    : `${selectedCountries.length} ${language === "ar" ? "دولة" : "selected"}`}
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuItem onClick={() => setSelectedCountries([])}>
+                  {language === "ar" ? "جميع الدول" : "All Countries"}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {COUNTRIES.map((country) => (
+                  <DropdownMenuItem
+                    key={country}
+                    onClick={() => {
+                      setSelectedCountries((prev) =>
+                        prev.includes(country)
+                          ? prev.filter((c) => c !== country)
+                          : [...prev, country],
+                      );
+                    }}
+                  >
+                    <Checkbox
+                      checked={selectedCountries.includes(country)}
+                      className="mr-2"
+                    />
+                    <ReactCountryFlag
+                      countryCode={country}
+                      svg
+                      className="mr-2"
+                    />
+                    {country}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Importance Filter */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">
+              {language === "ar" ? "مستوى الأهمية" : "Importance"}
+            </label>
+            <div className="flex gap-1">
+              {[3, 2, 1].map((level) => (
+                <Button
+                  key={level}
+                  variant={
+                    selectedImportance.includes(level) ? "default" : "outline"
+                  }
+                  size="sm"
+                  onClick={() => {
+                    setSelectedImportance((prev) =>
+                      prev.includes(level)
+                        ? prev.filter((l) => l !== level)
+                        : [...prev, level],
+                    );
+                  }}
+                  className={cn(
+                    "h-9 px-2 text-xs",
+                    selectedImportance.includes(level)
+                      ? getImportanceColor(level)
+                      : "",
+                  )}
+                >
+                  {getImportanceLabel(level)}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Events Table */}
       <div className="border border-border rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[800px]">
             <thead className="bg-muted/30">
               <tr>
-                <th className="px-4 py-3 text-left text-sm font-medium">
+                <th
+                  className={cn(
+                    "px-4 py-3 text-sm font-medium w-[140px]",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
                   {language === "ar" ? "التاريخ والوقت" : "Date & Time"}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium">
+                <th
+                  className={cn(
+                    "px-4 py-3 text-sm font-medium w-[100px]",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
                   {language === "ar" ? "الدولة" : "Country"}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium">
+                <th
+                  className={cn(
+                    "px-4 py-3 text-sm font-medium w-[200px]",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
                   {language === "ar" ? "الحدث" : "Event"}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium">
+                <th
+                  className={cn(
+                    "px-4 py-3 text-sm font-medium w-[100px]",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
                   {language === "ar" ? "الأهمية" : "Impact"}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium">
+                <th
+                  className={cn(
+                    "px-4 py-3 text-sm font-medium w-[80px]",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
                   {language === "ar" ? "السابق" : "Previous"}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium">
+                <th
+                  className={cn(
+                    "px-4 py-3 text-sm font-medium w-[80px]",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
                   {language === "ar" ? "المتوقع" : "Forecast"}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium">
+                <th
+                  className={cn(
+                    "px-4 py-3 text-sm font-medium w-[80px]",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
                   {language === "ar" ? "الفعلي" : "Actual"}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium">
+                <th
+                  className={cn(
+                    "px-4 py-3 text-sm font-medium w-[120px]",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
                   {language === "ar" ? "الإجراءات" : "Actions"}
                 </th>
               </tr>
@@ -649,28 +755,60 @@ export default function EnhancedMacroCalendar({
                   </td>
                 </tr>
               ) : (
-                filteredEvents.map((event, index) => (
-                  <React.Fragment key={index}>
+                displayedEvents.map((event, index) => (
+                  <React.Fragment key={`${event.event}-${index}`}>
                     <tr className="border-t border-border hover:bg-muted/20">
-                      <td className="px-4 py-3 text-sm">
-                        <div className="flex items-center gap-1">
+                      <td className="px-4 py-3 text-sm align-top">
+                        <div
+                          className={cn(
+                            "flex items-center gap-1 text-xs",
+                            dir === "rtl" ? "justify-end" : "justify-start",
+                          )}
+                        >
                           <Clock className="w-3 h-3 text-muted-foreground" />
-                          {formatDateTime(event.date, event.time)}
+                          <span className="whitespace-nowrap">
+                            {formatDateTime(event.date, event.time)}
+                          </span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm">
-                        <div className="flex items-center gap-2">
+                      <td className="px-4 py-3 text-sm align-top">
+                        <div
+                          className={cn(
+                            "flex items-center gap-2",
+                            dir === "rtl" ? "justify-end" : "justify-start",
+                          )}
+                        >
                           <ReactCountryFlag
                             countryCode={event.country}
                             svg
-                            className="w-4 h-3"
+                            className="w-4 h-3 flex-shrink-0"
                           />
-                          <span>{event.country}</span>
+                          <span className="text-xs">{event.country}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm">
-                        <div className="max-w-xs">
-                          <div className="font-medium">{event.event}</div>
+                      <td className="px-4 py-3 text-sm align-top">
+                        <div className="w-full">
+                          <div
+                            className={cn(
+                              "font-medium text-xs leading-tight",
+                              dir === "rtl" ? "text-right" : "text-left",
+                            )}
+                          >
+                            {language === "ar" &&
+                            translatedContent[`${event.event}-${event.country}`]
+                              ? translatedContent[
+                                  `${event.event}-${event.country}`
+                                ]
+                              : event.event}
+                            {language === "ar" &&
+                              loadingTranslation[
+                                `${event.event}-${event.country}`
+                              ] && (
+                                <span className="ml-2 text-xs text-muted-foreground">
+                                  (translating...)
+                                </span>
+                              )}
+                          </div>
                           {event.category && (
                             <Badge variant="outline" className="mt-1 text-xs">
                               {event.category}
@@ -678,38 +816,83 @@ export default function EnhancedMacroCalendar({
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm">
-                        <Badge className={getImportanceColor(event.importance)}>
-                          {getImportanceLabel(event.importance)}
-                        </Badge>
+                      <td className="px-4 py-3 text-sm align-top">
+                        <div
+                          className={cn(
+                            "flex",
+                            dir === "rtl" ? "justify-end" : "justify-start",
+                          )}
+                        >
+                          <Badge
+                            className={cn(
+                              getImportanceColor(event.importance),
+                              "text-xs",
+                            )}
+                          >
+                            {getImportanceLabel(event.importance)}
+                          </Badge>
+                        </div>
                       </td>
-                      <td className="px-4 py-3 text-sm">
+                      <td
+                        className={cn(
+                          "px-4 py-3 text-xs align-top",
+                          dir === "rtl" ? "text-right" : "text-left",
+                        )}
+                      >
                         {event.previous || "-"}
                       </td>
-                      <td className="px-4 py-3 text-sm">
+                      <td
+                        className={cn(
+                          "px-4 py-3 text-xs align-top",
+                          dir === "rtl" ? "text-right" : "text-left",
+                        )}
+                      >
                         {event.forecast || "-"}
                       </td>
-                      <td className="px-4 py-3 text-sm font-medium">
+                      <td
+                        className={cn(
+                          "px-4 py-3 text-xs font-medium align-top",
+                          dir === "rtl" ? "text-right" : "text-left",
+                        )}
+                      >
                         {event.actual || "-"}
                       </td>
-                      <td className="px-4 py-3 text-sm">
-                        <div className="flex items-center gap-1">
+                      <td className="px-4 py-3 text-sm align-top">
+                        <div
+                          className={cn(
+                            "flex items-center gap-1",
+                            dir === "rtl" ? "justify-end" : "justify-start",
+                          )}
+                        >
                           <Button
-                            variant="ghost"
+                            variant={
+                              aiAnalysis[event.event] ? "default" : "outline"
+                            }
                             size="sm"
                             onClick={() => requestAIAnalysis(event)}
                             disabled={loadingAnalysis[event.event]}
-                            className="h-8 w-8 p-0"
+                            className={cn(
+                              "h-8 px-3 font-medium transition-all duration-200 shadow-sm",
+                              aiAnalysis[event.event]
+                                ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg"
+                                : "hover:bg-primary/10 border-primary/30 hover:border-primary/60",
+                              loadingAnalysis[event.event] && "animate-pulse",
+                            )}
                             title={
                               language === "ar" ? "تحليل ذكي" : "AI Analysis"
                             }
                           >
                             <Bot
                               className={cn(
-                                "w-4 h-4",
+                                "w-4 h-4 mr-1",
                                 loadingAnalysis[event.event] && "animate-spin",
+                                aiAnalysis[event.event] &&
+                                  "text-primary-foreground",
                               )}
                             />
+                            <span className="text-xs font-medium">
+                              {language === "ar" ? "تحليل" : "AI"}
+                            </span>
                           </Button>
                           <Button
                             variant="ghost"
@@ -755,12 +938,35 @@ export default function EnhancedMacroCalendar({
         </div>
       </div>
 
+      {/* Pagination Controls */}
+      {filteredEvents.length > itemsPerPage && (
+        <div className="flex items-center justify-center gap-4 pt-4">
+          <Button
+            variant="outline"
+            onClick={() => setShowAll(!showAll)}
+            className="flex items-center gap-2"
+          >
+            {showAll ? (
+              <>
+                <ChevronDown className="w-4 h-4 rotate-180" />
+                {language === "ar" ? "عرض أقل" : "Show Less"}
+              </>
+            ) : (
+              <>
+                <ChevronDown className="w-4 h-4" />
+                {language === "ar" ? "عرض المزيد" : "Show More"}
+              </>
+            )}
+          </Button>
+        </div>
+      )}
+
       {/* Results Summary */}
       {filteredEvents.length > 0 && (
         <div className="text-sm text-muted-foreground text-center">
           {language === "ar"
-            ? `عرض ${filteredEvents.length} من ${events.length} حدث اقتصادي`
-            : `Showing ${filteredEvents.length} of ${events.length} economic events`}
+            ? `عرض ${displayedEvents.length} من ${filteredEvents.length} حدث اقتصادي (${events.length} المجموع)`
+            : `Showing ${displayedEvents.length} of ${filteredEvents.length} events (${events.length} total)`}
         </div>
       )}
     </div>
