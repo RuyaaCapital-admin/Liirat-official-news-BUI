@@ -487,23 +487,8 @@ export function MacroCalendarTable({
     }
   };
 
-  // Auto-refresh when filters change (with debounce)
-  React.useEffect(() => {
-    // Only refresh if onRefresh is available and we're not on initial load
-    if (!onRefresh) return;
-
-    const timeoutId = setTimeout(() => {
-      const filters = {
-        country: selectedCountry === "all" ? undefined : selectedCountry,
-        importance: selectedImportances,
-        from: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
-        to: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
-      };
-      onRefresh(filters);
-    }, 800); // Increased debounce to 800ms to reduce calls
-
-    return () => clearTimeout(timeoutId);
-  }, [selectedCountry, selectedImportances, selectedDate]); // Removed onRefresh from dependencies to prevent infinite loops
+  // REMOVED auto-refresh to prevent infinite API calls
+  // Refresh only happens manually via Update button
 
   const clearFilters = () => {
     setSearchTerm("");
