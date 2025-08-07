@@ -121,6 +121,10 @@ export default function Index() {
           if (data.error) {
             setEventsError(data.error);
             setEconomicEvents([]);
+          } else if (data.message && data.events?.length === 0) {
+            // Handle API access restricted message
+            setEventsError(data.message);
+            setEconomicEvents([]);
           } else {
             setEconomicEvents(data.events || []);
             setEventsError(null);
@@ -336,7 +340,7 @@ export default function Index() {
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                       <span className="ml-2">
                         {language === "ar"
-                          ? "جاري تحميل ��لتقويم الاقتصادي..."
+                          ? "جاري تحميل التقويم الاق��صادي..."
                           : "Loading economic calendar..."}
                       </span>
                     </div>
