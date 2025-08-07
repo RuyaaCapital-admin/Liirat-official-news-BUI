@@ -74,7 +74,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     { symbol: "USDJPY", name: "USD/JPY", nameAr: "دولار/ين" },
     { symbol: "USDCHF", name: "USD/CHF", nameAr: "دولار/فرنك" },
     { symbol: "AUDUSD", name: "AUD/USD", nameAr: "دولار أسترالي/دولار" },
-    { symbol: "USDCAD", name: "USD/CAD", nameAr: "دولار/دولار كندي" },
+    { symbol: "USDCAD", name: "USD/CAD", nameAr: "دولار/دولار كن��ي" },
     { symbol: "NZDUSD", name: "NZD/USD", nameAr: "دولار نيوزيلندي/دولار" },
     { symbol: "EURGBP", name: "EUR/GBP", nameAr: "يورو/جنيه" },
     { symbol: "EURJPY", name: "EUR/JPY", nameAr: "يورو/ين" },
@@ -315,28 +315,29 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
         if (!alert.isActive) continue;
 
         try {
-          // Fetch real-time price from our API
-          const response = await fetch(`/api/price-alert?symbol=${alert.pair}`);
+          // Fetch real-time price from EODHD API
+          const response = await fetch(`/api/eodhd-price?symbol=${alert.pair}`);
 
           // Check if response is HTML (error page) instead of JSON
           const contentType = response.headers.get("content-type");
           if (!contentType || !contentType.includes("application/json")) {
             console.warn(
-              `API returned HTML for ${alert.pair}, skipping alert check`,
+              `EODHD API returned HTML for ${alert.pair}, skipping alert check`,
             );
             continue;
           }
 
           if (!response.ok) {
             console.warn(
-              `Failed to fetch price for ${alert.pair}:`,
+              `Failed to fetch price for ${alert.pair} from EODHD:`,
               response.statusText,
             );
             continue;
           }
 
           const data = await response.json();
-          const currentPrice = data.price;
+          const priceData = data.prices?.[0];
+          const currentPrice = priceData?.price;
 
           if (!currentPrice) continue;
 
