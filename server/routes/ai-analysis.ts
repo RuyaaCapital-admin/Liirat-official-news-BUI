@@ -58,7 +58,7 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
 
     // Create analysis prompt with the exact system prompt requested
     const systemPrompt = language === "ar"
-      ? "لخص هذا الحدث/الخبر وتأثيره المحتمل على السوق بطريقة قصيرة وصادقة وواضحة. اعتمد فقط على محتوى الحدث، لا تعشوائي أبداً، لا تخمن. ركز على ما يحتاج المتداول لمعرفته - قدم فائدة واضحة، بدون تعقيد."
+      ? "لخص هذا الحدث/��لخبر وتأثيره المحتمل على السوق بطريقة قصيرة وصادقة وواضحة. اعتمد فقط على محتوى الحدث، لا تعشوائي أبداً، لا تخمن. ركز على ما يحتاج المتداول لمعرفته - قدم فائدة واضحة، بدون تعقيد."
       : "Summarize this event/news and its likely market effect in a short, honest, and clear way. Only base analysis on the event content, never randomize, never guess. Focus on what a trader needs to know — deliver clear benefit, no complexity.";
 
     let userPrompt = "";
@@ -194,7 +194,7 @@ export const handleTranslation: RequestHandler = async (req, res) => {
       },
       signal: controller.signal,
       body: JSON.stringify({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "user",
