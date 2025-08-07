@@ -585,10 +585,17 @@ export function MacroCalendarTable({
                 variant="outline"
                 className={cn("justify-between", dir === "rtl" && "text-right")}
               >
-                <span>
+                <span className="flex items-center gap-2">
                   {selectedCountry === "all"
                     ? t("Currency/Country", "العملة/البلد")
-                    : `${getCountryFlag(selectedCountry)} ${selectedCountry}`}
+                    : (
+                        <>
+                          <div className="flex items-center">
+                            {getCountryFlag(selectedCountry)}
+                          </div>
+                          <span>{selectedCountry}</span>
+                        </>
+                      )}
                 </span>
                 <ChevronDown className="h-4 w-4 opacity-50" />
               </Button>
