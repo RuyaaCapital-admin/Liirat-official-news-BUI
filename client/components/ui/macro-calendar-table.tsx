@@ -863,7 +863,7 @@ export function MacroCalendarTable({
                   },
                   {
                     value: "1",
-                    label: t("Low Impact", "منخفض التأثير"),
+                    label: t("Low Impact", "من��فض التأثير"),
                     color: "text-green-600",
                   },
                 ].map((importance) => (
@@ -1208,7 +1208,14 @@ export function MacroCalendarTable({
                         )}
                       >
                         <div className="font-medium max-w-xs">
-                          {event.event}
+                          {language === "ar" && translatedContent[`${event.event}-${event.country}`]
+                            ? translatedContent[`${event.event}-${event.country}`]
+                            : event.event}
+                          {language === "ar" && loadingTranslation[`${event.event}-${event.country}`] && (
+                            <span className="ml-2 text-xs text-muted-foreground animate-pulse">
+                              (ترجمة...)
+                            </span>
+                          )}
                         </div>
                       </td>
                       <td
