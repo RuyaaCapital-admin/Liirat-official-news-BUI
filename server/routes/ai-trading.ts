@@ -152,7 +152,7 @@ USER MESSAGE: ${message}`;
     const response =
       completion.choices[0]?.message?.content ||
       (language === "ar"
-        ? "عذراً، لم أستطع إنشاء رد."
+        ? "عذراً، لم ��ستطع إنشاء رد."
         : "Sorry, I could not generate a response.");
 
     res.json({
@@ -168,7 +168,7 @@ USER MESSAGE: ${message}`;
     const { language = "ar" } = req.body;
     const errorMessage =
       language === "ar"
-        ? "عذراً، أوا��ه صعوبات تقنية. يرجى المحاولة مرة أخرى."
+        ? "عذراً، أواجه صعوبات تقنية. يرجى المحاولة مرة أخرى."
         : "Sorry, I'm experiencing technical difficulties. Please try again.";
 
     res.status(500).json({
@@ -231,7 +231,7 @@ export const handleChartIndicator = async (req: Request, res: Response) => {
 
     // Fetch real price data for the symbol
     const response = await fetch(
-      `http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+      `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
     );
     const data = await response.json();
 
@@ -287,7 +287,7 @@ export const handleTechnicalAnalysis = async (req: Request, res: Response) => {
 
     // Fetch real market data
     const response = await fetch(
-      `http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+      `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
     );
     const data = await response.json();
 
