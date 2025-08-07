@@ -461,7 +461,7 @@ export default function Index() {
                         className="rounded-lg overflow-hidden"
                         language={language}
                         dir={dir}
-                        onRefresh={() => fetchEconomicEvents(language)}
+                        onRefresh={(filters) => fetchEconomicEvents(language, filters)}
                       />
                     </div>
                   )}
@@ -526,7 +526,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيهات ذكية لأزواج العملات مع مراقبة ال��سعار في الوقت الفعلي"
+                    ? "قم بإنشاء تنبيهات ذكية لأزواج العملات مع مراقبة الأسعار في الوقت الفعلي"
                     : "Create intelligent alerts for currency pairs with real-time price monitoring"}
                 </p>
               </div>
