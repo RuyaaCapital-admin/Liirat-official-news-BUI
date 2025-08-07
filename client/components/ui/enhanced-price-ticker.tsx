@@ -379,9 +379,9 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
                 <div className="text-right">
                   <div className="font-mono text-sm font-bold">
                     {data.status === "connecting"
-                      ? "..."
+                      ? "Demo"
                       : data.status === "disconnected"
-                        ? "Loading..."
+                        ? "Offline"
                         : formatPrice(data.price, data.symbol)}
                   </div>
                   <div
