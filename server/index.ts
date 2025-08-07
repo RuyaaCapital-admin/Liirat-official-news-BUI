@@ -61,5 +61,12 @@ export function createServer() {
   app.get("/eodhd-price", handleEODHDPrice);
   app.use("/", eodhd_news);
 
+  // AI Analysis routes (secure backend only)
+  app.post("/ai-analysis", handleAIAnalysis);
+  app.post("/translate", handleTranslation);
+
+  // Real-time news route
+  app.get("/realtime-news", handleRealtimeNews);
+
   return app;
 }
