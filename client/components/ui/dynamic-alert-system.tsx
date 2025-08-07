@@ -430,7 +430,7 @@ export default function DynamicAlertSystem({
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-2xl font-bold flex items-center gap-2">
             <Bell className="h-6 w-6 text-primary" />
-            {language === "ar" ? "نظام التنبيهات الذكي" : "Smart Alert System"}
+            {language === "ar" ? "نظام التنب��هات الذكي" : "Smart Alert System"}
           </CardTitle>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
@@ -653,7 +653,7 @@ export default function DynamicAlertSystem({
                 <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>
                   {language === "ar"
-                    ? "لا توج�� تنبيهات حالياً"
+                    ? "لا توجد تنبيهات حالياً"
                     : "No alerts yet"}
                 </p>
                 <p className="text-sm">
