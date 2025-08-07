@@ -18,6 +18,15 @@ export interface EconomicEvent {
 
 export interface EconomicEventsResponse {
   events: EconomicEvent[];
+  total?: number;
+  filters?: {
+    country?: string;
+    importance?: string;
+    from?: string;
+    to?: string;
+    limit?: string;
+  };
+  error?: string;
 }
 
 // EODHD News
