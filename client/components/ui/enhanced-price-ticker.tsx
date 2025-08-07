@@ -285,6 +285,14 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         className,
       )}
     >
+      {/* Network Status Indicator */}
+      {(!isOnline || !isApiAvailable) && (
+        <div className="absolute top-1 right-2 z-10 flex items-center gap-1 text-xs text-muted-foreground bg-background/80 px-2 py-1 rounded">
+          <WifiOff className="w-3 h-3" />
+          {!isOnline ? "Offline" : isDegraded ? "Limited" : "No Data"}
+        </div>
+      )}
+
       <div
         ref={scrollRef}
         className={cn(
