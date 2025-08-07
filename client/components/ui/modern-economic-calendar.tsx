@@ -114,6 +114,23 @@ export function ModernEconomicCalendar({
     );
   }, [searchQuery, searchSuggestions]);
 
+  // Auto-translate event titles when language changes to Arabic
+  useEffect(() => {
+    if (language === "ar" && filteredEvents.length > 0) {
+      const timer = setTimeout(() => {
+        filteredEvents.slice(0, 5).forEach((event, index) => {
+          setTimeout(() => {
+            translateEventTitle(event).catch((error) => {
+              console.debug("Translation failed for:", event.event);
+            });
+          }, index * 1000); // 1 second delay between requests
+        });
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [language, filteredEvents]);
+
   // Fetch real economic events data from API
   useEffect(() => {
     async function fetchEvents() {
@@ -257,7 +274,7 @@ export function ModernEconomicCalendar({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message: `قم بتحليل هذا الحدث الاقتصادي: ${event.event} في ${event.country}. القيم: فعلي: ${event.actual || "غير متوفر"}, ��توقع: ${event.forecast || "غير متوفر"}, سابق: ${event.previous || "غير متوفر"}`,
+          message: `قم بتحليل هذا الحدث الاقتصادي: ${event.event} في ${event.country}. القيم: فعلي: ${event.actual || "غير متوفر"}, متوقع: ${event.forecast || "غير متوفر"}, سابق: ${event.previous || "غير متوفر"}`,
           language: "ar",
         }),
       });
@@ -656,7 +673,16 @@ export function ModernEconomicCalendar({
                       <span className="text-sm">{event.country}</span>
                     </div>
 
-                    <div className="font-medium text-sm">{event.event}</div>
+                    <div className="font-medium text-sm">
+                      {language === "ar" && translatedContent[`${event.id}-${event.event}`]
+                        ? translatedContent[`${event.id}-${event.event}`]
+                        : event.event}
+                      {language === "ar" && loadingTranslation[`${event.id}-${event.event}`] && (
+                        <span className="ml-2 text-xs text-muted-foreground animate-pulse">
+                          (ترجمة...)
+                        </span>
+                      )}
+                    </div>
 
                     <div className="flex items-center gap-2">
                       <div
@@ -724,7 +750,16 @@ export function ModernEconomicCalendar({
                       </div>
                     </div>
 
-                    <div className="font-medium">{event.event}</div>
+                    <div className="font-medium">
+                      {language === "ar" && translatedContent[`${event.id}-${event.event}`]
+                        ? translatedContent[`${event.id}-${event.event}`]
+                        : event.event}
+                      {language === "ar" && loadingTranslation[`${event.id}-${event.event}`] && (
+                        <span className="ml-2 text-xs text-muted-foreground animate-pulse">
+                          (ترجمة...)
+                        </span>
+                      )}
+                    </div>
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
