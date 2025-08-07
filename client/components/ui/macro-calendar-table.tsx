@@ -1125,6 +1125,22 @@ export function MacroCalendarTable({
                         {event.previous || "-"}
                       </span>
                     </td>
+                    <td
+                      className={cn(
+                        "p-3",
+                        dir === "rtl" ? "text-right" : "text-left",
+                      )}
+                    >
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0 hover:bg-primary/10"
+                        onClick={() => onCreateAlert?.(event)}
+                        title={t("Create Alert for this Event", "إنشاء تنبيه لهذا الحدث")}
+                      >
+                        <Bell className="h-4 w-4" />
+                      </Button>
+                    </td>
                   </tr>
                 ))
               )}
