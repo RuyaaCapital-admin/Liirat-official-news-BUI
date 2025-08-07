@@ -52,17 +52,11 @@ interface NewsTableProps {
 
 export default function RealtimeNewsTable({ className }: NewsTableProps) {
   const { language, dir } = useLanguage();
-  const { addAlert } = useAlerts();
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [filteredArticles, setFilteredArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [itemsToShow, setItemsToShow] = useState(10);
-
-  // Alert creation state
-  const [showAlertDialog, setShowAlertDialog] = useState(false);
-  const [selectedArticle, setSelectedArticle] = useState<NewsArticle | null>(null);
-  const [alertTiming, setAlertTiming] = useState<string>("instant");
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
@@ -288,7 +282,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
 
     if (timing === "instant") {
       message = language === "ar"
-        ? `تن��يه فوري للخبر: ${article.title.substring(0, 80)}...`
+        ? `تنبيه فوري للخبر: ${article.title.substring(0, 80)}...`
         : `Instant news alert: ${article.title.substring(0, 80)}...`;
       eventName = language === "ar" ? "تنبيه خبر فوري" : "Instant News Alert";
     } else {
