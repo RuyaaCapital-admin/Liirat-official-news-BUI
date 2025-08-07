@@ -99,12 +99,19 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
 
         if (r.ok && r.data) {
           const item = r.data;
+
+          // Handle cases where EODHD returns "NA" for current data
+          const close = item.close === 'NA' || item.close === null ? item.previousClose : item.close;
+          const change = item.change === 'NA' || item.change === null ? 0 : item.change;
+          const changePct = item.change_p === 'NA' || item.change_p === null ? 0 : item.change_p;
+          const timestamp = item.timestamp === 'NA' || item.timestamp === null ? Date.now() : item.timestamp;
+
           const priceData = {
             symbol: symbol,
-            price: +(item.close ?? item.price ?? 0),
-            change: +(item.change ?? 0),
-            changePct: +(item.change_p ?? item.change_percent ?? 0),
-            ts: +(item.timestamp ?? item.ts ?? Date.now()),
+            price: +(close ?? item.price ?? 0),
+            change: +(change ?? 0),
+            changePct: +(changePct ?? 0),
+            ts: +(timestamp ?? Date.now()),
           };
           console.log(`✅ Success for ${symbol}:`, priceData);
           results.push(priceData);
