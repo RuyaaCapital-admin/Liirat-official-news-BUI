@@ -112,7 +112,6 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
           };
           results.push(priceData);
         } else {
-          console.warn(`❌ Failed response for ${symbol}:`, r);
           // Add placeholder for failed symbols
           results.push({
             symbol: symbol,
