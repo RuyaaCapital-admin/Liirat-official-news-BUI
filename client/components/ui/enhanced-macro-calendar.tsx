@@ -132,6 +132,10 @@ export default function EnhancedMacroCalendar({
   const [dateTo, setDateTo] = useState<Date>();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
+  // Pagination state
+  const [showAll, setShowAll] = useState(false);
+  const [itemsPerPage] = useState(10);
+
   // AI Analysis state
   const [aiAnalysis, setAiAnalysis] = useState<Record<string, string>>({});
   const [loadingAnalysis, setLoadingAnalysis] = useState<
@@ -316,6 +320,12 @@ export default function EnhancedMacroCalendar({
     selectedImportance,
     selectedCategory,
   ]);
+
+  // Paginated events
+  const displayedEvents = useMemo(() => {
+    if (showAll) return filteredEvents;
+    return filteredEvents.slice(0, itemsPerPage);
+  }, [filteredEvents, showAll, itemsPerPage]);
 
   // Handle time period changes
   const handlePeriodChange = (period: string) => {
@@ -649,7 +659,7 @@ export default function EnhancedMacroCalendar({
                   </td>
                 </tr>
               ) : (
-                filteredEvents.map((event, index) => (
+                displayedEvents.map((event, index) => (
                   <React.Fragment key={index}>
                     <tr className="border-t border-border hover:bg-muted/20">
                       <td className="px-4 py-3 text-sm">
@@ -695,21 +705,31 @@ export default function EnhancedMacroCalendar({
                       <td className="px-4 py-3 text-sm">
                         <div className="flex items-center gap-1">
                           <Button
-                            variant="ghost"
+                            variant={aiAnalysis[event.event] ? "default" : "outline"}
                             size="sm"
                             onClick={() => requestAIAnalysis(event)}
                             disabled={loadingAnalysis[event.event]}
-                            className="h-8 w-8 p-0"
+                            className={cn(
+                              "h-8 px-3 font-medium transition-all duration-200",
+                              aiAnalysis[event.event]
+                                ? "bg-primary text-primary-foreground shadow-md hover:shadow-lg"
+                                : "hover:bg-primary/10 border-primary/20",
+                              loadingAnalysis[event.event] && "animate-pulse"
+                            )}
                             title={
                               language === "ar" ? "تحليل ذكي" : "AI Analysis"
                             }
                           >
                             <Bot
                               className={cn(
-                                "w-4 h-4",
+                                "w-4 h-4 mr-1",
                                 loadingAnalysis[event.event] && "animate-spin",
+                                aiAnalysis[event.event] && "text-primary-foreground"
                               )}
                             />
+                            <span className="text-xs">
+                              {language === "ar" ? "تحليل" : "AI"}
+                            </span>
                           </Button>
                           <Button
                             variant="ghost"
@@ -755,12 +775,35 @@ export default function EnhancedMacroCalendar({
         </div>
       </div>
 
+      {/* Pagination Controls */}
+      {filteredEvents.length > itemsPerPage && (
+        <div className="flex items-center justify-center gap-4 pt-4">
+          <Button
+            variant="outline"
+            onClick={() => setShowAll(!showAll)}
+            className="flex items-center gap-2"
+          >
+            {showAll ? (
+              <>
+                <ChevronDown className="w-4 h-4 rotate-180" />
+                {language === "ar" ? "عرض أقل" : "Show Less"}
+              </>
+            ) : (
+              <>
+                <ChevronDown className="w-4 h-4" />
+                {language === "ar" ? "عرض المزيد" : "Show More"}
+              </>
+            )}
+          </Button>
+        </div>
+      )}
+
       {/* Results Summary */}
       {filteredEvents.length > 0 && (
         <div className="text-sm text-muted-foreground text-center">
           {language === "ar"
-            ? `عرض ${filteredEvents.length} من ${events.length} حدث اقتصادي`
-            : `Showing ${filteredEvents.length} of ${events.length} economic events`}
+            ? `عرض ${displayedEvents.length} من ${filteredEvents.length} حدث اقتصادي (${events.length} المجموع)`
+            : `Showing ${displayedEvents.length} of ${filteredEvents.length} events (${events.length} total)`}
         </div>
       )}
     </div>
