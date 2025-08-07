@@ -479,11 +479,34 @@ export default function EnhancedMacroCalendar({
           throw new Error("No analysis received");
         }
       } else {
-        // Don't read response body twice - just use status for error
+        // Handle specific API key errors
+        const errorData = await response.json().catch(() => ({}));
         console.error(
           `AI Analysis API error: ${response.status} - ${response.statusText}`,
         );
-        throw new Error(`API error: ${response.status}`);
+
+        if (response.status === 401) {
+          // API key not configured or invalid
+          setAiAnalysis((prev) => ({
+            ...prev,
+            [event.event]:
+              language === "ar"
+                ? "⚠️ مفتاح OpenAI API غير صحيح أو غير مُعدّ. يرجى إعداد مفتاح صحيح في متغيرات البيئة."
+                : "⚠️ OpenAI API key is invalid or not configured. Please set a valid API key in environment variables.",
+          }));
+          return; // Exit early to avoid throwing error
+        } else if (response.status === 500) {
+          setAiAnalysis((prev) => ({
+            ...prev,
+            [event.event]:
+              language === "ar"
+                ? "❌ خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقاً."
+                : "❌ Server error. Please try again later.",
+          }));
+          return; // Exit early to avoid throwing error
+        } else {
+          throw new Error(`API error: ${response.status}`);
+        }
       }
     } catch (error) {
       console.error("AI analysis error:", error);
@@ -1014,7 +1037,7 @@ export default function EnhancedMacroCalendar({
       {filteredEvents.length > 0 && (
         <div className="text-sm text-muted-foreground text-center">
           {language === "ar"
-            ? `عرض ${displayedEvents.length} من ${filteredEvents.length} حدث اقتصادي (${events.length} المجموع)`
+            ? `عرض ${displayedEvents.length} من ${filteredEvents.length} حد�� اقتصادي (${events.length} المجموع)`
             : `Showing ${displayedEvents.length} of ${filteredEvents.length} events (${events.length} total)`}
         </div>
       )}
