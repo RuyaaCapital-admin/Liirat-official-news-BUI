@@ -217,25 +217,44 @@ export default function Index() {
         setEconomicEvents([]);
       }
     } catch (error) {
-      console.error("Failed to fetch economic events:", error);
+    console.error("Failed to fetch economic events:", error);
 
-      // NO MOCK DATA - show only real API data
-      let errorMessage =
-        "Failed to load economic data. Please check your connection and try again.";
-      if (error instanceof TypeError && error.message.includes("fetch")) {
-        errorMessage =
-          "Connection failed. Please check your internet connection.";
-      } else if (error instanceof Error && error.message.includes("aborted")) {
-        errorMessage = "Request timeout. Please try again.";
-      } else if (error instanceof Error) {
-        errorMessage = `API unavailable: ${error.message}`;
+    // Provide user-friendly error messages based on error type
+    let errorMessage: string;
+
+    if (error instanceof Error) {
+      if (error.message.includes("Network connection failed")) {
+        errorMessage = language === "ar"
+          ? "خطأ في الاتصال بالشبكة. يرجى التحقق من اتصال الإنترنت والم��اولة مرة أخرى."
+          : "Network connection failed. Please check your internet connection and try again.";
+      } else if (error.message.includes("Request timeout")) {
+        errorMessage = language === "ar"
+          ? "انتهت مهلة الطلب. يرجى المحاولة مرة أخرى."
+          : "Request timeout. Please try again.";
+      } else if (error.message.includes("API key")) {
+        errorMessage = language === "ar"
+          ? "خطأ في مفتاح API. يرجى التواصل مع الدعم الفني."
+          : "API authentication error. Please contact support.";
+      } else if (error.message.includes("Rate limit")) {
+        errorMessage = language === "ar"
+          ? "تم تجاوز حد الاستخدام. يرجى الانتظار والمحاولة لاحقاً."
+          : "Rate limit exceeded. Please wait and try again later.";
+      } else {
+        errorMessage = language === "ar"
+          ? `خطأ في الخدمة: ${error.message}`
+          : `Service error: ${error.message}`;
       }
-
-      setEventsError(errorMessage);
-      setEconomicEvents([]); // Empty array - no mock data
-    } finally {
-      setIsLoadingEvents(false);
+    } else {
+      errorMessage = language === "ar"
+        ? "خطأ غير معروف. يرجى المحاولة مرة أخرى."
+        : "Unknown error. Please try again.";
     }
+
+    setEventsError(errorMessage);
+    setEconomicEvents([]); // Empty array - no mock data
+  } finally {
+    setIsLoadingEvents(false);
+  }
   };
 
   // Initial fetch on mount and language change
@@ -550,7 +569,7 @@ export default function Index() {
                             // Show success feedback
                             const successMessage =
                               language === "ar"
-                                ? `تم إنشاء تنبيه للحدث الاقتصادي: ${event.event}`
+                                ? `ت�� إنشاء تنبيه للحدث الاقتصادي: ${event.event}`
                                 : `Alert created for economic event: ${event.event}`;
 
                             addAlert({
