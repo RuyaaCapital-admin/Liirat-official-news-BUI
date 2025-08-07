@@ -481,8 +481,8 @@ export default function EnhancedMacroCalendar({
           throw new Error("No analysis received");
         }
       } else {
-        const errorData = await response.json();
-        console.error(`AI Analysis API error: ${response.status}`, errorData);
+        // Don't read response body twice - just use status for error
+        console.error(`AI Analysis API error: ${response.status} - ${response.statusText}`);
         throw new Error(`API error: ${response.status}`);
       }
     } catch (error) {
