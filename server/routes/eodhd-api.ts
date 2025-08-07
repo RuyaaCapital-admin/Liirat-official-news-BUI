@@ -86,26 +86,47 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
   }
 
   try {
-    const base = symbolList[0].toUpperCase();
-    const response = await eodFetch(`/real-time/${encodeURIComponent(base)}`, {
-      s: symbolList.slice(1).join(","),
-    });
+    // Fetch each symbol individually to ensure reliability
+    const results = [];
 
-    const r = await response.json();
-    if (!r.ok) {
-      return res.status(502).json(r);
+    for (const symbol of symbolList) {
+      try {
+        const response = await eodFetch(`/real-time/${encodeURIComponent(symbol.toUpperCase())}`);
+        const r = await response.json();
+
+        if (r.ok && r.data) {
+          const item = r.data;
+          results.push({
+            symbol: symbol,
+            price: +(item.close ?? item.price ?? 0),
+            change: +(item.change ?? 0),
+            changePct: +(item.change_p ?? item.change_percent ?? 0),
+            ts: +(item.timestamp ?? item.ts ?? Date.now()),
+          });
+        } else {
+          // Add placeholder for failed symbols
+          results.push({
+            symbol: symbol,
+            price: 0,
+            change: 0,
+            changePct: 0,
+            ts: Date.now(),
+          });
+        }
+      } catch (symbolError) {
+        console.warn(`Failed to fetch ${symbol}:`, symbolError);
+        // Add placeholder for failed symbols
+        results.push({
+          symbol: symbol,
+          price: 0,
+          change: 0,
+          changePct: 0,
+          ts: Date.now(),
+        });
+      }
     }
 
-    const arr = Array.isArray(r.data) ? r.data : [r.data];
-    const out = arr.map((x: any) => ({
-      symbol: x.code || x.symbol,
-      price: +(x.close ?? x.price),
-      change: +(x.change ?? 0),
-      changePct: +(x.change_p ?? x.change_percent ?? 0),
-      ts: +(x.timestamp ?? x.ts ?? 0),
-    }));
-
-    res.status(200).json({ ok: true, items: out });
+    res.status(200).json({ ok: true, items: results });
   } catch (error) {
     res
       .status(500)
