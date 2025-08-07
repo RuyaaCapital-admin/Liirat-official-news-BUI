@@ -41,19 +41,81 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
+    // Check if user is asking for real-time price data
+    const isPriceQuery = /\b(price|سعر|أسعار|EUR|USD|GBP|JPY|BTC|ETH|bitcoin|forex)\b/i.test(message);
+    const isNewsQuery = /\b(news|أخبار|events|أحداث|calendar|تقويم)\b/i.test(message);
+
+    let realTimeData = "";
+
+    // Fetch real EODHD data for price queries
+    if (isPriceQuery) {
+      try {
+        // Extract symbol from message or use popular ones
+        const symbols = ["EURUSD", "GBPUSD", "USDJPY", "BTCUSD"];
+        const pricePromises = symbols.map(async (symbol) => {
+          try {
+            const response = await fetch(`${req.headers.origin || 'http://localhost:5000'}/api/eodhd-price?symbol=${symbol}`);
+            if (response.ok) {
+              const data = await response.json();
+              return data.prices?.[0];
+            }
+          } catch (error) {
+            console.warn(`Failed to fetch price for ${symbol}:`, error);
+          }
+          return null;
+        });
+
+        const priceResults = await Promise.all(pricePromises);
+        const validPrices = priceResults.filter(Boolean);
+
+        if (validPrices.length > 0) {
+          realTimeData = language === "ar"
+            ? `البيانات المباشرة من EODHD (${new Date().toLocaleString('ar-SA')}):
+${validPrices.map(p => `• ${p.symbol}: ${p.price?.toFixed(4) || 'N/A'} (${p.change_percent >= 0 ? '+' : ''}${p.change_percent?.toFixed(2) || '0'}%)`).join('\n')}`
+            : `Live EODHD data (${new Date().toLocaleString()}):
+${validPrices.map(p => `• ${p.symbol}: ${p.price?.toFixed(4) || 'N/A'} (${p.change_percent >= 0 ? '+' : ''}${p.change_percent?.toFixed(2) || '0'}%)`).join('\n')}`;
+        }
+      } catch (error) {
+        console.error("Error fetching price data:", error);
+      }
+    }
+
+    // Fetch real EODHD economic events for news queries
+    if (isNewsQuery) {
+      try {
+        const response = await fetch(`${req.headers.origin || 'http://localhost:5000'}/api/eodhd-calendar?limit=5&importance=3`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.events && data.events.length > 0) {
+            realTimeData += (realTimeData ? '\n\n' : '') + (language === "ar"
+              ? `أحداث اقتصادية مهمة من EODHD:
+${data.events.slice(0, 3).map((e: any) => `• ${e.event} (${e.country}) - ${new Date(e.date).toLocaleDateString('ar-SA')}`).join('\n')}`
+              : `Important economic events from EODHD:
+${data.events.slice(0, 3).map((e: any) => `• ${e.event} (${e.country}) - ${new Date(e.date).toLocaleDateString()}`).join('\n')}`);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching economic events:", error);
+      }
+    }
+
     const systemPrompt = `You are Liirat News AI Assistant, a professional economic and financial news agent serving users in both Arabic and English.
 
 CORE FUNCTIONS:
 • Instantly deliver economic calendar events, real-time news, and market price alerts
 • Explain news/event impact on markets in a concise, user-friendly way—no lengthy or complex answers
 • Always detect and reply in the user's language (${language === "ar" ? "Arabic" : "English"}). Never mix languages in a single reply
+• Use ONLY real EODHD data provided below - NEVER invent or guess prices/events
+
+REAL-TIME EODHD DATA:
+${realTimeData || (language === "ar" ? "لا توجد بيانات EODHD متاحة حالياً" : "No EODHD data available currently")}
 
 PROFESSIONAL STANDARDS:
 • Never reveal internal methods, private information, or implementation details
 • Never leave your defined role. Never answer non-economic or off-topic questions
 • Never guess, assume, or provide uncertain information. If data is unavailable or unclear, state so directly
 • Always act confidently and professionally—no weak language, no hedging, no "maybe", "I guess", or "possibly"
-• When explaining market impact, refer to specific events/data, and when possible, include date/time for context
+• When explaining market impact, refer to specific events/data with exact timestamps from EODHD data above
 
 GREETING RESPONSE (always the same):
 ${
@@ -67,6 +129,7 @@ ROLE RESTRICTIONS (absolute):
 • Never provide any non-economic advice or information, even if asked repeatedly
 • Never discuss internal logic, AI, your limitations, or "how you work"
 • Always keep answers short, clear, and actionable
+• ONLY use the real EODHD data provided above - no mock or example data
 
 ERROR RESPONSES:
 If user's request is outside your scope:
@@ -76,16 +139,17 @@ ${
     : "I'm only able to assist with economic and financial news or market data. Please ask about these topics."
 }
 
-If real-time data is unavailable:
+If real-time EODHD data is unavailable:
 ${
   language === "ar"
-    ? "أواجه حالياً مشكلة في جلب البيانات الحية. يرجى تحديد الخبر أو الرسم البياني الذي تحتاج لمساعدتي به، وسأساعدك بما هو متوفر لدي."
-    : "I'm facing technical issues fetching live data. Please specify the news or chart you need help with, and I'll assist based on the latest available information."
+    ? "عذراً، بيانات EODHD غير متاحة حالياً بسبب قيود الوصول لـ API. يرجى المحاولة لاحقاً."
+    : "Sorry, EODHD data is currently unavailable due to API access restrictions. Please try again later."
 }
 
 RESPONSE FORMAT:
-• Present data clearly: calendar items in tables, news headlines in bullet format, real-time prices in tickers
+• Present EODHD data clearly with timestamps
 • Keep responses concise and actionable—no lengthy explanations unless specifically requested
+• Always mention EODHD as the data source
 • This is for educational and informational purposes only, not investment advice`;
 
     console.log("Sending request to OpenAI with message:", message);
