@@ -56,7 +56,7 @@ interface EnhancedMacroCalendarProps {
 
 // Economic event categories
 const EVENT_CATEGORIES = [
-  { value: "all", labelEn: "All Categories", labelAr: "جميع الفئات" },
+  { value: "all", labelEn: "All Categories", labelAr: "جميع الفئا��" },
   { value: "inflation", labelEn: "Inflation", labelAr: "التضخم" },
   { value: "employment", labelEn: "Employment", labelAr: "التوظيف" },
   {
@@ -141,6 +141,10 @@ export default function EnhancedMacroCalendar({
   const [loadingAnalysis, setLoadingAnalysis] = useState<
     Record<string, boolean>
   >({});
+
+  // Translation state
+  const [translatedContent, setTranslatedContent] = useState<Record<string, string>>({});
+  const [loadingTranslation, setLoadingTranslation] = useState<Record<string, boolean>>({});
 
   // Helper functions
   const getImportanceColor = (importance: number) => {
@@ -370,6 +374,47 @@ export default function EnhancedMacroCalendar({
         category: selectedCategory !== "all" ? selectedCategory : undefined,
       });
     }
+  };
+
+  // Handle translation request
+  const translateContent = async (event: EconomicEvent) => {
+    const eventKey = `${event.event}-${event.country}`;
+
+    if (translatedContent[eventKey] || loadingTranslation[eventKey]) {
+      return translatedContent[eventKey];
+    }
+
+    if (language !== "ar") {
+      return event.event; // Return original if not Arabic mode
+    }
+
+    setLoadingTranslation((prev) => ({ ...prev, [eventKey]: true }));
+
+    try {
+      const response = await fetch("/api/translate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: event.event,
+          targetLanguage: "ar",
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const translated = data.translatedText || event.event;
+        setTranslatedContent((prev) => ({ ...prev, [eventKey]: translated }));
+        return translated;
+      }
+    } catch (error) {
+      console.error("Translation error:", error);
+    } finally {
+      setLoadingTranslation((prev) => ({ ...prev, [eventKey]: false }));
+    }
+
+    return event.event; // Fallback to original
   };
 
   // Handle AI analysis request
@@ -690,7 +735,14 @@ export default function EnhancedMacroCalendar({
                       </td>
                       <td className="px-4 py-3 text-sm">
                         <div className="max-w-xs">
-                          <div className="font-medium">{event.event}</div>
+                          <div className="font-medium">
+                            {language === "ar" && translatedContent[`${event.event}-${event.country}`]
+                              ? translatedContent[`${event.event}-${event.country}`]
+                              : event.event}
+                            {language === "ar" && loadingTranslation[`${event.event}-${event.country}`] && (
+                              <span className="ml-2 text-xs text-muted-foreground">(translating...)</span>
+                            )}
+                          </div>
                           {event.category && (
                             <Badge variant="outline" className="mt-1 text-xs">
                               {event.category}
