@@ -20,6 +20,7 @@ import {
   TrendingUp,
   TrendingDown,
   Minus,
+  Bell,
   Globe,
   ChevronDown,
 } from "lucide-react";
@@ -27,9 +28,10 @@ import { cn } from "@/lib/utils";
 
 interface EconomicEvent {
   id: string;
+  date: string;
   time: string;
   country: string;
-  countryFlag: string;
+  countryFlag?: string;
   event: string;
   importance: 1 | 2 | 3;
   actual?: string;
@@ -63,12 +65,9 @@ export function ModernEconomicCalendar({
   // Search suggestions based on countries, events, and currencies (Arabic and English)
   const searchSuggestions = React.useMemo(() => {
     if (searchQuery.length < 1) return [];
-
-    const countries = [...new Set(sampleEvents.map((e) => e.country))];
-    const eventTerms = [...new Set(sampleEvents.map((e) => e.event))];
-    const currencies = [...new Set(sampleEvents.map((e) => e.currency))];
-
-    // Add common English translations for better search
+    const countries = [...new Set(events.map((e) => e.country))];
+    const eventTerms = [...new Set(events.map((e) => e.event))];
+    const currencies = [...new Set(events.map((e) => e.currency))];
     const countryTranslations = [
       { ar: "الولايات المتحدة", en: "United States", currency: "USD" },
       { ar: "ألمانيا", en: "Germany", currency: "EUR" },
@@ -76,33 +75,22 @@ export function ModernEconomicCalendar({
       { ar: "اليابان", en: "Japan", currency: "JPY" },
       { ar: "كندا", en: "Canada", currency: "CAD" },
     ];
-
     const allSuggestions = [
       ...countries.map((c) => ({ type: "country", text: c, icon: "🏛️" })),
       ...eventTerms.map((e) => ({ type: "event", text: e, icon: "📊" })),
       ...currencies.map((c) => ({ type: "currency", text: c, icon: "💱" })),
-      // Add English translations for countries
-      ...countryTranslations.map((t) => ({
-        type: "country",
-        text: t.en,
-        icon: "🏛️",
-      })),
-      ...countryTranslations.map((t) => ({
-        type: "currency",
-        text: `${t.currency} (${t.en})`,
-        icon: "💱",
-      })),
+      ...countryTranslations.map((t) => ({ type: "country", text: t.en, icon: "🏛️" })),
+      ...countryTranslations.map((t) => ({ type: "currency", text: `${t.currency} (${t.en})`, icon: "💱" })),
     ];
-
     return allSuggestions
       .filter(
         (s) =>
-          s.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          // Support Arabic search terms
-          (searchQuery.length >= 1 && s.text.includes(searchQuery)),
+          typeof s.text === "string" &&
+          (s.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (searchQuery.length >= 1 && s.text.includes(searchQuery))),
       )
       .slice(0, 8);
-  }, [searchQuery]);
+  }, [searchQuery, events]);
 
   // Show suggestions when user types 1+ characters
   React.useEffect(() => {
@@ -112,82 +100,27 @@ export function ModernEconomicCalendar({
   }, [searchQuery, searchSuggestions]);
 
   // Sample economic events data
-  const sampleEvents: EconomicEvent[] = [
-    {
-      id: "1",
-      time: "14:30",
-      country: "الولايات المتحدة",
-      countryFlag: "🇺🇸",
-      event: "بيانات التوظيف غير الزراعي",
-      importance: 3,
-      actual: "250K",
-      forecast: "200K",
-      previous: "180K",
-      category: "employment",
-      currency: "USD",
-      impact: "positive",
-    },
-    {
-      id: "2",
-      time: "16:00",
-      country: "ألمانيا",
-      countryFlag: "🇩🇪",
-      event: "مؤشر أسعار المستهلك",
-      importance: 2,
-      actual: undefined,
-      forecast: "2.1%",
-      previous: "2.0%",
-      category: "inflation",
-      currency: "EUR",
-      impact: "neutral",
-    },
-    {
-      id: "3",
-      time: "18:15",
-      country: "المملكة المتحدة",
-      countryFlag: "🇬🇧",
-      event: "قرار معدل الفائدة",
-      importance: 3,
-      actual: undefined,
-      forecast: "5.25%",
-      previous: "5.25%",
-      category: "growth",
-      currency: "GBP",
-      impact: "neutral",
-    },
-    {
-      id: "4",
-      time: "20:00",
-      country: "اليابان",
-      countryFlag: "🇯🇵",
-      event: "الناتج المحلي الإجمالي",
-      importance: 2,
-      actual: "1.2%",
-      forecast: "1.0%",
-      previous: "0.8%",
-      category: "growth",
-      currency: "JPY",
-      impact: "positive",
-    },
-    {
-      id: "5",
-      time: "22:30",
-      country: "كندا",
-      countryFlag: "🇨🇦",
-      event: "معدل البطالة",
-      importance: 2,
-      actual: undefined,
-      forecast: "5.2%",
-      previous: "5.4%",
-      category: "employment",
-      currency: "CAD",
-      impact: "neutral",
-    },
-  ];
-
   useEffect(() => {
-    setEvents(sampleEvents);
-  }, []);
+    async function fetchEvents() {
+      try {
+        const params = new URLSearchParams();
+        if (selectedCategory !== "all") params.append("category", selectedCategory);
+        if (!selectedCountries.includes("all")) params.append("country", selectedCountries.join(","));
+        if (!selectedCurrencies.includes("all")) params.append("currency", selectedCurrencies.join(","));
+        if (selectedImportance.length > 0) params.append("importance", selectedImportance.join(","));
+        // Always fetch for today and future
+        const today = new Date().toISOString().split("T")[0];
+        params.append("from", today);
+        params.append("limit", "100");
+        const res = await fetch(`/api/eodhd-calendar?${params.toString()}`);
+        const data = await res.json();
+        setEvents(Array.isArray(data.events) ? data.events : []);
+      } catch (err) {
+        setEvents([]);
+      }
+    }
+    fetchEvents();
+  }, [selectedCategory, selectedCountries, selectedCurrencies, selectedImportance]);
 
   const categories = [
     { value: "all", label: "الكل" },
@@ -241,16 +174,19 @@ export function ModernEconomicCalendar({
     }
   };
 
+  // Normalize Arabic text to avoid corruption
+  const normalizeArabic = (str: string) => str ? str.normalize('NFC') : "";
+
   const getImportanceLabel = (importance: 1 | 2 | 3) => {
     switch (importance) {
       case 1:
-        return "عادي";
+        return normalizeArabic("عادي");
       case 2:
-        return "متوسط";
+        return normalizeArabic("متوسط");
       case 3:
-        return "مرتفع";
+        return normalizeArabic("مرتفع");
       default:
-        return "عادي";
+        return normalizeArabic("عادي");
     }
   };
 
@@ -265,38 +201,56 @@ export function ModernEconomicCalendar({
     }
   };
 
+  // Handler to set alert for an event (browser notification)
+  const handleSetAlert = (event: EconomicEvent) => {
+    // Request notification permission if not already granted
+    if (typeof window !== "undefined" && "Notification" in window) {
+      if (Notification.permission === "default") {
+        Notification.requestPermission();
+      }
+      if (Notification.permission === "granted") {
+        // Calculate time until event
+        const eventDateTime = new Date(`${event.date}T${event.time}`);
+        const now = new Date();
+        const msUntilEvent = eventDateTime.getTime() - now.getTime();
+        if (msUntilEvent > 0) {
+          setTimeout(() => {
+            new Notification(`تنبيه حدث اقتصادي: ${event.event}`, {
+              body: `الدولة: ${event.country}\nالوقت: ${event.time}\nالأهمية: ${getImportanceLabel(event.importance)}`,
+              icon: "/liirat-favicon-64.png",
+            });
+          }, msUntilEvent);
+          alert(`تم ضبط تنبيه للحدث: ${event.event}`);
+        } else {
+          alert("هذا الحدث قد بدأ بالفعل أو انتهى.");
+        }
+      } else {
+        alert("يرجى السماح بالإشعارات من المتصفح.");
+      }
+    } else {
+      alert("المتصفح لا يدعم الإشعارات.");
+    }
+  };
+
+  // Handler to get AI summary for an event
+  const [aiSummary, setAISummary] = useState<Record<string, string>>({});
   const handleAIAnalysis = async (eventId: string) => {
     setIsLoadingAI(eventId);
-
     try {
       const event = events.find((e) => e.id === eventId);
       if (!event) return;
-
-      const response = await fetch("/api/chat", {
+      const prompt = `Summarize this economic event in a short, powerful, and simple way for non-experts. Event: ${event.event}, Country: ${event.country}, Date: ${event.date}, Importance: ${getImportanceLabel(event.importance)}, Actual: ${event.actual}, Forecast: ${event.forecast}, Previous: ${event.previous}`;
+      const response = await fetch("/api/openai-summary", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: `قم بتحليل هذا الحدث الاقتصادي: ${event.event} في ${event.country}. القيم: فعلي: ${event.actual || "غير متوفر"}, متوقع: ${event.forecast || "غير متوفر"}, سابق: ${event.previous || "غير متوفر"}`,
-          language: "ar",
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to get AI analysis");
-      }
-
       const data = await response.json();
-
-      // You could store the analysis result in state or show it in a modal
-      alert(`تحليل الذكاء الاصطناعي:\n\n${data.response}`);
-    } catch (error) {
-      console.error("AI Analysis error:", error);
-      alert("عذراً، حدث خطأ في تحليل الذكاء الاصطناعي");
-    } finally {
-      setIsLoadingAI(null);
+      setAISummary((prev) => ({ ...prev, [eventId]: data.summary || "لم يتم العثور على ملخص." }));
+    } catch (err) {
+      setAISummary((prev) => ({ ...prev, [eventId]: "حدث خطأ أثناء جلب التحليل." }));
     }
+    setIsLoadingAI(null);
   };
 
   const filteredEvents = events.filter((event) => {
@@ -321,11 +275,10 @@ export function ModernEconomicCalendar({
       {/* Header */}
       <div className="text-center space-y-2 mb-8">
         <h1 className="text-4xl md:text-5xl font-bold text-primary mb-2">
-          التقويم الاقتصادي المباشر
+          {normalizeArabic("التقويم الاقتصادي المباشر")}
         </h1>
         <p className="text-lg text-muted-foreground">
-          تابع أهم الأحداث الاقتصادية والمؤشرات المالية مع تحليلات الذكاء
-          الاصطناعي
+          {normalizeArabic("تابع أهم الأحداث الاقتصادية والمؤشرات المالية مع تحليلات الذكاء الاصطناعي")}
         </p>
       </div>
 
@@ -334,7 +287,7 @@ export function ModernEconomicCalendar({
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
             <Filter className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-semibold">أدوات التصفية والبحث</h3>
+            <h3 className="text-lg font-semibold">{normalizeArabic("أدوات التصفية والبحث")}</h3>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -343,7 +296,7 @@ export function ModernEconomicCalendar({
             {/* Timezone Selector */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">
-                المنطقة الزمنية
+                {normalizeArabic("المنطقة الزمنية")}
               </label>
               <Select
                 value={selectedTimezone}
@@ -365,7 +318,7 @@ export function ModernEconomicCalendar({
             {/* Smart Search Bar with Suggestions */}
             <div className="space-y-2 relative">
               <label className="text-sm font-medium text-muted-foreground">
-                البحث الذكي
+                {normalizeArabic("البحث الذكي")}
               </label>
               <div className="relative">
                 <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -420,7 +373,7 @@ export function ModernEconomicCalendar({
             {/* Category Dropdown */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">
-                الفئة
+                {normalizeArabic("الفئة")}
               </label>
               <Select
                 value={selectedCategory}
@@ -445,7 +398,7 @@ export function ModernEconomicCalendar({
             {/* Week Selector */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">
-                الأسبوع
+                {normalizeArabic("الأسبوع")}
               </label>
               <Select value={selectedWeek} onValueChange={setSelectedWeek}>
                 <SelectTrigger className="bg-background/80 border-border/50 hover:border-primary/50 transition-colors">
@@ -464,7 +417,7 @@ export function ModernEconomicCalendar({
             {/* Day Selector */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">
-                اليوم
+                {normalizeArabic("اليوم")}
               </label>
               <Select value={selectedDay} onValueChange={setSelectedDay}>
                 <SelectTrigger className="bg-background/80 border-border/50 hover:border-primary/50 transition-colors">
@@ -482,7 +435,7 @@ export function ModernEconomicCalendar({
 
             {/* Currency Filter */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">العملة</label>
+              <label className="text-sm font-medium text-muted-foreground">{normalizeArabic("العملة")}</label>
               <div className="flex flex-wrap gap-2">
                 {currencyOptions.map((currency) => (
                   <Button
@@ -507,7 +460,7 @@ export function ModernEconomicCalendar({
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">الدولة</label>
+              <label className="text-sm font-medium text-muted-foreground">{normalizeArabic("الدولة")}</label>
               <div className="flex flex-wrap gap-2">
                 {[{ value: "all", label: "جميع البلدان" }, ...Object.keys(countryFlagMap).map((code) => ({ value: code, label: code }))].map((country) => (
                   <Button
@@ -536,7 +489,7 @@ export function ModernEconomicCalendar({
             {/* Importance Filter */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">
-                مستوى الأهمية (اختيار متعدد)
+                {normalizeArabic("مستوى الأهمية (اختيار متعدد)")}
               </label>
               <div className="flex gap-2">
                 <Button
@@ -555,7 +508,7 @@ export function ModernEconomicCalendar({
                   }}
                   className="flex-1 text-xs"
                 >
-                  عادي
+                  {normalizeArabic("عادي")}
                 </Button>
                 <Button
                   variant={
@@ -573,7 +526,7 @@ export function ModernEconomicCalendar({
                   }}
                   className="flex-1 text-xs"
                 >
-                  متوسط
+                  {normalizeArabic("متوسط")}
                 </Button>
                 <Button
                   variant={
@@ -591,7 +544,7 @@ export function ModernEconomicCalendar({
                   }}
                   className="flex-1 text-xs"
                 >
-                  مرتفع
+                  {normalizeArabic("مرتفع")}
                 </Button>
               </div>
             </div>
@@ -620,177 +573,154 @@ export function ModernEconomicCalendar({
         <CardContent>
           <div className="space-y-2">
             {/* Table Header */}
-            <div className="hidden md:grid md:grid-cols-8 gap-4 p-4 bg-muted/30 rounded-lg font-medium text-sm text-muted-foreground">
-              <div>الوقت</div>
-              <div>الدولة</div>
-              <div>الحدث</div>
-              <div>الأهمية</div>
-              <div>الفعلي</div>
-              <div>المتوقع</div>
-              <div>السابق</div>
-              <div>تحليل الذكاء الاصطناعي</div>
+            <div className="hidden md:grid md:grid-cols-11 gap-4 p-4 bg-muted/30 rounded-lg font-medium text-sm text-muted-foreground">
+              <div>{normalizeArabic("الوقت")}</div>
+              <div>{normalizeArabic("الدولة")}</div>
+              <div>{normalizeArabic("الحدث")}</div>
+              <div>{normalizeArabic("الفئة")}</div>
+              <div>{normalizeArabic("الأهمية")}</div>
+              <div>{normalizeArabic("الفعلي")}</div>
+              <div>{normalizeArabic("المتوقع")}</div>
+              <div>{normalizeArabic("السابق")}</div>
+              <div>{normalizeArabic("تنبيه")}</div>
+              <div>{normalizeArabic("تحليل الذكاء الاصطناعي")}</div>
+              <div>{normalizeArabic("ملخص سريع")}</div>
             </div>
 
             {/* Events List */}
             <div className="space-y-2">
-              {filteredEvents.map((event) => (
-                <div
-                  key={event.id}
-                  className="p-4 bg-background/50 rounded-lg border border-border/50 hover:border-primary/30 transition-all duration-200 hover:shadow-lg"
-                >
-                  {/* Desktop View */}
-                  <div className="hidden md:grid md:grid-cols-8 gap-4 items-center">
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-muted-foreground" />
-                      <span className="font-mono text-sm">{event.time}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">{countryFlagMap[event.country] || event.countryFlag || "🌐"}</span>
-                      <span className="text-sm">{event.country}</span>
-                    </div>
-
-                    <div className="font-medium text-sm">{event.event}</div>
-
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={cn(
-                          "w-3 h-3 rounded-full",
-                          getImportanceColor(event.importance),
-                        )}
-                      ></div>
-                      <span className="text-xs">
-                        {getImportanceLabel(event.importance)}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      {event.actual && (
-                        <>
-                          {getImpactIcon(event.impact)}
-                          <span className="font-mono text-sm">
-                            {event.actual}
-                          </span>
-                        </>
-                      )}
-                      {!event.actual && (
-                        <span className="text-muted-foreground text-sm">-</span>
-                      )}
-                    </div>
-
-                    <div className="font-mono text-sm text-muted-foreground">
-                      {event.forecast || "-"}
-                    </div>
-
-                    <div className="font-mono text-sm text-muted-foreground">
-                      {event.previous || "-"}
-                    </div>
-
-                    <div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleAIAnalysis(event.id)}
-                        disabled={isLoadingAI === event.id}
-                        className="h-8 w-8 p-0 hover:bg-primary/10"
-                      >
-                        {isLoadingAI === event.id ? (
-                          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                          <Bot className="w-4 h-4 text-primary" />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Mobile View */}
-                  <div className="md:hidden space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg">{event.countryFlag}</span>
-                        <span className="font-medium text-sm">
-                          {event.country}
-                        </span>
-                      </div>
+              {filteredEvents
+                .sort((a, b) => new Date(a.date + " " + a.time).getTime() - new Date(b.date + " " + b.time).getTime())
+                .map((event) => (
+                  <div
+                    key={event.id}
+                    className="p-4 bg-background/50 rounded-lg border border-border/50 hover:border-primary/30 transition-all duration-200 hover:shadow-lg"
+                  >
+                    {/* Desktop View */}
+                    <div className="hidden md:grid md:grid-cols-11 gap-4 items-center">
                       <div className="flex items-center gap-2">
                         <Clock className="w-4 h-4 text-muted-foreground" />
                         <span className="font-mono text-sm">{event.time}</span>
                       </div>
-                    </div>
-
-                    <div className="font-medium">{event.event}</div>
-
-                    <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div
-                          className={cn(
-                            "w-3 h-3 rounded-full",
-                            getImportanceColor(event.importance),
-                          )}
-                        ></div>
-                        <span className="text-xs">
-                          {getImportanceLabel(event.importance)}
-                        </span>
+                        <span className="text-lg">{countryFlagMap[event.country] || event.countryFlag || "🌐"}</span>
+                        <span className="text-sm">{event.country}</span>
                       </div>
-
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleAIAnalysis(event.id)}
-                        disabled={isLoadingAI === event.id}
-                        className="h-8 gap-2 hover:bg-primary/10"
-                      >
-                        {isLoadingAI === event.id ? (
-                          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                          <Bot className="w-4 h-4 text-primary" />
-                        )}
-                        <span className="text-xs">تحليل</span>
-                      </Button>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-4 text-sm">
+                      <div className="font-medium text-sm">{event.event}</div>
+                      <div className="font-medium text-xs">{event.category}</div>
+                      <div className="flex items-center gap-2">
+                        <div className={cn("w-3 h-3 rounded-full", getImportanceColor(event.importance))}></div>
+                        <span className="text-xs">{getImportanceLabel(event.importance)}</span>
+                      </div>
+                      <div className="font-mono text-sm text-muted-foreground">{event.actual || "-"}</div>
+                      <div className="font-mono text-sm text-muted-foreground">{event.forecast || "-"}</div>
+                      <div className="font-mono text-sm text-muted-foreground">{event.previous || "-"}</div>
                       <div>
-                        <div className="text-muted-foreground text-xs">
-                          الفعلي
-                        </div>
-                        <div className="flex items-center gap-1 mt-1">
-                          {event.actual ? (
-                            <>
-                              {getImpactIcon(event.impact)}
-                              <span className="font-mono">{event.actual}</span>
-                            </>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleSetAlert(event)}
+                          className="h-8 w-8 p-0 hover:bg-primary/10"
+                        >
+                          <Bell className="w-4 h-4 text-primary" />
+                        </Button>
+                      </div>
+                      <div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleAIAnalysis(event.id)}
+                          disabled={isLoadingAI === event.id}
+                          className="h-8 w-8 p-0 hover:bg-primary/10"
+                        >
+                          {isLoadingAI === event.id ? (
+                            <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                           ) : (
-                            <span className="text-muted-foreground">-</span>
+                            <Bot className="w-4 h-4 text-primary" />
                           )}
+                        </Button>
+                      </div>
+                      <div className="text-xs">{aiSummary[event.id] || ""}</div>
+                    </div>
+                    {/* Mobile View */}
+                    <div className="md:hidden space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{countryFlagMap[event.country] || event.countryFlag || "🌐"}</span>
+                          <span className="font-medium text-sm">{event.country}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-muted-foreground" />
+                          <span className="font-mono text-sm">{event.time}</span>
                         </div>
                       </div>
-                      <div>
-                        <div className="text-muted-foreground text-xs">
-                          المتوقع
+                      <div className="font-medium">{event.event}</div>
+                      <div className="font-medium text-xs">{event.category}</div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className={cn("w-3 h-3 rounded-full", getImportanceColor(event.importance))}></div>
+                          <span className="text-xs">{getImportanceLabel(event.importance)}</span>
                         </div>
-                        <div className="font-mono mt-1">
-                          {event.forecast || "-"}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleAIAnalysis(event.id)}
+                          disabled={isLoadingAI === event.id}
+                          className="h-8 gap-2 hover:bg-primary/10"
+                        >
+                          {isLoadingAI === event.id ? (
+                            <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <Bot className="w-4 h-4 text-primary" />
+                          )}
+                          <span className="text-xs">{normalizeArabic("تحليل")}</span>
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div>
+                          <div className="text-muted-foreground text-xs">{normalizeArabic("الفعلي")}</div>
+                          <div className="flex items-center gap-1 mt-1">
+                            {event.actual ? (
+                              <>
+                                {getImpactIcon(event.impact)}
+                                <span className="font-mono">{event.actual}</span>
+                              </>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground text-xs">{normalizeArabic("المتوقع")}</div>
+                          <div className="font-mono mt-1">{event.forecast || "-"}</div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground text-xs">{normalizeArabic("السابق")}</div>
+                          <div className="font-mono mt-1">{event.previous || "-"}</div>
                         </div>
                       </div>
-                      <div>
-                        <div className="text-muted-foreground text-xs">
-                          السابق
-                        </div>
-                        <div className="font-mono mt-1">
-                          {event.previous || "-"}
-                        </div>
+                      <div className="mt-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleSetAlert(event)}
+                          className="h-8 w-8 p-0 hover:bg-primary/10"
+                        >
+                          <Bell className="w-4 h-4 text-primary" />
+                        </Button>
+                        <span className="text-xs text-muted-foreground ml-2">
+                          {aiSummary[event.id] ? normalizeArabic(aiSummary[event.id]) : "-"}
+                        </span>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
 
             {filteredEvents.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>لا توجد أحداث اقتصادية تطابق المرشحات المحددة</p>
+                <p>{normalizeArabic("لا توجد أحداث اقتصادية تطابق المرشحات المحددة")}</p>
               </div>
             )}
           </div>
