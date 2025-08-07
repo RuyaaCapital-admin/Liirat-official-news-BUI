@@ -111,7 +111,7 @@ export function ModernEconomicCalendar({
         // Always fetch for today and future
         const today = new Date().toISOString().split("T")[0];
         params.append("from", today);
-        params.append("limit", "100");
+        params.append("limit", "50");
         const res = await fetch(`/api/eodhd-calendar?${params.toString()}`);
         const data = await res.json();
         setEvents(Array.isArray(data.events) ? data.events : []);
@@ -174,19 +174,33 @@ export function ModernEconomicCalendar({
     }
   };
 
-  // Normalize Arabic text to avoid corruption
+  // Language helpers
   const normalizeArabic = (str: string) => str ? str.normalize('NFC') : "";
-
   const getImportanceLabel = (importance: 1 | 2 | 3) => {
-    switch (importance) {
-      case 1:
-        return normalizeArabic("عادي");
-      case 2:
-        return normalizeArabic("متوسط");
-      case 3:
-        return normalizeArabic("مرتفع");
-      default:
-        return normalizeArabic("عادي");
+    if (language === "ar") {
+      switch (importance) {
+        case 1: return normalizeArabic("عادي");
+        case 2: return normalizeArabic("متوسط");
+        case 3: return normalizeArabic("مرتفع");
+        default: return normalizeArabic("عادي");
+      }
+    } else {
+      switch (importance) {
+        case 1: return "Low";
+        case 2: return "Medium";
+        case 3: return "High";
+        default: return "Low";
+      }
+    }
+  };
+
+  // Date and time formatting
+  const formatDateTime = (date: string, time: string) => {
+    const dt = new Date(`${date}T${time}`);
+    if (language === "ar") {
+      return dt.toLocaleString("ar-EG", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+    } else {
+      return dt.toLocaleString("en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
     }
   };
 
@@ -203,7 +217,6 @@ export function ModernEconomicCalendar({
 
   // Handler to set alert for an event (browser notification)
   const handleSetAlert = (event: EconomicEvent) => {
-    // Request notification permission if not already granted
     if (typeof window !== "undefined" && "Notification" in window) {
       if (Notification.permission === "default") {
         Notification.requestPermission();
@@ -213,22 +226,24 @@ export function ModernEconomicCalendar({
         const eventDateTime = new Date(`${event.date}T${event.time}`);
         const now = new Date();
         const msUntilEvent = eventDateTime.getTime() - now.getTime();
-        if (msUntilEvent > 0) {
+        if (msUntilEvent > 0 && msUntilEvent < 1000 * 60 * 60 * 24 * 7) { // Only allow alerts for events within 7 days
           setTimeout(() => {
-            new Notification(`تنبيه حدث اقتصادي: ${event.event}`, {
-              body: `الدولة: ${event.country}\nالوقت: ${event.time}\nالأهمية: ${getImportanceLabel(event.importance)}`,
+            new Notification(`${language === "ar" ? "تنبيه حدث اقتصادي" : "Economic Event Alert"}: ${event.event}`, {
+              body: `${language === "ar" ? "الدولة" : "Country"}: ${event.country}\n${language === "ar" ? "الوقت" : "Time"}: ${event.time}\n${language === "ar" ? "الأهمية" : "Importance"}: ${getImportanceLabel(event.importance)}`,
               icon: "/liirat-favicon-64.png",
             });
           }, msUntilEvent);
-          alert(`تم ضبط تنبيه للحدث: ${event.event}`);
+          alert(`${language === "ar" ? "تم ضبط تنبيه للحدث" : "Alert set for event"}: ${event.event}`);
+        } else if (msUntilEvent <= 0) {
+          alert(language === "ar" ? "هذا الحدث قد بدأ بالفعل أو انتهى." : "This event has already started or ended.");
         } else {
-          alert("هذا الحدث قد بدأ بالفعل أو انتهى.");
+          alert(language === "ar" ? "يمكن ضبط التنبيه فقط للأحداث خلال أسبوع من الآن." : "You can only set alerts for events within 7 days.");
         }
       } else {
-        alert("يرجى السماح بالإشعارات من المتصفح.");
+        alert(language === "ar" ? "يرجى السماح بالإشعارات من المتصفح." : "Please allow notifications from your browser.");
       }
     } else {
-      alert("المتصفح لا يدعم الإشعارات.");
+      alert(language === "ar" ? "المتصفح لا يدعم الإشعارات." : "Browser does not support notifications.");
     }
   };
 
@@ -237,6 +252,7 @@ export function ModernEconomicCalendar({
   const handleAIAnalysis = async (eventId: string) => {
     setIsLoadingAI(eventId);
     try {
+      // Check if API endpoint exists
       const event = events.find((e) => e.id === eventId);
       if (!event) return;
       const prompt = `Summarize this economic event in a short, powerful, and simple way for non-experts. Event: ${event.event}, Country: ${event.country}, Date: ${event.date}, Importance: ${getImportanceLabel(event.importance)}, Actual: ${event.actual}, Forecast: ${event.forecast}, Previous: ${event.previous}`;
@@ -245,23 +261,30 @@ export function ModernEconomicCalendar({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt }),
       });
-      const data = await response.json();
-      setAISummary((prev) => ({ ...prev, [eventId]: data.summary || "لم يتم العثور على ملخص." }));
+      if (response.status === 404) {
+        setAISummary((prev) => ({ ...prev, [eventId]: language === "ar" ? "تحليل الذكاء الاصطناعي غير متوفر حالياً." : "AI summary is not available right now." }));
+      } else {
+        const data = await response.json();
+        setAISummary((prev) => ({ ...prev, [eventId]: data.summary || (language === "ar" ? "لم يتم العثور على ملخص." : "No summary found.") }));
+      }
     } catch (err) {
-      setAISummary((prev) => ({ ...prev, [eventId]: "حدث خطأ أثناء جلب التحليل." }));
+      setAISummary((prev) => ({ ...prev, [eventId]: language === "ar" ? "حدث خطأ أثناء جلب التحليل." : "Error fetching analysis." }));
     }
     setIsLoadingAI(null);
   };
 
   const filteredEvents = events.filter((event) => {
+    // Only show events from today and future
+    const eventDateTime = new Date(`${event.date}T${event.time}`);
+    const now = new Date();
+    if (eventDateTime < now) return false;
     if (selectedCategory !== "all" && event.category !== selectedCategory) return false;
     if (!selectedCurrencies.includes("all") && !selectedCurrencies.includes(event.currency)) return false;
     if (!selectedCountries.includes("all") && !selectedCountries.includes(event.country)) return false;
-    if (!event.importance || !['1','2','3'].includes(event.importance.toString())) return true;
+    if (!event.importance || !['1','2','3'].includes(event.importance.toString())) return false;
     if (!selectedImportance.includes(event.importance.toString())) return false;
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      // Normalize Arabic text to avoid encoding issues
       const normalize = (str: string) => str ? str.normalize('NFC') : "";
       const matchesArabic = normalize(event.event).includes(normalize(searchQuery)) || normalize(event.country).includes(normalize(searchQuery)) || normalize(event.currency).includes(normalize(searchQuery));
       const matchesEnglish = event.event.toLowerCase().includes(query) || event.country.toLowerCase().includes(query) || event.currency.toLowerCase().includes(query);
@@ -271,7 +294,18 @@ export function ModernEconomicCalendar({
   });
 
   return (
-    <div className={cn("w-full space-y-6", className)} dir="rtl">
+    <div
+      className={cn(
+        "w-full space-y-6",
+        className,
+        "text-base",
+        "text-foreground",
+        "[&_.font-medium]:text-foreground",
+        "[&_.font-mono]:text-foreground",
+        "[&_.text-muted-foreground]:text-gray-700 dark:text-muted-foreground"
+      )}
+      dir="rtl"
+    >
       {/* Header */}
       <div className="text-center space-y-2 mb-8">
         <h1 className="text-4xl md:text-5xl font-bold text-primary mb-2">
@@ -651,11 +685,11 @@ export function ModernEconomicCalendar({
                         </div>
                         <div className="flex items-center gap-2">
                           <Clock className="w-4 h-4 text-muted-foreground" />
-                          <span className="font-mono text-sm">{event.time}</span>
+                          <span className="font-mono text-sm">{formatDateTime(event.date, event.time)}</span>
                         </div>
                       </div>
                       <div className="font-medium">{event.event}</div>
-                      <div className="font-medium text-xs">{event.category}</div>
+                      <div className="font-medium text-xs">{language === "ar" ? normalizeArabic(event.category) : event.category}</div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className={cn("w-3 h-3 rounded-full", getImportanceColor(event.importance))}></div>
