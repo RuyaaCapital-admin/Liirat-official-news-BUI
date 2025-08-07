@@ -249,14 +249,20 @@ export default function Index() {
     }
   };
 
-  // Fetch economic events on component mount and language changes with debouncing
+  // Initial fetch on mount and language change
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      fetchEconomicEvents(language);
-    }, 300); // 300ms debounce
+    fetchEconomicEvents(language);
+  }, [language]);
 
-    return () => clearTimeout(timeoutId);
-  }, [language]); // Only depend on language, remove duplicate mount effect
+  // Periodic refresh every 15 minutes
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      console.log('Periodic refresh - fetching latest economic events');
+      fetchEconomicEvents(language);
+    }, 15 * 60 * 1000); // 15 minutes
+
+    return () => clearInterval(intervalId);
+  }, [language]);
 
   // Enhanced economic calendar data with mixed language support
 
