@@ -58,8 +58,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // Use hardcoded API key as specified by user
-  const apiKey = "6891e3b89ee5e1.29062933";
+  const apiKey = process.env.EODHD_API_KEY;
+  if (!apiKey) {
+    res.status(500).json({
+      error: "EODHD API key not configured",
+      prices: [],
+    });
+    return;
+  }
 
   try {
     const { symbol, symbols, fmt = "json", filter = "live" } = req.query;

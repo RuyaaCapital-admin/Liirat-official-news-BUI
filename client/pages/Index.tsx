@@ -525,20 +525,6 @@ export default function Index() {
                         )}
                         <EnhancedMacroCalendar
                           events={economicEvents}
-                          isLoading={isLoadingEvents}
-                          error={
-                            eventsError
-                              ? {
-                                  message: eventsError,
-                                  userMessage:
-                                    language === "ar"
-                                      ? "خطأ في تحميل التقويم الاقتصادي. يرجى المحاولة مرة أخرى."
-                                      : "Error loading economic calendar. Please try again.",
-                                  canRetry: true,
-                                  details: eventsError,
-                                }
-                              : null
-                          }
                           className="rounded-lg overflow-hidden"
                           onRefresh={(filters) => {
                             console.log("Refreshing with filters:", filters);

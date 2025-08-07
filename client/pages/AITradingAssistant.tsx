@@ -117,9 +117,7 @@ const AITradingAssistant: React.FC = () => {
       }
     } catch (error) {
       console.error("Error fetching news:", error);
-      // No mock data - show empty array for production
-      setNews([]);
-      language === "ar"
+      const newsData = language === "ar"
         ? [
             {
               id: "1",

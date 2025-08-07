@@ -135,8 +135,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    // Get API key from Vercel environment variables or use provided key as fallback
-    const apiKey = process.env.EODHD_API_KEY || "6891e3b89ee5e1.29062933";
+    const apiKey = process.env.EODHD_API_KEY;
+    if (!apiKey) {
+      res.status(500).json({ error: "EODHD API key not configured" });
+      return;
+    }
 
     // Extract query parameters
     const {

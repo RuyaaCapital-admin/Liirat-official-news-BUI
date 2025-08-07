@@ -700,7 +700,6 @@ export default function DynamicAlertSystem({
                     <Switch
                       checked={alert.isActive}
                       onCheckedChange={() => toggleAlert(alert.id)}
-                      size="sm"
                     />
                     <Button
                       variant="ghost"

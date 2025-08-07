@@ -18,19 +18,25 @@ interface EconomicEvent {
 }
 
 export const handleEODHDCalendar: RequestHandler = async (req, res) => {
-  // Get API key from environment or use provided key as fallback
-  const apiKey = process.env.EODHD_API_KEY || "6891e3b89ee5e1.29062933";
+  const apiKey = process.env.EODHD_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({
+      error: "EODHD API key not configured",
+      events: [],
+    });
+  }
+  const {
+    country,
+    importance,
+    from,
+    to,
+    limit = "50",
+    lang: langParam = "en",
+  } = req.query;
+
+  const lang = Array.isArray(langParam) ? langParam[0] : langParam;
 
   try {
-    // Extract query parameters
-    const {
-      country,
-      importance,
-      from,
-      to,
-      limit = "50",
-      lang = "en",
-    } = req.query;
 
     // Get client ID for rate limiting
     const clientId = getClientId(req);
