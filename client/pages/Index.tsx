@@ -85,8 +85,16 @@ export default function Index() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Fetch economic events data with language support
-  const fetchEconomicEvents = async (lang: string = language) => {
+  // Fetch economic events data with language support and filters
+  const fetchEconomicEvents = async (
+    lang: string = language,
+    filters?: {
+      country?: string;
+      importance?: string[];
+      from?: string;
+      to?: string;
+    }
+  ) => {
     try {
       setIsLoadingEvents(true);
       setEventsError(null);
@@ -412,7 +420,7 @@ export default function Index() {
                             <AlertTriangle className="w-4 h-4 mr-2" />
                             <span>
                               {language === "ar"
-                                ? "خطأ في تحميل التقويم الا��تصادي:"
+                                ? "خطأ في تحميل التقويم الاقتصادي:"
                                 : "Error loading economic calendar:"}{" "}
                               {eventsError.replace("API Error:", "Error")}
                             </span>
