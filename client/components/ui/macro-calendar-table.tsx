@@ -641,7 +641,9 @@ export function MacroCalendarTable({
                           setIsCountryOpen(false);
                         }}
                       >
-                        <span>{getCountryFlag(country)}</span>
+                        <div className="flex items-center">
+                          {getCountryFlag(country)}
+                        </div>
                         <span>{country}</span>
                         <span className="text-muted-foreground text-xs">
                           {getCountryName(country, language)}
@@ -666,7 +668,9 @@ export function MacroCalendarTable({
                             setIsCountryOpen(false);
                           }}
                         >
-                          <span>{getCountryFlag(country)}</span>
+                          <div className="flex items-center">
+                            {getCountryFlag(country)}
+                          </div>
                           <span>{country}</span>
                           <span className="text-muted-foreground text-xs">
                             {getCountryName(country, language)}
