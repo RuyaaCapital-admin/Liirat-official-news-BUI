@@ -56,7 +56,7 @@ export default function Index() {
 
   const { theme } = useTheme();
   const { language, t, dir } = useLanguage();
-  const { checkEventAlerts } = useAlerts();
+  const { checkEventAlerts, addAlert } = useAlerts();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
