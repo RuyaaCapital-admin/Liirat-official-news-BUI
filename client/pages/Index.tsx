@@ -488,7 +488,7 @@ export default function Index() {
                             <AlertTriangle className="w-4 h-4 mr-2" />
                             <span>
                               {language === "ar"
-                                ? "خطأ في تحميل التقويم الاق��صادي:"
+                                ? "خطأ في تحميل التقويم الاقتصادي:"
                                 : "Error loading economic calendar:"}{" "}
                               {eventsError.replace("API Error:", "Error")}
                             </span>
@@ -500,7 +500,7 @@ export default function Index() {
                               onClick={() => fetchEconomicEvents(language)}
                               className="text-xs"
                             >
-                              {t("Retry", "إعادة المحاولة")}
+                              {t("Retry", "إع��دة المحاولة")}
                             </Button>
                             <div className="text-xs text-muted-foreground">
                               {language === "ar"
