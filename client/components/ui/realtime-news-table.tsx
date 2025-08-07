@@ -29,11 +29,8 @@ import {
   TrendingUp,
   AlertTriangle,
   Globe,
-  Bell,
-  Timer,
 } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
-import { useAlerts } from "@/contexts/alert-context";
 
 interface NewsArticle {
   id: string;
@@ -291,7 +288,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
 
     if (timing === "instant") {
       message = language === "ar"
-        ? `تنبيه فوري للخبر: ${article.title.substring(0, 80)}...`
+        ? `تن��يه فوري للخبر: ${article.title.substring(0, 80)}...`
         : `Instant news alert: ${article.title.substring(0, 80)}...`;
       eventName = language === "ar" ? "تنبيه خبر فوري" : "Instant News Alert";
     } else {
