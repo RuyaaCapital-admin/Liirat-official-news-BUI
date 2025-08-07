@@ -38,29 +38,48 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     // Determine if it's crypto, forex, or regular stock
     const symbolStr = (symbol || symbols) as string;
     const isMultiple = !!symbols;
-    const isCrypto = symbolStr.includes("-USD") || symbolStr.includes("BTC") || symbolStr.includes("ETH");
-    const isForex = symbolStr.includes("FOREX:") || symbolStr.includes(".FOREX") || (symbolStr.includes("-") && !isCrypto);
-    const isComm = symbolStr.includes(".COMM");
-    const isIndex = symbolStr.includes(".INDX");
+
+    // Improved symbol classification
+    const isCrypto = symbolStr.includes("-USD") || symbolStr.includes("BTC") || symbolStr.includes("ETH") ||
+                    symbolStr.match(/^(BTC|ETH|LTC|ADA|DOT|DOGE|XRP|LINK|UNI)/);
+
+    const isForex = symbolStr.includes("FOREX:") || symbolStr.includes(".FOREX") ||
+                   symbolStr.match(/^(EUR|GBP|USD|JPY|CAD|AUD|CHF|NZD|SEK|NOK)(USD|EUR|GBP|JPY|CAD|AUD|CHF|NZD|SEK|NOK)$/);
+
+    const isComm = symbolStr.includes(".COMM") || symbolStr.match(/^(XAU|XAG|WTI|BRENT|CL)/);
+    const isIndex = symbolStr.includes(".INDX") || symbolStr.match(/^(SPX|DJI|IXIC|NDX|FTSE|DAX|CAC|NIKKEI)/);
 
     let apiUrl: URL;
-    
+    let finalSymbol = symbolStr;
+
     if (isCrypto) {
       // Crypto API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/crypto");
-      apiUrl.searchParams.append("s", symbolStr);
+      // Convert formats like BTCUSD to BTC-USD for EODHD
+      if (!symbolStr.includes("-") && symbolStr.length > 3) {
+        if (symbolStr.includes("USD")) {
+          finalSymbol = symbolStr.replace("USD", "-USD");
+        } else if (symbolStr.includes("BTC")) {
+          finalSymbol = symbolStr.replace("BTC", "BTC-");
+        }
+      }
+      apiUrl.searchParams.append("s", finalSymbol);
     } else if (isForex) {
-      // Forex API endpoint  
+      // Forex API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/forex");
-      apiUrl.searchParams.append("s", symbolStr);
+      // Convert EURUSD to EUR-USD format if needed
+      if (!symbolStr.includes("-") && symbolStr.length === 6) {
+        finalSymbol = symbolStr.substring(0, 3) + "-" + symbolStr.substring(3);
+      }
+      apiUrl.searchParams.append("s", finalSymbol);
     } else {
       // Regular stocks/ETFs/indices/commodities
       apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
-      if (isMultiple) {
-        apiUrl.searchParams.append("s", symbolStr);
-      } else {
-        apiUrl.searchParams.append("s", symbolStr);
+      // Add .US suffix for US stocks if not already present
+      if (!symbolStr.includes(".") && symbolStr.match(/^[A-Z]{1,5}$/)) {
+        finalSymbol = symbolStr + ".US";
       }
+      apiUrl.searchParams.append("s", finalSymbol);
     }
 
     // Add common parameters
