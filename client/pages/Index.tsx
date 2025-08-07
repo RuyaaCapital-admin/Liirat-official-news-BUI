@@ -428,7 +428,7 @@ export default function Index() {
                 <CardContent>
                   {isLoadingEvents ? (
                     <div className="flex items-center justify-center py-12">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary/20 border-t-primary"></div>
                       <span className="ml-2">
                         {language === "ar"
                           ? "جاري تحميل التقويم الاق��صادي..."
