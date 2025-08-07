@@ -72,7 +72,8 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
       });
 
       const results = await Promise.all(promises);
-      setPriceData(results.filter(Boolean));
+      const validResults = results.filter((result): result is PriceData => result !== null);
+      setPriceData(validResults);
     } catch (error) {
       console.error("Error fetching price data:", error);
     } finally {
