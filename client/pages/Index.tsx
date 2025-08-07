@@ -465,16 +465,30 @@ export default function Index() {
                           </div>
                         </div>
                       )}
-                      <MacroCalendarTable
-                        events={economicEvents}
-                        className="rounded-lg overflow-hidden"
-                        language={language}
-                        dir={dir}
-                        onRefresh={(filters) => {
-                          console.log('Refreshing with filters:', filters);
-                          fetchEconomicEvents(language, filters);
-                        }}
-                      />
+                      <div className="space-y-3">
+                        {eventsError && economicEvents.length > 0 && (
+                          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                            <div className="flex items-center text-yellow-800 dark:text-yellow-200 text-sm">
+                              <Bell className="w-4 h-4 mr-2" />
+                              <span>
+                                {language === "ar"
+                                  ? "عرض بيانات تجريبية - سيتم التحديث عند استعادة الاتصال"
+                                  : "Showing demo data - will update when connection is restored"}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                        <MacroCalendarTable
+                          events={economicEvents}
+                          className="rounded-lg overflow-hidden"
+                          language={language}
+                          dir={dir}
+                          onRefresh={(filters) => {
+                            console.log('Refreshing with filters:', filters);
+                            fetchEconomicEvents(language, filters);
+                          }}
+                        />
+                      </div>
                     </div>
                   )}
                 </CardContent>
@@ -538,7 +552,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيهات ذكية لأزواج العملات مع مراقبة الأسعار في الوقت ا��فعلي"
+                    ? "قم بإنشاء تنبيهات ذكية لأزواج العملات مع مراقبة الأسعار في الوقت الفعلي"
                     : "Create intelligent alerts for currency pairs with real-time price monitoring"}
                 </p>
               </div>
