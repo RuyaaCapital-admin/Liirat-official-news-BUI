@@ -44,13 +44,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const apiKey = process.env.EODHD_API_KEY;
-  if (!apiKey) {
-    return res.status(500).json({
-      error: "EODHD API key not configured",
-      prices: [],
-    });
-  }
+  // Use hardcoded API key as specified by user
+  const apiKey = "6891e3b89ee5e1.29062933";
 
   try {
     const { symbol, symbols, fmt = "json", filter = "live" } = req.query;
@@ -65,12 +60,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Determine if it's crypto, forex, or regular stock
     const symbolStr = (symbol || symbols) as string;
     const isMultiple = !!symbols;
-    const isCrypto =
-      symbolStr.includes("-USD") ||
-      symbolStr.includes("BTC") ||
-      symbolStr.includes("ETH");
-    const isForex =
-      symbolStr.includes("FOREX:") || (symbolStr.includes("-") && !isCrypto);
+    const isCrypto = symbolStr.includes("-USD") || symbolStr.includes("BTC") || symbolStr.includes("ETH");
+    const isForex = symbolStr.includes("USD") || symbolStr.includes("EUR") || symbolStr.includes("GBP") || symbolStr.includes("JPY") || symbolStr.includes("CHF") || symbolStr.includes("CAD") || symbolStr.includes("AUD") || symbolStr.includes("XAU");
+    const isIndex = symbolStr.includes(".INDX") || symbolStr === "GSPC";
 
     let apiUrl: URL;
 
@@ -79,17 +71,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       apiUrl = new URL("https://eodhd.com/api/real-time/crypto");
       apiUrl.searchParams.append("s", symbolStr);
     } else if (isForex) {
-      // Forex API endpoint
-      apiUrl = new URL("https://eodhd.com/api/real-time/forex");
-      apiUrl.searchParams.append("s", symbolStr);
-    } else {
-      // Regular stocks/ETFs/indices
-      apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
-      if (isMultiple) {
-        apiUrl.searchParams.append("s", symbolStr);
-      } else {
-        apiUrl.searchParams.append("s", symbolStr);
+      // Forex API endpoint - format properly for EODHD
+      let forexSymbol = symbolStr;
+      if (!forexSymbol.includes(".FOREX")) {
+        forexSymbol = forexSymbol + ".FOREX";
       }
+      apiUrl = new URL("https://eodhd.com/api/real-time/forex");
+      apiUrl.searchParams.append("s", forexSymbol);
+    } else if (isIndex) {
+      // Index API endpoint
+      let indexSymbol = symbolStr;
+      if (!indexSymbol.includes(".INDX")) {
+        indexSymbol = indexSymbol + ".INDX";
+      }
+      apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
+      apiUrl.searchParams.append("s", indexSymbol);
+    } else {
+      // Regular stocks/ETFs
+      apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
+      apiUrl.searchParams.append("s", symbolStr);
     }
 
     // Add common parameters
@@ -117,33 +117,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.error(
-        `EODHD Price API error: ${response.status} - ${response.statusText}`,
-      );
-
-      // Return empty array instead of mock data for 401/403 errors
-      if (response.status === 401 || response.status === 403) {
-        return res.status(200).json({
-          prices: [],
-          total: 0,
-          symbol: symbolStr,
-          message: "EODHD API access restricted - no mock data provided",
-          timestamp: new Date().toISOString(),
-        });
+      console.error(`EODHD Price API error: ${response.status} - ${response.statusText}`);
+      
+      // Log response body for debugging
+      try {
+        const errorBody = await response.text();
+        console.error("Error response body:", errorBody);
+      } catch (e) {
+        console.error("Could not read error response body");
       }
 
       return res.status(response.status).json({
         error: `EODHD Price API Error: ${response.status} - ${response.statusText}`,
         prices: [],
+        symbol: symbolStr,
       });
     }
 
     // Check if response is JSON
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
-      console.error(
-        `EODHD Price API returned non-JSON content: ${contentType}`,
-      );
+      console.error(`EODHD Price API returned non-JSON content: ${contentType}`);
       return res.status(500).json({
         error: "Invalid response format from EODHD Price API",
         prices: [],
@@ -151,6 +145,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const data = await response.json();
+    console.log("EODHD API response:", JSON.stringify(data, null, 2));
 
     // Transform EODHD response to our format
     let prices: PriceData[] = [];
@@ -182,8 +177,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
-    // Return empty array instead of mock data on errors
-    res.status(200).json({
+    res.status(500).json({
       prices: [],
       total: 0,
       error: errorMessage,
@@ -193,12 +187,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 }
 
 function transformPriceData(item: any): PriceData {
+  const symbol = item.code || item.symbol || "Unknown";
+  const price = parseFloat(item.close || item.price || item.last || item.value || 0);
+  const change = parseFloat(item.change || item.change_price || item.diff || 0);
+  const change_percent = parseFloat(item.change_p || item.change_percent || item.chg_percent || 0);
+  
   return {
-    symbol: item.code || item.symbol || "Unknown",
+    symbol: symbol,
     name: item.name || undefined,
-    price: parseFloat(item.close || item.price || item.last || 0),
-    change: parseFloat(item.change || item.change_price || 0),
-    change_percent: parseFloat(item.change_p || item.change_percent || 0),
+    price: price,
+    change: change,
+    change_percent: change_percent,
     currency: item.currency || undefined,
     timestamp: item.timestamp || item.gmtoffset || new Date().toISOString(),
     market_status: item.market_status || undefined,
@@ -206,7 +205,6 @@ function transformPriceData(item: any): PriceData {
     high: parseFloat(item.high || 0) || undefined,
     low: parseFloat(item.low || 0) || undefined,
     open: parseFloat(item.open || 0) || undefined,
-    previous_close:
-      parseFloat(item.previous_close || item.previousClose || 0) || undefined,
+    previous_close: parseFloat(item.previous_close || item.previousClose || 0) || undefined,
   };
 }
