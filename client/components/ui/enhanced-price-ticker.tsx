@@ -121,11 +121,19 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         );
       } catch (fetchError) {
         console.warn(`[TICKER] Fetch failed for ${symbol}:`, fetchError);
-        // Return early for network errors to avoid retry storms
+        clearTimeout(timeoutId);
+
+        // Set disconnected status and return early for network errors
         setPriceData((prev) => ({
           ...prev,
-          [symbol]: { ...prev[symbol], status: "disconnected" },
+          [symbol]: {
+            ...prev[symbol],
+            status: "disconnected",
+            lastUpdate: new Date(),
+          },
         }));
+
+        // Don't retry on basic fetch failures - they indicate network issues
         return;
       }
 
