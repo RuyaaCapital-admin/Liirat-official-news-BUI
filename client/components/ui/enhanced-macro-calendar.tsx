@@ -337,8 +337,8 @@ export default function EnhancedMacroCalendar({
 
   // Auto-translate events when language changes to Arabic (with debouncing)
   useEffect(() => {
-    // Translation temporarily disabled due to fetch errors - will re-enable once API is stable
-    if (false && language === "ar" && displayedEvents.length > 0) {
+    // Enable translation for Arabic mode with proper API configuration
+    if (language === "ar" && displayedEvents.length > 0) {
       // Debounce translation requests to avoid overwhelming the API
       const timer = setTimeout(() => {
         displayedEvents.slice(0, 5).forEach((event, index) => {
@@ -401,16 +401,48 @@ export default function EnhancedMacroCalendar({
     }
   };
 
-  // Handle translation request - temporarily simplified to prevent fetch errors
+  // Handle translation request with proper error handling and API calls
   const translateContent = async (event: EconomicEvent) => {
     const eventKey = `${event.event}-${event.country}`;
 
-    // Always return original text for now to prevent fetch errors
-    // Translation functionality will be re-enabled once API connectivity is stable
-    setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
-    return event.event;
+    // Skip if already translated or currently translating
+    if (translatedContent[eventKey] || loadingTranslation[eventKey]) {
+      return translatedContent[eventKey] || event.event;
+    }
 
-    return event.event; // Fallback to original
+    setLoadingTranslation((prev) => ({ ...prev, [eventKey]: true }));
+
+    try {
+      const response = await fetch("/api/ai-analysis", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: event.event,
+          targetLanguage: "ar",
+          type: "translation",
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const translated = data.translatedText || event.event;
+        setTranslatedContent((prev) => ({ ...prev, [eventKey]: translated }));
+        return translated;
+      } else {
+        // Fallback to original text on API error
+        setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
+        return event.event;
+      }
+    } catch (error) {
+      console.debug("Translation failed, using original text:", error);
+      // Silent fallback to original text
+      setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
+      return event.event;
+    } finally {
+      setLoadingTranslation((prev) => ({ ...prev, [eventKey]: false }));
+    }
   };
 
   // Handle AI analysis request with better error handling
@@ -571,7 +603,7 @@ export default function EnhancedMacroCalendar({
               <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder={
-                  language === "ar" ? "البحث في ��لأحداث..." : "Search events..."
+                  language === "ar" ? "البحث في الأحداث..." : "Search events..."
                 }
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
