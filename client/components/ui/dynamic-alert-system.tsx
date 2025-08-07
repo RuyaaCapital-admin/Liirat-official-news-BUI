@@ -71,7 +71,7 @@ const SYMBOL_DATABASE: SymbolData[] = [
   { symbol: "EURGBP.FOREX", name: "EUR/GBP", category: "forex" },
   { symbol: "EURJPY.FOREX", name: "EUR/JPY", category: "forex" },
   { symbol: "GBPJPY.FOREX", name: "GBP/JPY", category: "forex" },
-  
+
   // Cryptocurrencies
   { symbol: "BTC-USD.CC", name: "Bitcoin (BTC/USD)", category: "crypto" },
   { symbol: "ETH-USD.CC", name: "Ethereum (ETH/USD)", category: "crypto" },
@@ -81,11 +81,15 @@ const SYMBOL_DATABASE: SymbolData[] = [
   { symbol: "DOT-USD.CC", name: "Polkadot (DOT/USD)", category: "crypto" },
   { symbol: "LINK-USD.CC", name: "Chainlink (LINK/USD)", category: "crypto" },
   { symbol: "BCH-USD.CC", name: "Bitcoin Cash (BCH/USD)", category: "crypto" },
-  
+
   // Major Indices
   { symbol: "GSPC.INDX", name: "S&P 500", category: "indices" },
   { symbol: "IXIC.INDX", name: "NASDAQ Composite", category: "indices" },
-  { symbol: "DJI.INDX", name: "Dow Jones Industrial Average", category: "indices" },
+  {
+    symbol: "DJI.INDX",
+    name: "Dow Jones Industrial Average",
+    category: "indices",
+  },
   { symbol: "RUT.INDX", name: "Russell 2000", category: "indices" },
   { symbol: "VIX.INDX", name: "VIX Volatility Index", category: "indices" },
   { symbol: "N225.INDX", name: "Nikkei 225", category: "indices" },
@@ -93,7 +97,7 @@ const SYMBOL_DATABASE: SymbolData[] = [
   { symbol: "FTSE.INDX", name: "FTSE 100", category: "indices" },
   { symbol: "DAX.INDX", name: "DAX", category: "indices" },
   { symbol: "CAC.INDX", name: "CAC 40", category: "indices" },
-  
+
   // Major Stocks
   { symbol: "AAPL.US", name: "Apple Inc.", category: "stocks" },
   { symbol: "MSFT.US", name: "Microsoft Corporation", category: "stocks" },
@@ -105,12 +109,20 @@ const SYMBOL_DATABASE: SymbolData[] = [
   { symbol: "NFLX.US", name: "Netflix Inc.", category: "stocks" },
   { symbol: "AMD.US", name: "Advanced Micro Devices", category: "stocks" },
   { symbol: "INTC.US", name: "Intel Corporation", category: "stocks" },
-  
+
   // Commodities
   { symbol: "XAUUSD.FOREX", name: "Gold (XAU/USD)", category: "commodities" },
   { symbol: "XAGUSD.FOREX", name: "Silver (XAG/USD)", category: "commodities" },
-  { symbol: "XPTUSD.FOREX", name: "Platinum (XPT/USD)", category: "commodities" },
-  { symbol: "XPDUSD.FOREX", name: "Palladium (XPD/USD)", category: "commodities" },
+  {
+    symbol: "XPTUSD.FOREX",
+    name: "Platinum (XPT/USD)",
+    category: "commodities",
+  },
+  {
+    symbol: "XPDUSD.FOREX",
+    name: "Palladium (XPD/USD)",
+    category: "commodities",
+  },
   { symbol: "CL.F", name: "Crude Oil WTI", category: "commodities" },
   { symbol: "BZ.F", name: "Brent Crude Oil", category: "commodities" },
   { symbol: "NG.F", name: "Natural Gas", category: "commodities" },
@@ -208,41 +220,48 @@ export default function DynamicAlertSystem({
   }, [symbolSearch]);
 
   // Fetch real-time price for selected symbol
-  const fetchSymbolPrice = useCallback(async (symbolData: SymbolData) => {
-    if (!symbolData) return;
+  const fetchSymbolPrice = useCallback(
+    async (symbolData: SymbolData) => {
+      if (!symbolData) return;
 
-    setPriceLoading(true);
-    try {
-      const response = await fetch(
-        `/api/eodhd-price?symbol=${encodeURIComponent(symbolData.symbol)}`,
-      );
+      setPriceLoading(true);
+      try {
+        const response = await fetch(
+          `/api/eodhd-price?symbol=${encodeURIComponent(symbolData.symbol)}`,
+        );
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.prices && data.prices.length > 0) {
-          const price = data.prices[0];
-          setCurrentPrice(price.price);
-          
-          // Update symbol data with current price info
-          setSelectedSymbol(prev => prev ? {
-            ...prev,
-            price: price.price,
-            change: price.change,
-            changePercent: price.change_percent,
-          } : null);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.prices && data.prices.length > 0) {
+            const price = data.prices[0];
+            setCurrentPrice(price.price);
+
+            // Update symbol data with current price info
+            setSelectedSymbol((prev) =>
+              prev
+                ? {
+                    ...prev,
+                    price: price.price,
+                    change: price.change,
+                    changePercent: price.change_percent,
+                  }
+                : null,
+            );
+          }
         }
+      } catch (error) {
+        console.error("Error fetching symbol price:", error);
+        toast.error(
+          language === "ar"
+            ? "خطأ في جلب السعر الحالي"
+            : "Error fetching current price",
+        );
+      } finally {
+        setPriceLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching symbol price:", error);
-      toast.error(
-        language === "ar"
-          ? "خطأ في جلب السعر الحالي"
-          : "Error fetching current price",
-      );
-    } finally {
-      setPriceLoading(false);
-    }
-  }, [language]);
+    },
+    [language],
+  );
 
   // Handle symbol selection
   const handleSymbolSelect = useCallback(
@@ -384,7 +403,9 @@ export default function DynamicAlertSystem({
     setIsDialogOpen(false);
 
     toast.success(
-      language === "ar" ? "تم إنشاء التنبيه بنجاح" : "Alert created successfully",
+      language === "ar"
+        ? "تم إنشاء التنبيه بنجاح"
+        : "Alert created successfully",
     );
   };
 
@@ -409,13 +430,11 @@ export default function DynamicAlertSystem({
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-2xl font-bold flex items-center gap-2">
             <Bell className="h-6 w-6 text-primary" />
-            {language === "ar"
-              ? "نظام التنبيهات الذكي"
-              : "Smart Alert System"}
+            {language === "ar" ? "نظام التنبيهات الذكي" : "Smart Alert System"}
           </CardTitle>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button 
+              <Button
                 className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg border-0 font-medium"
                 size="sm"
               >
@@ -455,7 +474,7 @@ export default function DynamicAlertSystem({
                       className="pl-10"
                     />
                   </div>
-                  
+
                   {/* Symbol Suggestions */}
                   {symbolSearch && filteredSymbols.length > 0 && (
                     <div className="max-h-48 overflow-y-auto border rounded-md bg-background">
@@ -610,8 +629,8 @@ export default function DynamicAlertSystem({
                   </Label>
                 </div>
 
-                <Button 
-                  onClick={createPriceAlert} 
+                <Button
+                  onClick={createPriceAlert}
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                   disabled={!selectedSymbol || !targetPrice}
                 >
@@ -690,7 +709,7 @@ export default function DynamicAlertSystem({
                         setEditingAlert(alert);
                         // Find symbol data for editing
                         const symbolData = SYMBOL_DATABASE.find(
-                          s => s.symbol === alert.symbol
+                          (s) => s.symbol === alert.symbol,
                         );
                         if (symbolData) {
                           setSelectedSymbol(symbolData);

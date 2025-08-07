@@ -23,7 +23,14 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
 
   try {
     // Extract query parameters
-    const { country, importance, from, to, limit = "50", lang = "en" } = req.query;
+    const {
+      country,
+      importance,
+      from,
+      to,
+      limit = "50",
+      lang = "en",
+    } = req.query;
 
     // Get client ID for rate limiting
     const clientId = getClientId(req);
@@ -117,7 +124,8 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
       // Return proper error response based on status
       let errorMessage = "Failed to fetch economic calendar";
       if (response.status === 403) {
-        errorMessage = "API key authentication failed. Please check API key configuration.";
+        errorMessage =
+          "API key authentication failed. Please check API key configuration.";
       } else if (response.status === 401) {
         errorMessage = "API key is invalid or expired.";
       } else if (response.status === 429) {
@@ -156,7 +164,7 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
 
     // Transform EODHD response to our format
     let events: EconomicEvent[] = [];
-    
+
     if (Array.isArray(data)) {
       events = data
         .filter((event: any) => event && (event.date || event.time))
@@ -177,7 +185,7 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
         .split(",")
         .map((i) => parseInt(i.trim()))
         .filter((i) => !isNaN(i) && i >= 1 && i <= 3);
-      
+
       if (requestedLevels.length > 0) {
         events = events.filter((event) =>
           requestedLevels.includes(event.importance),
@@ -232,11 +240,15 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
   }
 };
 
-function transformEventData(event: any, language: string = "en"): EconomicEvent {
+function transformEventData(
+  event: any,
+  language: string = "en",
+): EconomicEvent {
   // Parse date and time from EODHD format
-  const eventDate = event.date || event.Date || new Date().toISOString().split("T")[0];
+  const eventDate =
+    event.date || event.Date || new Date().toISOString().split("T")[0];
   const eventTime = event.time || event.Time || "00:00";
-  
+
   // Format date consistently
   let formattedDate = eventDate;
   if (!eventDate.includes("T")) {
@@ -269,7 +281,7 @@ function transformEventData(event: any, language: string = "en"): EconomicEvent 
   // Determine importance based on keywords and event type
   let importance = 2; // Default to medium
   const eventNameLower = eventName.toLowerCase();
-  
+
   // High importance keywords
   if (
     eventNameLower.includes("gdp") ||
@@ -304,19 +316,22 @@ function transformEventData(event: any, language: string = "en"): EconomicEvent 
   }
 
   // Handle actual, forecast, previous values
-  const actual = event.actual !== null && event.actual !== undefined
-    ? String(event.actual)
-    : undefined;
-  
-  const forecast = event.forecast !== null && event.forecast !== undefined
-    ? String(event.forecast)
-    : event.estimate !== null && event.estimate !== undefined
-      ? String(event.estimate)
+  const actual =
+    event.actual !== null && event.actual !== undefined
+      ? String(event.actual)
       : undefined;
-  
-  const previous = event.previous !== null && event.previous !== undefined
-    ? String(event.previous)
-    : undefined;
+
+  const forecast =
+    event.forecast !== null && event.forecast !== undefined
+      ? String(event.forecast)
+      : event.estimate !== null && event.estimate !== undefined
+        ? String(event.estimate)
+        : undefined;
+
+  const previous =
+    event.previous !== null && event.previous !== undefined
+      ? String(event.previous)
+      : undefined;
 
   return {
     date: formattedDate,

@@ -13,54 +13,65 @@ interface NewsNotification {
 interface NotificationContextType {
   notifications: NewsNotification[];
   unreadCount: number;
-  addNotification: (notification: Omit<NewsNotification, "id" | "timestamp" | "read">) => void;
+  addNotification: (
+    notification: Omit<NewsNotification, "id" | "timestamp" | "read">,
+  ) => void;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
   removeNotification: (id: string) => void;
   clearAll: () => void;
 }
 
-const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
+const NotificationContext = createContext<NotificationContextType | undefined>(
+  undefined,
+);
 
-export function NotificationProvider({ children }: { children: React.ReactNode }) {
+export function NotificationProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [notifications, setNotifications] = useState<NewsNotification[]>([]);
 
-  const addNotification = useCallback((notification: Omit<NewsNotification, "id" | "timestamp" | "read">) => {
-    const newNotification: NewsNotification = {
-      ...notification,
-      id: Date.now().toString(),
-      timestamp: new Date().toISOString(),
-      read: false,
-    };
+  const addNotification = useCallback(
+    (notification: Omit<NewsNotification, "id" | "timestamp" | "read">) => {
+      const newNotification: NewsNotification = {
+        ...notification,
+        id: Date.now().toString(),
+        timestamp: new Date().toISOString(),
+        read: false,
+      };
 
-    setNotifications(prev => [newNotification, ...prev.slice(0, 49)]); // Keep max 50 notifications
-  }, []);
+      setNotifications((prev) => [newNotification, ...prev.slice(0, 49)]); // Keep max 50 notifications
+    },
+    [],
+  );
 
   const markAsRead = useCallback((id: string) => {
-    setNotifications(prev => 
-      prev.map(notification => 
-        notification.id === id 
-          ? { ...notification, read: true }
-          : notification
-      )
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        notification.id === id ? { ...notification, read: true } : notification,
+      ),
     );
   }, []);
 
   const markAllAsRead = useCallback(() => {
-    setNotifications(prev => 
-      prev.map(notification => ({ ...notification, read: true }))
+    setNotifications((prev) =>
+      prev.map((notification) => ({ ...notification, read: true })),
     );
   }, []);
 
   const removeNotification = useCallback((id: string) => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id));
+    setNotifications((prev) =>
+      prev.filter((notification) => notification.id !== id),
+    );
   }, []);
 
   const clearAll = useCallback(() => {
     setNotifications([]);
   }, []);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const value: NotificationContextType = {
     notifications,
@@ -82,7 +93,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 export function useNotifications() {
   const context = useContext(NotificationContext);
   if (context === undefined) {
-    throw new Error("useNotifications must be used within a NotificationProvider");
+    throw new Error(
+      "useNotifications must be used within a NotificationProvider",
+    );
   }
   return context;
 }

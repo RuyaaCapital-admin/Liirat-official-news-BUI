@@ -14,7 +14,7 @@ const SYMBOL_DATABASE = [
   { symbol: "EURGBP.FOREX", name: "EUR/GBP", category: "forex" },
   { symbol: "EURJPY.FOREX", name: "EUR/JPY", category: "forex" },
   { symbol: "GBPJPY.FOREX", name: "GBP/JPY", category: "forex" },
-  
+
   // Cryptocurrencies
   { symbol: "BTC-USD.CC", name: "Bitcoin", category: "crypto" },
   { symbol: "ETH-USD.CC", name: "Ethereum", category: "crypto" },
@@ -24,7 +24,7 @@ const SYMBOL_DATABASE = [
   { symbol: "DOT-USD.CC", name: "Polkadot", category: "crypto" },
   { symbol: "LINK-USD.CC", name: "Chainlink", category: "crypto" },
   { symbol: "BCH-USD.CC", name: "Bitcoin Cash", category: "crypto" },
-  
+
   // Major Indices
   { symbol: "GSPC.INDX", name: "S&P 500", category: "indices" },
   { symbol: "IXIC.INDX", name: "NASDAQ", category: "indices" },
@@ -36,7 +36,7 @@ const SYMBOL_DATABASE = [
   { symbol: "FTSE.INDX", name: "FTSE 100", category: "indices" },
   { symbol: "DAX.INDX", name: "DAX", category: "indices" },
   { symbol: "CAC.INDX", name: "CAC 40", category: "indices" },
-  
+
   // Major Stocks
   { symbol: "AAPL.US", name: "Apple", category: "stocks" },
   { symbol: "MSFT.US", name: "Microsoft", category: "stocks" },
@@ -48,7 +48,7 @@ const SYMBOL_DATABASE = [
   { symbol: "NFLX.US", name: "Netflix", category: "stocks" },
   { symbol: "AMD.US", name: "AMD", category: "stocks" },
   { symbol: "INTC.US", name: "Intel", category: "stocks" },
-  
+
   // Commodities
   { symbol: "XAUUSD.FOREX", name: "Gold", category: "commodities" },
   { symbol: "XAGUSD.FOREX", name: "Silver", category: "commodities" },
@@ -59,21 +59,23 @@ const SYMBOL_DATABASE = [
 // Function to find symbol by name or symbol
 function findSymbol(query: string): any | null {
   const searchTerm = query.toLowerCase();
-  
+
   // First try exact matches
   const exactMatch = SYMBOL_DATABASE.find(
-    s => s.name.toLowerCase() === searchTerm || 
-    s.symbol.toLowerCase().includes(searchTerm.toUpperCase())
+    (s) =>
+      s.name.toLowerCase() === searchTerm ||
+      s.symbol.toLowerCase().includes(searchTerm.toUpperCase()),
   );
-  
+
   if (exactMatch) return exactMatch;
-  
+
   // Then try partial matches
   const partialMatch = SYMBOL_DATABASE.find(
-    s => s.name.toLowerCase().includes(searchTerm) ||
-    s.symbol.toLowerCase().includes(searchTerm)
+    (s) =>
+      s.name.toLowerCase().includes(searchTerm) ||
+      s.symbol.toLowerCase().includes(searchTerm),
   );
-  
+
   return partialMatch || null;
 }
 
@@ -119,7 +121,7 @@ async function fetchRealMarketData(): Promise<any[]> {
         const data = await response.json();
         if (data.prices && data.prices.length > 0) {
           const price = data.prices[0];
-          const symbolData = SYMBOL_DATABASE.find(s => s.symbol === symbol);
+          const symbolData = SYMBOL_DATABASE.find((s) => s.symbol === symbol);
           marketData.push({
             symbol: symbol
               .replace(".FOREX", "")
@@ -169,8 +171,10 @@ async function fetchRealNews(): Promise<any[]> {
 // Get accurate Dubai time
 function getDubaiTime(): { date: Date; formatted: string; timeString: string } {
   const now = new Date();
-  const dubaiTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Dubai" }));
-  
+  const dubaiTime = new Date(
+    now.toLocaleString("en-US", { timeZone: "Asia/Dubai" }),
+  );
+
   const formatted = dubaiTime.toLocaleString("en-US", {
     timeZone: "Asia/Dubai",
     weekday: "long",
@@ -181,14 +185,14 @@ function getDubaiTime(): { date: Date; formatted: string; timeString: string } {
     minute: "2-digit",
     hour12: true,
   });
-  
+
   const timeString = dubaiTime.toLocaleString("en-US", {
     timeZone: "Asia/Dubai",
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
   });
-  
+
   return { date: dubaiTime, formatted, timeString };
 }
 
@@ -202,44 +206,79 @@ async function generateSmartFallbackResponse(
 
   // Check if user is asking for specific symbol prices
   const priceKeywords = ["price", "سعر", "cost", "value", "quote", "rate"];
-  const isAskingForPrice = priceKeywords.some(keyword => lowerMessage.includes(keyword));
+  const isAskingForPrice = priceKeywords.some((keyword) =>
+    lowerMessage.includes(keyword),
+  );
 
   if (isAskingForPrice) {
     // Try to extract symbol from message
     let requestedSymbol = null;
-    
+
     // Check for specific mentions
     if (lowerMessage.includes("btc") || lowerMessage.includes("bitcoin")) {
-      requestedSymbol = SYMBOL_DATABASE.find(s => s.symbol === "BTC-USD.CC");
-    } else if (lowerMessage.includes("eth") || lowerMessage.includes("ethereum")) {
-      requestedSymbol = SYMBOL_DATABASE.find(s => s.symbol === "ETH-USD.CC");
+      requestedSymbol = SYMBOL_DATABASE.find((s) => s.symbol === "BTC-USD.CC");
+    } else if (
+      lowerMessage.includes("eth") ||
+      lowerMessage.includes("ethereum")
+    ) {
+      requestedSymbol = SYMBOL_DATABASE.find((s) => s.symbol === "ETH-USD.CC");
     } else if (lowerMessage.includes("gold") || lowerMessage.includes("ذهب")) {
-      requestedSymbol = SYMBOL_DATABASE.find(s => s.symbol === "XAUUSD.FOREX");
+      requestedSymbol = SYMBOL_DATABASE.find(
+        (s) => s.symbol === "XAUUSD.FOREX",
+      );
     } else if (lowerMessage.includes("eur") && lowerMessage.includes("usd")) {
-      requestedSymbol = SYMBOL_DATABASE.find(s => s.symbol === "EURUSD.FOREX");
+      requestedSymbol = SYMBOL_DATABASE.find(
+        (s) => s.symbol === "EURUSD.FOREX",
+      );
     } else if (lowerMessage.includes("gbp") && lowerMessage.includes("usd")) {
-      requestedSymbol = SYMBOL_DATABASE.find(s => s.symbol === "GBPUSD.FOREX");
+      requestedSymbol = SYMBOL_DATABASE.find(
+        (s) => s.symbol === "GBPUSD.FOREX",
+      );
     } else if (lowerMessage.includes("usd") && lowerMessage.includes("jpy")) {
-      requestedSymbol = SYMBOL_DATABASE.find(s => s.symbol === "USDJPY.FOREX");
-    } else if (lowerMessage.includes("s&p") || lowerMessage.includes("sp500") || lowerMessage.includes("s p 500")) {
-      requestedSymbol = SYMBOL_DATABASE.find(s => s.symbol === "GSPC.INDX");
+      requestedSymbol = SYMBOL_DATABASE.find(
+        (s) => s.symbol === "USDJPY.FOREX",
+      );
+    } else if (
+      lowerMessage.includes("s&p") ||
+      lowerMessage.includes("sp500") ||
+      lowerMessage.includes("s p 500")
+    ) {
+      requestedSymbol = SYMBOL_DATABASE.find((s) => s.symbol === "GSPC.INDX");
     } else if (lowerMessage.includes("nasdaq")) {
-      requestedSymbol = SYMBOL_DATABASE.find(s => s.symbol === "IXIC.INDX");
-    } else if (lowerMessage.includes("apple") || lowerMessage.includes("aapl")) {
-      requestedSymbol = SYMBOL_DATABASE.find(s => s.symbol === "AAPL.US");
-    } else if (lowerMessage.includes("tesla") || lowerMessage.includes("tsla")) {
-      requestedSymbol = SYMBOL_DATABASE.find(s => s.symbol === "TSLA.US");
-    } else if (lowerMessage.includes("microsoft") || lowerMessage.includes("msft")) {
-      requestedSymbol = SYMBOL_DATABASE.find(s => s.symbol === "MSFT.US");
-    } else if (lowerMessage.includes("google") || lowerMessage.includes("googl")) {
-      requestedSymbol = SYMBOL_DATABASE.find(s => s.symbol === "GOOGL.US");
-    } else if (lowerMessage.includes("amazon") || lowerMessage.includes("amzn")) {
-      requestedSymbol = SYMBOL_DATABASE.find(s => s.symbol === "AMZN.US");
-    } else if (lowerMessage.includes("nvidia") || lowerMessage.includes("nvda")) {
-      requestedSymbol = SYMBOL_DATABASE.find(s => s.symbol === "NVDA.US");
+      requestedSymbol = SYMBOL_DATABASE.find((s) => s.symbol === "IXIC.INDX");
+    } else if (
+      lowerMessage.includes("apple") ||
+      lowerMessage.includes("aapl")
+    ) {
+      requestedSymbol = SYMBOL_DATABASE.find((s) => s.symbol === "AAPL.US");
+    } else if (
+      lowerMessage.includes("tesla") ||
+      lowerMessage.includes("tsla")
+    ) {
+      requestedSymbol = SYMBOL_DATABASE.find((s) => s.symbol === "TSLA.US");
+    } else if (
+      lowerMessage.includes("microsoft") ||
+      lowerMessage.includes("msft")
+    ) {
+      requestedSymbol = SYMBOL_DATABASE.find((s) => s.symbol === "MSFT.US");
+    } else if (
+      lowerMessage.includes("google") ||
+      lowerMessage.includes("googl")
+    ) {
+      requestedSymbol = SYMBOL_DATABASE.find((s) => s.symbol === "GOOGL.US");
+    } else if (
+      lowerMessage.includes("amazon") ||
+      lowerMessage.includes("amzn")
+    ) {
+      requestedSymbol = SYMBOL_DATABASE.find((s) => s.symbol === "AMZN.US");
+    } else if (
+      lowerMessage.includes("nvidia") ||
+      lowerMessage.includes("nvda")
+    ) {
+      requestedSymbol = SYMBOL_DATABASE.find((s) => s.symbol === "NVDA.US");
     } else {
       // Try to find symbol by searching through all symbols
-      const words = lowerMessage.split(' ');
+      const words = lowerMessage.split(" ");
       for (const word of words) {
         const found = findSymbol(word);
         if (found) {
@@ -252,11 +291,12 @@ async function generateSmartFallbackResponse(
     if (requestedSymbol) {
       // Fetch real-time price for the requested symbol
       const priceData = await fetchSpecificPrice(requestedSymbol.symbol);
-      
+
       if (priceData) {
-        const priceInfo = language === "ar"
-          ? `سعر ${requestedSymbol.name} الحالي: $${priceData.price.toLocaleString()} (${priceData.change_percent >= 0 ? "+" : ""}${priceData.change_percent.toFixed(2)}%)`
-          : `Current ${requestedSymbol.name} price: $${priceData.price.toLocaleString()} (${priceData.change_percent >= 0 ? "+" : ""}${priceData.change_percent.toFixed(2)}%)`;
+        const priceInfo =
+          language === "ar"
+            ? `سعر ${requestedSymbol.name} الحالي: $${priceData.price.toLocaleString()} (${priceData.change_percent >= 0 ? "+" : ""}${priceData.change_percent.toFixed(2)}%)`
+            : `Current ${requestedSymbol.name} price: $${priceData.price.toLocaleString()} (${priceData.change_percent >= 0 ? "+" : ""}${priceData.change_percent.toFixed(2)}%)`;
 
         return language === "ar"
           ? `${priceInfo}\n\nالوقت الحالي: ${dubaiTime.formatted} (توقيت دبي)\nمساعد ليرات للأخبار المالية`
@@ -374,11 +414,11 @@ export const handleChat = async (req: Request, res: Response) => {
     // Check if user is asking for a specific symbol price
     let specificSymbolData = null;
     const lowerMessage = message.toLowerCase();
-    
+
     // Try to extract and fetch specific symbol if mentioned
     const symbolKeywords = ["price", "سعر", "quote", "value"];
-    if (symbolKeywords.some(keyword => lowerMessage.includes(keyword))) {
-      const words = lowerMessage.split(' ');
+    if (symbolKeywords.some((keyword) => lowerMessage.includes(keyword))) {
+      const words = lowerMessage.split(" ");
       for (const word of words) {
         const found = findSymbol(word);
         if (found) {
@@ -408,10 +448,14 @@ ${marketData
   )
   .join("\n")}
 
-${specificSymbolData ? `SPECIFIC REQUESTED SYMBOL:
+${
+  specificSymbolData
+    ? `SPECIFIC REQUESTED SYMBOL:
 ${specificSymbolData.symbol}: $${specificSymbolData.price.toLocaleString()} (${specificSymbolData.changePercent >= 0 ? "+" : ""}${specificSymbolData.changePercent.toFixed(2)}%)
 
-` : ""}LATEST NEWS HEADLINES:
+`
+    : ""
+}LATEST NEWS HEADLINES:
 ${newsData
   .map(
     (item, index) =>

@@ -61,19 +61,19 @@ const translations = {
     actual: "الفعلي",
     forecast: "المتوقع",
     previous: "السابق",
-    
+
     // Importance levels
     high: "عالي",
     medium: "متوسط",
     low: "منخفض",
-    
+
     // Actions
     refresh: "تحديث",
     retry: "إعادة المحاولة",
     filter: "تصفية",
     search: "البحث",
     all: "الكل",
-    
+
     // Status messages
     loading: "جاري التحميل...",
     noEvents: "لا توجد أحداث اقتصادية متاحة",
@@ -81,11 +81,11 @@ const translations = {
     error: "خطأ في تحميل التقويم الاقتصادي",
     networkError: "خطأ في الشبكة",
     retryMessage: "فشل في تحميل البيانات. يرجى المحاولة مرة أخرى.",
-    
+
     // Countries
     countries: {
       US: "الولايات المتحدة",
-      EUR: "منطقة اليورو", 
+      EUR: "منطقة اليورو",
       GB: "المملكة المتحدة",
       JP: "اليابان",
       CA: "كندا",
@@ -94,7 +94,7 @@ const translations = {
       FR: "فرنسا",
       CN: "الصين",
       CH: "سويسرا",
-    }
+    },
   },
   en: {
     // Table headers
@@ -105,19 +105,19 @@ const translations = {
     actual: "Actual",
     forecast: "Forecast",
     previous: "Previous",
-    
+
     // Importance levels
     high: "High",
-    medium: "Medium", 
+    medium: "Medium",
     low: "Low",
-    
+
     // Actions
     refresh: "Refresh",
     retry: "Retry",
     filter: "Filter",
     search: "Search",
     all: "All",
-    
+
     // Status messages
     loading: "Loading...",
     noEvents: "No economic events available",
@@ -125,12 +125,12 @@ const translations = {
     error: "Error loading economic calendar",
     networkError: "Network error",
     retryMessage: "Failed to load data. Please try again.",
-    
+
     // Countries
     countries: {
       US: "United States",
       EUR: "Eurozone",
-      GB: "United Kingdom", 
+      GB: "United Kingdom",
       JP: "Japan",
       CA: "Canada",
       AU: "Australia",
@@ -138,8 +138,8 @@ const translations = {
       FR: "France",
       CN: "China",
       CH: "Switzerland",
-    }
-  }
+    },
+  },
 };
 
 const COUNTRIES = ["US", "EUR", "GB", "JP", "CA", "AU", "DE", "FR", "CN", "CH"];
@@ -154,67 +154,78 @@ export default function EnhancedCalendarTable({
 }: EnhancedCalendarTableProps) {
   const { language } = useLanguage();
   const t = translations[language];
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("all");
-  const [selectedImportances, setSelectedImportances] = useState<string[]>(["1", "2", "3"]);
+  const [selectedImportances, setSelectedImportances] = useState<string[]>([
+    "1",
+    "2",
+    "3",
+  ]);
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Filter events based on search and filters
   const filteredEvents = useMemo(() => {
     if (!Array.isArray(events)) return [];
-    
+
     return events.filter((event) => {
       // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
-        const matchesSearch = 
+        const matchesSearch =
           event.event?.toLowerCase().includes(query) ||
           event.country?.toLowerCase().includes(query) ||
           event.category?.toLowerCase().includes(query);
         if (!matchesSearch) return false;
       }
-      
+
       // Country filter
       if (selectedCountry !== "all" && event.country !== selectedCountry) {
         return false;
       }
-      
+
       // Importance filter
       if (!selectedImportances.includes(event.importance?.toString())) {
         return false;
       }
-      
+
       return true;
     });
   }, [events, searchQuery, selectedCountry, selectedImportances]);
 
   // Display logic - show first 10 by default, expand to show all
-  const displayedEvents = isExpanded 
-    ? filteredEvents 
+  const displayedEvents = isExpanded
+    ? filteredEvents
     : filteredEvents.slice(0, 10);
 
   // Format date and time
   const formatDateTime = (dateStr: string, timeStr?: string) => {
     try {
       let date: Date;
-      
-      if (dateStr.includes('T')) {
+
+      if (dateStr.includes("T")) {
         date = parseISO(dateStr);
       } else {
-        const fullDateTime = timeStr ? `${dateStr}T${timeStr}:00` : `${dateStr}T00:00:00`;
+        const fullDateTime = timeStr
+          ? `${dateStr}T${timeStr}:00`
+          : `${dateStr}T00:00:00`;
         date = parseISO(fullDateTime);
       }
-      
+
       if (!isValid(date)) {
         return language === "ar" ? "تاريخ غير صالح" : "Invalid date";
       }
-      
+
       const dateFormatted = format(date, "MMM dd");
       const timeFormatted = timeStr || format(date, "HH:mm");
-      
+
       return (
-        <div className={cn("text-sm", language === "ar" ? "text-right" : "text-left")}>
+        <div
+          className={cn(
+            "text-sm",
+            language === "ar" ? "text-right" : "text-left",
+          )}
+        >
           <div className="font-medium">{dateFormatted}</div>
           <div className="text-muted-foreground">{timeFormatted}</div>
         </div>
@@ -232,9 +243,11 @@ export default function EnhancedCalendarTable({
       2: { label: t.medium, color: "bg-yellow-500" },
       3: { label: t.high, color: "bg-red-500" },
     };
-    
-    const config = importanceMap[importance as keyof typeof importanceMap] || importanceMap[2];
-    
+
+    const config =
+      importanceMap[importance as keyof typeof importanceMap] ||
+      importanceMap[2];
+
     return (
       <Badge className={cn("text-white text-xs", config.color)}>
         {config.label}
@@ -259,10 +272,8 @@ export default function EnhancedCalendarTable({
 
   // Handle importance filter change
   const handleImportanceChange = (importance: string, checked: boolean) => {
-    setSelectedImportances(prev => 
-      checked 
-        ? [...prev, importance]
-        : prev.filter(i => i !== importance)
+    setSelectedImportances((prev) =>
+      checked ? [...prev, importance] : prev.filter((i) => i !== importance),
     );
   };
 
@@ -278,11 +289,7 @@ export default function EnhancedCalendarTable({
         {error?.userMessage || t.retryMessage}
       </p>
       {error?.canRetry && (
-        <Button 
-          onClick={handleRefresh}
-          variant="outline"
-          className="gap-2"
-        >
+        <Button onClick={handleRefresh} variant="outline" className="gap-2">
           <RefreshCw className="h-4 w-4" />
           {t.retry}
         </Button>
@@ -311,12 +318,15 @@ export default function EnhancedCalendarTable({
     <div className="flex flex-col items-center justify-center py-12">
       <Clock className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
       <h3 className="text-lg font-semibold mb-2">
-        {searchQuery || selectedCountry !== "all" || selectedImportances.length < 3
+        {searchQuery ||
+        selectedCountry !== "all" ||
+        selectedImportances.length < 3
           ? t.noEventsFiltered
-          : t.noEvents
-        }
+          : t.noEvents}
       </h3>
-      {(searchQuery || selectedCountry !== "all" || selectedImportances.length < 3) && (
+      {(searchQuery ||
+        selectedCountry !== "all" ||
+        selectedImportances.length < 3) && (
         <Button
           variant="outline"
           onClick={() => {
@@ -333,24 +343,26 @@ export default function EnhancedCalendarTable({
   );
 
   return (
-    <div className={cn("w-full space-y-4", className)} dir={language === "ar" ? "rtl" : "ltr"}>
+    <div
+      className={cn("w-full space-y-4", className)}
+      dir={language === "ar" ? "rtl" : "ltr"}
+    >
       {/* Controls */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="flex flex-wrap gap-2 items-center">
           {/* Search */}
           <div className="relative">
-            <Search className={cn(
-              "absolute top-3 h-4 w-4 text-muted-foreground",
-              language === "ar" ? "right-3" : "left-3"
-            )} />
+            <Search
+              className={cn(
+                "absolute top-3 h-4 w-4 text-muted-foreground",
+                language === "ar" ? "right-3" : "left-3",
+              )}
+            />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.search + "..."}
-              className={cn(
-                "w-64",
-                language === "ar" ? "pr-10" : "pl-10"
-              )}
+              className={cn("w-64", language === "ar" ? "pr-10" : "pl-10")}
             />
           </div>
 
@@ -384,15 +396,22 @@ export default function EnhancedCalendarTable({
                 <Checkbox
                   id={`importance-${importance}`}
                   checked={selectedImportances.includes(importance.toString())}
-                  onCheckedChange={(checked) => 
-                    handleImportanceChange(importance.toString(), checked as boolean)
+                  onCheckedChange={(checked) =>
+                    handleImportanceChange(
+                      importance.toString(),
+                      checked as boolean,
+                    )
                   }
                 />
                 <label
                   htmlFor={`importance-${importance}`}
                   className="text-sm cursor-pointer"
                 >
-                  {importance === 1 ? t.low : importance === 2 ? t.medium : t.high}
+                  {importance === 1
+                    ? t.low
+                    : importance === 2
+                      ? t.medium
+                      : t.high}
                 </label>
               </div>
             ))}
@@ -402,7 +421,7 @@ export default function EnhancedCalendarTable({
         {/* Refresh button */}
         <Button
           onClick={handleRefresh}
-          variant="outline" 
+          variant="outline"
           size="sm"
           className="gap-2"
           disabled={isLoading}
@@ -427,49 +446,47 @@ export default function EnhancedCalendarTable({
               <table className="w-full">
                 <thead className="border-b bg-muted/30">
                   <tr>
-                    <th className={cn(
-                      "p-3 text-sm font-semibold",
-                      language === "ar" ? "text-right" : "text-left"
-                    )}>
+                    <th
+                      className={cn(
+                        "p-3 text-sm font-semibold",
+                        language === "ar" ? "text-right" : "text-left",
+                      )}
+                    >
                       {t.dateTime}
                     </th>
-                    <th className={cn(
-                      "p-3 text-sm font-semibold",
-                      language === "ar" ? "text-right" : "text-left"
-                    )}>
+                    <th
+                      className={cn(
+                        "p-3 text-sm font-semibold",
+                        language === "ar" ? "text-right" : "text-left",
+                      )}
+                    >
                       {t.country}
                     </th>
-                    <th className={cn(
-                      "p-3 text-sm font-semibold",
-                      language === "ar" ? "text-right" : "text-left"
-                    )}>
+                    <th
+                      className={cn(
+                        "p-3 text-sm font-semibold",
+                        language === "ar" ? "text-right" : "text-left",
+                      )}
+                    >
                       {t.event}
                     </th>
-                    <th className={cn(
-                      "p-3 text-sm font-semibold text-center"
-                    )}>
+                    <th className={cn("p-3 text-sm font-semibold text-center")}>
                       {t.importance}
                     </th>
-                    <th className={cn(
-                      "p-3 text-sm font-semibold text-center"
-                    )}>
+                    <th className={cn("p-3 text-sm font-semibold text-center")}>
                       {t.actual}
                     </th>
-                    <th className={cn(
-                      "p-3 text-sm font-semibold text-center"
-                    )}>
+                    <th className={cn("p-3 text-sm font-semibold text-center")}>
                       {t.forecast}
                     </th>
-                    <th className={cn(
-                      "p-3 text-sm font-semibold text-center"
-                    )}>
+                    <th className={cn("p-3 text-sm font-semibold text-center")}>
                       {t.previous}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {displayedEvents.map((event, index) => (
-                    <tr 
+                    <tr
                       key={`${event.date}-${event.country}-${event.event}-${index}`}
                       className="border-b hover:bg-muted/20 transition-colors"
                     >
@@ -479,7 +496,9 @@ export default function EnhancedCalendarTable({
                       <td className="p-3">
                         <div className="flex items-center gap-2">
                           <ReactCountryFlag
-                            countryCode={event.country === "EUR" ? "EU" : event.country}
+                            countryCode={
+                              event.country === "EUR" ? "EU" : event.country
+                            }
                             svg
                             style={{ width: "20px", height: "15px" }}
                           />
@@ -489,11 +508,15 @@ export default function EnhancedCalendarTable({
                         </div>
                       </td>
                       <td className="p-3">
-                        <div className={cn(
-                          "max-w-xs",
-                          language === "ar" ? "text-right" : "text-left"
-                        )}>
-                          <span className="text-sm font-medium">{event.event}</span>
+                        <div
+                          className={cn(
+                            "max-w-xs",
+                            language === "ar" ? "text-right" : "text-left",
+                          )}
+                        >
+                          <span className="text-sm font-medium">
+                            {event.event}
+                          </span>
                           {event.category && (
                             <div className="text-xs text-muted-foreground mt-1">
                               {event.category}
@@ -534,11 +557,12 @@ export default function EnhancedCalendarTable({
                   className="gap-2"
                 >
                   {isExpanded
-                    ? language === "ar" ? "عرض أقل" : "Show less"
-                    : language === "ar" 
+                    ? language === "ar"
+                      ? "عرض أقل"
+                      : "Show less"
+                    : language === "ar"
                       ? `عرض ${filteredEvents.length - 10} أحداث أخرى`
-                      : `Show ${filteredEvents.length - 10} more events`
-                  }
+                      : `Show ${filteredEvents.length - 10} more events`}
                 </Button>
               </div>
             )}

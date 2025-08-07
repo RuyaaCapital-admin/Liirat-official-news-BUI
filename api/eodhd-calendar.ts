@@ -12,11 +12,15 @@ interface EconomicEvent {
   previous?: string;
 }
 
-function transformEventData(event: any, language: string = "en"): EconomicEvent {
+function transformEventData(
+  event: any,
+  language: string = "en",
+): EconomicEvent {
   // Parse date and time from EODHD format
-  const eventDate = event.date || event.Date || new Date().toISOString().split("T")[0];
+  const eventDate =
+    event.date || event.Date || new Date().toISOString().split("T")[0];
   const eventTime = event.time || event.Time || "00:00";
-  
+
   // Format date consistently
   let formattedDate = eventDate;
   if (!eventDate.includes("T")) {
@@ -49,7 +53,7 @@ function transformEventData(event: any, language: string = "en"): EconomicEvent 
   // Determine importance based on keywords and event type
   let importance = 2; // Default to medium
   const eventNameLower = eventName.toLowerCase();
-  
+
   // High importance keywords
   if (
     eventNameLower.includes("gdp") ||
@@ -84,19 +88,22 @@ function transformEventData(event: any, language: string = "en"): EconomicEvent 
   }
 
   // Handle actual, forecast, previous values
-  const actual = event.actual !== null && event.actual !== undefined
-    ? String(event.actual)
-    : undefined;
-  
-  const forecast = event.forecast !== null && event.forecast !== undefined
-    ? String(event.forecast)
-    : event.estimate !== null && event.estimate !== undefined
-      ? String(event.estimate)
+  const actual =
+    event.actual !== null && event.actual !== undefined
+      ? String(event.actual)
       : undefined;
-  
-  const previous = event.previous !== null && event.previous !== undefined
-    ? String(event.previous)
-    : undefined;
+
+  const forecast =
+    event.forecast !== null && event.forecast !== undefined
+      ? String(event.forecast)
+      : event.estimate !== null && event.estimate !== undefined
+        ? String(event.estimate)
+        : undefined;
+
+  const previous =
+    event.previous !== null && event.previous !== undefined
+      ? String(event.previous)
+      : undefined;
 
   return {
     date: formattedDate,
@@ -132,7 +139,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const apiKey = process.env.EODHD_API_KEY || "6891e3b89ee5e1.29062933";
 
     // Extract query parameters
-    const { country, importance, from, to, limit = "50", lang = "en" } = req.query;
+    const {
+      country,
+      importance,
+      from,
+      to,
+      limit = "50",
+      lang = "en",
+    } = req.query;
 
     // Build OFFICIAL EODHD Economic Calendar API URL
     const apiUrl = new URL("https://eodhd.com/api/economic-events");
@@ -198,31 +212,36 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // Return proper error response based on status
       let errorMessage = "Failed to fetch economic calendar";
       let userMessage = "";
-      
+
       if (response.status === 403) {
         errorMessage = "API key authentication failed";
-        userMessage = lang === "ar" 
-          ? "خطأ في مفتاح API. يرجى التحقق من إعدادات الخدمة."
-          : "API key authentication failed. Please check service configuration.";
+        userMessage =
+          lang === "ar"
+            ? "خطأ في مفتاح API. يرجى التحقق من إعدادات الخدمة."
+            : "API key authentication failed. Please check service configuration.";
       } else if (response.status === 401) {
         errorMessage = "API key is invalid or expired";
-        userMessage = lang === "ar"
-          ? "مفتاح API غير صالح أو منتهي الصلاحية."
-          : "API key is invalid or expired.";
+        userMessage =
+          lang === "ar"
+            ? "مفتاح API غير صالح أو منتهي الصلاحية."
+            : "API key is invalid or expired.";
       } else if (response.status === 429) {
         errorMessage = "API rate limit exceeded";
-        userMessage = lang === "ar"
-          ? "تم تجاوز حد الاستخدام. يرجى المحاولة لاحقاً."
-          : "API rate limit exceeded. Please try again later.";
+        userMessage =
+          lang === "ar"
+            ? "تم تجاوز حد الاستخدام. يرجى المحاولة لاحقاً."
+            : "API rate limit exceeded. Please try again later.";
       } else if (response.status === 404) {
         errorMessage = "Economic calendar service not found";
-        userMessage = lang === "ar"
-          ? "خدمة التقويم الاقتصادي غير متوفرة."
-          : "Economic calendar service not available.";
+        userMessage =
+          lang === "ar"
+            ? "خدمة التقويم الاقتصادي غير متوفرة."
+            : "Economic calendar service not available.";
       } else {
-        userMessage = lang === "ar"
-          ? "خطأ في جلب التقويم الاقتصادي. يرجى المحاولة مرة أخرى."
-          : "Error fetching economic calendar. Please try again.";
+        userMessage =
+          lang === "ar"
+            ? "خطأ في جلب التقويم الاقتصادي. يرجى المحاولة مرة أخرى."
+            : "Error fetching economic calendar. Please try again.";
       }
 
       return res.status(response.status).json({
@@ -243,9 +262,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       );
       return res.status(500).json({
         error: "Invalid response format from EODHD Calendar API",
-        userMessage: lang === "ar"
-          ? "تنسيق استجابة غير صالح من خدمة التقويم."
-          : "Invalid response format from calendar service.",
+        userMessage:
+          lang === "ar"
+            ? "تنسيق استجابة غير صالح من خدمة التقويم."
+            : "Invalid response format from calendar service.",
         events: [],
         canRetry: true,
       });
@@ -259,7 +279,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Transform EODHD response to our format
     let events: EconomicEvent[] = [];
-    
+
     if (Array.isArray(data)) {
       events = data
         .filter((event: any) => event && (event.date || event.time))
@@ -279,7 +299,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .split(",")
         .map((i) => parseInt(i.trim()))
         .filter((i) => !isNaN(i) && i >= 1 && i <= 3);
-      
+
       if (requestedLevels.length > 0) {
         events = events.filter((event) =>
           requestedLevels.includes(event.importance),
@@ -315,23 +335,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Handle specific error types
     let errorMessage = "Failed to fetch economic calendar";
     let userMessage = "";
-    
+
     if (error instanceof Error) {
       if (error.name === "AbortError") {
         errorMessage = "Request timeout";
-        userMessage = (req.query.lang as string) === "ar"
-          ? "انتهت مهلة الطلب. يرجى المحاولة مرة أخرى."
-          : "Request timeout. Please try again.";
+        userMessage =
+          (req.query.lang as string) === "ar"
+            ? "انتهت مهلة الطلب. يرجى المحاولة مرة أخرى."
+            : "Request timeout. Please try again.";
       } else if (error.message.includes("fetch")) {
         errorMessage = "Network error";
-        userMessage = (req.query.lang as string) === "ar"
-          ? "خطأ في الشبكة. يرجى التحقق من الاتصال."
-          : "Network error. Please check your connection.";
+        userMessage =
+          (req.query.lang as string) === "ar"
+            ? "خطأ في الشبكة. يرجى التحقق من الاتصال."
+            : "Network error. Please check your connection.";
       } else {
         errorMessage = error.message;
-        userMessage = (req.query.lang as string) === "ar"
-          ? "خطأ في الخدمة. يرجى المحاولة لاحقاً."
-          : "Service error. Please try again later.";
+        userMessage =
+          (req.query.lang as string) === "ar"
+            ? "خطأ في الخدمة. يرجى المحاولة لاحقاً."
+            : "Service error. Please try again later.";
       }
     }
 

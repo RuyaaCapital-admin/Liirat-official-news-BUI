@@ -23,7 +23,7 @@ const SYMBOL_DATABASE = [
   { symbol: "EURCAD.FOREX", name: "EUR/CAD", category: "forex" },
   { symbol: "GBPCAD.FOREX", name: "GBP/CAD", category: "forex" },
   { symbol: "GBPCHF.FOREX", name: "GBP/CHF", category: "forex" },
-  
+
   // Cryptocurrencies
   { symbol: "BTC-USD.CC", name: "Bitcoin (BTC/USD)", category: "crypto" },
   { symbol: "ETH-USD.CC", name: "Ethereum (ETH/USD)", category: "crypto" },
@@ -39,11 +39,15 @@ const SYMBOL_DATABASE = [
   { symbol: "AVAX-USD.CC", name: "Avalanche (AVAX/USD)", category: "crypto" },
   { symbol: "UNI-USD.CC", name: "Uniswap (UNI/USD)", category: "crypto" },
   { symbol: "ATOM-USD.CC", name: "Cosmos (ATOM/USD)", category: "crypto" },
-  
+
   // Major Indices
   { symbol: "GSPC.INDX", name: "S&P 500", category: "indices" },
   { symbol: "IXIC.INDX", name: "NASDAQ Composite", category: "indices" },
-  { symbol: "DJI.INDX", name: "Dow Jones Industrial Average", category: "indices" },
+  {
+    symbol: "DJI.INDX",
+    name: "Dow Jones Industrial Average",
+    category: "indices",
+  },
   { symbol: "RUT.INDX", name: "Russell 2000", category: "indices" },
   { symbol: "VIX.INDX", name: "VIX Volatility Index", category: "indices" },
   { symbol: "N225.INDX", name: "Nikkei 225", category: "indices" },
@@ -54,7 +58,7 @@ const SYMBOL_DATABASE = [
   { symbol: "ASX.INDX", name: "ASX 200", category: "indices" },
   { symbol: "KOSPI.INDX", name: "KOSPI", category: "indices" },
   { symbol: "TWII.INDX", name: "Taiwan Weighted", category: "indices" },
-  
+
   // Major Stocks
   { symbol: "AAPL.US", name: "Apple Inc.", category: "stocks" },
   { symbol: "MSFT.US", name: "Microsoft Corporation", category: "stocks" },
@@ -76,12 +80,20 @@ const SYMBOL_DATABASE = [
   { symbol: "ZOOM.US", name: "Zoom Video Communications", category: "stocks" },
   { symbol: "SQ.US", name: "Block Inc.", category: "stocks" },
   { symbol: "SHOP.US", name: "Shopify Inc.", category: "stocks" },
-  
+
   // Commodities
   { symbol: "XAUUSD.FOREX", name: "Gold (XAU/USD)", category: "commodities" },
   { symbol: "XAGUSD.FOREX", name: "Silver (XAG/USD)", category: "commodities" },
-  { symbol: "XPTUSD.FOREX", name: "Platinum (XPT/USD)", category: "commodities" },
-  { symbol: "XPDUSD.FOREX", name: "Palladium (XPD/USD)", category: "commodities" },
+  {
+    symbol: "XPTUSD.FOREX",
+    name: "Platinum (XPT/USD)",
+    category: "commodities",
+  },
+  {
+    symbol: "XPDUSD.FOREX",
+    name: "Palladium (XPD/USD)",
+    category: "commodities",
+  },
   { symbol: "CL.F", name: "Crude Oil WTI", category: "commodities" },
   { symbol: "BZ.F", name: "Brent Crude Oil", category: "commodities" },
   { symbol: "NG.F", name: "Natural Gas", category: "commodities" },
