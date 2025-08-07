@@ -46,32 +46,36 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
     try {
       const now = Date.now();
       const lastFetch = lastFetchTime.current[symbol] || 0;
-      
+
       // Rate limiting: don't fetch if less than 20 seconds have passed
       if (now - lastFetch < 20000) {
         return;
       }
-      
+
       lastFetchTime.current[symbol] = now;
 
-      const response = await fetch(`/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`);
-      
+      const response = await fetch(
+        `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+      );
+
       if (!response.ok) {
-        console.error(`Failed to fetch price for ${symbol}: ${response.status}`);
-        setPriceData(prev => ({
+        console.error(
+          `Failed to fetch price for ${symbol}: ${response.status}`,
+        );
+        setPriceData((prev) => ({
           ...prev,
-          [symbol]: { ...prev[symbol], status: "disconnected" }
+          [symbol]: { ...prev[symbol], status: "disconnected" },
         }));
         return;
       }
 
       const data = await response.json();
-      
+
       if (data.prices && data.prices.length > 0) {
         const priceInfo = data.prices[0];
-        const config = TICKER_CONFIG.find(c => c.symbol === symbol);
-        
-        setPriceData(prev => ({
+        const config = TICKER_CONFIG.find((c) => c.symbol === symbol);
+
+        setPriceData((prev) => ({
           ...prev,
           [symbol]: {
             symbol,
@@ -80,20 +84,20 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
             change: priceInfo.change || 0,
             changePercent: priceInfo.change_percent || 0,
             lastUpdate: new Date(),
-            status: "connected"
-          }
+            status: "connected",
+          },
         }));
       } else {
-        setPriceData(prev => ({
+        setPriceData((prev) => ({
           ...prev,
-          [symbol]: { ...prev[symbol], status: "disconnected" }
+          [symbol]: { ...prev[symbol], status: "disconnected" },
         }));
       }
     } catch (error) {
       console.error(`Error fetching price for ${symbol}:`, error);
-      setPriceData(prev => ({
+      setPriceData((prev) => ({
         ...prev,
-        [symbol]: { ...prev[symbol], status: "disconnected" }
+        [symbol]: { ...prev[symbol], status: "disconnected" },
       }));
     }
   };
@@ -135,7 +139,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
 
   // Get valid price entries for display
   const validPrices = Object.values(priceData).filter(
-    data => data.price > 0 && data.status === "connected"
+    (data) => data.price > 0 && data.status === "connected",
   );
 
   // Handle scroll pause on hover
@@ -144,25 +148,30 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
 
   const formatPrice = (price: number, symbol: string) => {
     if (symbol.includes("BTC") || symbol.includes("ETH")) {
-      return price.toLocaleString("en-US", { 
-        minimumFractionDigits: 2, 
-        maximumFractionDigits: 2 
+      return price.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
       });
     }
     return price.toFixed(5);
   };
 
   const formatPercent = (percent: number) => {
-    return `${percent >= 0 ? '+' : ''}${percent.toFixed(2)}%`;
+    return `${percent >= 0 ? "+" : ""}${percent.toFixed(2)}%`;
   };
 
   return (
-    <div className={cn("relative overflow-hidden bg-background border-y border-border", className)}>
+    <div
+      className={cn(
+        "relative overflow-hidden bg-background border-y border-border",
+        className,
+      )}
+    >
       <div
         ref={scrollRef}
         className={cn(
           "flex items-center whitespace-nowrap overflow-hidden",
-          isScrolling && "animate-scroll"
+          isScrolling && "animate-scroll",
         )}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -176,7 +185,9 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
                 className="flex items-center gap-3 px-6 py-3 border-r border-border/50 min-w-[200px]"
               >
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-sm">{data.displayName}</span>
+                  <span className="font-semibold text-sm">
+                    {data.displayName}
+                  </span>
                   {data.changePercent >= 0 ? (
                     <TrendingUp className="w-4 h-4 text-green-500" />
                   ) : (
@@ -190,7 +201,9 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
                   <div
                     className={cn(
                       "text-xs font-mono",
-                      data.changePercent >= 0 ? "text-green-500" : "text-red-500"
+                      data.changePercent >= 0
+                        ? "text-green-500"
+                        : "text-red-500",
                     )}
                   >
                     {formatPercent(data.changePercent)}

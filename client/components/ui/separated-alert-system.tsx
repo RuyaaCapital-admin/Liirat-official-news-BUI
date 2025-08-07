@@ -102,19 +102,43 @@ const ALL_SYMBOLS = [
   { symbol: "ETH-USD.CC", displayName: "Ethereum (ETH/USD)", type: "crypto" },
   { symbol: "ADA-USD.CC", displayName: "Cardano (ADA/USD)", type: "crypto" },
   { symbol: "SOL-USD.CC", displayName: "Solana (SOL/USD)", type: "crypto" },
-  { symbol: "AVAX-USD.CC", displayName: "Avalanche (AVAX/USD)", type: "crypto" },
+  {
+    symbol: "AVAX-USD.CC",
+    displayName: "Avalanche (AVAX/USD)",
+    type: "crypto",
+  },
   { symbol: "DOT-USD.CC", displayName: "Polkadot (DOT/USD)", type: "crypto" },
-  { symbol: "MATIC-USD.CC", displayName: "Polygon (MATIC/USD)", type: "crypto" },
-  { symbol: "LINK-USD.CC", displayName: "Chainlink (LINK/USD)", type: "crypto" },
+  {
+    symbol: "MATIC-USD.CC",
+    displayName: "Polygon (MATIC/USD)",
+    type: "crypto",
+  },
+  {
+    symbol: "LINK-USD.CC",
+    displayName: "Chainlink (LINK/USD)",
+    type: "crypto",
+  },
   { symbol: "UNI-USD.CC", displayName: "Uniswap (UNI/USD)", type: "crypto" },
   { symbol: "LTC-USD.CC", displayName: "Litecoin (LTC/USD)", type: "crypto" },
 
   // Commodities
   { symbol: "XAUUSD.FOREX", displayName: "Gold (XAU/USD)", type: "commodity" },
-  { symbol: "XAGUSD.FOREX", displayName: "Silver (XAG/USD)", type: "commodity" },
+  {
+    symbol: "XAGUSD.FOREX",
+    displayName: "Silver (XAG/USD)",
+    type: "commodity",
+  },
   { symbol: "WTIUSD.FOREX", displayName: "WTI Crude Oil", type: "commodity" },
-  { symbol: "XPDUSD.FOREX", displayName: "Palladium (XPD/USD)", type: "commodity" },
-  { symbol: "XPTUSD.FOREX", displayName: "Platinum (XPT/USD)", type: "commodity" },
+  {
+    symbol: "XPDUSD.FOREX",
+    displayName: "Palladium (XPD/USD)",
+    type: "commodity",
+  },
+  {
+    symbol: "XPTUSD.FOREX",
+    displayName: "Platinum (XPT/USD)",
+    type: "commodity",
+  },
 
   // Major Stock Indices
   { symbol: "GSPC.INDX", displayName: "S&P 500", type: "index" },
@@ -169,16 +193,20 @@ export default function SeparatedAlertSystem({
   const [showSymbolSuggestions, setShowSymbolSuggestions] = useState(false);
   const [currentPrice, setCurrentPrice] = useState<number | null>(null);
   const [loadingPrice, setLoadingPrice] = useState(false);
-  const [selectedSymbol, setSelectedSymbol] = useState<typeof ALL_SYMBOLS[0] | null>(null);
+  const [selectedSymbol, setSelectedSymbol] = useState<
+    (typeof ALL_SYMBOLS)[0] | null
+  >(null);
 
   // Filter symbols based on search
   const filteredSymbols = React.useMemo(() => {
-    if (!symbolSearch || symbolSearch.length < 2) return ALL_SYMBOLS.slice(0, 10);
+    if (!symbolSearch || symbolSearch.length < 2)
+      return ALL_SYMBOLS.slice(0, 10);
 
     const searchLower = symbolSearch.toLowerCase();
-    return ALL_SYMBOLS.filter(symbol =>
-      symbol.displayName.toLowerCase().includes(searchLower) ||
-      symbol.symbol.toLowerCase().includes(searchLower)
+    return ALL_SYMBOLS.filter(
+      (symbol) =>
+        symbol.displayName.toLowerCase().includes(searchLower) ||
+        symbol.symbol.toLowerCase().includes(searchLower),
     ).slice(0, 15);
   }, [symbolSearch]);
 
@@ -188,7 +216,9 @@ export default function SeparatedAlertSystem({
 
     setLoadingPrice(true);
     try {
-      const response = await fetch(`/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`);
+      const response = await fetch(
+        `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+      );
       if (response.ok) {
         const data = await response.json();
         if (data.prices && data.prices.length > 0 && data.prices[0].price) {
@@ -197,11 +227,11 @@ export default function SeparatedAlertSystem({
           setCurrentPrice(null);
         }
       } else {
-        console.error('Failed to fetch price:', response.status);
+        console.error("Failed to fetch price:", response.status);
         setCurrentPrice(null);
       }
     } catch (error) {
-      console.error('Error fetching price:', error);
+      console.error("Error fetching price:", error);
       setCurrentPrice(null);
     } finally {
       setLoadingPrice(false);
@@ -209,9 +239,9 @@ export default function SeparatedAlertSystem({
   };
 
   // Handle symbol selection
-  const handleSymbolSelect = (symbol: typeof ALL_SYMBOLS[0]) => {
+  const handleSymbolSelect = (symbol: (typeof ALL_SYMBOLS)[0]) => {
     setSelectedSymbol(symbol);
-    setPriceForm(prev => ({ ...prev, symbol: symbol.symbol }));
+    setPriceForm((prev) => ({ ...prev, symbol: symbol.symbol }));
     setSymbolSearch(symbol.displayName);
     setShowSymbolSuggestions(false);
     fetchRealTimePrice(symbol.symbol);
@@ -222,9 +252,11 @@ export default function SeparatedAlertSystem({
     if (priceAlerts.length === 0) return;
 
     const checkAlerts = async () => {
-      for (const alert of priceAlerts.filter(a => a.isActive)) {
+      for (const alert of priceAlerts.filter((a) => a.isActive)) {
         try {
-          const response = await fetch(`/api/eodhd-price?symbol=${encodeURIComponent(alert.symbol)}`);
+          const response = await fetch(
+            `/api/eodhd-price?symbol=${encodeURIComponent(alert.symbol)}`,
+          );
           if (response.ok) {
             const data = await response.json();
             if (data.prices && data.prices.length > 0 && data.prices[0].price) {
@@ -233,32 +265,40 @@ export default function SeparatedAlertSystem({
 
               let shouldTrigger = false;
 
-              if (alert.condition === 'above' && currentPrice >= targetPrice) {
+              if (alert.condition === "above" && currentPrice >= targetPrice) {
                 shouldTrigger = true;
-              } else if (alert.condition === 'below' && currentPrice <= targetPrice) {
+              } else if (
+                alert.condition === "below" &&
+                currentPrice <= targetPrice
+              ) {
                 shouldTrigger = true;
-              } else if (alert.condition === 'change_percent') {
+              } else if (alert.condition === "change_percent") {
                 // Calculate percentage change - would need previous price stored
                 // For now, skip this condition until we store previous prices
               }
 
               if (shouldTrigger) {
                 // Trigger alert notification
-                if ('Notification' in window && Notification.permission === 'granted') {
+                if (
+                  "Notification" in window &&
+                  Notification.permission === "granted"
+                ) {
                   new Notification(`Price Alert: ${alert.symbol}`, {
-                    body: `${alert.symbol} is now ${currentPrice.toFixed(5)}. ${alert.message || ''}`,
-                    icon: '/favicon.ico'
+                    body: `${alert.symbol} is now ${currentPrice.toFixed(5)}. ${alert.message || ""}`,
+                    icon: "/favicon.ico",
                   });
                 }
 
                 // Deactivate the alert since it triggered
-                setPriceAlerts(prev =>
-                  prev.map(a =>
-                    a.id === alert.id ? { ...a, isActive: false } : a
-                  )
+                setPriceAlerts((prev) =>
+                  prev.map((a) =>
+                    a.id === alert.id ? { ...a, isActive: false } : a,
+                  ),
                 );
 
-                console.log(`Alert triggered for ${alert.symbol}: ${currentPrice}`);
+                console.log(
+                  `Alert triggered for ${alert.symbol}: ${currentPrice}`,
+                );
               }
             }
           }
@@ -277,7 +317,7 @@ export default function SeparatedAlertSystem({
 
   // Request notification permission on component mount
   React.useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
+    if ("Notification" in window && Notification.permission === "default") {
       Notification.requestPermission();
     }
   }, []);
@@ -749,15 +789,23 @@ export default function SeparatedAlertSystem({
                     </DialogHeader>
                     <div className="space-y-4" dir={dir}>
                       <div>
-                        <Label>{language === "ar" ? "البحث عن الرمز" : "Search Symbol"}</Label>
+                        <Label>
+                          {language === "ar"
+                            ? "البحث عن الرمز"
+                            : "Search Symbol"}
+                        </Label>
                         <div className="relative">
                           <Input
                             value={symbolSearch}
                             onChange={(e) => {
                               setSymbolSearch(e.target.value);
-                              setShowSymbolSuggestions(e.target.value.length >= 2);
+                              setShowSymbolSuggestions(
+                                e.target.value.length >= 2,
+                              );
                             }}
-                            onFocus={() => setShowSymbolSuggestions(symbolSearch.length >= 2)}
+                            onFocus={() =>
+                              setShowSymbolSuggestions(symbolSearch.length >= 2)
+                            }
                             placeholder={
                               language === "ar"
                                 ? "ابحث عن الرمز (مثل: EUR, BTC, GOLD)"
@@ -770,51 +818,67 @@ export default function SeparatedAlertSystem({
                           {selectedSymbol && (
                             <div className="mt-2 p-2 bg-muted/50 rounded border">
                               <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium">{selectedSymbol.displayName}</span>
+                                <span className="text-sm font-medium">
+                                  {selectedSymbol.displayName}
+                                </span>
                                 <div className="text-right">
                                   {loadingPrice ? (
                                     <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                                   ) : currentPrice ? (
                                     <span className="text-lg font-bold text-primary">
-                                      {currentPrice.toFixed(selectedSymbol.type === 'crypto' ? 2 : 5)}
+                                      {currentPrice.toFixed(
+                                        selectedSymbol.type === "crypto"
+                                          ? 2
+                                          : 5,
+                                      )}
                                     </span>
                                   ) : (
                                     <span className="text-sm text-muted-foreground">
-                                      {language === "ar" ? "السعر غير متاح" : "Price unavailable"}
+                                      {language === "ar"
+                                        ? "السعر غير متاح"
+                                        : "Price unavailable"}
                                     </span>
                                   )}
                                 </div>
                               </div>
                               <div className="text-xs text-muted-foreground mt-1">
-                                {language === "ar" ? "السعر الحالي" : "Current Price"}
+                                {language === "ar"
+                                  ? "السعر الحالي"
+                                  : "Current Price"}
                               </div>
                             </div>
                           )}
 
                           {/* Symbol suggestions dropdown */}
-                          {showSymbolSuggestions && filteredSymbols.length > 0 && (
-                            <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border border-border/50 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                              <div className="p-2">
-                                <div className="text-xs text-muted-foreground mb-2 px-2">
-                                  {language === "ar" ? "اختر الرمز:" : "Select Symbol:"}
-                                </div>
-                                {filteredSymbols.map((symbol) => (
-                                  <div
-                                    key={symbol.symbol}
-                                    onClick={() => handleSymbolSelect(symbol)}
-                                    className="flex items-center gap-3 p-2 hover:bg-muted/50 cursor-pointer rounded text-sm"
-                                  >
-                                    <div className="flex-1">
-                                      <div className="font-medium">{symbol.displayName}</div>
-                                      <div className="text-xs text-muted-foreground">
-                                        {symbol.symbol} • {symbol.type.toUpperCase()}
+                          {showSymbolSuggestions &&
+                            filteredSymbols.length > 0 && (
+                              <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border border-border/50 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                <div className="p-2">
+                                  <div className="text-xs text-muted-foreground mb-2 px-2">
+                                    {language === "ar"
+                                      ? "اختر الرمز:"
+                                      : "Select Symbol:"}
+                                  </div>
+                                  {filteredSymbols.map((symbol) => (
+                                    <div
+                                      key={symbol.symbol}
+                                      onClick={() => handleSymbolSelect(symbol)}
+                                      className="flex items-center gap-3 p-2 hover:bg-muted/50 cursor-pointer rounded text-sm"
+                                    >
+                                      <div className="flex-1">
+                                        <div className="font-medium">
+                                          {symbol.displayName}
+                                        </div>
+                                        <div className="text-xs text-muted-foreground">
+                                          {symbol.symbol} •{" "}
+                                          {symbol.type.toUpperCase()}
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                ))}
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            )}
                         </div>
                       </div>
 
