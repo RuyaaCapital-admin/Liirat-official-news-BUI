@@ -11,12 +11,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
-import EODHDPriceTicker from "@/components/ui/eodhd-price-ticker";
+import EnhancedPriceTicker from "@/components/ui/enhanced-price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
-import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
+import EnhancedMacroCalendar from "@/components/ui/enhanced-macro-calendar";
+import RealtimeNewsTable from "@/components/ui/realtime-news-table";
+import SeparatedAlertSystem from "@/components/ui/separated-alert-system";
 import { EconomicEventsResponse, EconomicEvent } from "@shared/api";
-import { AdvancedAlertSystem } from "@/components/ui/advanced-alert-system";
 import { NotificationSystem } from "@/components/ui/notification-system";
 import { NotificationDropdown } from "@/components/ui/notification-dropdown";
 
@@ -35,6 +36,7 @@ import {
   BellRing,
   Bot,
   AlertTriangle,
+  Newspaper,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTheme } from "@/hooks/use-theme";
@@ -54,7 +56,7 @@ export default function Index() {
 
   const { theme } = useTheme();
   const { language, t, dir } = useLanguage();
-  const { checkEventAlerts } = useAlerts();
+  const { checkEventAlerts, addAlert } = useAlerts();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -224,15 +226,15 @@ export default function Index() {
     fetchEconomicEvents(language);
   }, [language]);
 
-  // Periodic refresh every 15 minutes
+  // Periodic refresh every 30 minutes (reduced from 15 to limit API calls)
   useEffect(() => {
     const intervalId = setInterval(
       () => {
         console.log("Periodic refresh - fetching latest economic events");
         fetchEconomicEvents(language);
       },
-      15 * 60 * 1000,
-    ); // 15 minutes
+      30 * 60 * 1000,
+    ); // 30 minutes to reduce API calls
 
     return () => clearInterval(intervalId);
   }, [language]);
@@ -257,12 +259,12 @@ export default function Index() {
         <main role="main">
           {/* Real-Time EODHD Market Ticker - Always Visible */}
           <div className="fixed top-0 left-0 right-0 z-[70] w-full">
-            <EODHDPriceTicker className="w-full" />
+            <EnhancedPriceTicker className="w-full" />
           </div>
 
           {/* Floating Navigation Header */}
           <header
-            className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? "translate-y-20" : "-translate-y-20"} top-4 mx-2 max-w-[calc(100vw-1rem)]`}
+            className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? "top-16" : "top-16"} mx-2 max-w-[calc(100vw-1rem)]`}
           >
             <div className="neumorphic-card bg-background/95 backdrop-blur-md rounded-full px-2 sm:px-4 lg:px-6 py-2 sm:py-3 flex items-center justify-between shadow-lg border border-border/50 w-full max-w-full">
               <div className="flex items-center">
@@ -290,6 +292,13 @@ export default function Index() {
                 >
                   <Calendar className="w-3 h-3" />
                   <span>{t("nav.calendar")}</span>
+                </a>
+                <a
+                  href="#news"
+                  className="flex items-center space-x-1 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                >
+                  <Newspaper className="w-3 h-3" />
+                  <span>{language === "ar" ? "الأخبار" : "News"}</span>
                 </a>
                 <a
                   href="#alerts"
@@ -356,6 +365,19 @@ export default function Index() {
                     aria-label="Navigate to economic calendar section"
                   >
                     {t("hero.btn.calendar")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="text-primary px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg font-semibold neumorphic-hover"
+                    onClick={() =>
+                      document
+                        .getElementById("news")
+                        ?.scrollIntoView({ behavior: "smooth" })
+                    }
+                    aria-label="Navigate to news section"
+                  >
+                    {language === "ar" ? "الأخبار المباشرة" : "Live News"}
                   </Button>
                   <Button
                     variant="outline"
@@ -457,21 +479,59 @@ export default function Index() {
                             </div>
                           </div>
                         )}
-                        <MacroCalendarTable
+                        <EnhancedMacroCalendar
                           events={economicEvents}
                           className="rounded-lg overflow-hidden"
-                          language={language}
-                          dir={dir}
                           onRefresh={(filters) => {
                             console.log("Refreshing with filters:", filters);
                             fetchEconomicEvents(language, filters);
                           }}
-                          onCreateAlert={(event) => {
-                            console.log("Creating alert for event:", event);
-                            // Scroll to alerts section to create the alert
-                            document
-                              .getElementById("alerts")
-                              ?.scrollIntoView({ behavior: "smooth" });
+                          onCreateAlert={(event, type) => {
+                            console.log(
+                              "Creating alert for event:",
+                              event,
+                              "type:",
+                              type,
+                            );
+
+                            // Create an actual alert for the economic event
+                            const message =
+                              language === "ar"
+                                ? `تنبيه حدث اقتصادي: ${event.event} - ${event.country} - الوقت: ${event.time || "غير محدد"}`
+                                : `Economic Event Alert: ${event.event} - ${event.country} - Time: ${event.time || "TBD"}`;
+
+                            const eventName =
+                              language === "ar"
+                                ? `حدث اقتصادي: ${event.event}`
+                                : `Economic Event: ${event.event}`;
+
+                            // Add the alert using the alert context
+                            addAlert({
+                              eventName,
+                              message,
+                              importance: event.importance || 2,
+                              eventData: {
+                                type: "economic_event",
+                                event,
+                                country: event.country,
+                                time: event.time,
+                              },
+                            });
+
+                            // Show success feedback
+                            const successMessage =
+                              language === "ar"
+                                ? `تم إنشاء تنبيه للحدث الاقتصادي: ${event.event}`
+                                : `Alert created for economic event: ${event.event}`;
+
+                            addAlert({
+                              eventName:
+                                language === "ar"
+                                  ? "تأكيد التنبيه"
+                                  : "Alert Confirmation",
+                              message: successMessage,
+                              importance: 1,
+                            });
                           }}
                         />
                       </div>
@@ -527,6 +587,25 @@ export default function Index() {
             </div>
           </section>
 
+          {/* Real-Time News Section */}
+          <section id="news" className="py-12 sm:py-20">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  {language === "ar"
+                    ? "الأخبار المالية المباشرة"
+                    : "Real-Time Financial News"}
+                </h2>
+                <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                  {language === "ar"
+                    ? "تابع آخر الأخبار المالية والاقتصادية مع تحليل الذكاء الاصطناعي"
+                    : "Follow the latest financial and economic news with AI analysis"}
+                </p>
+              </div>
+              <RealtimeNewsTable />
+            </div>
+          </section>
+
           {/* Advanced Alert System Section */}
           <section id="alerts" className="py-12 sm:py-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full">
@@ -542,7 +621,7 @@ export default function Index() {
                     : "Create intelligent alerts for currency pairs with real-time price monitoring"}
                 </p>
               </div>
-              <AdvancedAlertSystem />
+              <SeparatedAlertSystem />
             </div>
           </section>
 

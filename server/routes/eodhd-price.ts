@@ -1,4 +1,9 @@
 import { RequestHandler } from "express";
+import {
+  apiOptimizer,
+  generateCacheKey,
+  getClientId,
+} from "../utils/rate-limiter";
 
 interface PriceData {
   symbol: string;
@@ -30,8 +35,33 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       });
     }
 
-    // Determine symbol type and format correctly for EODHD
+    // Get client ID for rate limiting
+    const clientId = getClientId(req);
+
+    // Check rate limit
+    if (!apiOptimizer.checkRateLimit(clientId, "prices")) {
+      return res.status(429).json({
+        error: "Rate limit exceeded. Please try again later.",
+        prices: [],
+        retryAfter: 60,
+      });
+    }
+
+    // Generate cache key
     const symbolStr = (symbol || symbols) as string;
+    const cacheKey = generateCacheKey("price", {
+      symbol: symbolStr,
+      fmt,
+      filter,
+    });
+
+    // Check cache first
+    const cachedData = apiOptimizer.getCached(cacheKey, "prices");
+    if (cachedData) {
+      return res.json(cachedData);
+    }
+
+    // Determine symbol type and format correctly for EODHD
     const isCrypto =
       symbolStr.includes("-USD") ||
       symbolStr.includes("BTC") ||
@@ -138,12 +168,17 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
 
     console.log("Transformed prices:", JSON.stringify(prices, null, 2));
 
-    res.json({
+    const responseData = {
       prices,
       total: prices.length,
       symbol: symbolStr,
       timestamp: new Date().toISOString(),
-    });
+    };
+
+    // Cache the successful response
+    apiOptimizer.setCache(cacheKey, responseData, "prices");
+
+    res.json(responseData);
   } catch (error) {
     console.error("Error fetching EODHD price data:", error);
 

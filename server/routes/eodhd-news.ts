@@ -20,7 +20,8 @@ interface NewsArticle {
 const router = express.Router();
 
 router.get("/eodhd-news", async (req, res) => {
-  const apiKey = process.env.EODHD_API_KEY;
+  // Use the provided EODHD API key
+  const apiKey = "6891e3b89ee5e1.29062933";
   if (!apiKey) {
     return res.status(500).json({
       error: "EODHD API key not configured",

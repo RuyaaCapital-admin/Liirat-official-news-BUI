@@ -16,6 +16,8 @@ import { handleMarketauxNews } from "./routes/marketaux-news";
 import { handleEODHDCalendar } from "./routes/eodhd-calendar";
 import { handleEODHDPrice } from "./routes/eodhd-price";
 import eodhd_news from "./routes/eodhd-news";
+import { handleAIAnalysis, handleTranslation } from "./routes/ai-analysis";
+import { handleRealtimeNews } from "./routes/realtime-news";
 
 export function createServer() {
   const app = express();
@@ -58,6 +60,13 @@ export function createServer() {
   app.get("/eodhd-calendar", handleEODHDCalendar);
   app.get("/eodhd-price", handleEODHDPrice);
   app.use("/", eodhd_news);
+
+  // AI Analysis routes (secure backend only)
+  app.post("/ai-analysis", handleAIAnalysis);
+  app.post("/translate", handleTranslation);
+
+  // Real-time news route
+  app.get("/realtime-news", handleRealtimeNews);
 
   return app;
 }

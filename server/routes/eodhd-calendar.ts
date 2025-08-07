@@ -1,4 +1,9 @@
 import { RequestHandler } from "express";
+import {
+  apiOptimizer,
+  generateCacheKey,
+  getClientId,
+} from "../utils/rate-limiter";
 
 interface EconomicEvent {
   date: string;
@@ -19,6 +24,33 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
   try {
     // Extract query parameters
     const { country, importance, from, to, limit = "50" } = req.query;
+
+    // Get client ID for rate limiting
+    const clientId = getClientId(req);
+
+    // Check rate limit
+    if (!apiOptimizer.checkRateLimit(clientId, "calendar")) {
+      return res.status(429).json({
+        error: "Rate limit exceeded. Please try again later.",
+        events: [],
+        retryAfter: 60,
+      });
+    }
+
+    // Generate cache key
+    const cacheKey = generateCacheKey("calendar", {
+      country,
+      importance,
+      from,
+      to,
+      limit,
+    });
+
+    // Check cache first
+    const cachedData = apiOptimizer.getCached(cacheKey, "calendar");
+    if (cachedData) {
+      return res.json(cachedData);
+    }
 
     // Build EODHD API URL
     const apiUrl = new URL("https://eodhd.com/api/economic-events");
@@ -170,7 +202,7 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
       `Returning ${filteredEvents.length} filtered events out of ${events.length} total events`,
     );
 
-    res.json({
+    const responseData = {
       events: filteredEvents,
       total: filteredEvents.length,
       filters: {
@@ -181,7 +213,12 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
         limit: eventLimit,
       },
       timestamp: new Date().toISOString(),
-    });
+    };
+
+    // Cache the successful response
+    apiOptimizer.setCache(cacheKey, responseData, "calendar");
+
+    res.json(responseData);
   } catch (error) {
     console.error("Error fetching EODHD economic events:", error);
 
