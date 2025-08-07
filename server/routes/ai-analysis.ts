@@ -96,15 +96,20 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
     }
 
     const data = await response.json();
-    const analysis = data.choices?.[0]?.message?.content || 
+    const analysis = data.choices?.[0]?.message?.content ||
       (language === "ar" ? "لا يوجد تحليل متاح" : "No analysis available");
 
-    res.json({
+    const responseData = {
       analysis: analysis.trim(),
       language,
       type,
       timestamp: new Date().toISOString(),
-    });
+    };
+
+    // Cache the successful response
+    apiOptimizer.setCache(cacheKey, responseData, 'analysis');
+
+    res.json(responseData);
 
   } catch (error) {
     console.error("Error in AI analysis:", error);
