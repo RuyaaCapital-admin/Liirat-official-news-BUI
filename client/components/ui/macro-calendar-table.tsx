@@ -389,9 +389,9 @@ export function MacroCalendarTable({
     });
   }, [countrySearchTerm, language]);
 
-  // Filter events based on search criteria
+  // Filter and sort events based on search criteria
   const filteredEvents = useMemo(() => {
-    return events.filter((event) => {
+    const filtered = events.filter((event) => {
       const matchesSearch =
         searchTerm === "" ||
         event.event.toLowerCase().includes(searchTerm.toLowerCase()) ||
