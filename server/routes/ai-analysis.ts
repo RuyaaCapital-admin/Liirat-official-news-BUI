@@ -18,6 +18,16 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
       });
     }
 
+    if (!openaiApiKey) {
+      return res.status(500).json({
+        error: "OpenAI API key not configured",
+        analysis:
+          language === "ar"
+            ? "مفتاح OpenAI غير متوفر"
+            : "OpenAI API key not available",
+      });
+    }
+
     // Get client ID for rate limiting
     const clientId = getClientId(req);
 
@@ -46,17 +56,19 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
       return res.json(cachedData);
     }
 
-    // Create analysis prompt based on type
-    let prompt = "";
+    // Create analysis prompt with the exact system prompt requested
+    const systemPrompt = "Summarize this event/news and its likely market effect in a short, honest, and clear way. Only base analysis on the event content, never randomize, never guess. Focus on what a trader needs to know — deliver clear benefit, no complexity.";
+
+    let userPrompt = "";
     if (type === "event") {
-      prompt = `Give me a one-line summary of how this economic event might impact the market: "${text}"`;
+      userPrompt = `Economic Event: ${text}`;
     } else {
-      prompt = `Give me a one-line summary of how this news might impact the market: "${text}"`;
+      userPrompt = `News: ${text}`;
     }
 
     // Add translation instruction for Arabic
     if (language === "ar") {
-      prompt += " Please provide the response in Arabic.";
+      userPrompt += "\n\nPlease provide the response in Arabic.";
     }
 
     console.log(`AI Analysis request: ${type} analysis for ${language}`);
@@ -73,15 +85,19 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
       },
       signal: controller.signal,
       body: JSON.stringify({
-        model: "gpt-3.5-turbo", // Using cheapest model as requested
+        model: "gpt-4o-mini", // Using gpt-4o-mini as requested
         messages: [
           {
+            role: "system",
+            content: systemPrompt,
+          },
+          {
             role: "user",
-            content: prompt,
+            content: userPrompt,
           },
         ],
-        max_tokens: 150,
-        temperature: 0.3,
+        max_tokens: 200,
+        temperature: 0.2,
       }),
     });
 
