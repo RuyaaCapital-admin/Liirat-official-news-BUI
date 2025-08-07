@@ -143,8 +143,12 @@ export default function EnhancedMacroCalendar({
   >({});
 
   // Translation state
-  const [translatedContent, setTranslatedContent] = useState<Record<string, string>>({});
-  const [loadingTranslation, setLoadingTranslation] = useState<Record<string, boolean>>({});
+  const [translatedContent, setTranslatedContent] = useState<
+    Record<string, string>
+  >({});
+  const [loadingTranslation, setLoadingTranslation] = useState<
+    Record<string, boolean>
+  >({});
 
   // Helper functions
   const getImportanceColor = (importance: number) => {
@@ -342,7 +346,7 @@ export default function EnhancedMacroCalendar({
           setTimeout(() => {
             translateContent(event).catch((error) => {
               // Silently handle translation failures, fallback already handled in translateContent
-              console.debug('Translation failed for:', event.event);
+              console.debug("Translation failed for:", event.event);
             });
           }, index * 2000); // 2 second delay between requests to reduce load
         });
@@ -445,7 +449,9 @@ export default function EnhancedMacroCalendar({
         }
       } else {
         // Don't read response body twice - just use status for error
-        console.error(`AI Analysis API error: ${response.status} - ${response.statusText}`);
+        console.error(
+          `AI Analysis API error: ${response.status} - ${response.statusText}`,
+        );
         throw new Error(`API error: ${response.status}`);
       }
     } catch (error) {
@@ -492,7 +498,10 @@ export default function EnhancedMacroCalendar({
               <label className="text-sm font-medium text-muted-foreground">
                 {language === "ar" ? "التوقيت:" : "Time:"}
               </label>
-              <Select value={selectedTimezone} onValueChange={setSelectedTimezone}>
+              <Select
+                value={selectedTimezone}
+                onValueChange={setSelectedTimezone}
+              >
                 <SelectTrigger className="w-[140px]">
                   <Globe className="w-4 h-4 mr-2" />
                   <SelectValue />
@@ -524,7 +533,10 @@ export default function EnhancedMacroCalendar({
           <div className="md:col-span-4 mb-2">
             <h4 className="font-medium text-sm">
               {language === "ar" ? "فلاتر" : "Filters"}
-              {(searchTerm || selectedCountries.length > 0 || selectedImportance.length < 3 || selectedCategory !== "all") && (
+              {(searchTerm ||
+                selectedCountries.length > 0 ||
+                selectedImportance.length < 3 ||
+                selectedCategory !== "all") && (
                 <Badge variant="secondary" className="ml-2 text-xs">
                   {language === "ar" ? "نشط" : "Active"}
                 </Badge>
@@ -541,9 +553,7 @@ export default function EnhancedMacroCalendar({
               <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder={
-                  language === "ar"
-                    ? "البحث في الأحداث..."
-                    : "Search events..."
+                  language === "ar" ? "البحث في الأحداث..." : "Search events..."
                 }
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -567,9 +577,7 @@ export default function EnhancedMacroCalendar({
               <SelectContent>
                 {EVENT_CATEGORIES.map((category) => (
                   <SelectItem key={category.value} value={category.value}>
-                    {language === "ar"
-                      ? category.labelAr
-                      : category.labelEn}
+                    {language === "ar" ? category.labelAr : category.labelEn}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -596,9 +604,7 @@ export default function EnhancedMacroCalendar({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56">
-                <DropdownMenuItem
-                  onClick={() => setSelectedCountries([])}
-                >
+                <DropdownMenuItem onClick={() => setSelectedCountries([])}>
                   {language === "ar" ? "جميع الدول" : "All Countries"}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -639,9 +645,7 @@ export default function EnhancedMacroCalendar({
                 <Button
                   key={level}
                   variant={
-                    selectedImportance.includes(level)
-                      ? "default"
-                      : "outline"
+                    selectedImportance.includes(level) ? "default" : "outline"
                   }
                   size="sm"
                   onClick={() => {
@@ -655,7 +659,7 @@ export default function EnhancedMacroCalendar({
                     "h-9 px-2 text-xs",
                     selectedImportance.includes(level)
                       ? getImportanceColor(level)
-                      : ""
+                      : "",
                   )}
                 >
                   {getImportanceLabel(level)}
@@ -666,59 +670,74 @@ export default function EnhancedMacroCalendar({
         </div>
       </div>
 
-
       {/* Events Table */}
       <div className="border border-border rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[800px]">
             <thead className="bg-muted/30">
               <tr>
-                <th className={cn(
-                  "px-4 py-3 text-sm font-medium w-[140px]",
-                  dir === "rtl" ? "text-right" : "text-left"
-                )}>
+                <th
+                  className={cn(
+                    "px-4 py-3 text-sm font-medium w-[140px]",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
                   {language === "ar" ? "التاريخ والوقت" : "Date & Time"}
                 </th>
-                <th className={cn(
-                  "px-4 py-3 text-sm font-medium w-[100px]",
-                  dir === "rtl" ? "text-right" : "text-left"
-                )}>
+                <th
+                  className={cn(
+                    "px-4 py-3 text-sm font-medium w-[100px]",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
                   {language === "ar" ? "الدولة" : "Country"}
                 </th>
-                <th className={cn(
-                  "px-4 py-3 text-sm font-medium w-[200px]",
-                  dir === "rtl" ? "text-right" : "text-left"
-                )}>
+                <th
+                  className={cn(
+                    "px-4 py-3 text-sm font-medium w-[200px]",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
                   {language === "ar" ? "الحدث" : "Event"}
                 </th>
-                <th className={cn(
-                  "px-4 py-3 text-sm font-medium w-[100px]",
-                  dir === "rtl" ? "text-right" : "text-left"
-                )}>
+                <th
+                  className={cn(
+                    "px-4 py-3 text-sm font-medium w-[100px]",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
                   {language === "ar" ? "الأهمية" : "Impact"}
                 </th>
-                <th className={cn(
-                  "px-4 py-3 text-sm font-medium w-[80px]",
-                  dir === "rtl" ? "text-right" : "text-left"
-                )}>
+                <th
+                  className={cn(
+                    "px-4 py-3 text-sm font-medium w-[80px]",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
                   {language === "ar" ? "السابق" : "Previous"}
                 </th>
-                <th className={cn(
-                  "px-4 py-3 text-sm font-medium w-[80px]",
-                  dir === "rtl" ? "text-right" : "text-left"
-                )}>
+                <th
+                  className={cn(
+                    "px-4 py-3 text-sm font-medium w-[80px]",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
                   {language === "ar" ? "المتوقع" : "Forecast"}
                 </th>
-                <th className={cn(
-                  "px-4 py-3 text-sm font-medium w-[80px]",
-                  dir === "rtl" ? "text-right" : "text-left"
-                )}>
+                <th
+                  className={cn(
+                    "px-4 py-3 text-sm font-medium w-[80px]",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
                   {language === "ar" ? "الفعلي" : "Actual"}
                 </th>
-                <th className={cn(
-                  "px-4 py-3 text-sm font-medium w-[120px]",
-                  dir === "rtl" ? "text-right" : "text-left"
-                )}>
+                <th
+                  className={cn(
+                    "px-4 py-3 text-sm font-medium w-[120px]",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
                   {language === "ar" ? "الإجراءات" : "Actions"}
                 </th>
               </tr>
@@ -740,10 +759,12 @@ export default function EnhancedMacroCalendar({
                   <React.Fragment key={`${event.event}-${index}`}>
                     <tr className="border-t border-border hover:bg-muted/20">
                       <td className="px-4 py-3 text-sm align-top">
-                        <div className={cn(
-                          "flex items-center gap-1 text-xs",
-                          dir === "rtl" ? "justify-end" : "justify-start"
-                        )}>
+                        <div
+                          className={cn(
+                            "flex items-center gap-1 text-xs",
+                            dir === "rtl" ? "justify-end" : "justify-start",
+                          )}
+                        >
                           <Clock className="w-3 h-3 text-muted-foreground" />
                           <span className="whitespace-nowrap">
                             {formatDateTime(event.date, event.time)}
@@ -751,10 +772,12 @@ export default function EnhancedMacroCalendar({
                         </div>
                       </td>
                       <td className="px-4 py-3 text-sm align-top">
-                        <div className={cn(
-                          "flex items-center gap-2",
-                          dir === "rtl" ? "justify-end" : "justify-start"
-                        )}>
+                        <div
+                          className={cn(
+                            "flex items-center gap-2",
+                            dir === "rtl" ? "justify-end" : "justify-start",
+                          )}
+                        >
                           <ReactCountryFlag
                             countryCode={event.country}
                             svg
@@ -765,16 +788,26 @@ export default function EnhancedMacroCalendar({
                       </td>
                       <td className="px-4 py-3 text-sm align-top">
                         <div className="w-full">
-                          <div className={cn(
-                            "font-medium text-xs leading-tight",
-                            dir === "rtl" ? "text-right" : "text-left"
-                          )}>
-                            {language === "ar" && translatedContent[`${event.event}-${event.country}`]
-                              ? translatedContent[`${event.event}-${event.country}`]
-                              : event.event}
-                            {language === "ar" && loadingTranslation[`${event.event}-${event.country}`] && (
-                              <span className="ml-2 text-xs text-muted-foreground">(translating...)</span>
+                          <div
+                            className={cn(
+                              "font-medium text-xs leading-tight",
+                              dir === "rtl" ? "text-right" : "text-left",
                             )}
+                          >
+                            {language === "ar" &&
+                            translatedContent[`${event.event}-${event.country}`]
+                              ? translatedContent[
+                                  `${event.event}-${event.country}`
+                                ]
+                              : event.event}
+                            {language === "ar" &&
+                              loadingTranslation[
+                                `${event.event}-${event.country}`
+                              ] && (
+                                <span className="ml-2 text-xs text-muted-foreground">
+                                  (translating...)
+                                </span>
+                              )}
                           </div>
                           {event.category && (
                             <Badge variant="outline" className="mt-1 text-xs">
@@ -784,40 +817,57 @@ export default function EnhancedMacroCalendar({
                         </div>
                       </td>
                       <td className="px-4 py-3 text-sm align-top">
-                        <div className={cn(
-                          "flex",
-                          dir === "rtl" ? "justify-end" : "justify-start"
-                        )}>
-                          <Badge className={cn(getImportanceColor(event.importance), "text-xs")}>
+                        <div
+                          className={cn(
+                            "flex",
+                            dir === "rtl" ? "justify-end" : "justify-start",
+                          )}
+                        >
+                          <Badge
+                            className={cn(
+                              getImportanceColor(event.importance),
+                              "text-xs",
+                            )}
+                          >
                             {getImportanceLabel(event.importance)}
                           </Badge>
                         </div>
                       </td>
-                      <td className={cn(
-                        "px-4 py-3 text-xs align-top",
-                        dir === "rtl" ? "text-right" : "text-left"
-                      )}>
+                      <td
+                        className={cn(
+                          "px-4 py-3 text-xs align-top",
+                          dir === "rtl" ? "text-right" : "text-left",
+                        )}
+                      >
                         {event.previous || "-"}
                       </td>
-                      <td className={cn(
-                        "px-4 py-3 text-xs align-top",
-                        dir === "rtl" ? "text-right" : "text-left"
-                      )}>
+                      <td
+                        className={cn(
+                          "px-4 py-3 text-xs align-top",
+                          dir === "rtl" ? "text-right" : "text-left",
+                        )}
+                      >
                         {event.forecast || "-"}
                       </td>
-                      <td className={cn(
-                        "px-4 py-3 text-xs font-medium align-top",
-                        dir === "rtl" ? "text-right" : "text-left"
-                      )}>
+                      <td
+                        className={cn(
+                          "px-4 py-3 text-xs font-medium align-top",
+                          dir === "rtl" ? "text-right" : "text-left",
+                        )}
+                      >
                         {event.actual || "-"}
                       </td>
                       <td className="px-4 py-3 text-sm align-top">
-                        <div className={cn(
-                          "flex items-center gap-1",
-                          dir === "rtl" ? "justify-end" : "justify-start"
-                        )}>
+                        <div
+                          className={cn(
+                            "flex items-center gap-1",
+                            dir === "rtl" ? "justify-end" : "justify-start",
+                          )}
+                        >
                           <Button
-                            variant={aiAnalysis[event.event] ? "default" : "outline"}
+                            variant={
+                              aiAnalysis[event.event] ? "default" : "outline"
+                            }
                             size="sm"
                             onClick={() => requestAIAnalysis(event)}
                             disabled={loadingAnalysis[event.event]}
@@ -826,7 +876,7 @@ export default function EnhancedMacroCalendar({
                               aiAnalysis[event.event]
                                 ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg"
                                 : "hover:bg-primary/10 border-primary/30 hover:border-primary/60",
-                              loadingAnalysis[event.event] && "animate-pulse"
+                              loadingAnalysis[event.event] && "animate-pulse",
                             )}
                             title={
                               language === "ar" ? "تحليل ذكي" : "AI Analysis"
@@ -836,7 +886,8 @@ export default function EnhancedMacroCalendar({
                               className={cn(
                                 "w-4 h-4 mr-1",
                                 loadingAnalysis[event.event] && "animate-spin",
-                                aiAnalysis[event.event] && "text-primary-foreground"
+                                aiAnalysis[event.event] &&
+                                  "text-primary-foreground",
                               )}
                             />
                             <span className="text-xs font-medium">

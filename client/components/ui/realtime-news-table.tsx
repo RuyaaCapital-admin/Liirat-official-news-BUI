@@ -75,8 +75,12 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
   >({});
 
   // Translation state
-  const [translatedTitles, setTranslatedTitles] = useState<Record<string, string>>({});
-  const [loadingTranslation, setLoadingTranslation] = useState<Record<string, boolean>>({});
+  const [translatedTitles, setTranslatedTitles] = useState<
+    Record<string, string>
+  >({});
+  const [loadingTranslation, setLoadingTranslation] = useState<
+    Record<string, boolean>
+  >({});
 
   // Timezone selector
   const [selectedTimezone, setSelectedTimezone] = useState("UTC");
@@ -175,12 +179,14 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     if (language === "ar" && filteredArticles.length > 0) {
       // Debounce translation requests to avoid overwhelming the API
       const timer = setTimeout(() => {
-        filteredArticles.slice(0, Math.min(5, itemsToShow)).forEach((article, index) => {
-          // Stagger requests to avoid rate limiting
-          setTimeout(() => {
-            translateTitle(article);
-          }, index * 600);
-        });
+        filteredArticles
+          .slice(0, Math.min(5, itemsToShow))
+          .forEach((article, index) => {
+            // Stagger requests to avoid rate limiting
+            setTimeout(() => {
+              translateTitle(article);
+            }, index * 600);
+          });
       }, 1000);
 
       return () => clearTimeout(timer);
@@ -248,8 +254,8 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         console.warn(`Translation failed with status: ${response.status}`);
       }
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        console.warn('Translation request timed out');
+      if (error instanceof Error && error.name === "AbortError") {
+        console.warn("Translation request timed out");
       } else {
         console.error("Translation error:", error);
       }
@@ -296,7 +302,9 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         }
       } else {
         // Don't read response body twice - just use status for error
-        console.error(`AI Analysis API error: ${response.status} - ${response.statusText}`);
+        console.error(
+          `AI Analysis API error: ${response.status} - ${response.statusText}`,
+        );
         throw new Error(`API error: ${response.status}`);
       }
     } catch (error) {
@@ -486,14 +494,23 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
               >
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex-1">
-                    <div className={cn(
-                      "flex items-center gap-2 mb-2 flex-wrap",
-                      dir === "rtl" ? "justify-start" : "justify-start"
-                    )}>
-                      <Badge className={cn(getImportanceColor(article.importance), "font-medium")}>
+                    <div
+                      className={cn(
+                        "flex items-center gap-2 mb-2 flex-wrap",
+                        dir === "rtl" ? "justify-start" : "justify-start",
+                      )}
+                    >
+                      <Badge
+                        className={cn(
+                          getImportanceColor(article.importance),
+                          "font-medium",
+                        )}
+                      >
                         {getImportanceLabel(article.importance)}
                       </Badge>
-                      <Badge variant="outline" className="font-medium">{article.category}</Badge>
+                      <Badge variant="outline" className="font-medium">
+                        {article.category}
+                      </Badge>
                       {article.country && (
                         <Badge
                           variant="outline"
@@ -510,7 +527,9 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                         ? translatedTitles[article.id]
                         : article.title}
                       {language === "ar" && loadingTranslation[article.id] && (
-                        <span className="ml-2 text-xs text-muted-foreground">(translating...)</span>
+                        <span className="ml-2 text-xs text-muted-foreground">
+                          (translating...)
+                        </span>
                       )}
                     </h3>
 
@@ -572,21 +591,20 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                           aiAnalysis[article.id]
                             ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg"
                             : "hover:bg-primary/10 border-primary/20 hover:border-primary/40",
-                          loadingAnalysis[article.id] && "animate-pulse"
+                          loadingAnalysis[article.id] && "animate-pulse",
                         )}
                       >
                         <Bot
                           className={cn(
                             "w-4 h-4",
                             loadingAnalysis[article.id] && "animate-spin",
-                            aiAnalysis[article.id] && "text-primary-foreground"
+                            aiAnalysis[article.id] && "text-primary-foreground",
                           )}
                         />
                         <span className="text-xs font-medium">
                           {language === "ar" ? "تحليل" : "AI"}
                         </span>
                       </Button>
-
                     </div>
                   </div>
                 </div>
