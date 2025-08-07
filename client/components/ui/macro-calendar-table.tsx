@@ -150,13 +150,21 @@ const getImportanceLabel = (importance: number, language: string) => {
 const getCountryFlag = (country: string) => {
   const flagMap: Record<string, string> = {
     US: "🇺🇸",
+    USA: "🇺🇸",
     EUR: "🇪🇺",
+    EU: "🇪🇺",
     GB: "🇬🇧",
+    UK: "🇬🇧",
     JP: "🇯🇵",
+    JPY: "🇯🇵",
     CA: "🇨🇦",
+    CAD: "🇨🇦",
     AU: "🇦🇺",
+    AUD: "🇦🇺",
     CHF: "🇨🇭",
+    CH: "🇨🇭",
     DE: "🇩🇪",
+    GER: "🇩🇪",
     FR: "🇫🇷",
     IT: "🇮🇹",
     ES: "🇪🇸",
@@ -167,7 +175,7 @@ const getCountryFlag = (country: string) => {
     IE: "🇮🇪",
     FI: "🇫🇮",
     GR: "🇬🇷",
-    CZ: "����🇿",
+    CZ: "🇨🇿",
     PL: "🇵🇱",
     HU: "🇭🇺",
     SK: "🇸🇰",
@@ -176,10 +184,15 @@ const getCountryFlag = (country: string) => {
     LV: "🇱🇻",
     LT: "🇱🇹",
     CN: "🇨🇳",
+    CHN: "🇨🇳",
     IN: "🇮🇳",
+    IND: "🇮🇳",
     BR: "🇧🇷",
+    BRA: "🇧🇷",
     MX: "🇲🇽",
-    RU: "🇷���",
+    MEX: "🇲🇽",
+    RU: "🇷🇺",
+    RUS: "🇷🇺",
     ZA: "🇿🇦",
     KR: "🇰🇷",
     SG: "🇸🇬",
@@ -189,7 +202,7 @@ const getCountryFlag = (country: string) => {
     ID: "🇮🇩",
     PH: "🇵🇭",
     VN: "🇻🇳",
-    NO: "���🇴",
+    NO: "🇳🇴",
     SE: "🇸🇪",
     DK: "🇩🇰",
     IS: "🇮🇸",
@@ -197,8 +210,22 @@ const getCountryFlag = (country: string) => {
     IL: "🇮🇱",
     SA: "🇸🇦",
     AE: "🇦🇪",
+    NZ: "🇳🇿",
+    // Additional mappings for common variations
+    "United States": "🇺🇸",
+    "Eurozone": "🇪🇺",
+    "United Kingdom": "🇬🇧",
+    "Japan": "🇯🇵",
+    "Canada": "🇨🇦",
+    "Australia": "🇦🇺",
+    "Switzerland": "🇨🇭",
+    "Germany": "🇩🇪",
+    "France": "🇫🇷",
+    "China": "🇨🇳",
   };
-  return flagMap[country] || "🌍";
+
+  // Try direct match first, then uppercase
+  return flagMap[country] || flagMap[country?.toUpperCase()] || "🌍";
 };
 
 const getCountryName = (country: string, language: string) => {
@@ -208,7 +235,7 @@ const getCountryName = (country: string, language: string) => {
     GB: { en: "United Kingdom", ar: "المملكة المتحدة" },
     JP: { en: "Japan", ar: "اليابان" },
     CA: { en: "Canada", ar: "كندا" },
-    AU: { en: "Australia", ar: "أستراليا" },
+    AU: { en: "Australia", ar: "��ستراليا" },
     CHF: { en: "Switzerland", ar: "سويسرا" },
     DE: { en: "Germany", ar: "ألمانيا" },
     FR: { en: "France", ar: "فرنسا" },
@@ -530,7 +557,7 @@ export function MacroCalendarTable({
                       setIsCountryOpen(false);
                     }}
                   >
-                    {t("All Countries", "جميع البلدان")}
+                    {t("All Countries", "جم��ع البلدان")}
                   </div>
 
                   {/* Top Countries Section */}
