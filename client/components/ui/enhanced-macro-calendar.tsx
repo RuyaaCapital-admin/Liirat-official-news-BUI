@@ -853,7 +853,7 @@ export default function EnhancedMacroCalendar({
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-muted-foreground">
-                {language === "ar" ? "إلى ��اريخ" : "To Date"}
+                {language === "ar" ? "إلى تاريخ" : "To Date"}
               </label>
               <Popover>
                 <PopoverTrigger asChild>
