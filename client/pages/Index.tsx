@@ -466,7 +466,7 @@ export default function Index() {
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "الأحداث الا��تصادية المهمة والإعلانات المالية"
+                      ? "الأحداث الاقتصادية المهمة والإعلانات المالية"
                       : "Important economic events and financial announcements"}
                   </CardDescription>
                 </CardHeader>
@@ -654,7 +654,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "تابع آخر الأخبار ا��مالية والاقتصادية مع تحليل الذكاء الاصطناعي"
+                    ? "تابع آخر الأخبار المالية والاقتصادية مع تحليل الذكاء الاصطناعي"
                     : "Follow the latest financial and economic news with AI analysis"}
                 </p>
               </div>
