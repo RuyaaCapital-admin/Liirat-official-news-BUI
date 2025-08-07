@@ -84,10 +84,10 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
         ? symbolStr
         : symbolStr + ".INDX";
     } else if (isGold) {
-      // Gold - try stocks endpoint first, then forex as fallback
-      apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
-      // Try different gold symbol that might work better
-      finalSymbol = "XAUUSD.FOREX"; // Keep original format but use stocks endpoint
+      // Gold - use forex endpoint but without .FOREX suffix
+      apiUrl = new URL("https://eodhd.com/api/real-time/forex");
+      // Try basic XAUUSD symbol
+      finalSymbol = "XAUUSD";
     } else {
       // Forex API endpoint - default for currency pairs
       apiUrl = new URL("https://eodhd.com/api/real-time/forex");
