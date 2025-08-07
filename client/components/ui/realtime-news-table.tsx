@@ -156,42 +156,68 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       } else {
         // Transform server response to match client interface
         const transformedArticles = (data.items || []).map((item: any, index: number) => {
-          // Extract real importance from EODHD API data
+          // Calculate real importance based on available EODHD API data
           let importance = 1; // Default to low
 
-          // EODHD API provides sentiment and relevance indicators
-          if (item.sentiment) {
-            // Map sentiment to importance (negative sentiment often indicates higher importance)
-            const sentimentValue = parseFloat(item.sentiment);
-            if (sentimentValue <= -0.5 || sentimentValue >= 0.5) {
-              importance = 3; // High importance for strong sentiment
-            } else if (sentimentValue <= -0.2 || sentimentValue >= 0.2) {
-              importance = 2; // Medium importance for moderate sentiment
-            }
+          const title = item.title || '';
+          const symbols = item.symbols || [];
+          const source = item.source || '';
+
+          // High importance keywords in title (financial impact indicators)
+          const highImpactKeywords = [
+            'fed', 'federal reserve', 'interest rate', 'inflation', 'gdp', 'unemployment',
+            'central bank', 'monetary policy', 'recession', 'crisis', 'crash', 'surge',
+            'breakthrough', 'acquisition', 'merger', 'earnings', 'bankruptcy', 'ipo'
+          ];
+
+          const mediumImpactKeywords = [
+            'market', 'trading', 'stock', 'price', 'volatility', 'analysis',
+            'forecast', 'outlook', 'report', 'data', 'economic', 'financial'
+          ];
+
+          // Check title for impact keywords
+          const titleLower = title.toLowerCase();
+          const hasHighImpact = highImpactKeywords.some(keyword => titleLower.includes(keyword));
+          const hasMediumImpact = mediumImpactKeywords.some(keyword => titleLower.includes(keyword));
+
+          if (hasHighImpact) {
+            importance = 3; // High importance
+          } else if (hasMediumImpact) {
+            importance = 2; // Medium importance
           }
 
-          // Also check if symbols are major currencies/assets for importance
-          const majorSymbols = ['EURUSD', 'GBPUSD', 'USDJPY', 'USDCHF', 'AUDUSD', 'USDCAD', 'NZDUSD', 'XAUUSD', 'BTC', 'ETH'];
-          const hasImportantSymbols = (item.symbols || []).some((symbol: string) =>
-            majorSymbols.some(major => symbol.toUpperCase().includes(major))
+          // Boost importance for major financial symbols
+          const majorSymbols = ['EURUSD', 'GBPUSD', 'USDJPY', 'USDCHF', 'AUDUSD', 'USDCAD', 'NZDUSD', 'XAUUSD', 'BTCUSD', 'ETHUSD'];
+          const hasImportantSymbols = symbols.some((symbol: string) =>
+            majorSymbols.some(major => symbol.toUpperCase().includes(major.replace('USD', '')))
           );
 
           if (hasImportantSymbols && importance < 2) {
             importance = 2; // Boost importance for major financial instruments
           }
 
+          // Boost importance for trusted news sources
+          const trustedSources = ['reuters', 'bloomberg', 'cnbc', 'marketwatch', 'financial times', 'wsj'];
+          const isTrustedSource = trustedSources.some(trusted =>
+            source.toLowerCase().includes(trusted)
+          );
+
+          if (isTrustedSource && importance < 2) {
+            importance = 2;
+          }
+
           return {
-            id: `news-${Date.now()}-${index}`, // More unique ID
+            id: `news-${Date.now()}-${index}`, // Unique ID with timestamp
             datetimeIso: item.datetimeIso,
-            title: item.title || '',
-            content: item.content || item.title || '', // Use content if available, fallback to title
-            category: item.category || 'financial',
-            symbols: item.symbols || [],
-            tags: item.tags || item.symbols || [],
+            title: title,
+            content: title, // EODHD news API only provides title
+            category: 'financial',
+            symbols: symbols,
+            tags: symbols,
             url: item.url,
-            source: item.source || '',
-            importance: importance, // Real importance based on API data
-            country: item.country || ''
+            source: source,
+            importance: importance, // Real importance based on content analysis
+            country: ''
           };
         });
         setArticles(transformedArticles);
@@ -560,7 +586,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                   Earnings: language === "ar" ? "الأرباح" : "Earnings",
                   "Central Banks":
                     language === "ar" ? "البنوك المركزية" : "Central Banks",
-                  Inflation: language === "ar" ? "الت��خم" : "Inflation",
+                  Inflation: language === "ar" ? "التضخم" : "Inflation",
                   Forex: language === "ar" ? "تداو�� العملات" : "Forex",
                   Economic: language === "ar" ? "اقتصادي" : "Economic",
                   Employment: language === "ar" ? "التوظيف" : "Employment",
