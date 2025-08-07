@@ -35,7 +35,7 @@ const TICKER_CONFIG = [
   { symbol: "TSLA.US", displayName: "TESLA", priority: 2 },
 
   // TIER 3: Additional symbols (load last)
-  { symbol: "XAGUSD", displayName: "SILVER", priority: 3 },
+  { symbol: "SI.COMEX", displayName: "SILVER", priority: 3 },
   { symbol: "USDCHF.FOREX", displayName: "USD/CHF", priority: 3 },
   { symbol: "USDCAD.FOREX", displayName: "USD/CAD", priority: 3 },
   { symbol: "AUDUSD.FOREX", displayName: "AUD/USD", priority: 3 },
