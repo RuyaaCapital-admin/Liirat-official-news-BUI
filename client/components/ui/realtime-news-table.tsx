@@ -155,19 +155,45 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         setArticles([]);
       } else {
         // Transform server response to match client interface
-        const transformedArticles = (data.items || []).map((item: any, index: number) => ({
-          id: `news-${index}`,
-          datetimeIso: item.datetimeIso,
-          title: item.title || '',
-          content: item.title || '', // Use title as content for now
-          category: 'financial',
-          symbols: item.symbols || [],
-          tags: item.symbols || [],
-          url: item.url,
-          source: item.source || '',
-          importance: 2, // Default importance
-          country: ''
-        }));
+        const transformedArticles = (data.items || []).map((item: any, index: number) => {
+          // Extract real importance from EODHD API data
+          let importance = 1; // Default to low
+
+          // EODHD API provides sentiment and relevance indicators
+          if (item.sentiment) {
+            // Map sentiment to importance (negative sentiment often indicates higher importance)
+            const sentimentValue = parseFloat(item.sentiment);
+            if (sentimentValue <= -0.5 || sentimentValue >= 0.5) {
+              importance = 3; // High importance for strong sentiment
+            } else if (sentimentValue <= -0.2 || sentimentValue >= 0.2) {
+              importance = 2; // Medium importance for moderate sentiment
+            }
+          }
+
+          // Also check if symbols are major currencies/assets for importance
+          const majorSymbols = ['EURUSD', 'GBPUSD', 'USDJPY', 'USDCHF', 'AUDUSD', 'USDCAD', 'NZDUSD', 'XAUUSD', 'BTC', 'ETH'];
+          const hasImportantSymbols = (item.symbols || []).some((symbol: string) =>
+            majorSymbols.some(major => symbol.toUpperCase().includes(major))
+          );
+
+          if (hasImportantSymbols && importance < 2) {
+            importance = 2; // Boost importance for major financial instruments
+          }
+
+          return {
+            id: `news-${Date.now()}-${index}`, // More unique ID
+            datetimeIso: item.datetimeIso,
+            title: item.title || '',
+            content: item.content || item.title || '', // Use content if available, fallback to title
+            category: item.category || 'financial',
+            symbols: item.symbols || [],
+            tags: item.tags || item.symbols || [],
+            url: item.url,
+            source: item.source || '',
+            importance: importance, // Real importance based on API data
+            country: item.country || ''
+          };
+        });
         setArticles(transformedArticles);
         setAvailableCategories(['financial']);
         setAvailableSymbols([]);
@@ -383,10 +409,12 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
 
   // Request AI analysis for an article with better error handling
   const requestAIAnalysis = async (article: NewsArticle) => {
+    // Ensure we only analyze the specific selected article
     if (aiAnalysis[article.id] || loadingAnalysis[article.id]) {
-      return; // Already have analysis or loading
+      return; // Already have analysis or loading for this specific article
     }
 
+    console.log(`[AI ANALYSIS] Starting analysis for article: ${article.id} - ${article.title.substring(0, 50)}...`);
     setLoadingAnalysis((prev) => ({ ...prev, [article.id]: true }));
 
     try {
@@ -402,6 +430,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
           text: `${article.title}. ${article.content.substring(0, 300)}`,
           language: language,
           type: "news",
+          articleId: article.id, // Include article ID for tracking
         }),
         signal: controller.signal,
       });
@@ -411,6 +440,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       if (response.ok) {
         const data = await response.json();
         if (data.analysis) {
+          console.log(`[AI ANALYSIS] Completed for article: ${article.id}`);
           setAiAnalysis((prev) => ({ ...prev, [article.id]: data.analysis }));
         } else {
           throw new Error("No analysis received");
@@ -423,7 +453,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         throw new Error(`API error: ${response.status}`);
       }
     } catch (error) {
-      console.error("AI analysis error:", error);
+      console.error(`[AI ANALYSIS] Error for article ${article.id}:`, error);
       setAiAnalysis((prev) => ({
         ...prev,
         [article.id]:
@@ -530,7 +560,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                   Earnings: language === "ar" ? "الأرباح" : "Earnings",
                   "Central Banks":
                     language === "ar" ? "البنوك المركزية" : "Central Banks",
-                  Inflation: language === "ar" ? "التضخم" : "Inflation",
+                  Inflation: language === "ar" ? "الت��خم" : "Inflation",
                   Forex: language === "ar" ? "تداو�� العملات" : "Forex",
                   Economic: language === "ar" ? "اقتصادي" : "Economic",
                   Employment: language === "ar" ? "التوظيف" : "Employment",
