@@ -191,7 +191,7 @@ function getDubaiTime(): { date: Date; formatted: string; timeString: string } {
     hour12: true,
   });
 
-  return { date: dubaiTime, formatted, timeString };
+  return { date: now, formatted, timeString };
 }
 
 // Enhanced fallback response generator with dynamic symbol support
