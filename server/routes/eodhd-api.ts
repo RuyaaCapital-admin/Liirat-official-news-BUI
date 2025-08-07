@@ -122,7 +122,7 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
           });
         }
       } catch (symbolError) {
-        console.error(`💥 Exception for ${symbol}:`, symbolError);
+        console.warn(`Failed to fetch ${symbol}:`, symbolError);
         // Add placeholder for failed symbols
         results.push({
           symbol: symbol,
