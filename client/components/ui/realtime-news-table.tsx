@@ -90,7 +90,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     { value: "Australia/Sydney", label: "Sydney" },
   ];
 
-  // Fetch news data
+  // Fetch news data - ALWAYS fetch in English first
   const fetchNews = async () => {
     try {
       setLoading(true);
@@ -120,6 +120,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
 
       from = fromDate.toISOString().split("T")[0];
 
+      // ALWAYS fetch in English - never pass language to API
       const params = new URLSearchParams({
         from,
         to,
@@ -345,7 +346,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       case 3:
         return language === "ar" ? "عالي" : "High";
       case 2:
-        return language === "ar" ? "متوسط" : "Medium";
+        return language === "ar" ? "مت��سط" : "Medium";
       case 1:
         return language === "ar" ? "منخفض" : "Low";
       default:
