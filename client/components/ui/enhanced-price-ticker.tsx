@@ -225,35 +225,28 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
     initializePriceTicker();
   }, []);
 
-  // Start fetching data when API becomes available
+  // Start fetching data immediately
   useEffect(() => {
-    if (!isApiAvailable || !isOnline) {
-      console.log('[TICKER] API not available or offline, skipping price updates');
-      return;
-    }
+    console.log('[TICKER] Starting price updates immediately');
 
-    console.log('[TICKER] API available, starting price updates');
-
-    // Start fetching price data for all symbols (staggered)
+    // Start fetching price data for all symbols (staggered) - ALWAYS TRY
     TICKER_CONFIG.forEach((config, index) => {
       setTimeout(() => {
         fetchPriceData(config.symbol);
-      }, index * 2000); // 2 seconds between requests to reduce load
+      }, index * 1500); // 1.5 seconds between requests
     });
 
     // Set up interval for continuous updates
     const interval = setInterval(() => {
-      if (isApiAvailable && isOnline) {
-        TICKER_CONFIG.forEach((config, index) => {
-          setTimeout(() => {
-            fetchPriceData(config.symbol);
-          }, index * 1000); // 1 second between each update request
-        });
-      }
-    }, 90000); // Update every 90 seconds when API is available
+      TICKER_CONFIG.forEach((config, index) => {
+        setTimeout(() => {
+          fetchPriceData(config.symbol);
+        }, index * 800); // 800ms between each update request
+      });
+    }, 60000); // Update every 60 seconds
 
     return () => clearInterval(interval);
-  }, [isApiAvailable, isOnline]);
+  }, []); // Remove dependency on network status
 
   // Get valid price entries for display
   const validPrices = Object.values(priceData).filter(
@@ -285,11 +278,11 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         className,
       )}
     >
-      {/* Network Status Indicator */}
-      {(!isOnline || !isApiAvailable) && (
+      {/* Network Status Indicator - Only show if truly offline */}
+      {!isOnline && (
         <div className="absolute top-1 right-2 z-10 flex items-center gap-1 text-xs text-muted-foreground bg-background/80 px-2 py-1 rounded">
           <WifiOff className="w-3 h-3" />
-          {!isOnline ? "Offline" : isDegraded ? "Limited" : "No Data"}
+          Offline
         </div>
       )}
 
