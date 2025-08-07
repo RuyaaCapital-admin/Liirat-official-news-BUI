@@ -362,6 +362,7 @@ export function MacroCalendarTable({
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const t = (enText: string, arText: string) =>
     language === "ar" ? arText : enText;
