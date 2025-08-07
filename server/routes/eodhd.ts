@@ -178,8 +178,8 @@ export const getNews: RequestHandler = async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error("Error fetching news:", error);
-    // Return mock data instead of empty array
-    const result: NewsResponse = { news: getMockNews() };
+    // Return empty array instead of mock data
+    const result: NewsResponse = { news: [] };
     res.json(result);
   }
 };
