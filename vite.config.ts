@@ -82,7 +82,7 @@ function expressPlugin(): Plugin {
 
           // Strip /api prefix and handle the request
           req.url = req.url.replace(/^\/api/, "") || "/";
-          app(req, res, next);
+          app(req as any, res as any, next);
         } catch (error) {
           console.error("❌ Error handling API request:", error);
 
