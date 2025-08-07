@@ -185,12 +185,12 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
 
   return (
     <div className={cn("relative overflow-hidden bg-background border-y border-border", className)}>
-      <div 
+      <div
         ref={scrollRef}
-        className="flex items-center whitespace-nowrap overflow-hidden"
-        style={{ 
-          animation: isScrolling ? 'scroll 60s linear infinite' : 'none',
-        }}
+        className={cn(
+          "flex items-center whitespace-nowrap overflow-hidden",
+          isScrolling && "animate-scroll"
+        )}
         onMouseEnter={() => setIsScrolling(false)}
         onMouseLeave={() => setIsScrolling(true)}
       >
