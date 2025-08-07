@@ -388,6 +388,8 @@ export function MacroCalendarTable({
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [translatedContent, setTranslatedContent] = useState<Record<string, string>>({});
+  const [loadingTranslation, setLoadingTranslation] = useState<Record<string, boolean>>({});
 
   const t = (enText: string, arText: string) =>
     language === "ar" ? arText : enText;
@@ -957,7 +959,14 @@ export function MacroCalendarTable({
 
                 <div className="space-y-2">
                   <div className="font-medium text-sm leading-tight">
-                    {event.event}
+                    {language === "ar" && translatedContent[`${event.event}-${event.country}`]
+                      ? translatedContent[`${event.event}-${event.country}`]
+                      : event.event}
+                    {language === "ar" && loadingTranslation[`${event.event}-${event.country}`] && (
+                      <span className="ml-2 text-xs text-muted-foreground animate-pulse">
+                        (ترجمة...)
+                      </span>
+                    )}
                   </div>
 
                   <div className="text-xs text-muted-foreground flex items-center gap-1">
@@ -1086,7 +1095,7 @@ export function MacroCalendarTable({
                       <p className="text-sm mt-1">
                         {t(
                           "Try adjusting your filters or check back later",
-                          "جرب تعديل فلاترك أو تحقق مرة أخرى لاحقاً",
+                          "جرب تعديل فلاترك أو تحقق مرة أخرى لاحقا��",
                         )}
                       </p>
                     </td>
