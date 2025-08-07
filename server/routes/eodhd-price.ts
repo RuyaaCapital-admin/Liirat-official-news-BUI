@@ -122,6 +122,18 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       console.error(
         `EODHD Price API error: ${response.status} - ${response.statusText}`,
       );
+
+      // Return empty array instead of mock data for 401/403 errors
+      if (response.status === 401 || response.status === 403) {
+        return res.status(200).json({
+          prices: [],
+          total: 0,
+          symbol: symbolStr,
+          message: "EODHD API access restricted - no mock data provided",
+          timestamp: new Date().toISOString(),
+        });
+      }
+
       return res.status(response.status).json({
         error: `EODHD Price API Error: ${response.status} - ${response.statusText}`,
         prices: [],
