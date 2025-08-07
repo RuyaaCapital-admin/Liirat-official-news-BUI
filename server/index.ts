@@ -36,7 +36,6 @@ export function createServer() {
     res.json({ message: ping });
   });
 
-
   // Chat widget route
   app.post("/chat", handleChat);
 
