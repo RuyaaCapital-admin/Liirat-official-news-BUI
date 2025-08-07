@@ -17,7 +17,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/components/ui/use-toast";
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 import { NewLiquidToggle } from "@/components/ui/new-liquid-toggle";
-// TradingView removed - using EODHD data only
+// Using EODHD data only - no TradingView widgets
 import {
   Send,
   Bot,
@@ -145,7 +145,7 @@ const AITradingAssistant: React.FC = () => {
                 title:
                   "أسعار الذهب تصل إلى مستويات قياسية جديدة وسط عدم اليقين الاقتصادي",
                 summary:
-                  "ارتفعت أسعار الذهب إلى مستويات قياسية حيث يسعى المستثمرون إلى ال��صول الآمنة خلال تقلبات السوق.",
+                  "ارتفعت أسعار الذهب إلى مستويات قياسية حيث يسعى المستثمرون إلى الأصول الآمنة خلال تقلبات السوق.",
                 source: "سي إن بي سي",
                 publishedAt: "2024-01-15T08:45:00Z",
                 impact: "medium",
@@ -375,7 +375,7 @@ const AITradingAssistant: React.FC = () => {
             </h1>
             <p className="text-lg text-muted-foreground">
               {language === "ar"
-                ? "رفيقك الذكي لتحليل الأسواق ��استراتيجيات التداول"
+                ? "رفيقك الذكي لتحليل الأسواق واستراتيجيات التداول"
                 : "Your intelligent companion for market analysis and trading strategies"}
             </p>
             <div className="flex justify-center gap-4 mt-4">
@@ -406,7 +406,7 @@ const AITradingAssistant: React.FC = () => {
                     </CardTitle>
                     <CardDescription>
                       {language === "ar"
-                        ? "تحدث مع مساعد التداول"
+                        ? "تحدث مع مساع�� التداول"
                         : "Chat with your trading companion"}
                     </CardDescription>
                   </div>
