@@ -259,7 +259,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     return article.title; // Fallback to original
   };
 
-  // Request AI analysis for an article
+  // Request AI analysis for an article with better error handling
   const requestAIAnalysis = async (article: NewsArticle) => {
     if (aiAnalysis[article.id] || loadingAnalysis[article.id]) {
       return; // Already have analysis or loading
@@ -268,6 +268,9 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     setLoadingAnalysis((prev) => ({ ...prev, [article.id]: true }));
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
       const response = await fetch("/api/ai-analysis", {
         method: "POST",
         headers: {
@@ -278,19 +281,22 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
           language: language,
           type: "news",
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const data = await response.json();
-        setAiAnalysis((prev) => ({ ...prev, [article.id]: data.analysis }));
+        if (data.analysis) {
+          setAiAnalysis((prev) => ({ ...prev, [article.id]: data.analysis }));
+        } else {
+          throw new Error("No analysis received");
+        }
       } else {
-        setAiAnalysis((prev) => ({
-          ...prev,
-          [article.id]:
-            language === "ar"
-              ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
-              : "AI analysis currently unavailable",
-        }));
+        const errorData = await response.json();
+        console.error(`AI Analysis API error: ${response.status}`, errorData);
+        throw new Error(`API error: ${response.status}`);
       }
     } catch (error) {
       console.error("AI analysis error:", error);
