@@ -100,7 +100,7 @@ ${validPrices.map((p) => `• ${p.symbol}: ${p.price?.toFixed(4) || "N/A"} (${p.
             realTimeData +=
               (realTimeData ? "\n\n" : "") +
               (language === "ar"
-                ? `أحداث اقتصادية مهمة من EODHD:
+                ? `أحداث اقتصادية مهمة:
 ${data.events
   .slice(0, 3)
   .map(
@@ -108,7 +108,7 @@ ${data.events
       `• ${e.event} (${e.country}) - ${new Date(e.date).toLocaleDateString("ar-SA")}`,
   )
   .join("\n")}`
-                : `Important economic events from EODHD:
+                : `Important economic events:
 ${data.events
   .slice(0, 3)
   .map(
