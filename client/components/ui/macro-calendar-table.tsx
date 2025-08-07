@@ -508,9 +508,14 @@ export function MacroCalendarTable({
       <div className="bg-card border rounded-lg p-4 space-y-4">
         <div className="flex items-center gap-2 mb-3">
           <Filter className="h-4 w-4 text-primary" />
-          <h3 className="font-semibold text-sm">
-            {t("Economic Calendar Filters", "فلاتر التقويم الاقتصادي")}
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-sm">
+              {t("Economic Calendar Filters", "فلاتر التقويم الاقتصادي")}
+            </h3>
+            <span className="text-xs text-muted-foreground">
+              {t("Auto-refresh: 15min", "تحديث تلقائي: 15 دقيقة")}
+            </span>
+          </div>
         </div>
 
         {/* Search Input */}
@@ -917,7 +922,7 @@ export function MacroCalendarTable({
                     dir === "rtl" ? "text-right" : "text-left",
                   )}
                 >
-                  {t("Date & Time", "التاري�� والوقت")}
+                  {t("Date & Time", "التاريخ والوقت")}
                 </th>
                 <th
                   className={cn(
