@@ -205,17 +205,8 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
         ))}
       </div>
 
-      {/* CSS for Animation */}
+      {/* CSS for Custom Animation Control */}
       <style jsx>{`
-        @keyframes scroll {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-
         .animate-scroll {
           animation: scroll 60s linear infinite;
         }
@@ -225,16 +216,16 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
           animation-play-state: paused;
         }
 
-        /* Mobile responsiveness */
+        /* Mobile responsiveness - faster scroll on smaller screens */
         @media (max-width: 768px) {
           .animate-scroll {
-            animation: scroll 45s linear infinite;
+            animation-duration: 45s;
           }
         }
 
         @media (max-width: 480px) {
           .animate-scroll {
-            animation: scroll 35s linear infinite;
+            animation-duration: 35s;
           }
         }
       `}</style>
