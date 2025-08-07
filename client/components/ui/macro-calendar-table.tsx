@@ -762,7 +762,7 @@ export function MacroCalendarTable({
             <PopoverContent className="w-56 p-3">
               <div className="space-y-3">
                 <div className="text-sm font-medium">
-                  {t("Select Impact Levels", "اختر مستويات ال��أثير")}
+                  {t("Select Impact Levels", "اختر مستويات التأثير")}
                 </div>
                 {[
                   {
@@ -882,7 +882,7 @@ export function MacroCalendarTable({
               )}
             </div>
           ) : (
-            filteredEvents.map((event, index) => (
+            displayedEvents.map((event, index) => (
               <div
                 key={index}
                 className="bg-card rounded-lg border p-4 space-y-3"
@@ -994,7 +994,7 @@ export function MacroCalendarTable({
               </tr>
             </thead>
             <tbody>
-              {filteredEvents.length === 0 ? (
+              {displayedEvents.length === 0 ? (
                 <tr>
                   <td
                     colSpan={7}
@@ -1007,7 +1007,7 @@ export function MacroCalendarTable({
                   </td>
                 </tr>
               ) : (
-                filteredEvents.map((event, index) => (
+                displayedEvents.map((event, index) => (
                   <tr
                     key={index}
                     className="border-b hover:bg-muted/30 transition-colors"
