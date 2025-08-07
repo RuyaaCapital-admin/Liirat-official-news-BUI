@@ -229,8 +229,11 @@ export const handleTranslation: RequestHandler = async (req, res) => {
         statusText: response.statusText,
         body: errorBody.substring(0, 200)
       });
+      const errorMessage = req.body.targetLanguage === "ar"
+        ? `خدمة الترجمة غير متاحة: ${response.status} ${response.statusText}`
+        : `Translation service unavailable: ${response.status} ${response.statusText}`;
       return res.status(500).json({
-        error: `Translation service unavailable: ${response.status} ${response.statusText}`,
+        error: errorMessage,
         translatedText: text, // Return original text as fallback
       });
     }
