@@ -114,13 +114,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const events: EconomicEvent[] = Array.isArray(data)
       ? data.map((event: any) => ({
           date: event.date || new Date().toISOString().split("T")[0],
-          time: event.time || "",
+          time: event.time || "", // EODHD may not provide 'time' separately
           country: event.country || event.currency || "Unknown",
-          event: event.event || event.title || event.name || "Economic Event",
+          event: event.type || event.event || event.title || event.name || "Economic Event", // Use 'type' for event name
           category: event.category || event.type || "Economic",
           importance: parseInt(event.importance) || 1,
           actual: event.actual || undefined,
-          forecast: event.forecast || event.estimate || undefined,
+          forecast: event.estimate || event.forecast || undefined, // Use 'estimate' for forecast
           previous: event.previous || undefined,
         }))
       : [];
