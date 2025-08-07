@@ -209,15 +209,22 @@ export default function Index() {
           } else {
             // Transform server response to match client interface
             const transformedEvents = (data.items || []).map((item: any) => ({
-              date: item.datetimeIso ? item.datetimeIso.split('T')[0] : '',
-              time: item.datetimeIso ? item.datetimeIso.split('T')[1]?.replace('Z', '') : '',
-              country: item.country || '',
-              event: item.event || '',
-              category: item.category || '',
-              importance: item.importance === 'high' ? 3 : item.importance === 'medium' ? 2 : 1,
-              actual: item.actual || '',
-              forecast: item.forecast || '',
-              previous: item.previous || ''
+              date: item.datetimeIso ? item.datetimeIso.split("T")[0] : "",
+              time: item.datetimeIso
+                ? item.datetimeIso.split("T")[1]?.replace("Z", "")
+                : "",
+              country: item.country || "",
+              event: item.event || "",
+              category: item.category || "",
+              importance:
+                item.importance === "high"
+                  ? 3
+                  : item.importance === "medium"
+                    ? 2
+                    : 1,
+              actual: item.actual || "",
+              forecast: item.forecast || "",
+              previous: item.previous || "",
             }));
             setEconomicEvents(transformedEvents);
             setEventsError(null);

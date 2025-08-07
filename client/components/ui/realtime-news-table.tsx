@@ -155,73 +155,124 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         setArticles([]);
       } else {
         // Transform server response to match client interface
-        const transformedArticles = (data.items || []).map((item: any, index: number) => {
-          // Calculate real importance based on available EODHD API data
-          let importance = 1; // Default to low
+        const transformedArticles = (data.items || []).map(
+          (item: any, index: number) => {
+            // Calculate real importance based on available EODHD API data
+            let importance = 1; // Default to low
 
-          const title = item.title || '';
-          const symbols = item.symbols || [];
-          const source = item.source || '';
+            const title = item.title || "";
+            const symbols = item.symbols || [];
+            const source = item.source || "";
 
-          // High importance keywords in title (financial impact indicators)
-          const highImpactKeywords = [
-            'fed', 'federal reserve', 'interest rate', 'inflation', 'gdp', 'unemployment',
-            'central bank', 'monetary policy', 'recession', 'crisis', 'crash', 'surge',
-            'breakthrough', 'acquisition', 'merger', 'earnings', 'bankruptcy', 'ipo'
-          ];
+            // High importance keywords in title (financial impact indicators)
+            const highImpactKeywords = [
+              "fed",
+              "federal reserve",
+              "interest rate",
+              "inflation",
+              "gdp",
+              "unemployment",
+              "central bank",
+              "monetary policy",
+              "recession",
+              "crisis",
+              "crash",
+              "surge",
+              "breakthrough",
+              "acquisition",
+              "merger",
+              "earnings",
+              "bankruptcy",
+              "ipo",
+            ];
 
-          const mediumImpactKeywords = [
-            'market', 'trading', 'stock', 'price', 'volatility', 'analysis',
-            'forecast', 'outlook', 'report', 'data', 'economic', 'financial'
-          ];
+            const mediumImpactKeywords = [
+              "market",
+              "trading",
+              "stock",
+              "price",
+              "volatility",
+              "analysis",
+              "forecast",
+              "outlook",
+              "report",
+              "data",
+              "economic",
+              "financial",
+            ];
 
-          // Check title for impact keywords
-          const titleLower = title.toLowerCase();
-          const hasHighImpact = highImpactKeywords.some(keyword => titleLower.includes(keyword));
-          const hasMediumImpact = mediumImpactKeywords.some(keyword => titleLower.includes(keyword));
+            // Check title for impact keywords
+            const titleLower = title.toLowerCase();
+            const hasHighImpact = highImpactKeywords.some((keyword) =>
+              titleLower.includes(keyword),
+            );
+            const hasMediumImpact = mediumImpactKeywords.some((keyword) =>
+              titleLower.includes(keyword),
+            );
 
-          if (hasHighImpact) {
-            importance = 3; // High importance
-          } else if (hasMediumImpact) {
-            importance = 2; // Medium importance
-          }
+            if (hasHighImpact) {
+              importance = 3; // High importance
+            } else if (hasMediumImpact) {
+              importance = 2; // Medium importance
+            }
 
-          // Boost importance for major financial symbols
-          const majorSymbols = ['EURUSD', 'GBPUSD', 'USDJPY', 'USDCHF', 'AUDUSD', 'USDCAD', 'NZDUSD', 'XAUUSD', 'BTCUSD', 'ETHUSD'];
-          const hasImportantSymbols = symbols.some((symbol: string) =>
-            majorSymbols.some(major => symbol.toUpperCase().includes(major.replace('USD', '')))
-          );
+            // Boost importance for major financial symbols
+            const majorSymbols = [
+              "EURUSD",
+              "GBPUSD",
+              "USDJPY",
+              "USDCHF",
+              "AUDUSD",
+              "USDCAD",
+              "NZDUSD",
+              "XAUUSD",
+              "BTCUSD",
+              "ETHUSD",
+            ];
+            const hasImportantSymbols = symbols.some((symbol: string) =>
+              majorSymbols.some((major) =>
+                symbol.toUpperCase().includes(major.replace("USD", "")),
+              ),
+            );
 
-          if (hasImportantSymbols && importance < 2) {
-            importance = 2; // Boost importance for major financial instruments
-          }
+            if (hasImportantSymbols && importance < 2) {
+              importance = 2; // Boost importance for major financial instruments
+            }
 
-          // Boost importance for trusted news sources
-          const trustedSources = ['reuters', 'bloomberg', 'cnbc', 'marketwatch', 'financial times', 'wsj'];
-          const isTrustedSource = trustedSources.some(trusted =>
-            source.toLowerCase().includes(trusted)
-          );
+            // Boost importance for trusted news sources
+            const trustedSources = [
+              "reuters",
+              "bloomberg",
+              "cnbc",
+              "marketwatch",
+              "financial times",
+              "wsj",
+            ];
+            const isTrustedSource = trustedSources.some((trusted) =>
+              source.toLowerCase().includes(trusted),
+            );
 
-          if (isTrustedSource && importance < 2) {
-            importance = 2;
-          }
+            if (isTrustedSource && importance < 2) {
+              importance = 2;
+            }
 
-          return {
-            id: `news-${Date.now()}-${index}`, // Unique ID with timestamp
-            datetimeIso: item.datetimeIso,
-            title: title,
-            content: item.content || title, // Use API content if available, fallback to title
-            category: item.category || 'financial',
-            symbols: symbols,
-            tags: item.tags || symbols,
-            url: item.url,
-            source: source,
-            importance: importance, // Real importance based on content analysis
-            country: item.country || ''
-          };
-        });
+            return {
+              id: `news-${Date.now()}-${index}`, // Unique ID with timestamp
+              datetimeIso: item.datetimeIso,
+              title: title,
+              content: item.content || title, // Use API content if available, fallback to title
+              category: item.category || "financial",
+              symbols: symbols,
+              tags: item.tags || symbols,
+              url: item.url,
+              source: source,
+              importance: importance, // Real importance based on content analysis
+              country: item.country || "",
+            };
+          },
+        );
         setArticles(transformedArticles);
-        setAvailableCategories(['financial']);
+        setAvailableCategories(["financial"]);
         setAvailableSymbols([]);
       }
     } catch (err) {
@@ -364,7 +415,9 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
 
     // Use offline translation for instant results without API calls
     const offlineTranslation = getOfflineTranslation(article.title);
-    console.log(`[NEWS] Translating offline: "${article.title}" -> "${offlineTranslation}"`);
+    console.log(
+      `[NEWS] Translating offline: "${article.title}" -> "${offlineTranslation}"`,
+    );
 
     // Always cache the translation result (even if unchanged)
     setTranslatedTitles((prev) => ({
@@ -372,7 +425,6 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       [article.id]: offlineTranslation,
     }));
     return offlineTranslation;
-
   };
 
   // Request AI analysis for an article with better error handling
@@ -382,7 +434,9 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       return; // Already have analysis or loading for this specific article
     }
 
-    console.log(`[AI ANALYSIS] Starting analysis for article: ${article.id} - ${article.title.substring(0, 50)}...`);
+    console.log(
+      `[AI ANALYSIS] Starting analysis for article: ${article.id} - ${article.title.substring(0, 50)}...`,
+    );
     setLoadingAnalysis((prev) => ({ ...prev, [article.id]: true }));
 
     try {
@@ -441,13 +495,13 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     return isNaN(+d) ? null : d;
   }
 
-  function formatUtc(iso?: string | null, tz: string = 'UTC') {
+  function formatUtc(iso?: string | null, tz: string = "UTC") {
     const d = parseIso(iso);
-    if (!d) return '—';
-    return new Intl.DateTimeFormat('en-US', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-      timeZone: tz
+    if (!d) return "—";
+    return new Intl.DateTimeFormat("en-US", {
+      dateStyle: "medium",
+      timeStyle: "short",
+      timeZone: tz,
     }).format(d);
   }
 

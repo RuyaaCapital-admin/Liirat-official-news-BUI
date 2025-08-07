@@ -64,13 +64,11 @@ export const handleEODHDSearch: RequestHandler = async (req, res) => {
     const data = await response.json();
     res.status(response.status).json(data);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        ok: false,
-        code: "INTERNAL_ERROR",
-        detail: error instanceof Error ? error.message : "Unknown error",
-      });
+    res.status(500).json({
+      ok: false,
+      code: "INTERNAL_ERROR",
+      detail: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
@@ -92,17 +90,29 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
 
     for (const symbol of symbolList) {
       try {
-        const response = await eodFetch(`/real-time/${encodeURIComponent(symbol.toUpperCase())}`);
+        const response = await eodFetch(
+          `/real-time/${encodeURIComponent(symbol.toUpperCase())}`,
+        );
         const r = await response.json();
 
         if (r.ok && r.data) {
           const item = r.data;
 
           // Handle cases where EODHD returns "NA" for current data
-          const close = item.close === 'NA' || item.close === null ? item.previousClose : item.close;
-          const change = item.change === 'NA' || item.change === null ? 0 : item.change;
-          const changePct = item.change_p === 'NA' || item.change_p === null ? 0 : item.change_p;
-          const timestamp = item.timestamp === 'NA' || item.timestamp === null ? Date.now() : item.timestamp;
+          const close =
+            item.close === "NA" || item.close === null
+              ? item.previousClose
+              : item.close;
+          const change =
+            item.change === "NA" || item.change === null ? 0 : item.change;
+          const changePct =
+            item.change_p === "NA" || item.change_p === null
+              ? 0
+              : item.change_p;
+          const timestamp =
+            item.timestamp === "NA" || item.timestamp === null
+              ? Date.now()
+              : item.timestamp;
 
           const priceData = {
             symbol: symbol,
@@ -137,13 +147,11 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
 
     res.status(200).json({ ok: true, items: results });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        ok: false,
-        code: "INTERNAL_ERROR",
-        detail: error instanceof Error ? error.message : "Unknown error",
-      });
+    res.status(500).json({
+      ok: false,
+      code: "INTERNAL_ERROR",
+      detail: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
@@ -171,24 +179,22 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
 
     const items = (raw.data || raw || []).map((e: any) => ({
       datetimeIso: toIsoUtc(e.date || e.datetime),
-      country: e.country || '',
-      event: e.event || '',
-      category: e.category || e.type || '',
-      importance: String(e.importance || '').toLowerCase(),
-      previous: e.previous ?? '',
-      forecast: e.estimate ?? e.forecast ?? '',
-      actual: e.actual ?? ''
+      country: e.country || "",
+      event: e.event || "",
+      category: e.category || e.type || "",
+      importance: String(e.importance || "").toLowerCase(),
+      previous: e.previous ?? "",
+      forecast: e.estimate ?? e.forecast ?? "",
+      actual: e.actual ?? "",
     }));
 
     res.status(200).json({ ok: true, items });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        ok: false,
-        code: "INTERNAL_ERROR",
-        detail: error instanceof Error ? error.message : "Unknown error",
-      });
+    res.status(500).json({
+      ok: false,
+      code: "INTERNAL_ERROR",
+      detail: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
@@ -217,25 +223,23 @@ export const handleEODHDNews: RequestHandler = async (req, res) => {
 
     const items = (raw.data || raw).map((n: any) => ({
       datetimeIso: toIsoUtc(n.date || n.datetime || n.published_at || n.time),
-      title: String(n.title || ''),
-      content: String(n.content || n.description || n.title || ''),
-      source: String(n.source || ''),
+      title: String(n.title || ""),
+      content: String(n.content || n.description || n.title || ""),
+      source: String(n.source || ""),
       symbols: n.symbols || [],
       tags: n.tags || n.symbols || [],
-      url: n.link || n.url || '',
-      country: n.country || '',
-      category: n.category || 'financial'
+      url: n.link || n.url || "",
+      country: n.country || "",
+      category: n.category || "financial",
     }));
 
     res.status(200).json({ ok: true, items });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        ok: false,
-        code: "INTERNAL_ERROR",
-        detail: error instanceof Error ? error.message : "Unknown error",
-      });
+    res.status(500).json({
+      ok: false,
+      code: "INTERNAL_ERROR",
+      detail: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
