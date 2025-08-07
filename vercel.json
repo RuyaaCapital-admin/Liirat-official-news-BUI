@@ -9,7 +9,7 @@
   },
   "rewrites": [
     {
-      "source": "/(?!(.?api).))",
+      "source": "/:path(((?api).*))",
       "destination": "/index.html"
     }
   ],
@@ -32,7 +32,7 @@
       ]
     },
     {
-      "source": "/api/(.*)",
+      "source": "/api/(.*(?!!))",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
