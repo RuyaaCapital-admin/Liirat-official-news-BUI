@@ -16,8 +16,8 @@ const AITradingNav: React.FC = () => {
     },
     {
       icon: <TrendingUp className="h-6 w-6" />,
-      title: "Live TradingView Charts",
-      description: "Interactive charts with technical indicators"
+      title: "Live Market Charts",
+      description: "Interactive charts with EODHD data"
     },
     {
       icon: <Newspaper className="h-6 w-6" />,
