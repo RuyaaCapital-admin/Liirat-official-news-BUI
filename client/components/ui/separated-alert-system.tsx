@@ -350,7 +350,10 @@ export default function SeparatedAlertSystem({
       changePercent: "",
       message: "",
     });
-
+    setSymbolSearch("");
+    setSelectedSymbol(null);
+    setCurrentPrice(null);
+    setShowSymbolSuggestions(false);
     setIsPriceDialogOpen(false);
   };
 
