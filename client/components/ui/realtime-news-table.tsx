@@ -74,6 +74,10 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     Record<string, boolean>
   >({});
 
+  // Translation state
+  const [translatedTitles, setTranslatedTitles] = useState<Record<string, string>>({});
+  const [loadingTranslation, setLoadingTranslation] = useState<Record<string, boolean>>({});
+
   // Timezone selector
   const [selectedTimezone, setSelectedTimezone] = useState("UTC");
   const timezones = [
