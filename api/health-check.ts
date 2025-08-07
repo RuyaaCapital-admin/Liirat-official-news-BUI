@@ -22,11 +22,11 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     environment: process.env.NODE_ENV || "development",
     vercel: {
       region: process.env.VERCEL_REGION || "unknown",
-      url: process.env.VERCEL_URL || "unknown"
+      url: process.env.VERCEL_URL || "unknown",
     },
     api: {
       eodhdKey: process.env.EODHD_API_KEY ? "configured" : "missing",
-      fallbackKey: "6891e3b89ee5e1.29062933"
-    }
+      fallbackKey: "6891e3b89ee5e1.29062933",
+    },
   });
 }

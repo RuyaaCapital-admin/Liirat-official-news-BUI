@@ -102,29 +102,31 @@ export default function Index() {
       setEventsError(null);
 
       console.log(`Fetching economic events for language: ${lang}`);
-    console.log(`Current location: ${window.location.origin}`);
-    console.log(`API endpoint will be: ${window.location.origin}/api/eodhd-calendar`);
+      console.log(`Current location: ${window.location.origin}`);
+      console.log(
+        `API endpoint will be: ${window.location.origin}/api/eodhd-calendar`,
+      );
 
       // First test API connectivity with health check
-    let apiHealthy = false;
-    try {
-      const healthResponse = await fetch("/api/health-check", {
-        method: "GET",
-        headers: { Accept: "application/json" },
-        signal: AbortSignal.timeout(5000), // 5 second timeout
-      });
+      let apiHealthy = false;
+      try {
+        const healthResponse = await fetch("/api/health-check", {
+          method: "GET",
+          headers: { Accept: "application/json" },
+          signal: AbortSignal.timeout(5000), // 5 second timeout
+        });
 
-      if (healthResponse.ok) {
-        const healthData = await healthResponse.json();
-        console.log("API Health Check:", healthData);
-        apiHealthy = true;
-      } else {
-        console.warn(`API health check failed: ${healthResponse.status}`);
+        if (healthResponse.ok) {
+          const healthData = await healthResponse.json();
+          console.log("API Health Check:", healthData);
+          apiHealthy = true;
+        } else {
+          console.warn(`API health check failed: ${healthResponse.status}`);
+        }
+      } catch (healthError) {
+        console.warn("API health check failed:", healthError);
+        // Continue anyway, maybe the specific endpoint will work
       }
-    } catch (healthError) {
-      console.warn("API health check failed:", healthError);
-      // Continue anyway, maybe the specific endpoint will work
-    }
 
       // Build query parameters with filters
       const params = new URLSearchParams();
@@ -151,7 +153,9 @@ export default function Index() {
       }
 
       // Fetch from EODHD calendar endpoint with robust error handling
-      console.log(`Attempting to fetch economic events from: /api/eodhd-calendar?${params.toString()}`);
+      console.log(
+        `Attempting to fetch economic events from: /api/eodhd-calendar?${params.toString()}`,
+      );
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
@@ -171,10 +175,17 @@ export default function Index() {
         console.error("Network error when fetching calendar:", fetchError);
 
         // Handle specific network errors
-        if (fetchError instanceof TypeError && fetchError.message.includes("fetch")) {
-          throw new Error("Network connection failed. Please check your internet connection and try again.");
+        if (
+          fetchError instanceof TypeError &&
+          fetchError.message.includes("fetch")
+        ) {
+          throw new Error(
+            "Network connection failed. Please check your internet connection and try again.",
+          );
         } else if (fetchError.name === "AbortError") {
-          throw new Error("Request timeout. The server took too long to respond.");
+          throw new Error(
+            "Request timeout. The server took too long to respond.",
+          );
         } else {
           throw new Error(`Network error: ${fetchError.message}`);
         }
@@ -208,44 +219,50 @@ export default function Index() {
         setEconomicEvents([]);
       }
     } catch (error) {
-    console.error("Failed to fetch economic events:", error);
+      console.error("Failed to fetch economic events:", error);
 
-    // Provide user-friendly error messages based on error type
-    let errorMessage: string;
+      // Provide user-friendly error messages based on error type
+      let errorMessage: string;
 
-    if (error instanceof Error) {
-      if (error.message.includes("Network connection failed")) {
-        errorMessage = language === "ar"
-          ? "خطأ في الاتصال بالشبكة. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى."
-          : "Network connection failed. Please check your internet connection and try again.";
-      } else if (error.message.includes("Request timeout")) {
-        errorMessage = language === "ar"
-          ? "انتهت مهلة الطلب. يرجى المحاولة مرة أخرى."
-          : "Request timeout. Please try again.";
-      } else if (error.message.includes("API key")) {
-        errorMessage = language === "ar"
-          ? "خطأ في مفتاح API. يرجى التواصل مع الدعم الفني."
-          : "API authentication error. Please contact support.";
-      } else if (error.message.includes("Rate limit")) {
-        errorMessage = language === "ar"
-          ? "تم تجاوز حد الاستخدام. يرجى الانتظار والمحاولة لاحقاً."
-          : "Rate limit exceeded. Please wait and try again later.";
+      if (error instanceof Error) {
+        if (error.message.includes("Network connection failed")) {
+          errorMessage =
+            language === "ar"
+              ? "خطأ في الاتصال بالشبكة. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى."
+              : "Network connection failed. Please check your internet connection and try again.";
+        } else if (error.message.includes("Request timeout")) {
+          errorMessage =
+            language === "ar"
+              ? "انتهت مهلة الطلب. يرجى المحاولة مرة أخرى."
+              : "Request timeout. Please try again.";
+        } else if (error.message.includes("API key")) {
+          errorMessage =
+            language === "ar"
+              ? "خطأ في مفتاح API. يرجى التواصل مع الدعم الفني."
+              : "API authentication error. Please contact support.";
+        } else if (error.message.includes("Rate limit")) {
+          errorMessage =
+            language === "ar"
+              ? "تم تجاوز حد الاستخدام. يرجى الانتظار والمحاولة لاحقاً."
+              : "Rate limit exceeded. Please wait and try again later.";
+        } else {
+          errorMessage =
+            language === "ar"
+              ? `خطأ في الخدمة: ${error.message}`
+              : `Service error: ${error.message}`;
+        }
       } else {
-        errorMessage = language === "ar"
-          ? `خطأ في الخدمة: ${error.message}`
-          : `Service error: ${error.message}`;
+        errorMessage =
+          language === "ar"
+            ? "خط�� غير معروف. يرجى المحاولة مرة أخرى."
+            : "Unknown error. Please try again.";
       }
-    } else {
-      errorMessage = language === "ar"
-        ? "خط�� غير معروف. يرجى المحاولة مرة أخرى."
-        : "Unknown error. Please try again.";
-    }
 
-    setEventsError(errorMessage);
-    setEconomicEvents([]); // Empty array - no mock data
-  } finally {
-    setIsLoadingEvents(false);
-  }
+      setEventsError(errorMessage);
+      setEconomicEvents([]); // Empty array - no mock data
+    } finally {
+      setIsLoadingEvents(false);
+    }
   };
 
   // Initial fetch on mount and language change
