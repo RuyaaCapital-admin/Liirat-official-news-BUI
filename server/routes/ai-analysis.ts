@@ -112,7 +112,7 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
         error: "AI analysis temporarily unavailable",
         analysis:
           language === "ar"
-            ? "تحليل الذكاء الاص��ناعي غير متاح حاليًا"
+            ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
             : "AI analysis currently unavailable",
       });
     }
@@ -180,8 +180,11 @@ export const handleTranslation: RequestHandler = async (req, res) => {
 
     if (!openaiApiKey) {
       console.error('[TRANSLATION] OpenAI API key not configured');
+      const errorMessage = targetLanguage === "ar"
+        ? "مفتاح OpenAI غير مُعدّ. لا يمكن تقديم الترجمة."
+        : "OpenAI API key not configured. Translation unavailable.";
       return res.status(500).json({
-        error: "OpenAI API key not configured",
+        error: errorMessage,
         translatedText: text, // Return original text as fallback
       });
     }
