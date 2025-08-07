@@ -1,4 +1,4 @@
-# Fusion Starter
+# Fusion Starter 
 
 A production-ready full-stack React application template with integrated Express server, featuring React Router 6 SPA mode, TypeScript, Vitest, Zod and modern tooling.
 
