@@ -8,7 +8,7 @@ interface PriceData {
   price: number;
   change: number;
   changePercent: number;
-  currency?: string;
+  currency: string;
 }
 
 interface CustomPriceTickerProps {
@@ -71,10 +71,10 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
         }
       });
 
-      const results: (PriceData | null)[] = await Promise.all(promises);
+      const results = await Promise.all(promises);
       const validResults = results.filter(
         (result): result is PriceData => result !== null,
-      );
+      ) as PriceData[];
       setPriceData(validResults);
     } catch (error) {
       console.error("Error fetching price data:", error);
@@ -218,22 +218,12 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
         .animate-scroll {
           animation: scroll 60s linear infinite;
         }
-
-        /* Pause animation on hover for better UX */
-        .animate-scroll:hover {
-          animation-play-state: paused;
-        }
-
-        /* Mobile responsiveness - faster scroll on smaller screens */
-        @media (max-width: 768px) {
-          .animate-scroll {
-            animation-duration: 45s;
+        @keyframes scroll {
+          0% {
+            transform: translateX(0);
           }
-        }
-
-        @media (max-width: 480px) {
-          .animate-scroll {
-            animation-duration: 35s;
+          100% {
+            transform: translateX(-100%);
           }
         }
       `}</style>
