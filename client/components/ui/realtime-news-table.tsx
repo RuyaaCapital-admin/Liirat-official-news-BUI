@@ -288,7 +288,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
           ...prev,
           [article.id]:
             language === "ar"
-              ? "��حليل الذكاء الاصطناعي غير متاح حاليًا"
+              ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
               : "AI analysis currently unavailable",
         }));
       }
@@ -298,7 +298,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         ...prev,
         [article.id]:
           language === "ar"
-            ? "تحليل الذكاء الاصطناعي غير متاح حال��ًا"
+            ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
             : "AI analysis currently unavailable",
       }));
     } finally {
@@ -459,7 +459,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary/20 border-t-primary"></div>
             <span className="ml-2">
-              {language === "ar" ? "ج��ري تحميل الأخبار..." : "Loading news..."}
+              {language === "ar" ? "جاري تحميل الأخبار..." : "Loading news..."}
             </span>
           </div>
         ) : filteredArticles.length === 0 ? (
