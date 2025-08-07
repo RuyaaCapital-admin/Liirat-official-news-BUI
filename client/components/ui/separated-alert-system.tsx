@@ -227,8 +227,8 @@ export default function SeparatedAlertSystem({
           const response = await fetch(`/api/eodhd-price?symbol=${encodeURIComponent(alert.symbol)}`);
           if (response.ok) {
             const data = await response.json();
-            if (data && data.length > 0 && data[0].price) {
-              const currentPrice = data[0].price;
+            if (data.prices && data.prices.length > 0 && data.prices[0].price) {
+              const currentPrice = data.prices[0].price;
               const targetPrice = parseFloat(alert.targetPrice);
 
               let shouldTrigger = false;
