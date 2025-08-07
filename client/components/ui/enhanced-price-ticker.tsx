@@ -131,7 +131,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
     }
   };
 
-  // Connect to all WebSockets
+  // Connect to all price feeds
   useEffect(() => {
     TICKER_CONFIG.forEach(config => {
       connectWebSocket(config);
@@ -139,9 +139,9 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
 
     // Cleanup on unmount
     return () => {
-      Object.values(wsConnections.current).forEach(ws => {
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.close();
+      Object.values(wsConnections.current).forEach(connection => {
+        if (connection && typeof connection.close === 'function') {
+          connection.close();
         }
       });
       Object.values(reconnectTimeouts.current).forEach(timeout => {
