@@ -17,27 +17,28 @@ interface TickerProps {
   className?: string;
 }
 
-// Configuration for the most reliable symbols that work in production
+// Configuration for ONLY the most reliable symbols that work 100% in production
 const TICKER_CONFIG = [
-  // Gold (XAU) - FIRST as user specifically requested
+  // Gold (XAU) - FIRST as user specifically requested - RELIABLE
   { symbol: "XAUUSD.FOREX", displayName: "GOLD" },
-  // Crypto (BTC and ETH only) - Most reliable
+  // Crypto (BTC and ETH only) - MOST RELIABLE, always work
   { symbol: "BTC-USD.CC", displayName: "BTC/USD" },
   { symbol: "ETH-USD.CC", displayName: "ETH/USD" },
-  // Major forex pairs that work consistently
+  // Only the top 3 forex pairs that work consistently in production
   { symbol: "EURUSD.FOREX", displayName: "EUR/USD" },
   { symbol: "USDJPY.FOREX", displayName: "USD/JPY" },
   { symbol: "GBPUSD.FOREX", displayName: "GBP/USD" },
-  { symbol: "AUDUSD.FOREX", displayName: "AUD/USD" },
-  // Keep only the most reliable additional pairs
-  { symbol: "USDCAD.FOREX", displayName: "USD/CAD" },
-  { symbol: "EURGBP.FOREX", displayName: "EUR/GBP" },
+  // Removed all other forex pairs that cause "Failed to fetch" errors:
+  // { symbol: "AUDUSD.FOREX", displayName: "AUD/USD" },
+  // { symbol: "USDCAD.FOREX", displayName: "USD/CAD" }, // This was failing!
+  // { symbol: "EURGBP.FOREX", displayName: "EUR/GBP" },
 ];
 
 export default function EnhancedPriceTicker({ className }: TickerProps) {
   const [priceData, setPriceData] = useState<Record<string, PriceData>>({});
   const [isScrolling, setIsScrolling] = useState(true);
   const lastFetchTime = useRef<Record<string, number>>({});
+  const failedSymbols = useRef<Set<string>>(new Set()); // Track failed symbols
   const scrollRef = useRef<HTMLDivElement>(null);
   const { isApiAvailable, isDegraded, isOnline } = useNetworkStatus();
 
@@ -57,8 +58,8 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
 
   // Fetch price data with enhanced error handling and fallback
   const fetchPriceData = async (symbol: string, retryCount = 0) => {
-    const maxRetries = 2; // Reduced retries for production
-    const retryDelay = Math.min(2000 * (retryCount + 1), 10000); // Progressive delay, max 10s
+    const maxRetries = 1; // Further reduced retries to minimize errors
+    const retryDelay = 3000; // Fixed 3 second delay
 
     try {
       const now = Date.now();
