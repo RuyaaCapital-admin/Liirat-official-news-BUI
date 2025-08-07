@@ -425,6 +425,29 @@ export default function EnhancedMacroCalendar({
     }
   };
 
+  // Offline translation fallback for common economic terms
+  const getOfflineTranslation = (text: string): string => {
+    const offlineTranslations: Record<string, string> = {
+      "Exports": "الصادرات",
+      "Imports": "الواردات",
+      "GDP": "الناتج المحلي الإجمالي",
+      "Inflation": "التضخم",
+      "Unemployment": "البطالة",
+      "Interest Rate": "سعر الفائدة",
+      "Trade Balance": "الميزان التجاري",
+      "Consumer Price Index": "مؤشر أسعار المستهلك",
+      "Producer Price Index": "مؤشر أسعار المنتجين",
+      "Industrial Production": "الإنتاج الصناعي",
+      "Retail Sales": "مبيعات التجزئة",
+      "Employment": "التوظيف",
+      "Manufacturing": "التصنيع",
+      "Services": "الخدمات",
+      "Housing": "الإسكان",
+    };
+
+    return offlineTranslations[text] || text;
+  };
+
   // Handle translation request with proper error handling and API calls
   const translateContent = async (event: EconomicEvent) => {
     const eventKey = `${event.event}-${event.country}`;
@@ -432,6 +455,13 @@ export default function EnhancedMacroCalendar({
     // Skip if already translated or currently translating
     if (translatedContent[eventKey] || loadingTranslation[eventKey]) {
       return translatedContent[eventKey] || event.event;
+    }
+
+    // Try offline translation first
+    const offlineTranslation = getOfflineTranslation(event.event);
+    if (offlineTranslation !== event.event) {
+      setTranslatedContent((prev) => ({ ...prev, [eventKey]: offlineTranslation }));
+      return offlineTranslation;
     }
 
     setLoadingTranslation((prev) => ({ ...prev, [eventKey]: true }));
@@ -525,7 +555,7 @@ export default function EnhancedMacroCalendar({
             ...prev,
             [event.event]:
               language === "ar"
-                ? "⚠️ مفتاح OpenAI API غير صحيح أو غير مُعدّ. يرجى إعداد مفتاح صحيح في متغيرات البيئة."
+                ? "⚠️ مفتاح OpenAI API غير صحيح أو غير مُعدّ. يرجى إعداد مفتاح صحيح في ��تغيرات البيئة."
                 : "⚠️ OpenAI API key is invalid or not configured. Please set a valid API key in environment variables.",
           }));
           return; // Exit early to avoid throwing error
@@ -818,7 +848,7 @@ export default function EnhancedMacroCalendar({
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-muted-foreground">
-                {language === "ar" ? "إلى تاريخ" : "To Date"}
+                {language === "ar" ? "إلى ��اريخ" : "To Date"}
               </label>
               <Popover>
                 <PopoverTrigger asChild>
