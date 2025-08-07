@@ -336,13 +336,13 @@ export default function EnhancedMacroCalendar({
     if (language === "ar" && displayedEvents.length > 0) {
       // Debounce translation requests to avoid overwhelming the API
       const timer = setTimeout(() => {
-        displayedEvents.slice(0, 5).forEach((event, index) => {
+        displayedEvents.slice(0, 10).forEach((event, index) => {
           // Stagger requests to avoid rate limiting
           setTimeout(() => {
             translateContent(event);
-          }, index * 200);
+          }, index * 500);
         });
-      }, 500);
+      }, 1000);
 
       return () => clearTimeout(timer);
     }
@@ -557,7 +557,7 @@ export default function EnhancedMacroCalendar({
               {language === "ar" ? "فلاتر" : "Filters"}
               {(searchTerm || selectedCountries.length > 0 || selectedImportance.length < 3 || selectedCategory !== "all") && (
                 <Badge variant="secondary" className="ml-2 text-xs">
-                  {language === "ar" ? "نش��" : "Active"}
+                  {language === "ar" ? "نشط" : "Active"}
                 </Badge>
               )}
             </h4>
