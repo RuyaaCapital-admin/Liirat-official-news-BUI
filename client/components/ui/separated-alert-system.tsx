@@ -569,7 +569,7 @@ export default function SeparatedAlertSystem({
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="before">
-                              {language === "ar" ? "قب�� الحدث" : "Before Event"}
+                              {language === "ar" ? "قبل الحدث" : "Before Event"}
                             </SelectItem>
                             <SelectItem value="at">
                               {language === "ar"
@@ -587,7 +587,7 @@ export default function SeparatedAlertSystem({
                         <div>
                           <Label>
                             {language === "ar"
-                              ? "دقائق قبل ��لحدث"
+                              ? "��قائق قبل الحدث"
                               : "Minutes Before Event"}
                           </Label>
                           <Input
@@ -735,7 +735,7 @@ export default function SeparatedAlertSystem({
                     <Button className="flex items-center gap-2">
                       <Plus className="w-4 h-4" />
                       {language === "ar"
-                        ? "إضافة تنبيه سعر"
+                        ? "إضاف�� تنبيه سعر"
                         : "Add Price Alert"}
                     </Button>
                   </DialogTrigger>
