@@ -605,7 +605,7 @@ export default function EnhancedMacroCalendar({
                   {language === "ar" ? "الدولة" : "Country"}
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-medium">
-                  {language === "ar" ? "��لحدث" : "Event"}
+                  {language === "ar" ? "الحدث" : "Event"}
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-medium">
                   {language === "ar" ? "الأهمية" : "Impact"}
