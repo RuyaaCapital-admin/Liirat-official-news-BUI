@@ -184,6 +184,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     }
 
     setFilteredArticles(filtered);
+    setItemsToShow(10); // Reset pagination when filters change
   }, [articles, searchTerm]);
 
   // Request AI analysis for an article
@@ -215,7 +216,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
           ...prev,
           [article.id]:
             language === "ar"
-              ? "��حليل الذكاء الا��طناعي غير متاح حاليًا"
+              ? "��حليل الذكاء الاصطناعي غير متاح حاليًا"
               : "AI analysis currently unavailable",
         }));
       }
@@ -225,7 +226,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         ...prev,
         [article.id]:
           language === "ar"
-            ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
+            ? "تحليل الذ��اء الاصطناعي غير متاح حاليًا"
             : "AI analysis currently unavailable",
       }));
     } finally {
