@@ -38,7 +38,7 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
     // Check rate limit
     if (!apiOptimizer.checkRateLimit(clientId, "analysis")) {
       const errorMessage = language === "ar"
-        ? "تجاوز ��لحد المسموح من الطلبات. يرجى المحاولة لاحقاً."
+        ? "تجاوز الحد المسموح من الطلبات. يرجى المحاولة لاحقاً."
         : "Rate limit exceeded. Please try again later.";
       return res.status(429).json({
         error: errorMessage,
@@ -166,7 +166,8 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
 
 // Translation endpoint using OpenAI
 export const handleTranslation: RequestHandler = async (req, res) => {
-  const openaiApiKey = process.env.OPENAI_API_KEY;
+  // Try multiple environment variable names for flexibility
+  const openaiApiKey = process.env.OPENAI_API_KEY || process.env.OPENAI_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 
   try {
     const { text, targetLanguage = "ar" } = req.body;
