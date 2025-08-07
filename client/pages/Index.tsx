@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import EnhancedPriceTicker from "@/components/ui/enhanced-price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
-import EnhancedCalendarTable from "@/components/ui/enhanced-calendar-table";
+import EnhancedMacroCalendar from "@/components/ui/enhanced-macro-calendar";
 import RealtimeNewsTable from "@/components/ui/realtime-news-table";
 import DynamicAlertSystem from "@/components/ui/dynamic-alert-system";
 import { EconomicEventsResponse, EconomicEvent } from "@shared/api";
@@ -466,7 +466,7 @@ export default function Index() {
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "الأحداث الاقتصادية المهمة والإعلانات المالية"
+                      ? "الأحداث الا��تصادية المهمة والإعلانات المالية"
                       : "Important economic events and financial announcements"}
                   </CardDescription>
                 </CardHeader>
@@ -488,7 +488,7 @@ export default function Index() {
                             <AlertTriangle className="w-4 h-4 mr-2" />
                             <span>
                               {language === "ar"
-                                ? "خطأ في تحميل التقويم الاقتصادي:"
+                                ? "خطأ في تحميل التقويم الاق��صادي:"
                                 : "Error loading economic calendar:"}{" "}
                               {eventsError.replace("API Error:", "Error")}
                             </span>
