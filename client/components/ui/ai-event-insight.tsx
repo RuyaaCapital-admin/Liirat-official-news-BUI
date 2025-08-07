@@ -122,12 +122,8 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
     setError(null);
 
     try {
-      // 🔧 DEMO MODE - Remove this when API is configured
-      if (AI_API_CONFIG.demoMode) {
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        const demoInsight = generateDemoAnalysis(event, language);
-        setInsight(demoInsight);
+      if (!AI_API_CONFIG.apiAvailable) {
+        setError(language === "ar" ? "مفتاح OpenAI API غير متوفر" : "OpenAI API key not configured");
         setIsLoading(false);
         return;
       }
