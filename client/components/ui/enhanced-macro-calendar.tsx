@@ -1042,7 +1042,7 @@ export default function EnhancedMacroCalendar({
       {filteredEvents.length > 0 && (
         <div className="text-sm text-muted-foreground text-center">
           {language === "ar"
-            ? `عرض ${displayedEvents.length} من ${filteredEvents.length} حد�� اقتصادي (${events.length} المجموع)`
+            ? `عرض ${displayedEvents.length} من ${filteredEvents.length} حدث اقتصادي (${events.length} المجموع)`
             : `Showing ${displayedEvents.length} of ${filteredEvents.length} events (${events.length} total)`}
         </div>
       )}
