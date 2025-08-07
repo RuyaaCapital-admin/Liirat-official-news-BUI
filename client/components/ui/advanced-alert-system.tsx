@@ -777,8 +777,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                       !alert.isActive && "opacity-50",
                     )}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+                      <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
                         <div>
                           <div className="font-medium text-sm">
                             {alert.pair}
