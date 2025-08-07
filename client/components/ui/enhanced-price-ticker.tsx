@@ -248,9 +248,9 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
     return () => clearInterval(interval);
   }, []); // Remove dependency on network status
 
-  // Get valid price entries for display
+  // Get price entries for display - show all symbols even if price is 0 initially
   const validPrices = Object.values(priceData).filter(
-    (data) => data.price > 0 && data.status === "connected",
+    (data) => data.status === "connected" || data.status === "connecting",
   );
 
   // Handle scroll pause on hover
