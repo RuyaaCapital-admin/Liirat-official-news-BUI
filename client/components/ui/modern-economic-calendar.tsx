@@ -54,7 +54,8 @@ export function ModernEconomicCalendar({
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedWeek, setSelectedWeek] = useState("this-week");
   const [selectedDay, setSelectedDay] = useState("all");
-  const [selectedCurrency, setSelectedCurrency] = useState("all");
+  const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>(["all"]);
+  const [selectedCountries, setSelectedCountries] = useState<string[]>(["all"]);
   const [selectedImportance, setSelectedImportance] = useState<string[]>(["3"]);
   const [events, setEvents] = useState<EconomicEvent[]>([]);
   const [isLoadingAI, setIsLoadingAI] = useState<string | null>(null);
@@ -215,6 +216,9 @@ export function ModernEconomicCalendar({
     { value: "JPY", label: "الين الياباني" },
     { value: "CAD", label: "الدولار الكندي" },
   ];
+  const countryFlagMap: Record<string, string> = {
+    US: "🇺🇸", DE: "🇩🇪", GB: "🇬🇧", JP: "🇯🇵", CA: "🇨🇦", FR: "🇫🇷", CN: "🇨🇳", RU: "🇷🇺", AU: "🇦🇺", BR: "🇧🇷", IN: "🇮🇳", IT: "🇮🇹", ES: "🇪🇸", CH: "🇨🇭", TR: "🇹🇷", KR: "🇰🇷", SA: "🇸🇦", AE: "🇦🇪"
+  };
 
   const timezones = [
     "Dubai (GST)",
@@ -296,24 +300,17 @@ export function ModernEconomicCalendar({
   };
 
   const filteredEvents = events.filter((event) => {
-    if (selectedCategory !== "all" && event.category !== selectedCategory)
-      return false;
-    if (selectedCurrency !== "all" && event.currency !== selectedCurrency)
-      return false;
-    // Show all events if importance is missing or not 1/2/3
+    if (selectedCategory !== "all" && event.category !== selectedCategory) return false;
+    if (!selectedCurrencies.includes("all") && !selectedCurrencies.includes(event.currency)) return false;
+    if (!selectedCountries.includes("all") && !selectedCountries.includes(event.country)) return false;
     if (!event.importance || !['1','2','3'].includes(event.importance.toString())) return true;
     if (!selectedImportance.includes(event.importance.toString())) return false;
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      const matchesArabic =
-        event.event.includes(searchQuery) ||
-        event.country.includes(searchQuery) ||
-        event.currency.includes(searchQuery);
-      const matchesEnglish =
-        event.event.toLowerCase().includes(query) ||
-        event.country.toLowerCase().includes(query) ||
-        event.currency.toLowerCase().includes(query);
-
+      // Normalize Arabic text to avoid encoding issues
+      const normalize = (str: string) => str ? str.normalize('NFC') : "";
+      const matchesArabic = normalize(event.event).includes(normalize(searchQuery)) || normalize(event.country).includes(normalize(searchQuery)) || normalize(event.currency).includes(normalize(searchQuery));
+      const matchesEnglish = event.event.toLowerCase().includes(query) || event.country.toLowerCase().includes(query) || event.currency.toLowerCase().includes(query);
       if (!matchesArabic && !matchesEnglish) return false;
     }
     return true;
@@ -485,24 +482,55 @@ export function ModernEconomicCalendar({
 
             {/* Currency Filter */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                العملة
-              </label>
-              <Select
-                value={selectedCurrency}
-                onValueChange={setSelectedCurrency}
-              >
-                <SelectTrigger className="bg-background/80 border-border/50 hover:border-primary/50 transition-colors">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {currencyOptions.map((currency) => (
-                    <SelectItem key={currency.value} value={currency.value}>
-                      {currency.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <label className="text-sm font-medium text-muted-foreground">العملة</label>
+              <div className="flex flex-wrap gap-2">
+                {currencyOptions.map((currency) => (
+                  <Button
+                    key={currency.value}
+                    variant={selectedCurrencies.includes(currency.value) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => {
+                      if (currency.value === "all") {
+                        setSelectedCurrencies(["all"]);
+                      } else {
+                        setSelectedCurrencies((prev) =>
+                          prev.includes(currency.value)
+                            ? prev.filter((c) => c !== currency.value)
+                            : [...prev.filter((c) => c !== "all"), currency.value]
+                        );
+                      }
+                    }}
+                  >
+                    {currency.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">الدولة</label>
+              <div className="flex flex-wrap gap-2">
+                {[{ value: "all", label: "جميع البلدان" }, ...Object.keys(countryFlagMap).map((code) => ({ value: code, label: code }))].map((country) => (
+                  <Button
+                    key={country.value}
+                    variant={selectedCountries.includes(country.value) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => {
+                      if (country.value === "all") {
+                        setSelectedCountries(["all"]);
+                      } else {
+                        setSelectedCountries((prev) =>
+                          prev.includes(country.value)
+                            ? prev.filter((c) => c !== country.value)
+                            : [...prev.filter((c) => c !== "all"), country.value]
+                        );
+                      }
+                    }}
+                  >
+                    <span className="text-lg mr-1">{countryFlagMap[country.value] || "🌐"}</span>
+                    {country.label}
+                  </Button>
+                ))}
+              </div>
             </div>
 
             {/* Importance Filter */}
@@ -618,7 +646,7 @@ export function ModernEconomicCalendar({
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">{event.countryFlag}</span>
+                      <span className="text-lg">{countryFlagMap[event.country] || event.countryFlag || "🌐"}</span>
                       <span className="text-sm">{event.country}</span>
                     </div>
 
