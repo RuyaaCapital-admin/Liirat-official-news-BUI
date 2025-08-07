@@ -80,25 +80,6 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
     }
   };
 
-  const generateMockPrice = (symbol: string): number => {
-    const mockPrices: Record<string, number> = {
-      EURUSD: 1.0850,
-      GBPUSD: 1.2680,
-      USDJPY: 149.50,
-      USDCHF: 0.8820,
-      AUDUSD: 0.6520,
-      USDCAD: 1.3580,
-      NZDUSD: 0.5950,
-      EURGBP: 0.8560,
-      EURJPY: 162.30,
-      GBPJPY: 189.70,
-      CHFJPY: 169.50,
-      AUDCAD: 0.8850,
-      BTCUSD: 42500,
-      ETHUSD: 2580,
-    };
-    return mockPrices[symbol] || 1.0000;
-  };
 
   const formatPrice = (price: number, symbol: string): string => {
     if (symbol.includes("JPY")) {
