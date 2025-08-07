@@ -71,7 +71,7 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
         }
       });
 
-      const results = await Promise.all(promises);
+      const results: (PriceData | null)[] = await Promise.all(promises);
       const validResults = results.filter(
         (result): result is PriceData => result !== null,
       );
@@ -214,7 +214,7 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
       </div>
 
       {/* CSS for Custom Animation Control */}
-      <style jsx>{`
+      <style>{`
         .animate-scroll {
           animation: scroll 60s linear infinite;
         }

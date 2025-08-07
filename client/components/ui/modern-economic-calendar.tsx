@@ -22,11 +22,13 @@ import {
   Minus,
   Globe,
   ChevronDown,
+  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface EconomicEvent {
   id: string;
+  date: string;
   time: string;
   country: string;
   countryFlag: string;
@@ -115,6 +117,7 @@ export function ModernEconomicCalendar({
   const sampleEvents: EconomicEvent[] = [
     {
       id: "1",
+      date: "2023-10-01",
       time: "14:30",
       country: "الولايات المتحدة",
       countryFlag: "🇺🇸",
@@ -129,6 +132,7 @@ export function ModernEconomicCalendar({
     },
     {
       id: "2",
+      date: "2023-10-02",
       time: "16:00",
       country: "ألمانيا",
       countryFlag: "🇩🇪",
@@ -143,6 +147,7 @@ export function ModernEconomicCalendar({
     },
     {
       id: "3",
+      date: "2023-10-03",
       time: "18:15",
       country: "المملكة المتحدة",
       countryFlag: "🇬🇧",
@@ -157,6 +162,7 @@ export function ModernEconomicCalendar({
     },
     {
       id: "4",
+      date: "2023-10-04",
       time: "20:00",
       country: "اليابان",
       countryFlag: "🇯🇵",
@@ -171,6 +177,7 @@ export function ModernEconomicCalendar({
     },
     {
       id: "5",
+      date: "2023-10-05",
       time: "22:30",
       country: "كندا",
       countryFlag: "🇨🇦",
@@ -265,41 +272,23 @@ export function ModernEconomicCalendar({
     }
   };
 
-  const handleAIAnalysis = async (eventId: string) => {
-    setIsLoadingAI(eventId);
-
-    try {
-      const event = events.find((e) => e.id === eventId);
-      if (!event) return;
-
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: `قم بتحليل هذا الحدث الاقتصادي: ${event.event} في ${event.country}. القيم: فعلي: ${event.actual || "غير متوفر"}, متوقع: ${event.forecast || "غير متوفر"}, سابق: ${event.previous || "غير متوفر"}`,
-          language: "ar",
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to get AI analysis");
-      }
-
-      const data = await response.json();
-
-      // You could store the analysis result in state or show it in a modal
-      alert(`تحليل الذكاء الاصطناعي:\n\n${data.response}`);
-    } catch (error) {
-      console.error("AI Analysis error:", error);
-      alert("عذراً، حدث خطأ في تحليل الذكاء الاصطناعي");
-    } finally {
-      setIsLoadingAI(null);
-    }
+  // Handler to set alert for an event
+  const handleSetAlert = (event) => {
+    // TODO: Implement alert logic (e.g., save to backend or local storage)
+    alert(`تم ضبط تنبيه للحدث: ${event.event}`);
   };
 
+  // Handler to get AI summary for an event
+  const handleAIAnalysis = async (event) => {
+    // TODO: Call OpenAI API and show summary (integrate with chat widget or modal)
+    alert(`تحليل الذكاء الاصطناعي للحدث: ${event.event}`);
+  };
+
+  // Show only events today or in the future by default
+  const today = new Date();
   const filteredEvents = events.filter((event) => {
+    const eventDate = new Date(event.date);
+    if (eventDate < today) return false;
     if (selectedCategory !== "all" && event.category !== selectedCategory) return false;
     if (!selectedCurrencies.includes("all") && !selectedCurrencies.includes(event.currency)) return false;
     if (!selectedCountries.includes("all") && !selectedCountries.includes(event.country)) return false;
@@ -690,15 +679,22 @@ export function ModernEconomicCalendar({
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => handleAIAnalysis(event.id)}
-                        disabled={isLoadingAI === event.id}
+                        onClick={() => handleSetAlert(event)}
                         className="h-8 w-8 p-0 hover:bg-primary/10"
+                        title="تنبيه عند صدور الخبر"
                       >
-                        {isLoadingAI === event.id ? (
-                          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                          <Bot className="w-4 h-4 text-primary" />
-                        )}
+                        <Bell className="w-4 h-4 text-primary" />
+                      </Button>
+                    </div>
+                    <div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleAIAnalysis(event)}
+                        className="h-8 w-8 p-0 hover:bg-primary/10"
+                        title="تحليل الذكاء الاصطناعي"
+                      >
+                        <Bot className="w-4 h-4 text-primary" />
                       </Button>
                     </div>
                   </div>
@@ -707,10 +703,8 @@ export function ModernEconomicCalendar({
                   <div className="md:hidden space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg">{event.countryFlag}</span>
-                        <span className="font-medium text-sm">
-                          {event.country}
-                        </span>
+                        <span className="text-lg">{countryFlagMap[event.country] || event.countryFlag || "🌐"}</span>
+                        <span className="font-medium text-sm">{event.country}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Clock className="w-4 h-4 text-muted-foreground" />
