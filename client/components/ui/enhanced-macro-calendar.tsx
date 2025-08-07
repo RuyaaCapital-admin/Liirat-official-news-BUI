@@ -62,7 +62,7 @@ const EVENT_CATEGORIES = [
   {
     value: "central_bank",
     labelEn: "Central Banks",
-    labelAr: "البنوك المركزية",
+    labelAr: "البنوك المركزي��",
   },
   { value: "gdp", labelEn: "GDP", labelAr: "الناتج المحلي" },
   { value: "retail", labelEn: "Retail Sales", labelAr: "مبيعات التجزئة" },
@@ -437,16 +437,27 @@ export default function EnhancedMacroCalendar({
     setLoadingTranslation((prev) => ({ ...prev, [eventKey]: true }));
 
     try {
-      const response = await fetch("/api/translate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: event.event,
-          targetLanguage: "ar",
-        }),
-      });
+      let response;
+      try {
+        response = await fetch("/api/translate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({
+            text: event.event,
+            targetLanguage: "ar",
+          }),
+          // Add timeout and error handling
+          signal: AbortSignal.timeout(5000),
+        });
+      } catch (fetchError) {
+        console.warn(`[TRANSLATION] Fetch failed for "${event.event}":`, fetchError);
+        // Use original text as fallback
+        setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
+        return event.event;
+      }
 
       if (response.ok) {
         const data = await response.json();
@@ -537,7 +548,7 @@ export default function EnhancedMacroCalendar({
         ...prev,
         [event.event]:
           language === "ar"
-            ? "❌ تحليل الذكاء الاصطناعي غير متاح حاليًا. يرجى التحقق من إعدادات API."
+            ? "❌ تحليل الذكاء الاصطناعي غير متاح حاليًا. يرج�� التحقق من إعدادات API."
             : "❌ AI analysis currently unavailable. Please check API configuration.",
       }));
     } finally {
