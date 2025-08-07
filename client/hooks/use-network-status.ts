@@ -32,14 +32,18 @@ export function useNetworkStatus() {
       clearTimeout(timeoutId);
 
       if (response.ok) {
-        const data = await response.json();
-
-        // Check if critical services are working
-        const hasErrors = Object.values(data.checks || {}).some(
-          (check: any) => check.status === "error",
-        );
-
-        return hasErrors ? "degraded" : "online";
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          // Check if critical services are working
+          const hasErrors = Object.values(data.checks || {}).some(
+            (check: any) => check.status === "error",
+          );
+          return hasErrors ? "degraded" : "online";
+        } else {
+          // Non-JSON response but OK status means basic connectivity works
+          return "online";
+        }
       } else {
         return "degraded";
       }
