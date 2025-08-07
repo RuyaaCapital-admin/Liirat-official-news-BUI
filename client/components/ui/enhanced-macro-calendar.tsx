@@ -174,7 +174,7 @@ export default function EnhancedMacroCalendar({
         case 1:
           return "منخفض";
         default:
-          return "غير م��دد";
+          return "غير محدد";
       }
     } else {
       switch (importance) {

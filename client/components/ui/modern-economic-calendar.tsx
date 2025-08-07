@@ -467,7 +467,7 @@ export function ModernEconomicCalendar({
                     setTimeout(() => setShowSearchSuggestions(false), 200)
                   }
                   className="pr-10 bg-background/80 border-border/50 hover:border-primary/50 transition-colors"
-                  placeholder="ابحث في الأحداث ��و العملات... (اكتب حرف أو اثنين)"
+                  placeholder="ابحث في الأحداث أو العملات... (اكتب حرف أو اثنين)"
                   dir="rtl"
                 />
 
@@ -944,7 +944,7 @@ export function ModernEconomicCalendar({
             {filteredEvents.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>لا توجد أحداث اقتصادية تطابق المرشحا�� المحددة</p>
+                <p>لا توجد أحداث اقتصادية تطابق المرشحات المحددة</p>
               </div>
             )}
           </div>
