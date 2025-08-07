@@ -15,21 +15,15 @@ interface EconomicEvent {
 export const handleEODHDCalendar: RequestHandler = async (req, res) => {
   const apiKey = process.env.EODHD_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ 
-      error: "EODHD API key not configured", 
-      events: [] 
+    return res.status(500).json({
+      error: "EODHD API key not configured",
+      events: [],
     });
   }
 
   try {
     // Extract query parameters
-    const { 
-      country, 
-      importance, 
-      from, 
-      to, 
-      limit = "50" 
-    } = req.query;
+    const { country, importance, from, to, limit = "50" } = req.query;
 
     // Build EODHD API URL
     const apiUrl = new URL("https://eodhd.com/api/economic-events");
@@ -60,7 +54,7 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
     const response = await fetch(apiUrl.toString(), {
       method: "GET",
       headers: {
-        "Accept": "application/json",
+        Accept: "application/json",
         "User-Agent": "Liirat-News/1.0",
       },
       signal: controller.signal,
@@ -69,7 +63,9 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.error(`EODHD API error: ${response.status} - ${response.statusText}`);
+      console.error(
+        `EODHD API error: ${response.status} - ${response.statusText}`,
+      );
       return res.status(response.status).json({
         error: `EODHD API Error: ${response.status} - ${response.statusText}`,
         events: [],
@@ -114,7 +110,6 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
         limit,
       },
     });
-
   } catch (error) {
     console.error("Error fetching EODHD economic events:", error);
 

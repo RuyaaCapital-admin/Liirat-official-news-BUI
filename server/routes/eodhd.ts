@@ -73,7 +73,7 @@ export const getEconomicEvents: RequestHandler = async (req, res) => {
       // Return error instead of mock data
       const result: EconomicEventsResponse = {
         events: [],
-        error: `EODHD API Error: ${response.status} - ${response.statusText}`
+        error: `EODHD API Error: ${response.status} - ${response.statusText}`,
       };
       return res.json(result);
     }
@@ -84,7 +84,7 @@ export const getEconomicEvents: RequestHandler = async (req, res) => {
       console.error(`EODHD API returned non-JSON content: ${contentType}`);
       const result: EconomicEventsResponse = {
         events: [],
-        error: "Invalid response format from EODHD API"
+        error: "Invalid response format from EODHD API",
       };
       return res.json(result);
     }
@@ -113,7 +113,10 @@ export const getEconomicEvents: RequestHandler = async (req, res) => {
     // Return empty array with error message instead of mock data
     const result: EconomicEventsResponse = {
       events: [],
-      error: error instanceof Error ? error.message : "Failed to fetch economic events"
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch economic events",
     };
     res.json(result);
   }

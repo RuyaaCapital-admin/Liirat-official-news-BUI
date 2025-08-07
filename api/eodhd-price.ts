@@ -1,13 +1,13 @@
 /**
  * EODHD Real-time Price API Endpoint
- * 
+ *
  * Fetches real-time and historical price data from EODHD API
  * Supports stocks, forex, crypto, commodities, and indices
- * 
- * Documentation: 
+ *
+ * Documentation:
  * - Real-time: https://eodhd.com/financial-apis/live-realtime-stocks-api/
  * - Crypto: https://eodhd.com/financial-apis/cryptocurrency-api/
- * 
+ *
  * Query Parameters:
  * - symbol: Required symbol (e.g., AAPL.US, BTC-USD, EUR-USD)
  * - symbols: Multiple symbols comma-separated (alternative to symbol)
@@ -46,9 +46,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const apiKey = process.env.EODHD_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: "EODHD API key not configured",
-      prices: []
+      prices: [],
     });
   }
 
@@ -65,17 +65,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Determine if it's crypto, forex, or regular stock
     const symbolStr = (symbol || symbols) as string;
     const isMultiple = !!symbols;
-    const isCrypto = symbolStr.includes("-USD") || symbolStr.includes("BTC") || symbolStr.includes("ETH");
-    const isForex = symbolStr.includes("FOREX:") || (symbolStr.includes("-") && !isCrypto);
+    const isCrypto =
+      symbolStr.includes("-USD") ||
+      symbolStr.includes("BTC") ||
+      symbolStr.includes("ETH");
+    const isForex =
+      symbolStr.includes("FOREX:") || (symbolStr.includes("-") && !isCrypto);
 
     let apiUrl: URL;
-    
+
     if (isCrypto) {
       // Crypto API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/crypto");
       apiUrl.searchParams.append("s", symbolStr);
     } else if (isForex) {
-      // Forex API endpoint  
+      // Forex API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/forex");
       apiUrl.searchParams.append("s", symbolStr);
     } else {
@@ -104,7 +108,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const response = await fetch(apiUrl.toString(), {
       method: "GET",
       headers: {
-        "Accept": "application/json",
+        Accept: "application/json",
         "User-Agent": "Liirat-News/1.0",
       },
       signal: controller.signal,
@@ -113,7 +117,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.error(`EODHD Price API error: ${response.status} - ${response.statusText}`);
+      console.error(
+        `EODHD Price API error: ${response.status} - ${response.statusText}`,
+      );
       return res.status(response.status).json({
         error: `EODHD Price API Error: ${response.status} - ${response.statusText}`,
         prices: [],
@@ -123,7 +129,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Check if response is JSON
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
-      console.error(`EODHD Price API returned non-JSON content: ${contentType}`);
+      console.error(
+        `EODHD Price API returned non-JSON content: ${contentType}`,
+      );
       return res.status(500).json({
         error: "Invalid response format from EODHD Price API",
         prices: [],
@@ -149,7 +157,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       symbol: symbolStr,
       timestamp: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error("Error fetching EODHD price data:", error);
 
@@ -185,6 +192,7 @@ function transformPriceData(item: any): PriceData {
     high: parseFloat(item.high || 0) || undefined,
     low: parseFloat(item.low || 0) || undefined,
     open: parseFloat(item.open || 0) || undefined,
-    previous_close: parseFloat(item.previous_close || item.previousClose || 0) || undefined,
+    previous_close:
+      parseFloat(item.previous_close || item.previousClose || 0) || undefined,
   };
 }

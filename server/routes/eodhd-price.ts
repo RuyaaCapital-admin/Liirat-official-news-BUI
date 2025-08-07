@@ -19,9 +19,9 @@ interface PriceData {
 export const handleEODHDPrice: RequestHandler = async (req, res) => {
   const apiKey = process.env.EODHD_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: "EODHD API key not configured",
-      prices: []
+      prices: [],
     });
   }
 
@@ -40,14 +40,24 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     const isMultiple = !!symbols;
 
     // Improved symbol classification
-    const isCrypto = symbolStr.includes("-USD") || symbolStr.includes("BTC") || symbolStr.includes("ETH") ||
-                    symbolStr.match(/^(BTC|ETH|LTC|ADA|DOT|DOGE|XRP|LINK|UNI)/);
+    const isCrypto =
+      symbolStr.includes("-USD") ||
+      symbolStr.includes("BTC") ||
+      symbolStr.includes("ETH") ||
+      symbolStr.match(/^(BTC|ETH|LTC|ADA|DOT|DOGE|XRP|LINK|UNI)/);
 
-    const isForex = symbolStr.includes("FOREX:") || symbolStr.includes(".FOREX") ||
-                   symbolStr.match(/^(EUR|GBP|USD|JPY|CAD|AUD|CHF|NZD|SEK|NOK)(USD|EUR|GBP|JPY|CAD|AUD|CHF|NZD|SEK|NOK)$/);
+    const isForex =
+      symbolStr.includes("FOREX:") ||
+      symbolStr.includes(".FOREX") ||
+      symbolStr.match(
+        /^(EUR|GBP|USD|JPY|CAD|AUD|CHF|NZD|SEK|NOK)(USD|EUR|GBP|JPY|CAD|AUD|CHF|NZD|SEK|NOK)$/,
+      );
 
-    const isComm = symbolStr.includes(".COMM") || symbolStr.match(/^(XAU|XAG|WTI|BRENT|CL)/);
-    const isIndex = symbolStr.includes(".INDX") || symbolStr.match(/^(SPX|DJI|IXIC|NDX|FTSE|DAX|CAC|NIKKEI)/);
+    const isComm =
+      symbolStr.includes(".COMM") || symbolStr.match(/^(XAU|XAG|WTI|BRENT|CL)/);
+    const isIndex =
+      symbolStr.includes(".INDX") ||
+      symbolStr.match(/^(SPX|DJI|IXIC|NDX|FTSE|DAX|CAC|NIKKEI)/);
 
     let apiUrl: URL;
     let finalSymbol = symbolStr;
@@ -89,7 +99,9 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       apiUrl.searchParams.append("filter", filter as string);
     }
 
-    console.log(`Fetching EODHD price data for ${symbolStr} -> ${finalSymbol}: ${apiUrl.toString()}`);
+    console.log(
+      `Fetching EODHD price data for ${symbolStr} -> ${finalSymbol}: ${apiUrl.toString()}`,
+    );
 
     // Create abort controller for timeout
     const controller = new AbortController();
@@ -98,7 +110,7 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     const response = await fetch(apiUrl.toString(), {
       method: "GET",
       headers: {
-        "Accept": "application/json",
+        Accept: "application/json",
         "User-Agent": "Liirat-News/1.0",
       },
       signal: controller.signal,
@@ -107,7 +119,9 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.error(`EODHD Price API error: ${response.status} - ${response.statusText}`);
+      console.error(
+        `EODHD Price API error: ${response.status} - ${response.statusText}`,
+      );
       return res.status(response.status).json({
         error: `EODHD Price API Error: ${response.status} - ${response.statusText}`,
         prices: [],
@@ -117,7 +131,9 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     // Check if response is JSON
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
-      console.error(`EODHD Price API returned non-JSON content: ${contentType}`);
+      console.error(
+        `EODHD Price API returned non-JSON content: ${contentType}`,
+      );
       return res.status(500).json({
         error: "Invalid response format from EODHD Price API",
         prices: [],
@@ -143,7 +159,6 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       symbol: symbolStr,
       timestamp: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error("Error fetching EODHD price data:", error);
 
@@ -179,6 +194,7 @@ function transformPriceData(item: any): PriceData {
     high: parseFloat(item.high || 0) || undefined,
     low: parseFloat(item.low || 0) || undefined,
     open: parseFloat(item.open || 0) || undefined,
-    previous_close: parseFloat(item.previous_close || item.previousClose || 0) || undefined,
+    previous_close:
+      parseFloat(item.previous_close || item.previousClose || 0) || undefined,
   };
 }

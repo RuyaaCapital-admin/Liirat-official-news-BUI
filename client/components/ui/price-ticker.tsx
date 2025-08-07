@@ -66,9 +66,9 @@ export function PriceTicker({
         "GBP/USD": "GBPUSD.FOREX",
         "USD/JPY": "USDJPY.FOREX",
         "XAU/USD": "XAUUSD.FOREX",
-        "WTI": "CL.COMM",
-        "NASDAQ": "IXIC.INDX",
-        "DOW": "DJI.INDX",
+        WTI: "CL.COMM",
+        NASDAQ: "IXIC.INDX",
+        DOW: "DJI.INDX",
         "S&P 500": "GSPC.INDX",
       };
 
@@ -117,7 +117,10 @@ export function PriceTicker({
   };
 
   // Generate mock data for a single asset
-  const generateMockDataForAsset = (config: { symbol: string; name: string }): AssetData => {
+  const generateMockDataForAsset = (config: {
+    symbol: string;
+    name: string;
+  }): AssetData => {
     const basePrice = getBasePriceForAsset(config.symbol);
     const volatility = getVolatilityForAsset(config.symbol);
     const changePercent = (Math.random() - 0.5) * volatility * 2;

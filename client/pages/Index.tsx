@@ -106,16 +106,13 @@ export default function Index() {
       }
 
       // Fetch from EODHD economic events endpoint
-      const response = await fetch(
-        `/api/economic-events?limit=20`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
+      const response = await fetch(`/api/economic-events?limit=20`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-      );
+      });
 
       if (response.ok) {
         const contentType = response.headers.get("content-type");

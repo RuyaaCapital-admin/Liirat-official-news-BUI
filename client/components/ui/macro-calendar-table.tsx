@@ -214,15 +214,15 @@ const getCountryFlag = (country: string) => {
     NZ: "🇳🇿",
     // Additional mappings for common variations
     "United States": "🇺🇸",
-    "Eurozone": "🇪🇺",
+    Eurozone: "🇪🇺",
     "United Kingdom": "🇬🇧",
-    "Japan": "🇯🇵",
-    "Canada": "🇨🇦",
-    "Australia": "🇦🇺",
-    "Switzerland": "🇨🇭",
-    "Germany": "🇩🇪",
-    "France": "🇫🇷",
-    "China": "🇨🇳",
+    Japan: "🇯🇵",
+    Canada: "🇨🇦",
+    Australia: "🇦🇺",
+    Switzerland: "🇨🇭",
+    Germany: "🇩🇪",
+    France: "🇫🇷",
+    China: "🇨🇳",
   };
 
   // Try direct match first, then uppercase
@@ -746,7 +746,9 @@ export function MacroCalendarTable({
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">{getCountryFlag(event.country)}</span>
+                    <span className="text-lg">
+                      {getCountryFlag(event.country)}
+                    </span>
                     <span className="font-medium text-sm">{event.country}</span>
                   </div>
                   <Badge

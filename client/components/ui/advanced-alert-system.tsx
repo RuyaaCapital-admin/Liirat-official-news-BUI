@@ -181,22 +181,32 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     if (selectedPair) {
       const fetchRealTimePrice = async () => {
         try {
-          const response = await fetch(`/api/eodhd-price?symbol=${selectedPair.symbol}`);
+          const response = await fetch(
+            `/api/eodhd-price?symbol=${selectedPair.symbol}`,
+          );
           if (response.ok) {
             const data = await response.json();
             const priceData = data.prices?.[0];
             if (priceData) {
               // Update the selected pair with real-time price
-              setSelectedPair(prev => prev ? {
-                ...prev,
-                currentPrice: priceData.price || prev.currentPrice,
-                change: priceData.change || prev.change,
-                changePercent: priceData.change_percent || prev.changePercent,
-              } : null);
+              setSelectedPair((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      currentPrice: priceData.price || prev.currentPrice,
+                      change: priceData.change || prev.change,
+                      changePercent:
+                        priceData.change_percent || prev.changePercent,
+                    }
+                  : null,
+              );
             }
           }
         } catch (error) {
-          console.warn(`Failed to fetch real-time price for ${selectedPair.symbol}:`, error);
+          console.warn(
+            `Failed to fetch real-time price for ${selectedPair.symbol}:`,
+            error,
+          );
         }
       };
 
@@ -270,7 +280,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                   ...pair,
                   currentPrice: priceData?.price || pair.currentPrice,
                   change: priceData?.change || pair.change,
-                  changePercent: priceData?.change_percent || pair.changePercent,
+                  changePercent:
+                    priceData?.change_percent || pair.changePercent,
                 };
               } else {
                 // Handle rate limiting with exponential backoff
