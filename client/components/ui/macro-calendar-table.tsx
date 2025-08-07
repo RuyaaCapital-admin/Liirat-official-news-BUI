@@ -841,12 +841,27 @@ export function MacroCalendarTable({
 
         {/* Results Count */}
         <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>
-            {t(
-              `Showing ${filteredEvents.length} of ${events.length} events`,
-              `عرض ${filteredEvents.length} من ${events.length} حدث`,
+          <div className="flex items-center gap-4">
+            <span>
+              {t(
+                `Showing ${displayedEvents.length} of ${filteredEvents.length} events`,
+                `عرض ${displayedEvents.length} من ${filteredEvents.length} حدث`,
+              )}
+            </span>
+            {filteredEvents.length > 10 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-xs h-auto p-1 hover:bg-muted"
+              >
+                {isExpanded
+                  ? t("Show Less", "عرض أقل")
+                  : t(`Show All ${filteredEvents.length}`, `عرض جميع ${filteredEvents.length}`)
+                }
+              </Button>
             )}
-          </span>
+          </div>
           {lastUpdated && (
             <span className="text-xs">
               {t("Last updated", "آخر تحديث")}: {lastUpdated.toLocaleTimeString()}
