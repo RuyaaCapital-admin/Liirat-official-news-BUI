@@ -77,7 +77,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       symbolStr.includes("-USD.CC") ||
       symbolStr.includes("BTC") ||
       symbolStr.includes("ETH");
-    const isMetal = symbolStr === "XAUUSD" || symbolStr === "XAGUSD";
+    const isMetal = symbolStr.includes("GC.COMEX") || symbolStr.includes("SI.COMEX");
     const isIndex = symbolStr === "GSPC" || symbolStr.includes(".INDX");
 
     // Use the official real-time API endpoint format
