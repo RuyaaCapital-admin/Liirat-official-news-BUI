@@ -552,7 +552,7 @@ export default function SeparatedAlertSystem({
                   <Bell className="w-12 h-12 mx-auto mb-4 opacity-50" />
                   <p>
                     {language === "ar"
-                      ? "لا توجد تنبيهات أخبار أو أحداث"
+                      ? "لا توجد تنبيهات أخبار أو ��حداث"
                       : "No news or event alerts"}
                   </p>
                 </div>
@@ -682,33 +682,73 @@ export default function SeparatedAlertSystem({
                     </DialogHeader>
                     <div className="space-y-4" dir={dir}>
                       <div>
-                        <Label>{language === "ar" ? "الرمز" : "Symbol"}</Label>
-                        <Select
-                          value={priceForm.symbol}
-                          onValueChange={(value) =>
-                            setPriceForm((prev) => ({ ...prev, symbol: value }))
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue
-                              placeholder={
-                                language === "ar"
-                                  ? "اختر الرمز"
-                                  : "Select symbol"
-                              }
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {POPULAR_SYMBOLS.map((symbol) => (
-                              <SelectItem
-                                key={symbol.symbol}
-                                value={symbol.symbol}
-                              >
-                                {symbol.displayName}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Label>{language === "ar" ? "البحث عن الرمز" : "Search Symbol"}</Label>
+                        <div className="relative">
+                          <Input
+                            value={symbolSearch}
+                            onChange={(e) => {
+                              setSymbolSearch(e.target.value);
+                              setShowSymbolSuggestions(e.target.value.length >= 2);
+                            }}
+                            onFocus={() => setShowSymbolSuggestions(symbolSearch.length >= 2)}
+                            placeholder={
+                              language === "ar"
+                                ? "ابحث عن الرمز (مثل: EUR, BTC, GOLD)"
+                                : "Search symbol (e.g: EUR, BTC, GOLD)"
+                            }
+                            className="pr-10"
+                          />
+
+                          {/* Real-time price display */}
+                          {selectedSymbol && (
+                            <div className="mt-2 p-2 bg-muted/50 rounded border">
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">{selectedSymbol.displayName}</span>
+                                <div className="text-right">
+                                  {loadingPrice ? (
+                                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                  ) : currentPrice ? (
+                                    <span className="text-lg font-bold text-primary">
+                                      {currentPrice.toFixed(selectedSymbol.type === 'crypto' ? 2 : 5)}
+                                    </span>
+                                  ) : (
+                                    <span className="text-sm text-muted-foreground">
+                                      {language === "ar" ? "السعر غير متاح" : "Price unavailable"}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {language === "ar" ? "السعر الحالي" : "Current Price"}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Symbol suggestions dropdown */}
+                          {showSymbolSuggestions && filteredSymbols.length > 0 && (
+                            <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border border-border/50 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                              <div className="p-2">
+                                <div className="text-xs text-muted-foreground mb-2 px-2">
+                                  {language === "ar" ? "اختر الرمز:" : "Select Symbol:"}
+                                </div>
+                                {filteredSymbols.map((symbol) => (
+                                  <div
+                                    key={symbol.symbol}
+                                    onClick={() => handleSymbolSelect(symbol)}
+                                    className="flex items-center gap-3 p-2 hover:bg-muted/50 cursor-pointer rounded text-sm"
+                                  >
+                                    <div className="flex-1">
+                                      <div className="font-medium">{symbol.displayName}</div>
+                                      <div className="text-xs text-muted-foreground">
+                                        {symbol.symbol} • {symbol.type.toUpperCase()}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
 
                       <div>
@@ -848,7 +888,7 @@ export default function SeparatedAlertSystem({
                             >
                               {alert.isActive
                                 ? language === "ar"
-                                  ? "نشط"
+                                  ? "نش��"
                                   : "Active"
                                 : language === "ar"
                                   ? "معطل"
