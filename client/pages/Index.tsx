@@ -357,7 +357,7 @@ export default function Index() {
                               {language === "ar"
                                 ? "خطأ في تحميل التقويم الاقتصادي:"
                                 : "Error loading economic calendar:"}{" "}
-                              {eventsError.replace('API Error:', 'Error')}
+                              {eventsError.replace("API Error:", "Error")}
                             </span>
                           </div>
                           <div className="text-xs text-muted-foreground mt-1">
