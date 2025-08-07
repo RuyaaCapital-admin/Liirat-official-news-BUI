@@ -187,6 +187,45 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     setItemsToShow(10); // Reset pagination when filters change
   }, [articles, searchTerm]);
 
+  // Handle translation request
+  const translateTitle = async (article: NewsArticle) => {
+    if (translatedTitles[article.id] || loadingTranslation[article.id]) {
+      return translatedTitles[article.id];
+    }
+
+    if (language !== "ar") {
+      return article.title; // Return original if not Arabic mode
+    }
+
+    setLoadingTranslation((prev) => ({ ...prev, [article.id]: true }));
+
+    try {
+      const response = await fetch("/api/translate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: article.title,
+          targetLanguage: "ar",
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const translated = data.translatedText || article.title;
+        setTranslatedTitles((prev) => ({ ...prev, [article.id]: translated }));
+        return translated;
+      }
+    } catch (error) {
+      console.error("Translation error:", error);
+    } finally {
+      setLoadingTranslation((prev) => ({ ...prev, [article.id]: false }));
+    }
+
+    return article.title; // Fallback to original
+  };
+
   // Request AI analysis for an article
   const requestAIAnalysis = async (article: NewsArticle) => {
     if (aiAnalysis[article.id] || loadingAnalysis[article.id]) {
