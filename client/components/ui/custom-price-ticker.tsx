@@ -66,15 +66,8 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
           return null;
         } catch (error) {
           console.warn(`Failed to fetch price for ${symbol}:`, error);
-          // Return mock data on error
-          return {
-            symbol,
-            displayName,
-            price: generateMockPrice(symbol),
-            change: (Math.random() - 0.5) * 0.01,
-            changePercent: (Math.random() - 0.5) * 2,
-            currency: type === "crypto" ? "USD" : undefined,
-          };
+          // Return null on error - NO MOCK DATA
+          return null;
         }
       });
 
