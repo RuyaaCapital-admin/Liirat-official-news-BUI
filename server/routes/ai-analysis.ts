@@ -164,7 +164,14 @@ export const handleTranslation: RequestHandler = async (req, res) => {
   try {
     const { text, targetLanguage = "ar" } = req.body;
 
+    console.log(`[TRANSLATION] Request received:`, {
+      text: text?.substring(0, 50) + '...',
+      targetLanguage,
+      hasApiKey: !!openaiApiKey
+    });
+
     if (!text) {
+      console.warn('[TRANSLATION] Missing text in request body');
       return res.status(400).json({
         error: "Text is required for translation",
         translatedText: "",
@@ -172,6 +179,7 @@ export const handleTranslation: RequestHandler = async (req, res) => {
     }
 
     if (!openaiApiKey) {
+      console.error('[TRANSLATION] OpenAI API key not configured');
       return res.status(500).json({
         error: "OpenAI API key not configured",
         translatedText: text, // Return original text as fallback
