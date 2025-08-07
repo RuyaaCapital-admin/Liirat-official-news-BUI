@@ -69,5 +69,8 @@ export function createServer() {
   // Real-time news route
   app.get("/realtime-news", handleRealtimeNews);
 
+  // Status endpoint
+  app.get("/status", handleStatus);
+
   return app;
 }
