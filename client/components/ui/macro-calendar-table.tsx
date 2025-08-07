@@ -304,7 +304,7 @@ const getCountryFlag = (country: string) => {
 const getCountryName = (country: string, language: string) => {
   const countryNames: Record<string, { en: string; ar: string }> = {
     US: { en: "United States", ar: "الولايات المتحدة" },
-    EUR: { en: "Eurozone", ar: "منط��ة اليورو" },
+    EUR: { en: "Eurozone", ar: "منطقة اليورو" },
     GB: { en: "United Kingdom", ar: "المملكة المتحدة" },
     JP: { en: "Japan", ar: "اليابان" },
     CA: { en: "Canada", ar: "كندا" },
@@ -363,6 +363,7 @@ export function MacroCalendarTable({
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const t = (enText: string, arText: string) =>
     language === "ar" ? arText : enText;
@@ -938,7 +939,7 @@ export function MacroCalendarTable({
                     dir === "rtl" ? "text-right" : "text-left",
                   )}
                 >
-                  {t("Impact", "التأثير")}
+                  {t("Impact", "الت��ثير")}
                 </th>
                 <th
                   className={cn(
