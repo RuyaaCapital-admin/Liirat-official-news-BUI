@@ -43,7 +43,12 @@ interface MacroCalendarTableProps {
   className?: string;
   language?: "ar" | "en";
   dir?: "rtl" | "ltr";
-  onRefresh?: () => void;
+  onRefresh?: (filters?: {
+    country?: string;
+    importance?: string[];
+    from?: string;
+    to?: string;
+  }) => void;
 }
 
 // Top economic countries that frequently affect markets
