@@ -225,15 +225,15 @@ export default function Index() {
     fetchEconomicEvents(language);
   }, [language]);
 
-  // Periodic refresh every 15 minutes
+  // Periodic refresh every 30 minutes (reduced from 15 to limit API calls)
   useEffect(() => {
     const intervalId = setInterval(
       () => {
         console.log("Periodic refresh - fetching latest economic events");
         fetchEconomicEvents(language);
       },
-      15 * 60 * 1000,
-    ); // 15 minutes
+      30 * 60 * 1000,
+    ); // 30 minutes to reduce API calls
 
     return () => clearInterval(intervalId);
   }, [language]);
@@ -452,7 +452,7 @@ export default function Index() {
                               <Bell className="w-4 h-4 mr-2" />
                               <span>
                                 {language === "ar"
-                                  ? "عرض بيان��ت تجريبية - سيتم التحديث عند استعادة الاتصال"
+                                  ? "عرض بيانات تجريبية - سيتم التحديث عند استعادة الاتصال"
                                   : "Showing demo data - will update when connection is restored"}
                               </span>
                             </div>
