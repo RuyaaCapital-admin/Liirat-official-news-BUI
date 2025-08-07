@@ -261,7 +261,7 @@ export default function SeparatedAlertSystem({
             const data = await response.json();
             if (data.prices && data.prices.length > 0 && data.prices[0].price) {
               const currentPrice = data.prices[0].price;
-              const targetPrice = parseFloat(alert.targetPrice);
+              const targetPrice = typeof alert.targetPrice === 'string' ? parseFloat(alert.targetPrice) : alert.targetPrice;
 
               let shouldTrigger = false;
 
@@ -1048,7 +1048,7 @@ export default function SeparatedAlertSystem({
                             {alert.condition === "below" && (
                               <span>
                                 {language === "ar"
-                                  ? "تنبيه عندما ينخفض السعر دون"
+                                  ? "تن��يه عندما ينخفض السعر دون"
                                   : "Alert when price goes below"}{" "}
                                 {alert.targetPrice}
                               </span>
