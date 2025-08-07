@@ -107,7 +107,15 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
   if (isLoading) {
     return (
       <div className={cn("w-full h-[50px] sm:h-[60px] bg-card border-b border-border flex items-center justify-center", className)}>
-        <div className="animate-pulse text-xs sm:text-sm text-muted-foreground">Loading market data...</div>
+        <div className="animate-pulse text-xs sm:text-sm text-muted-foreground">Loading real-time EODHD market data...</div>
+      </div>
+    );
+  }
+
+  if (priceData.length === 0) {
+    return (
+      <div className={cn("w-full h-[50px] sm:h-[60px] bg-card border-b border-border flex items-center justify-center", className)}>
+        <div className="text-xs sm:text-sm text-muted-foreground">EODHD API access restricted - no market data available</div>
       </div>
     );
   }
