@@ -112,7 +112,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
             const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
             const response = await fetch(
-              `/api/eodhd-price?symbol=${apiSymbol}`,
+              `/api/eodhd/price?symbols=${apiSymbol}`,
               { signal: controller.signal },
             );
 
@@ -121,7 +121,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
             if (response.ok) {
               const data = await response.json();
               console.log(`Price response for ${symbol.symbol}:`, data);
-              const priceData = data.prices?.[0];
+              const priceData = data.ok && data.items?.[0] ? data.items[0] : null;
               if (priceData) {
                 setIsConnected(true);
                 return {
@@ -130,7 +130,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                   nameAr: symbol.nameAr,
                   currentPrice: parseFloat(priceData.price) || 0,
                   change: parseFloat(priceData.change || 0),
-                  changePercent: parseFloat(priceData.change_percent || 0),
+                  changePercent: parseFloat(priceData.changePct || 0),
                   lastUpdate: new Date(),
                 };
               }
