@@ -66,8 +66,8 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     const isIndex = symbolStr.includes(".INDX");
     const isForex = symbolStr.includes(".FOREX");
     const isUSStock = symbolStr.includes(".US");
-    const isCommodity = symbolStr.includes(".F");
-    const isMetal = symbolStr === "XAUUSD" || symbolStr === "XAGUSD";
+    const isCommodity = symbolStr.includes(".F") || symbolStr.includes(".COMEX");
+    const isMetal = symbolStr.includes("GC.COMEX") || symbolStr.includes("SI.COMEX");
 
     let apiUrl: URL;
     let finalSymbol = symbolStr;
