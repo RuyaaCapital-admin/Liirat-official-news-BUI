@@ -161,8 +161,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ? data.map((event: any) => transformEventData(event))
       : [];
 
+    // Remove duplicates based on date, country, and event name
+    const uniqueEvents: EconomicEvent[] = [];
+    const seen = new Set<string>();
+
+    for (const event of events) {
+      const key = `${event.date}_${event.country}_${event.event}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniqueEvents.push(event);
+      }
+    }
+
+    console.log(`Removed ${events.length - uniqueEvents.length} duplicate events`);
+
     // Filter events by importance on our side if multiple levels were requested
-    let filteredEvents = events;
+    let filteredEvents = uniqueEvents;
     if (importance && importance !== "all") {
       const importanceStr = importance as string;
       const requestedLevels = importanceStr
