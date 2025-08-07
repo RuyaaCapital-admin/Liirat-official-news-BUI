@@ -26,7 +26,7 @@ async function fetchRealMarketData(): Promise<any[]> {
   for (const symbol of symbols) {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+        `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
       );
       if (response.ok) {
         const data = await response.json();
