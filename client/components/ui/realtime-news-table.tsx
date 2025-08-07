@@ -251,6 +251,15 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       return article.title; // Return original if not Arabic mode
     }
 
+    // Check network connectivity first
+    const isOnline = await checkNetworkStatus();
+    if (!isOnline) {
+      console.warn(`[NEWS] No network connectivity for translation of article ${article.id}`);
+      // Cache original title to avoid repeated attempts
+      setTranslatedTitles((prev) => ({ ...prev, [article.id]: article.title }));
+      return article.title;
+    }
+
     setLoadingTranslation((prev) => ({ ...prev, [article.id]: true }));
 
     try {
@@ -280,11 +289,18 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         console.warn(`Translation failed with status: ${response.status}`);
       }
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
       if (error instanceof Error && error.name === "AbortError") {
-        console.warn("Translation request timed out");
+        console.warn(`[NEWS] Translation request timed out for article ${article.id}`);
+      } else if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+        console.warn(`[NEWS] Network error during translation for article ${article.id}: ${errorMessage}`);
       } else {
-        console.error("Translation error:", error);
+        console.error(`[NEWS] Translation error for article ${article.id}:`, errorMessage);
       }
+
+      // Cache original title to avoid repeated failed attempts
+      setTranslatedTitles((prev) => ({ ...prev, [article.id]: article.title }));
     } finally {
       setLoadingTranslation((prev) => ({ ...prev, [article.id]: false }));
     }
