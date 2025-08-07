@@ -495,13 +495,15 @@ export default function Index() {
                             );
 
                             // Create an actual alert for the economic event
-                            const message = language === "ar"
-                              ? `تنبيه حدث اقتصادي: ${event.event} - ${event.country} - الوقت: ${event.time || "غير محدد"}`
-                              : `Economic Event Alert: ${event.event} - ${event.country} - Time: ${event.time || "TBD"}`;
+                            const message =
+                              language === "ar"
+                                ? `تنبيه حدث اقتصادي: ${event.event} - ${event.country} - الوقت: ${event.time || "غير محدد"}`
+                                : `Economic Event Alert: ${event.event} - ${event.country} - Time: ${event.time || "TBD"}`;
 
-                            const eventName = language === "ar"
-                              ? `حدث اقتصادي: ${event.event}`
-                              : `Economic Event: ${event.event}`;
+                            const eventName =
+                              language === "ar"
+                                ? `حدث اقتصادي: ${event.event}`
+                                : `Economic Event: ${event.event}`;
 
                             // Add the alert using the alert context
                             addAlert({
@@ -517,12 +519,16 @@ export default function Index() {
                             });
 
                             // Show success feedback
-                            const successMessage = language === "ar"
-                              ? `تم إنشاء تنبيه للحدث الاقتصادي: ${event.event}`
-                              : `Alert created for economic event: ${event.event}`;
+                            const successMessage =
+                              language === "ar"
+                                ? `تم إنشاء تنبيه للحدث الاقتصادي: ${event.event}`
+                                : `Alert created for economic event: ${event.event}`;
 
                             addAlert({
-                              eventName: language === "ar" ? "تأكيد التنبيه" : "Alert Confirmation",
+                              eventName:
+                                language === "ar"
+                                  ? "تأكيد التنبيه"
+                                  : "Alert Confirmation",
                               message: successMessage,
                               importance: 1,
                             });

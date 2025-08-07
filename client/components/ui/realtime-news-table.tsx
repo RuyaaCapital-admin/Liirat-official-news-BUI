@@ -275,7 +275,6 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     }
   };
 
-
   return (
     <Card className={cn("w-full", className)}>
       <CardHeader>
@@ -569,19 +568,24 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
             <div className="text-center text-sm text-muted-foreground mb-4">
               {language === "ar"
                 ? `عرض ${Math.min(itemsToShow, filteredArticles.length)} من ${filteredArticles.length} خبر`
-                : `Showing ${Math.min(itemsToShow, filteredArticles.length)} of ${filteredArticles.length} articles`
-              }
+                : `Showing ${Math.min(itemsToShow, filteredArticles.length)} of ${filteredArticles.length} articles`}
             </div>
 
             {filteredArticles.length > itemsToShow && (
               <div className="flex justify-center gap-2">
                 <Button
                   variant="outline"
-                  onClick={() => setItemsToShow(prev => Math.min(prev + 10, filteredArticles.length))}
+                  onClick={() =>
+                    setItemsToShow((prev) =>
+                      Math.min(prev + 10, filteredArticles.length),
+                    )
+                  }
                   className="flex items-center gap-2"
                 >
                   {language === "ar" ? "عرض المزيد" : "Show More"}
-                  <span className="text-xs">({Math.min(10, filteredArticles.length - itemsToShow)})</span>
+                  <span className="text-xs">
+                    ({Math.min(10, filteredArticles.length - itemsToShow)})
+                  </span>
                 </Button>
               </div>
             )}
