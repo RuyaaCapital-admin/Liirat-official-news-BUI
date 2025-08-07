@@ -169,7 +169,7 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
         : `${eventData.event} below forecast, potential bearish pressure on ${eventData.country}.`;
 
       return {
-        summary: `${analysis}\n\n⚠️ This is a demo analysis. For real AI insights, please configure your OpenAI API key in environment variables.`,
+        summary: `${analysis}\n\n⚠️ OpenAI API key required for AI analysis.`,
         whatHappened: analysis,
         whyImportant: analysis,
         marketImpact: analysis,
