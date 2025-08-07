@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/language-context";
+import { cn } from "@/lib/utils";
 import {
   Calendar,
   Search,
@@ -21,10 +22,7 @@ import {
   TrendingDown,
   Minus,
   Bell,
-  Globe,
-  ChevronDown,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface EconomicEvent {
   id: string;
@@ -58,7 +56,7 @@ export function ModernEconomicCalendar({
   const [selectedDay, setSelectedDay] = useState("all");
   const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>(["all"]);
   const [selectedCountries, setSelectedCountries] = useState<string[]>(["all"]);
-  const [selectedImportance, setSelectedImportance] = useState<string[]>(["3"]);
+  const [selectedImportance, setSelectedImportance] = useState<string[]>(["1","2","3"]);
   const [events, setEvents] = useState<EconomicEvent[]>([]);
   const [isLoadingAI, setIsLoadingAI] = useState<string | null>(null);
 
@@ -302,7 +300,7 @@ export function ModernEconomicCalendar({
         "text-foreground",
         "[&_.font-medium]:text-foreground",
         "[&_.font-mono]:text-foreground",
-        "[&_.text-muted-foreground]:text-gray-700 dark:text-muted-foreground"
+        "[&_.text-muted-foreground]:text-gray-700 dark:[&_.text-muted-foreground]:text-gray-300"
       )}
       dir="rtl"
     >
