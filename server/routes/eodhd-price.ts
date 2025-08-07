@@ -89,7 +89,7 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       apiUrl.searchParams.append("filter", filter as string);
     }
 
-    console.log(`Fetching EODHD price data: ${apiUrl.toString()}`);
+    console.log(`Fetching EODHD price data for ${symbolStr} -> ${finalSymbol}: ${apiUrl.toString()}`);
 
     // Create abort controller for timeout
     const controller = new AbortController();
