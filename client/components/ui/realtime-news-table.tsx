@@ -215,7 +215,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
           ...prev,
           [article.id]:
             language === "ar"
-              ? "��حليل الذكاء الاصطناعي غير متاح حاليًا"
+              ? "��حليل الذكاء الا��طناعي غير متاح حاليًا"
               : "AI analysis currently unavailable",
         }));
       }
@@ -560,12 +560,40 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
           </div>
         )}
 
-        {/* News Count Footer */}
+        {/* Pagination Controls */}
         {!loading && filteredArticles.length > 0 && (
-          <div className="mt-6 pt-4 border-t border-border text-center text-sm text-muted-foreground">
-            {language === "ar"
-              ? `عرض ${filteredArticles.length} من ${articles.length} خبر`
-              : `Showing ${filteredArticles.length} of ${articles.length} articles`}
+          <div className="mt-6 pt-4 border-t border-border">
+            <div className="text-center text-sm text-muted-foreground mb-4">
+              {language === "ar"
+                ? `عرض ${Math.min(itemsToShow, filteredArticles.length)} من ${filteredArticles.length} خبر`
+                : `Showing ${Math.min(itemsToShow, filteredArticles.length)} of ${filteredArticles.length} articles`
+              }
+            </div>
+
+            {filteredArticles.length > itemsToShow && (
+              <div className="flex justify-center gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setItemsToShow(prev => Math.min(prev + 10, filteredArticles.length))}
+                  className="flex items-center gap-2"
+                >
+                  {language === "ar" ? "عرض المزيد" : "Show More"}
+                  <span className="text-xs">({Math.min(10, filteredArticles.length - itemsToShow)})</span>
+                </Button>
+              </div>
+            )}
+
+            {itemsToShow > 10 && (
+              <div className="flex justify-center gap-2 mt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setItemsToShow(10)}
+                  className="flex items-center gap-2"
+                >
+                  {language === "ar" ? "عرض أقل" : "Show Less"}
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </CardContent>
