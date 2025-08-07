@@ -428,21 +428,21 @@ export default function EnhancedMacroCalendar({
   // Offline translation fallback for common economic terms
   const getOfflineTranslation = (text: string): string => {
     const offlineTranslations: Record<string, string> = {
-      "Exports": "الصادرات",
-      "Imports": "الواردات",
-      "GDP": "الناتج المحلي الإجمالي",
-      "Inflation": "التضخم",
-      "Unemployment": "البطالة",
+      Exports: "الصادرات",
+      Imports: "الواردات",
+      GDP: "الناتج المحلي الإجمالي",
+      Inflation: "التضخم",
+      Unemployment: "البطالة",
       "Interest Rate": "سعر الفائدة",
       "Trade Balance": "الميزان التجاري",
       "Consumer Price Index": "مؤشر أسعار المستهلك",
       "Producer Price Index": "مؤشر أسعار المنتجين",
       "Industrial Production": "الإنتاج الصناعي",
       "Retail Sales": "مبيعات التجزئة",
-      "Employment": "التوظيف",
-      "Manufacturing": "التصنيع",
-      "Services": "الخدمات",
-      "Housing": "الإسكان",
+      Employment: "التوظيف",
+      Manufacturing: "التصنيع",
+      Services: "الخدمات",
+      Housing: "الإسكان",
     };
 
     return offlineTranslations[text] || text;
@@ -460,7 +460,10 @@ export default function EnhancedMacroCalendar({
     // Try offline translation first
     const offlineTranslation = getOfflineTranslation(event.event);
     if (offlineTranslation !== event.event) {
-      setTranslatedContent((prev) => ({ ...prev, [eventKey]: offlineTranslation }));
+      setTranslatedContent((prev) => ({
+        ...prev,
+        [eventKey]: offlineTranslation,
+      }));
       return offlineTranslation;
     }
 
@@ -473,7 +476,7 @@ export default function EnhancedMacroCalendar({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
           body: JSON.stringify({
             text: event.event,
@@ -483,7 +486,10 @@ export default function EnhancedMacroCalendar({
           signal: AbortSignal.timeout(5000),
         });
       } catch (fetchError) {
-        console.warn(`[TRANSLATION] Fetch failed for "${event.event}":`, fetchError);
+        console.warn(
+          `[TRANSLATION] Fetch failed for "${event.event}":`,
+          fetchError,
+        );
         // Use original text as fallback
         setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
         return event.event;

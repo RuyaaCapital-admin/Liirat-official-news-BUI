@@ -111,7 +111,9 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         );
       } catch (fetchError) {
         console.error(`[TICKER] Fetch failed for ${symbol}:`, fetchError);
-        throw new Error(`Network request failed: ${fetchError instanceof Error ? fetchError.message : String(fetchError)}`);
+        throw new Error(
+          `Network request failed: ${fetchError instanceof Error ? fetchError.message : String(fetchError)}`,
+        );
       }
 
       clearTimeout(timeoutId);
@@ -198,7 +200,9 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
       }
 
       // Final failure - blacklist symbol and set disconnected status
-      console.warn(`[TICKER] Blacklisting symbol ${symbol} after repeated failures`);
+      console.warn(
+        `[TICKER] Blacklisting symbol ${symbol} after repeated failures`,
+      );
       failedSymbols.current.add(symbol);
 
       const config = TICKER_CONFIG.find((c) => c.symbol === symbol);
@@ -330,8 +334,8 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
                     {data.status === "connecting"
                       ? "..."
                       : data.status === "disconnected"
-                      ? "Loading..."
-                      : formatPrice(data.price, data.symbol)}
+                        ? "Loading..."
+                        : formatPrice(data.price, data.symbol)}
                   </div>
                   <div
                     className={cn(

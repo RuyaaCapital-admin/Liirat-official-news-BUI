@@ -243,16 +243,30 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
   // Offline translation dictionary for common financial news terms
   const getOfflineTranslation = (title: string): string => {
     const translations: Record<string, string> = {
-      "Financial": "مالي", "Market": "السوق", "Stock": "الأسهم", "Price": "السعر",
-      "Economy": "الاقتصاد", "Trading": "التداول", "Investment": "الاستثمار",
-      "Bank": "البنك", "Currency": "العملة", "Dollar": "الدولار", "Euro": "اليورو",
-      "Gold": "الذهب", "Oil": "النفط", "Bitcoin": "البتكوين", "News": "الأخبار",
-      "Report": "ا��تقرير", "Analysis": "التحليل", "Growth": "النمو", "Rise": "الارتفاع",
+      Financial: "مالي",
+      Market: "السوق",
+      Stock: "الأسهم",
+      Price: "السعر",
+      Economy: "الاقتصاد",
+      Trading: "التداول",
+      Investment: "الاستثمار",
+      Bank: "البنك",
+      Currency: "العملة",
+      Dollar: "الدولار",
+      Euro: "اليورو",
+      Gold: "الذهب",
+      Oil: "النفط",
+      Bitcoin: "البتكوين",
+      News: "الأخبار",
+      Report: "ا��تقرير",
+      Analysis: "التحليل",
+      Growth: "النمو",
+      Rise: "الارتفاع",
     };
 
     let translatedTitle = title;
     Object.entries(translations).forEach(([english, arabic]) => {
-      const regex = new RegExp(`\\b${english}\\b`, 'gi');
+      const regex = new RegExp(`\\b${english}\\b`, "gi");
       translatedTitle = translatedTitle.replace(regex, arabic);
     });
     return translatedTitle;
@@ -279,13 +293,18 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     // Try offline translation first for instant results
     const offlineTranslation = getOfflineTranslation(article.title);
     if (offlineTranslation !== article.title) {
-      setTranslatedTitles((prev) => ({ ...prev, [article.id]: offlineTranslation }));
+      setTranslatedTitles((prev) => ({
+        ...prev,
+        [article.id]: offlineTranslation,
+      }));
       return offlineTranslation;
     }
 
     // SKIP API TRANSLATION to prevent "Failed to fetch" errors
     // Just cache and return the original title
-    console.log(`[NEWS] Skipping API translation to prevent fetch errors for: ${article.title}`);
+    console.log(
+      `[NEWS] Skipping API translation to prevent fetch errors for: ${article.title}`,
+    );
     setTranslatedTitles((prev) => ({ ...prev, [article.id]: article.title }));
     return article.title;
 
@@ -485,18 +504,20 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
               {availableCategories.map((category) => {
                 // Translate category names to Arabic when needed
                 const categoryTranslations: Record<string, string> = {
-                  "Financial": language === "ar" ? "مالي" : "Financial",
-                  "Earnings": language === "ar" ? "الأرباح" : "Earnings",
-                  "Central Banks": language === "ar" ? "البنوك المركزية" : "Central Banks",
-                  "Inflation": language === "ar" ? "التضخم" : "Inflation",
-                  "Forex": language === "ar" ? "تداول العملات" : "Forex",
-                  "Economic": language === "ar" ? "اقتصادي" : "Economic",
-                  "Employment": language === "ar" ? "التوظيف" : "Employment",
-                  "Trade": language === "ar" ? "التجارة" : "Trade",
-                  "Manufacturing": language === "ar" ? "التصنيع" : "Manufacturing",
-                  "Services": language === "ar" ? "الخدمات" : "Services",
-                  "Housing": language === "ar" ? "الإسكان" : "Housing",
-                  "Consumer": language === "ar" ? "المستهلك" : "Consumer",
+                  Financial: language === "ar" ? "مالي" : "Financial",
+                  Earnings: language === "ar" ? "الأرباح" : "Earnings",
+                  "Central Banks":
+                    language === "ar" ? "البنوك المركزية" : "Central Banks",
+                  Inflation: language === "ar" ? "التضخم" : "Inflation",
+                  Forex: language === "ar" ? "تداول العملات" : "Forex",
+                  Economic: language === "ar" ? "اقتصادي" : "Economic",
+                  Employment: language === "ar" ? "التوظيف" : "Employment",
+                  Trade: language === "ar" ? "التجارة" : "Trade",
+                  Manufacturing:
+                    language === "ar" ? "التصنيع" : "Manufacturing",
+                  Services: language === "ar" ? "الخدمات" : "Services",
+                  Housing: language === "ar" ? "الإسكان" : "Housing",
+                  Consumer: language === "ar" ? "المستهلك" : "Consumer",
                 };
 
                 return (
