@@ -29,8 +29,11 @@ import {
   TrendingUp,
   AlertTriangle,
   Globe,
+  Bell,
+  Timer,
 } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
+import { useAlerts } from "@/contexts/alert-context";
 
 interface NewsArticle {
   id: string;
@@ -226,7 +229,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         ...prev,
         [article.id]:
           language === "ar"
-            ? "تحليل الذ��اء الاصطناعي غير متاح حاليًا"
+            ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
             : "AI analysis currently unavailable",
       }));
     } finally {
