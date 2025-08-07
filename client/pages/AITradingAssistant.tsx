@@ -119,67 +119,67 @@ const AITradingAssistant: React.FC = () => {
       console.error("Error fetching news:", error);
       // No mock data - show empty array for production
       setNews([]);
-        language === "ar"
-          ? [
-              {
-                id: "1",
-                title:
-                  "بنك الاحتياطي الفيدرالي يشير إلى تخفيضات محتملة في أسعار الفائدة لعام 2024",
-                summary:
-                  "أشار بنك الاحتياطي الفيدرالي إلى موقف أكثر مرونة، مما يشير إلى تخفيضات محتملة في أس��ار الفائدة في العام القادم.",
-                source: "رويترز",
-                publishedAt: "2024-01-15T10:30:00Z",
-                impact: "high" as const,
-              },
-              {
-                id: "2",
-                title: "متوقع موافقة على صناديق بيتكوين المتداولة هذا الأسبوع",
-                summary:
-                  "من المتوقع أن تحصل صناديق العملات المشفرة الرئيسية على الموافقة التنظيمية، مما قد يعزز الاعتماد المؤسسي.",
-                source: "بلومبرغ",
-                publishedAt: "2024-01-15T09:15:00Z",
-                impact: "high" as const,
-              },
-              {
-                id: "3",
-                title:
-                  "أسعار الذهب تصل إلى مستويات قياسية جديدة وسط عدم اليقين الاقتصادي",
-                summary:
-                  "ارتفعت أسعار الذهب إلى مستويات قياسية حيث يسعى المستثمرون إلى الأصول الآمنة خلال تقلبات السوق.",
-                source: "سي إن بي سي",
-                publishedAt: "2024-01-15T08:45:00Z",
-                impact: "medium" as const,
-              },
-            ]
-          : [
-              {
-                id: "1",
-                title: "Federal Reserve Signals Potential Rate Cuts in 2024",
-                summary:
-                  "The Federal Reserve has indicated a more dovish stance, suggesting potential interest rate cuts in the coming year.",
-                source: "Reuters",
-                publishedAt: "2024-01-15T10:30:00Z",
-                impact: "high" as const,
-              },
-              {
-                id: "2",
-                title: "Bitcoin ETF Approval Expected This Week",
-                summary:
-                  "Major cryptocurrency ETFs are expected to receive regulatory approval, potentially boosting institutional adoption.",
-                source: "Bloomberg",
-                publishedAt: "2024-01-15T09:15:00Z",
-                impact: "high" as const,
-              },
-              {
-                id: "3",
-                title: "Gold Prices Reach New Highs Amid Economic Uncertainty",
-                summary:
-                  "Gold prices have surged to record levels as investors seek safe-haven assets during market volatility.",
-                source: "CNBC",
-                publishedAt: "2024-01-15T08:45:00Z",
-                impact: "medium" as const,
-              },
-            ];
+      language === "ar"
+        ? [
+            {
+              id: "1",
+              title:
+                "بنك الاحتياطي الفيدرالي يشير إلى تخفيضات محتملة في أسعار الفائدة لعام 2024",
+              summary:
+                "أشار بنك الاحتياطي الفيدرالي إلى موقف أكثر مرونة، مما يشير إلى تخفيضات محتملة في أس��ار الفائدة في العام القادم.",
+              source: "رويترز",
+              publishedAt: "2024-01-15T10:30:00Z",
+              impact: "high" as const,
+            },
+            {
+              id: "2",
+              title: "متوقع موافقة على صناديق بيتكوين المتداولة هذا الأسبوع",
+              summary:
+                "من المتوقع أن تحصل صناديق العملات المشفرة الرئيسية على الموافقة التنظيمية، مما قد يعزز الاعتماد المؤسسي.",
+              source: "بلومبرغ",
+              publishedAt: "2024-01-15T09:15:00Z",
+              impact: "high" as const,
+            },
+            {
+              id: "3",
+              title:
+                "أسعار الذهب تصل إلى مستويات قياسية جديدة وسط عدم اليقين الاقتصادي",
+              summary:
+                "ارتفعت أسعار الذهب إلى مستويات قياسية حيث يسعى المستثمرون إلى الأصول الآمنة خلال تقلبات السوق.",
+              source: "سي إن بي سي",
+              publishedAt: "2024-01-15T08:45:00Z",
+              impact: "medium" as const,
+            },
+          ]
+        : [
+            {
+              id: "1",
+              title: "Federal Reserve Signals Potential Rate Cuts in 2024",
+              summary:
+                "The Federal Reserve has indicated a more dovish stance, suggesting potential interest rate cuts in the coming year.",
+              source: "Reuters",
+              publishedAt: "2024-01-15T10:30:00Z",
+              impact: "high" as const,
+            },
+            {
+              id: "2",
+              title: "Bitcoin ETF Approval Expected This Week",
+              summary:
+                "Major cryptocurrency ETFs are expected to receive regulatory approval, potentially boosting institutional adoption.",
+              source: "Bloomberg",
+              publishedAt: "2024-01-15T09:15:00Z",
+              impact: "high" as const,
+            },
+            {
+              id: "3",
+              title: "Gold Prices Reach New Highs Amid Economic Uncertainty",
+              summary:
+                "Gold prices have surged to record levels as investors seek safe-haven assets during market volatility.",
+              source: "CNBC",
+              publishedAt: "2024-01-15T08:45:00Z",
+              impact: "medium" as const,
+            },
+          ];
       setNews(newsData);
     }
   };

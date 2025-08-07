@@ -17,10 +17,10 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const ping = process.env.PING_MESSAGE ?? "pong";
-  
-  res.status(200).json({ 
+
+  res.status(200).json({
     message: ping,
     timestamp: new Date().toISOString(),
-    environment: "production"
+    environment: "production",
   });
 }

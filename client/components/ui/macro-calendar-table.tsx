@@ -564,7 +564,6 @@ export function MacroCalendarTable({
     dateRange,
   ]);
 
-
   const handleUpdate = () => {
     // Update online status from navigator
     setIsOnline(navigator.onLine);

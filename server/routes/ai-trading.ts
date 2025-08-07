@@ -11,31 +11,36 @@ const openai = process.env.OPENAI_API_KEY
 // Real-time market data fetcher
 async function fetchRealMarketData(): Promise<any[]> {
   const symbols = [
-    "XAUUSD.FOREX",    // Gold
-    "BTC-USD.CC",      // Bitcoin
-    "ETH-USD.CC",      // Ethereum
-    "EURUSD.FOREX",    // EUR/USD
-    "GBPUSD.FOREX",    // GBP/USD
-    "USDJPY.FOREX",    // USD/JPY
-    "GSPC.INDX",       // S&P 500
-    "IXIC.INDX"        // NASDAQ
+    "XAUUSD.FOREX", // Gold
+    "BTC-USD.CC", // Bitcoin
+    "ETH-USD.CC", // Ethereum
+    "EURUSD.FOREX", // EUR/USD
+    "GBPUSD.FOREX", // GBP/USD
+    "USDJPY.FOREX", // USD/JPY
+    "GSPC.INDX", // S&P 500
+    "IXIC.INDX", // NASDAQ
   ];
 
   const marketData = [];
-  
+
   for (const symbol of symbols) {
     try {
-      const response = await fetch(`http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`);
+      const response = await fetch(
+        `http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+      );
       if (response.ok) {
         const data = await response.json();
         if (data.prices && data.prices.length > 0) {
           const price = data.prices[0];
           marketData.push({
-            symbol: symbol.replace('.FOREX', '').replace('.CC', '').replace('.INDX', ''),
+            symbol: symbol
+              .replace(".FOREX", "")
+              .replace(".CC", "")
+              .replace(".INDX", ""),
             price: price.price,
             change: price.change,
             changePercent: price.change_percent,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           });
         }
       }
@@ -43,14 +48,14 @@ async function fetchRealMarketData(): Promise<any[]> {
       console.error(`Failed to fetch ${symbol}:`, error);
     }
   }
-  
+
   return marketData;
 }
 
 // Real-time news fetcher
 async function fetchRealNews(): Promise<any[]> {
   try {
-    const response = await fetch('http://localhost:8080/api/news');
+    const response = await fetch("http://localhost:8080/api/news");
     if (response.ok) {
       const data = await response.json();
       if (data.news && Array.isArray(data.news)) {
@@ -58,16 +63,17 @@ async function fetchRealNews(): Promise<any[]> {
           id: item.id || Math.random().toString(),
           title: item.title,
           summary: item.content || item.summary || item.title,
-          source: item.source || 'Financial News',
-          publishedAt: item.published_at || item.date || new Date().toISOString(),
+          source: item.source || "Financial News",
+          publishedAt:
+            item.published_at || item.date || new Date().toISOString(),
           impact: "medium" as const,
         }));
       }
     }
   } catch (error) {
-    console.error('Failed to fetch real news:', error);
+    console.error("Failed to fetch real news:", error);
   }
-  
+
   return [];
 }
 
@@ -83,34 +89,43 @@ export const handleAIChat = async (req: Request, res: Response) => {
 
     if (!openai) {
       return res.status(500).json({
-        error: language === "ar" 
-          ? "خدمة الذكاء الاصطناعي غير ��توفرة" 
-          : "AI service unavailable",
+        error:
+          language === "ar"
+            ? "خدمة الذكاء الاصطناعي غير ��توفرة"
+            : "AI service unavailable",
       });
     }
 
     // Fetch real-time data for context
     const [marketData, newsData] = await Promise.all([
       fetchRealMarketData(),
-      fetchRealNews()
+      fetchRealNews(),
     ]);
 
     const currentTime = new Date();
-    const dubaiTime = new Date(currentTime.toLocaleString("en-US", {timeZone: "Asia/Dubai"}));
-    
+    const dubaiTime = new Date(
+      currentTime.toLocaleString("en-US", { timeZone: "Asia/Dubai" }),
+    );
+
     const systemPrompt = `You are Liirat News AI Assistant, providing real-time financial and economic information.
 
 CURRENT REAL-TIME DATA (${dubaiTime.toISOString()}):
 
 LIVE MARKET PRICES:
-${marketData.map(item => 
-  `${item.symbol}: $${item.price} (${item.change >= 0 ? '+' : ''}${item.changePercent.toFixed(2)}%)`
-).join('\n')}
+${marketData
+  .map(
+    (item) =>
+      `${item.symbol}: $${item.price} (${item.change >= 0 ? "+" : ""}${item.changePercent.toFixed(2)}%)`,
+  )
+  .join("\n")}
 
 LATEST NEWS HEADLINES:
-${newsData.map((item, index) => 
-  `${index + 1}. ${item.title} - ${item.source} (${new Date(item.publishedAt).toLocaleString()})`
-).join('\n')}
+${newsData
+  .map(
+    (item, index) =>
+      `${index + 1}. ${item.title} - ${item.source} (${new Date(item.publishedAt).toLocaleString()})`,
+  )
+  .join("\n")}
 
 INSTRUCTIONS:
 - Always use REAL current time: ${dubaiTime.toLocaleString()} (Dubai/GST)
@@ -134,29 +149,32 @@ USER MESSAGE: ${message}`;
       temperature: 0.3, // Lower temperature for more accurate responses
     });
 
-    const response = completion.choices[0]?.message?.content || 
-      (language === "ar" ? "عذراً، لم أستطع إنشاء رد." : "Sorry, I could not generate a response.");
+    const response =
+      completion.choices[0]?.message?.content ||
+      (language === "ar"
+        ? "عذراً، لم أستطع إنشاء رد."
+        : "Sorry, I could not generate a response.");
 
     res.json({
       response,
       timestamp: dubaiTime.toISOString(),
       marketData,
       newsData,
-      realTime: true
+      realTime: true,
     });
-
   } catch (error) {
     console.error("AI Chat Error:", error);
-    
+
     const { language = "ar" } = req.body;
-    const errorMessage = language === "ar"
-      ? "عذراً، أواجه صعوبات تقنية. يرجى المحاولة مرة أخرى."
-      : "Sorry, I'm experiencing technical difficulties. Please try again.";
+    const errorMessage =
+      language === "ar"
+        ? "عذراً، أواجه صعوبات تقنية. يرجى المحاولة مرة أخرى."
+        : "Sorry, I'm experiencing technical difficulties. Please try again.";
 
     res.status(500).json({
       error: "Failed to process AI chat request",
       response: errorMessage,
-      realTime: false
+      realTime: false,
     });
   }
 };
@@ -164,19 +182,19 @@ USER MESSAGE: ${message}`;
 export const handleMarketData = async (req: Request, res: Response) => {
   try {
     const realMarketData = await fetchRealMarketData();
-    
+
     res.json({
       data: realMarketData,
       timestamp: new Date().toISOString(),
       total: realMarketData.length,
-      realTime: true
+      realTime: true,
     });
   } catch (error) {
     console.error("Market data error:", error);
     res.status(500).json({
       error: "Failed to fetch market data",
       data: [],
-      realTime: false
+      realTime: false,
     });
   }
 };
@@ -184,19 +202,19 @@ export const handleMarketData = async (req: Request, res: Response) => {
 export const handleNews = async (req: Request, res: Response) => {
   try {
     const realNews = await fetchRealNews();
-    
+
     res.json({
       news: realNews,
       timestamp: new Date().toISOString(),
       total: realNews.length,
-      realTime: true
+      realTime: true,
     });
   } catch (error) {
     console.error("News fetch error:", error);
     res.status(500).json({
       error: "Failed to fetch news",
       news: [],
-      realTime: false
+      realTime: false,
     });
   }
 };
@@ -212,18 +230,20 @@ export const handleChartIndicator = async (req: Request, res: Response) => {
     }
 
     // Fetch real price data for the symbol
-    const response = await fetch(`http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`);
+    const response = await fetch(
+      `http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+    );
     const data = await response.json();
 
     if (!data.prices || data.prices.length === 0) {
       return res.status(404).json({
         error: "No price data found for symbol",
-        symbol
+        symbol,
       });
     }
 
     const price = data.prices[0];
-    
+
     // Generate technical analysis based on real data
     const analysis = {
       symbol,
@@ -233,20 +253,24 @@ export const handleChartIndicator = async (req: Request, res: Response) => {
       change: price.change,
       changePercent: price.change_percent,
       timestamp: new Date().toISOString(),
-      signal: price.change_percent > 1 ? "BUY" : price.change_percent < -1 ? "SELL" : "HOLD",
-      strength: Math.abs(price.change_percent) > 2 ? "STRONG" : "MODERATE"
+      signal:
+        price.change_percent > 1
+          ? "BUY"
+          : price.change_percent < -1
+            ? "SELL"
+            : "HOLD",
+      strength: Math.abs(price.change_percent) > 2 ? "STRONG" : "MODERATE",
     };
 
     res.json({
       analysis,
-      realTime: true
+      realTime: true,
     });
-
   } catch (error) {
     console.error("Chart indicator error:", error);
     res.status(500).json({
       error: "Failed to generate chart indicator",
-      realTime: false
+      realTime: false,
     });
   }
 };
@@ -262,18 +286,20 @@ export const handleTechnicalAnalysis = async (req: Request, res: Response) => {
     }
 
     // Fetch real market data
-    const response = await fetch(`http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`);
+    const response = await fetch(
+      `http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+    );
     const data = await response.json();
 
     if (!data.prices || data.prices.length === 0) {
       return res.status(404).json({
         error: "No price data found for symbol",
-        symbol
+        symbol,
       });
     }
 
     const price = data.prices[0];
-    
+
     // Generate technical analysis based on real data
     const analysis = {
       symbol,
@@ -285,24 +311,29 @@ export const handleTechnicalAnalysis = async (req: Request, res: Response) => {
       momentum: Math.abs(price.change_percent) > 1 ? "HIGH" : "LOW",
       support: price.price * 0.98, // Simple support calculation
       resistance: price.price * 1.02, // Simple resistance calculation
-      recommendation: price.change_percent > 2 ? "STRONG BUY" : 
-                      price.change_percent > 0.5 ? "BUY" :
-                      price.change_percent < -2 ? "STRONG SELL" :
-                      price.change_percent < -0.5 ? "SELL" : "HOLD",
+      recommendation:
+        price.change_percent > 2
+          ? "STRONG BUY"
+          : price.change_percent > 0.5
+            ? "BUY"
+            : price.change_percent < -2
+              ? "STRONG SELL"
+              : price.change_percent < -0.5
+                ? "SELL"
+                : "HOLD",
       timestamp: new Date().toISOString(),
-      confidence: "HIGH" // Based on real data
+      confidence: "HIGH", // Based on real data
     };
 
     res.json({
       analysis,
-      realTime: true
+      realTime: true,
     });
-
   } catch (error) {
     console.error("Technical analysis error:", error);
     res.status(500).json({
       error: "Failed to generate technical analysis",
-      realTime: false
+      realTime: false,
     });
   }
 };

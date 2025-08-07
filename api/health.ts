@@ -21,11 +21,11 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     openai: !!process.env.OPENAI_API_KEY,
     eodhd: !!process.env.EODHD_API_KEY,
     marketaux: !!process.env.MARKETAUX_API_KEY,
-    nodeEnv: process.env.NODE_ENV || "development"
+    nodeEnv: process.env.NODE_ENV || "development",
   };
 
-  const allGood = Object.values(envCheck).every(check => 
-    typeof check === 'boolean' ? check : true
+  const allGood = Object.values(envCheck).every((check) =>
+    typeof check === "boolean" ? check : true,
   );
 
   res.status(allGood ? 200 : 206).json({
@@ -39,12 +39,12 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
       chat: "/api/chat",
       aiChat: "/api/ai-chat",
       marketData: "/api/market-data",
-      health: "/api/health"
+      health: "/api/health",
     },
     deployment: {
       platform: "vercel",
       region: process.env.VERCEL_REGION || "unknown",
-      deployment: process.env.VERCEL_DEPLOYMENT_ID || "local"
-    }
+      deployment: process.env.VERCEL_DEPLOYMENT_ID || "local",
+    },
   });
 }

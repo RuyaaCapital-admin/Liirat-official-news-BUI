@@ -17,18 +17,23 @@ import { handleMarketauxNews } from "../server/routes/marketaux-news";
 import { handleEODHDCalendar } from "../server/routes/eodhd-calendar";
 import { handleEODHDPrice } from "../server/routes/eodhd-price";
 import eodhd_news from "../server/routes/eodhd-news";
-import { handleAIAnalysis, handleTranslation } from "../server/routes/ai-analysis";
+import {
+  handleAIAnalysis,
+  handleTranslation,
+} from "../server/routes/ai-analysis";
 import { handleRealtimeNews } from "../server/routes/realtime-news";
 
 // Create Express app for serverless function
 const app = express();
 
 // Middleware
-app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
@@ -36,10 +41,10 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.get("/ping", (_req, res) => {
   console.log("Ping endpoint hit!");
   const ping = process.env.PING_MESSAGE ?? "pong";
-  res.json({ 
+  res.json({
     message: ping,
     timestamp: new Date().toISOString(),
-    environment: "production"
+    environment: "production",
   });
 });
 
@@ -82,7 +87,7 @@ app.get("/health", (_req, res) => {
   res.json({
     status: "healthy",
     timestamp: new Date().toISOString(),
-    version: "1.0.0"
+    version: "1.0.0",
   });
 });
 
@@ -91,8 +96,14 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS",
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization",
+    );
     res.status(200).end();
     return;
   }

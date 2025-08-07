@@ -3,14 +3,16 @@ import { Request, Response } from "express";
 // Real price data fetcher using EODHD API
 async function getRealPriceData(symbol: string, res: Response) {
   try {
-    const response = await fetch(`http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`);
-    
+    const response = await fetch(
+      `http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+    );
+
     if (!response.ok) {
       throw new Error(`Price API returned ${response.status}`);
     }
-    
+
     const data = await response.json();
-    
+
     if (data.prices && data.prices.length > 0) {
       const price = data.prices[0];
       res.json({
@@ -20,13 +22,13 @@ async function getRealPriceData(symbol: string, res: Response) {
         changePercent: price.change_percent,
         timestamp: Date.now(),
         source: "eodhd_api",
-        realTime: true
+        realTime: true,
       });
     } else {
       res.status(404).json({
         error: `No price data found for ${symbol}`,
         symbol: symbol.toUpperCase(),
-        realTime: false
+        realTime: false,
       });
     }
   } catch (error) {
@@ -34,7 +36,7 @@ async function getRealPriceData(symbol: string, res: Response) {
     res.status(500).json({
       error: `Failed to fetch real price for ${symbol}`,
       symbol: symbol.toUpperCase(),
-      realTime: false
+      realTime: false,
     });
   }
 }
@@ -163,11 +165,13 @@ export async function handlePriceAlert(req: Request, res: Response) {
       price: parseFloat(price),
       timestamp: timestamp || Date.now(),
       source: "polygon.io",
-      realTime: true
+      realTime: true,
     });
   } catch (error) {
     console.error("Polygon API error:", error);
-    console.log(`Falling back to EODHD API for ${symbol} due to Polygon API error`);
+    console.log(
+      `Falling back to EODHD API for ${symbol} due to Polygon API error`,
+    );
 
     // Fallback to EODHD API when Polygon fails - NEVER mock data
     return getRealPriceData(symbol as string, res);

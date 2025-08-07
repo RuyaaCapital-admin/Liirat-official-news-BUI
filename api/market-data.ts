@@ -21,9 +21,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await handleMarketData(req as any, res as any);
   } catch (error) {
     console.error("Market Data API error:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Internal server error",
-      message: error instanceof Error ? error.message : "Unknown error"
+      message: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }

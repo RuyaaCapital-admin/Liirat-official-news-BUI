@@ -93,18 +93,20 @@ export const handleChat = async (req: Request, res: Response) => {
       });
     }
 
-    const dubaiTime = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Dubai"}));
+    const dubaiTime = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Dubai" }),
+    );
 
     const systemPrompt = `You are Liirat News AI Assistant, a professional economic and financial news agent serving users in both Arabic and English.
 
-CURRENT REAL TIME: ${dubaiTime.toLocaleString('en-US', {
-      timeZone: 'Asia/Dubai',
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+CURRENT REAL TIME: ${dubaiTime.toLocaleString("en-US", {
+      timeZone: "Asia/Dubai",
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     })} (Dubai/GST)
 
 CORE FUNCTIONS:
@@ -169,21 +171,23 @@ RESPONSE FORMAT:
     );
 
     // Get real Dubai time
-    const dubaiTime = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Dubai"}));
+    const dubaiTime = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Dubai" }),
+    );
 
     res.json({
       response,
       timestamp: dubaiTime.toISOString(),
-      dubaiTime: dubaiTime.toLocaleString('en-US', {
-        timeZone: 'Asia/Dubai',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
+      dubaiTime: dubaiTime.toLocaleString("en-US", {
+        timeZone: "Asia/Dubai",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
       }),
-      realTime: true
+      realTime: true,
     });
   } catch (error) {
     console.error("Chat Error:", error);

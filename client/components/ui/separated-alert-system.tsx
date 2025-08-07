@@ -261,7 +261,10 @@ export default function SeparatedAlertSystem({
             const data = await response.json();
             if (data.prices && data.prices.length > 0 && data.prices[0].price) {
               const currentPrice = data.prices[0].price;
-              const targetPrice = typeof alert.targetPrice === 'string' ? parseFloat(alert.targetPrice) : alert.targetPrice;
+              const targetPrice =
+                typeof alert.targetPrice === "string"
+                  ? parseFloat(alert.targetPrice)
+                  : alert.targetPrice;
 
               let shouldTrigger = false;
 
