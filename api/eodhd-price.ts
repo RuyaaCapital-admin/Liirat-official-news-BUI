@@ -78,7 +78,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     apiUrl.searchParams.append("api_token", apiKey);
     apiUrl.searchParams.append("fmt", fmt as string);
 
-    console.log(`Fetching EODHD price data: ${apiUrl.toString()}`);
+    console.log(`[PRICE API] Fetching EODHD data for ${symbolStr}: ${apiUrl.toString()}`);
 
     // Create abort controller for timeout
     const controller = new AbortController();
@@ -89,6 +89,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       headers: {
         Accept: "application/json",
         "User-Agent": "Liirat-News/1.0",
+        "Cache-Control": "no-cache",
       },
       signal: controller.signal,
     });
