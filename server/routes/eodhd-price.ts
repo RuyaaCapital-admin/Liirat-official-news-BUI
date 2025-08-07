@@ -236,7 +236,6 @@ function transformPriceData(item: any, originalSymbol: string): PriceData {
     previousClose > 0
   ) {
     price = previousClose;
-    // For metals, set minimal change to show it's using previous close
     console.log(`Using previousClose for ${item.code}: ${price}`);
   }
 
