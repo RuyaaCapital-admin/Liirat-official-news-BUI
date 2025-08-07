@@ -357,13 +357,13 @@ export default function Index() {
                               {language === "ar"
                                 ? "خطأ في تحميل التقويم الاقتصادي:"
                                 : "Error loading economic calendar:"}{" "}
-                              {eventsError}
+                              {eventsError.replace('API Error:', 'Error')}
                             </span>
                           </div>
                           <div className="text-xs text-muted-foreground mt-1">
                             {language === "ar"
-                              ? "يرجى المحاولة مرة أخرى لاحقاً"
-                              : "Please try again later"}
+                              ? "يرجى المحاولة مرة أخرى لاحقاً أو التواصل مع admin@ruyaacapital.com"
+                              : "Please try again later or contact admin@ruyaacapital.com"}
                           </div>
                         </div>
                       )}
