@@ -575,7 +575,6 @@ export default function EnhancedAlertSystem({
                     <Switch
                       checked={alert.isActive}
                       onCheckedChange={() => toggleAlert(alert.id)}
-                      size="sm"
                     />
                     <Button
                       variant="ghost"

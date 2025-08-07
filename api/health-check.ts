@@ -26,7 +26,6 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     },
     api: {
       eodhdKey: process.env.EODHD_API_KEY ? "configured" : "missing",
-      fallbackKey: "6891e3b89ee5e1.29062933",
     },
   });
 }

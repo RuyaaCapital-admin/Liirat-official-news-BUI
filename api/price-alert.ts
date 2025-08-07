@@ -2,9 +2,14 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 // Real price data fetcher using EODHD API
 async function getRealPriceData(symbol: string): Promise<any | null> {
+  const apiKey = process.env.EODHD_API_KEY;
+  if (!apiKey) {
+    return null;
+  }
+
   try {
     const response = await fetch(
-      `https://eodhd.com/api/real-time/forex?s=${encodeURIComponent(symbol)}&api_token=6891e3b89ee5e1.29062933&fmt=json`,
+      `https://eodhd.com/api/real-time/forex?s=${encodeURIComponent(symbol)}&api_token=${apiKey}&fmt=json`,
     );
 
     if (!response.ok) {
@@ -63,6 +68,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!symbol || typeof symbol !== "string") {
     return res.status(400).json({
       error: "Symbol parameter required",
+      realTime: false,
+    });
+  }
+
+  if (!process.env.EODHD_API_KEY) {
+    return res.status(500).json({
+      error: "EODHD API key not configured",
+      symbol: symbol.toUpperCase(),
       realTime: false,
     });
   }

@@ -43,23 +43,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Test 2: Environment variables
     status.checks.environment = {
-      status:
-        process.env.EODHD_API_KEY || process.env.API_KEY ? "ok" : "warning",
-      message:
-        process.env.EODHD_API_KEY || process.env.API_KEY
-          ? "API key configured"
-          : "Using fallback API key",
-      hasApiKey: !!(process.env.EODHD_API_KEY || process.env.API_KEY),
+      status: process.env.EODHD_API_KEY ? "ok" : "error",
+      message: process.env.EODHD_API_KEY
+        ? "API key configured"
+        : "EODHD_API_KEY missing",
+      hasApiKey: !!process.env.EODHD_API_KEY,
     };
 
     // Test 3: EODHD API connectivity (test with a simple symbol)
     try {
       const testSymbol = "EURUSD.FOREX";
-      const apiKey =
-        process.env.EODHD_API_KEY ||
-        process.env.API_KEY ||
-        "6891e3b89ee5e1.29062933";
-      const testUrl = `https://eodhd.com/api/real-time/${testSymbol}?api_token=${apiKey}&fmt=json`;
+      const apiKey = process.env.EODHD_API_KEY;
+      if (!apiKey) {
+        status.checks.eodhd = {
+          status: "error",
+          message: "EODHD API key not configured",
+        };
+      } else {
+        const testUrl = `https://eodhd.com/api/real-time/${testSymbol}?api_token=${apiKey}&fmt=json`;
 
       console.log(`[STATUS] Testing EODHD connectivity: ${testUrl}`);
 
@@ -87,19 +88,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         testUrl: testUrl.replace(apiKey, "***"),
       };
 
-      if (eodhResponse.ok) {
-        try {
-          const testData = await eodhResponse.json();
-          status.checks.eodhd.sampleData = {
-            hasData: !!testData,
-            dataType: typeof testData,
-            keys:
-              testData && typeof testData === "object"
-                ? Object.keys(testData)
-                : [],
-          };
-        } catch (e) {
-          status.checks.eodhd.parseError = "Failed to parse response as JSON";
+        if (eodhResponse.ok) {
+          try {
+            const testData = await eodhResponse.json();
+            status.checks.eodhd.sampleData = {
+              hasData: !!testData,
+              dataType: typeof testData,
+              keys:
+                testData && typeof testData === "object"
+                  ? Object.keys(testData)
+                  : [],
+            };
+          } catch (e) {
+            status.checks.eodhd.parseError = "Failed to parse response as JSON";
+          }
         }
       }
     } catch (eodhError) {

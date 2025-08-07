@@ -123,6 +123,13 @@ const ALL_COUNTRIES = [
   "NZD",
 ];
 
+export function getDisplayedEvents(
+  events: EconomicEvent[],
+  isExpanded: boolean,
+) {
+  return isExpanded ? events : events.slice(0, 10);
+}
+
 const getImportanceColor = (importance: number) => {
   switch (importance) {
     case 3:
@@ -455,23 +462,6 @@ export function MacroCalendarTable({
     }
   };
 
-  // Auto-translate event titles when language changes to Arabic
-  React.useEffect(() => {
-    if (language === "ar" && displayedEvents.length > 0) {
-      const timer = setTimeout(() => {
-        displayedEvents.slice(0, 5).forEach((event, index) => {
-          setTimeout(() => {
-            translateEventTitle(event).catch((error) => {
-              console.debug("Translation failed for:", event.event);
-            });
-          }, index * 1000); // 1 second delay between requests
-        });
-      }, 500);
-
-      return () => clearTimeout(timer);
-    }
-  }, [language, displayedEvents]);
-
   // Filter countries based on search
   const filteredCountries = useMemo(() => {
     const searchLower = countrySearchTerm.toLowerCase();
@@ -563,6 +553,28 @@ export function MacroCalendarTable({
     selectedDate,
     dateRange,
   ]);
+
+  const displayedEvents = useMemo(
+    () => getDisplayedEvents(filteredEvents, isExpanded),
+    [filteredEvents, isExpanded],
+  );
+
+  // Auto-translate event titles when language changes to Arabic
+  React.useEffect(() => {
+    if (language === "ar" && displayedEvents.length > 0) {
+      const timer = setTimeout(() => {
+        displayedEvents.slice(0, 5).forEach((event, index) => {
+          setTimeout(() => {
+            translateEventTitle(event).catch((error) => {
+              console.debug("Translation failed for:", event.event);
+            });
+          }, index * 1000);
+        });
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [language, displayedEvents]);
 
   const handleUpdate = () => {
     // Update online status from navigator

@@ -10,6 +10,7 @@ dist/server
 server/
 shared/
 *.md
+*.mdp
 .git
 .vscode
 .idea

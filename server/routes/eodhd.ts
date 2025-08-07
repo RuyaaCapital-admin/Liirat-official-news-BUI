@@ -1,57 +1,19 @@
 import { RequestHandler } from "express";
 import { EconomicEventsResponse, NewsResponse } from "@shared/api";
 
-// Fallback mock data when API fails
-const getMockEvents = () => [
-  {
-    date: new Date().toISOString().split("T")[0],
-    time: "08:30",
-    country: "US",
-    event: "Consumer Price Index (CPI)",
-    category: "Inflation",
-    importance: 3,
-    actual: "",
-    forecast: "0.3%",
-    previous: "0.2%",
-  },
-  {
-    date: new Date().toISOString().split("T")[0],
-    time: "14:00",
-    country: "EU",
-    event: "ECB Interest Rate Decision",
-    category: "Central Bank",
-    importance: 3,
-    actual: "",
-    forecast: "4.25%",
-    previous: "4.25%",
-  },
-];
-
-const getMockNews = () => [
-  {
-    title: "Market Update: Trading Activity Today",
-    content:
-      "Market overview and key developments affecting financial markets.",
-    link: "#",
-    symbols: ["SPX", "EUR", "USD"],
-    tags: ["market", "trading"],
-    date: new Date().toISOString(),
-    sentiment: {
-      polarity: 0,
-      label: "neutral" as const,
-    },
-  },
-];
-
-const EODHD_API_TOKEN =
-  process.env.EODHD_API_KEY ||
-  process.env.NEXT_PUBLIC_EODHD_API_KEY ||
-  process.env.EODHD_API_TOKEN ||
-  "demo"; // Use demo token as fallback
+const EODHD_API_TOKEN = process.env.EODHD_API_KEY;
 
 // EODHD API Token configured
 
 export const getEconomicEvents: RequestHandler = async (req, res) => {
+  if (!EODHD_API_TOKEN) {
+    const result: EconomicEventsResponse = {
+      events: [],
+      error: "EODHD API key not configured",
+    };
+    return res.status(500).json(result);
+  }
+
   try {
     // Create AbortController for timeout
     const controller = new AbortController();
@@ -70,7 +32,6 @@ export const getEconomicEvents: RequestHandler = async (req, res) => {
 
     if (!response.ok) {
       console.error(`EODHD API returned status: ${response.status}`);
-      // Return error instead of mock data
       const result: EconomicEventsResponse = {
         events: [],
         error: `EODHD API Error: ${response.status} - ${response.statusText}`,
@@ -110,7 +71,6 @@ export const getEconomicEvents: RequestHandler = async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error("Error fetching economic events:", error);
-    // Return empty array with error message instead of mock data
     const result: EconomicEventsResponse = {
       events: [],
       error:
@@ -123,6 +83,13 @@ export const getEconomicEvents: RequestHandler = async (req, res) => {
 };
 
 export const getNews: RequestHandler = async (req, res) => {
+  if (!EODHD_API_TOKEN) {
+    return res.status(500).json({
+      news: [],
+      error: "EODHD API key not configured",
+    });
+  }
+
   try {
     const offset = req.query.offset || "0";
     const limit = req.query.limit || "20";
@@ -144,7 +111,6 @@ export const getNews: RequestHandler = async (req, res) => {
 
     if (!response.ok) {
       console.error(`EODHD News API returned status: ${response.status}`);
-      // Return empty instead of mock news
       const result: NewsResponse = { news: [] };
       return res.json(result);
     }
@@ -181,7 +147,6 @@ export const getNews: RequestHandler = async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error("Error fetching news:", error);
-    // Return empty array instead of mock data
     const result: NewsResponse = { news: [] };
     res.json(result);
   }
