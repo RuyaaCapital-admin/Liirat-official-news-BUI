@@ -766,6 +766,90 @@ export default function EnhancedMacroCalendar({
             </div>
           </div>
         </div>
+
+        {/* Custom Date Range Picker - Show when "Custom Range" is selected */}
+        {selectedPeriod === "custom" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-primary/5 rounded-lg border border-primary/20">
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-muted-foreground">
+                {language === "ar" ? "من تاريخ" : "From Date"}
+              </label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal h-9",
+                      !dateFrom && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateFrom ? format(dateFrom, "MMM dd, yyyy") : (language === "ar" ? "اختر التاريخ" : "Pick a date")}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateFrom}
+                    onSelect={setDateFrom}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-muted-foreground">
+                {language === "ar" ? "إلى تاريخ" : "To Date"}
+              </label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal h-9",
+                      !dateTo && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateTo ? format(dateTo, "MMM dd, yyyy") : (language === "ar" ? "اختر التاريخ" : "Pick a date")}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateTo}
+                    onSelect={setDateTo}
+                    initialFocus
+                    disabled={(date) => dateFrom ? date < dateFrom : false}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Apply Custom Date Range Button */}
+            <div className="md:col-span-2 flex justify-end">
+              <Button
+                onClick={() => {
+                  if (dateFrom && dateTo && onRefresh) {
+                    onRefresh({
+                      from: dateFrom.toISOString().split("T")[0],
+                      to: dateTo.toISOString().split("T")[0],
+                      country: selectedCountries.length > 0 ? selectedCountries.join(",") : undefined,
+                      importance: selectedImportance.map(String),
+                      category: selectedCategory !== "all" ? selectedCategory : undefined,
+                    });
+                  }
+                }}
+                disabled={!dateFrom || !dateTo}
+                className="gap-2"
+              >
+                <CalendarIcon className="w-4 h-4" />
+                {language === "ar" ? "تطبيق التاريخ المخصص" : "Apply Custom Range"}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Events Table */}
