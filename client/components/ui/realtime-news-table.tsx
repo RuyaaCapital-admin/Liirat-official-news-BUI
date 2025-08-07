@@ -283,6 +283,74 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     }
   };
 
+  // Create news alert
+  const createNewsAlert = (article: NewsArticle, timing: string = "instant") => {
+    let message = "";
+    let eventName = "";
+
+    if (timing === "instant") {
+      message = language === "ar"
+        ? `تنبيه فوري للخبر: ${article.title.substring(0, 80)}...`
+        : `Instant news alert: ${article.title.substring(0, 80)}...`;
+      eventName = language === "ar" ? "تنبيه خبر فوري" : "Instant News Alert";
+    } else {
+      const minutes = timing.replace("min", "");
+      message = language === "ar"
+        ? `تذكير بالخبر خلال ${minutes} دقيقة: ${article.title.substring(0, 60)}...`
+        : `News reminder in ${minutes} minutes: ${article.title.substring(0, 60)}...`;
+      eventName = language === "ar" ? `تذكير خبر (${minutes} دقيقة)` : `News Reminder (${minutes}min)`;
+    }
+
+    // Create the alert
+    addAlert({
+      eventName,
+      message,
+      importance: article.importance,
+      eventData: {
+        type: "news",
+        article,
+        timing,
+      },
+    });
+
+    // If it's a delayed reminder, set up a timeout
+    if (timing !== "instant") {
+      const minutes = parseInt(timing.replace("min", ""));
+      setTimeout(() => {
+        const reminderMessage = language === "ar"
+          ? `تذكير: ${article.title}`
+          : `Reminder: ${article.title}`;
+
+        addAlert({
+          eventName: language === "ar" ? "تذكير بالخبر" : "News Reminder",
+          message: reminderMessage,
+          importance: article.importance,
+          eventData: {
+            type: "news_reminder",
+            article,
+          },
+        });
+      }, minutes * 60 * 1000);
+    }
+
+    // Show success feedback
+    const successMessage = timing === "instant"
+      ? (language === "ar" ? "تم إنشاء تنبيه فوري للخبر" : "Instant news alert created")
+      : (language === "ar" ? `تم جدولة تذكير خلال ${timing.replace("min", "")} دقيقة` : `Reminder scheduled for ${timing.replace("min", "")} minutes`);
+
+    addAlert({
+      eventName: language === "ar" ? "تأكيد التنبيه" : "Alert Confirmation",
+      message: successMessage,
+      importance: 1,
+    });
+  };
+
+  // Handle bell icon click
+  const handleBellClick = (article: NewsArticle) => {
+    setSelectedArticle(article);
+    setShowAlertDialog(true);
+  };
+
   return (
     <Card className={cn("w-full", className)}>
       <CardHeader>
