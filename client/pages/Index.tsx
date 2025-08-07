@@ -427,7 +427,7 @@ export default function Index() {
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "الأحداث الاقتصادية المهمة والإعلانات المالية"
+                      ? "الأحداث الاقتصادية المهمة والإعل��نات المالية"
                       : "Important economic events and financial announcements"}
                   </CardDescription>
                 </CardHeader>
@@ -437,7 +437,7 @@ export default function Index() {
                       <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary/20 border-t-primary"></div>
                       <span className="ml-2">
                         {language === "ar"
-                          ? "جاري تحميل التقويم الاق��صادي..."
+                          ? "جاري تحميل التقويم الاقتصادي..."
                           : "Loading economic calendar..."}
                       </span>
                     </div>
@@ -449,7 +449,7 @@ export default function Index() {
                             <AlertTriangle className="w-4 h-4 mr-2" />
                             <span>
                               {language === "ar"
-                                ? "خطأ في تحميل التقويم ��لاقتصادي:"
+                                ? "خطأ في تحميل التقويم الاقتصادي:"
                                 : "Error loading economic calendar:"}{" "}
                               {eventsError.replace("API Error:", "Error")}
                             </span>
