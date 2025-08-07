@@ -311,7 +311,7 @@ const getCountryName = (country: string, language: string) => {
     GB: { en: "United Kingdom", ar: "المملكة المتحدة" },
     JP: { en: "Japan", ar: "اليابان" },
     CA: { en: "Canada", ar: "كندا" },
-    AU: { en: "Australia", ar: "أستراليا" },
+    AU: { en: "Australia", ar: "��ستراليا" },
     CHF: { en: "Switzerland", ar: "سويسرا" },
     DE: { en: "Germany", ar: "ألمانيا" },
     FR: { en: "France", ar: "فرنسا" },
@@ -905,14 +905,25 @@ export function MacroCalendarTable({
                     </div>
                     <span className="font-medium text-sm">{event.country}</span>
                   </div>
-                  <Badge
-                    className={cn(
-                      "text-xs px-2 py-1",
-                      getImportanceColor(event.importance),
-                    )}
-                  >
-                    {getImportanceLabel(event.importance, language)}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      className={cn(
+                        "text-xs px-2 py-1",
+                        getImportanceColor(event.importance),
+                      )}
+                    >
+                      {getImportanceLabel(event.importance, language)}
+                    </Badge>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 hover:bg-primary/10"
+                      onClick={() => onCreateAlert?.(event)}
+                      title={t("Create Alert", "إنشاء تنبيه")}
+                    >
+                      <Bell className="h-3 w-3" />
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
