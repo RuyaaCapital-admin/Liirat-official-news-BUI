@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+import { toIsoUtc } from "../../src/server/date";
 const BASE = "https://eodhd.com/api";
 const key = process.env.EODHD_API_KEY;
 
@@ -216,11 +217,11 @@ export const handleEODHDNews: RequestHandler = async (req, res) => {
     }
 
     const items = (raw.data || raw).map((n: any) => ({
-      datetime: n.date,
-      title: n.title,
-      source: (n.source || "").toString(),
+      datetimeIso: toIsoUtc(n.date || n.datetime || n.published_at || n.time),
+      title: String(n.title || ''),
+      source: String(n.source || ''),
       symbols: n.symbols || [],
-      url: n.link || n.url || "",
+      url: n.link || n.url || ''
     }));
 
     res.status(200).json({ ok: true, items });
