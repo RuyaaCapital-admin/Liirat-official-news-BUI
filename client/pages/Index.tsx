@@ -249,15 +249,14 @@ export default function Index() {
     }
   };
 
-  // Fetch economic events on component mount
+  // Fetch economic events on component mount and language changes with debouncing
   useEffect(() => {
-    fetchEconomicEvents();
-  }, []);
+    const timeoutId = setTimeout(() => {
+      fetchEconomicEvents(language);
+    }, 300); // 300ms debounce
 
-  // Fetch events when language changes
-  useEffect(() => {
-    fetchEconomicEvents(language);
-  }, [language]);
+    return () => clearTimeout(timeoutId);
+  }, [language]); // Only depend on language, remove duplicate mount effect
 
   // Enhanced economic calendar data with mixed language support
 
@@ -444,7 +443,7 @@ export default function Index() {
                             <AlertTriangle className="w-4 h-4 mr-2" />
                             <span>
                               {language === "ar"
-                                ? "خطأ في تحميل التقويم الاقتصادي:"
+                                ? "خطأ في تحميل التقويم ��لاقتصادي:"
                                 : "Error loading economic calendar:"}{" "}
                               {eventsError.replace("API Error:", "Error")}
                             </span>
