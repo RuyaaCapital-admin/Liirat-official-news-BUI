@@ -296,10 +296,10 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
             )}
             <span className="text-xs text-muted-foreground">
               {connectionStatus === "connected"
-                ? "EODHD Live"
+                ? "Live"
                 : connectionStatus === "connecting"
                   ? "Connecting"
-                  : "REST Fallback"}
+                  : "Offline"}
             </span>
           </div>
 
