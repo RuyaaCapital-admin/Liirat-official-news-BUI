@@ -170,7 +170,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         }));
         setArticles(transformedArticles);
         setAvailableCategories(['financial']);
-        setAvailableSymbols(item.symbols || []);
+        setAvailableSymbols([]);
       }
     } catch (err) {
       console.error("Error fetching news:", err);
