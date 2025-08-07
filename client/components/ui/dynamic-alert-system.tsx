@@ -227,13 +227,13 @@ export default function DynamicAlertSystem({
       setPriceLoading(true);
       try {
         const response = await fetch(
-          `/api/eodhd-price?symbol=${encodeURIComponent(symbolData.symbol)}`,
+          `/api/eodhd/price?symbols=${encodeURIComponent(symbolData.symbol)}`,
         );
 
         if (response.ok) {
           const data = await response.json();
-          if (data.prices && data.prices.length > 0) {
-            const price = data.prices[0];
+          if (data.ok && data.items && data.items.length > 0) {
+            const price = data.items[0];
             setCurrentPrice(price.price);
 
             // Update symbol data with current price info
@@ -243,7 +243,7 @@ export default function DynamicAlertSystem({
                     ...prev,
                     price: price.price,
                     change: price.change,
-                    changePercent: price.change_percent,
+                    changePercent: price.changePct,
                   }
                 : null,
             );
@@ -363,7 +363,7 @@ export default function DynamicAlertSystem({
     if (!selectedSymbol || !targetPrice) {
       toast.error(
         language === "ar"
-          ? "يرجى اختيار الرمز والسعر المستهدف"
+          ? "يرجى اختيار ا��رمز والسعر المستهدف"
           : "Please select symbol and target price",
       );
       return;
@@ -412,7 +412,7 @@ export default function DynamicAlertSystem({
   // Delete alert
   const deleteAlert = (id: string) => {
     setPriceAlerts((prev) => prev.filter((alert) => alert.id !== id));
-    toast.success(language === "ar" ? "تم حذف التنبيه" : "Alert deleted");
+    toast.success(language === "ar" ? "تم حذف الت��بيه" : "Alert deleted");
   };
 
   // Toggle alert active state
@@ -653,7 +653,7 @@ export default function DynamicAlertSystem({
                 <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>
                   {language === "ar"
-                    ? "لا توجد تنبيهات حالياً"
+                    ? "لا توج�� تنبيهات حالياً"
                     : "No alerts yet"}
                 </p>
                 <p className="text-sm">
