@@ -237,11 +237,12 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
               if (response.ok) {
                 const data = await response.json();
+                const priceData = data.prices?.[0]; // EODHD returns prices array
                 return {
                   ...pair,
-                  currentPrice: data.price || pair.currentPrice,
-                  change: data.change || pair.change,
-                  changePercent: data.changePercent || pair.changePercent,
+                  currentPrice: priceData?.price || pair.currentPrice,
+                  change: priceData?.change || pair.change,
+                  changePercent: priceData?.change_percent || pair.changePercent,
                 };
               } else {
                 // Handle rate limiting with exponential backoff
