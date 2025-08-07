@@ -476,6 +476,8 @@ export function MacroCalendarTable({
   const handleUpdate = () => {
     // Update online status from navigator
     setIsOnline(navigator.onLine);
+    // Set last updated timestamp
+    setLastUpdated(new Date());
     // Call refresh callback with current filters
     if (onRefresh) {
       const filters = {
@@ -626,7 +628,7 @@ export function MacroCalendarTable({
               >
                 <span className="flex items-center gap-2">
                   {selectedCountry === "all"
-                    ? t("Currency/Country", "العملة/البلد")
+                    ? t("Currency/Country", "الع��لة/البلد")
                     : (
                         <>
                           <div className="flex items-center">
