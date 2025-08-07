@@ -240,6 +240,24 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     }
   };
 
+  // Offline translation dictionary for common financial news terms
+  const getOfflineTranslation = (title: string): string => {
+    const translations: Record<string, string> = {
+      "Financial": "مالي", "Market": "السوق", "Stock": "الأسهم", "Price": "السعر",
+      "Economy": "الاقتصاد", "Trading": "التداول", "Investment": "الاستثمار",
+      "Bank": "البنك", "Currency": "العملة", "Dollar": "الدولار", "Euro": "اليورو",
+      "Gold": "الذهب", "Oil": "النفط", "Bitcoin": "البتكوين", "News": "الأخبار",
+      "Report": "ا��تقرير", "Analysis": "التحليل", "Growth": "النمو", "Rise": "الارتفاع",
+    };
+
+    let translatedTitle = title;
+    Object.entries(translations).forEach(([english, arabic]) => {
+      const regex = new RegExp(`\\b${english}\\b`, 'gi');
+      translatedTitle = translatedTitle.replace(regex, arabic);
+    });
+    return translatedTitle;
+  };
+
   // Handle translation request with better error handling
   const translateTitle = async (article: NewsArticle) => {
     if (translatedTitles[article.id] || loadingTranslation[article.id]) {
@@ -256,6 +274,13 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
 
     if (language !== "ar") {
       return article.title; // Return original if not Arabic mode
+    }
+
+    // Try offline translation first for instant results
+    const offlineTranslation = getOfflineTranslation(article.title);
+    if (offlineTranslation !== article.title) {
+      setTranslatedTitles((prev) => ({ ...prev, [article.id]: offlineTranslation }));
+      return offlineTranslation;
     }
 
     // Check network connectivity first
