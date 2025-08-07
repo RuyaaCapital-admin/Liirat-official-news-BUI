@@ -112,7 +112,7 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
         error: "AI analysis temporarily unavailable",
         analysis:
           language === "ar"
-            ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
+            ? "تحليل الذكاء الاص��ناعي غير متاح حاليًا"
             : "AI analysis currently unavailable",
       });
     }
@@ -242,10 +242,14 @@ export const handleTranslation: RequestHandler = async (req, res) => {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error("Error in translation:", error);
+    console.error("[TRANSLATION] Error in translation:", {
+      error: error instanceof Error ? error.message : error,
+      stack: error instanceof Error ? error.stack : undefined,
+      text: req.body.text?.substring(0, 50) + '...'
+    });
 
     res.status(500).json({
-      error: "Translation failed",
+      error: `Translation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       translatedText: req.body.text, // Return original text as fallback
     });
   }
