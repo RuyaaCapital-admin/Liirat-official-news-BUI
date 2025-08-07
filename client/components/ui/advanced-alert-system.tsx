@@ -78,7 +78,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     { symbol: "EURUSD", name: "EUR/USD", nameAr: "يورو/دولار" },
     { symbol: "USDJPY", name: "USD/JPY", nameAr: "دولار/ين" },
     { symbol: "GBPUSD", name: "GBP/USD", nameAr: "جنيه/دولار" },
-    { symbol: "AUDUSD", name: "AUD/USD", nameAr: "دولار أسترالي/دول��ر" },
+    { symbol: "AUDUSD", name: "AUD/USD", nameAr: "دولار أسترالي/دولار" },
     { symbol: "USDCHF", name: "USD/CHF", nameAr: "دولار/فرنك" },
     { symbol: "USDCAD", name: "USD/CAD", nameAr: "دولار/دولار كندي" },
     { symbol: "BTC-USD", name: "Bitcoin/USD", nameAr: "بيتكوين/دولار" },
@@ -340,7 +340,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
             "Notification" in window &&
             Notification.permission === "granted"
           ) {
-            new Notification(`EODHD Price Alert: ${alert.pair}`, {
+            new Notification(`Price Alert: ${alert.pair}`, {
               body: message,
               icon: "/liirat-logo-new.png",
             });
@@ -457,8 +457,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-muted-foreground">
               {language === "ar"
-                ? "جاري تحميل أزواج العملات من EODHD..."
-                : "Loading currency pairs from EODHD..."}
+                ? "جاري تحميل أزواج العملات..."
+                : "Loading currency pairs..."}
             </p>
           </CardContent>
         </Card>
@@ -475,13 +475,13 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
             <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">
               {language === "ar"
-                ? "بيانات الأسعار غير متاحة من EODHD"
-                : "EODHD Price Data Not Available"}
+                ? "بيانات الأسعار غير متاحة"
+                : "Price Data Not Available"}
             </h3>
             <p className="text-muted-foreground">
               {language === "ar"
-                ? "لا يمكن الوصول إلى بيانات الأسعار من EODHD. يرجى التحقق من مفتاح API أو المحاولة لاحقاً."
-                : "Unable to access EODHD price data. Please check API key or try again later."}
+                ? "لا يمكن الوصول إلى بيانات الأسعار. يرجى المحاولة لاحقاً."
+                : "Unable to access price data. Please try again later."}
             </p>
           </CardContent>
         </Card>
@@ -685,7 +685,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                     </SelectItem>
                     <SelectItem value="below">
                       {language === "ar"
-                        ? "تحت السعر المحدد"
+                        ? "تحت ال��عر المحدد"
                         : "Below target price"}
                     </SelectItem>
                   </SelectContent>
