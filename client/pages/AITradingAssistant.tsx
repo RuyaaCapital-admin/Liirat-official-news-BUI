@@ -544,12 +544,17 @@ const AITradingAssistant: React.FC = () => {
                 </div>
               </CardHeader>
               <CardContent className="p-4">
-                <TradingViewWidget
-                  symbol={selectedSymbol}
-                  theme={theme}
-                  height="400px"
-                  className="w-full rounded-xl overflow-hidden"
-                />
+                <div className="h-[400px] flex items-center justify-center bg-muted/30 rounded-xl">
+                  <div className="text-center space-y-4">
+                    <h3 className="text-lg font-semibold">EODHD Price Data</h3>
+                    <p className="text-muted-foreground">
+                      Chart functionality will use EODHD API data
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Selected: {selectedSymbol}
+                    </p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
