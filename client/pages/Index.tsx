@@ -93,7 +93,7 @@ export default function Index() {
       importance?: string[];
       from?: string;
       to?: string;
-    }
+    },
   ) => {
     try {
       setIsLoadingEvents(true);
@@ -115,7 +115,9 @@ export default function Index() {
           });
 
           clearTimeout(timeoutId);
-          console.log(`Server ping status: ${pingResponse.status} (attempt ${attempt})`);
+          console.log(
+            `Server ping status: ${pingResponse.status} (attempt ${attempt})`,
+          );
 
           if (pingResponse.ok) {
             pingSuccessful = true;
@@ -127,7 +129,7 @@ export default function Index() {
             console.error("All ping attempts failed, proceeding with fallback");
             // Don't throw error, just log and continue with mock data
           }
-          await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Progressive delay
+          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt)); // Progressive delay
         }
       }
 
@@ -159,17 +161,14 @@ export default function Index() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-      const response = await fetch(
-        `/api/eodhd-calendar?${params.toString()}`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          signal: controller.signal,
+      const response = await fetch(`/api/eodhd-calendar?${params.toString()}`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-      );
+        signal: controller.signal,
+      });
 
       clearTimeout(timeoutId);
 
@@ -202,9 +201,11 @@ export default function Index() {
       console.error("Failed to fetch economic events:", error);
 
       // NO MOCK DATA - show only real API data
-      let errorMessage = "Failed to load economic data. Please check your connection and try again.";
+      let errorMessage =
+        "Failed to load economic data. Please check your connection and try again.";
       if (error instanceof TypeError && error.message.includes("fetch")) {
-        errorMessage = "Connection failed. Please check your internet connection.";
+        errorMessage =
+          "Connection failed. Please check your internet connection.";
       } else if (error instanceof Error && error.message.includes("aborted")) {
         errorMessage = "Request timeout. Please try again.";
       } else if (error instanceof Error) {
@@ -225,10 +226,13 @@ export default function Index() {
 
   // Periodic refresh every 15 minutes
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      console.log('Periodic refresh - fetching latest economic events');
-      fetchEconomicEvents(language);
-    }, 15 * 60 * 1000); // 15 minutes
+    const intervalId = setInterval(
+      () => {
+        console.log("Periodic refresh - fetching latest economic events");
+        fetchEconomicEvents(language);
+      },
+      15 * 60 * 1000,
+    ); // 15 minutes
 
     return () => clearInterval(intervalId);
   }, [language]);
@@ -459,13 +463,15 @@ export default function Index() {
                           language={language}
                           dir={dir}
                           onRefresh={(filters) => {
-                            console.log('Refreshing with filters:', filters);
+                            console.log("Refreshing with filters:", filters);
                             fetchEconomicEvents(language, filters);
                           }}
                           onCreateAlert={(event) => {
-                            console.log('Creating alert for event:', event);
+                            console.log("Creating alert for event:", event);
                             // Scroll to alerts section to create the alert
-                            document.getElementById('alerts')?.scrollIntoView({ behavior: 'smooth' });
+                            document
+                              .getElementById("alerts")
+                              ?.scrollIntoView({ behavior: "smooth" });
                           }}
                         />
                       </div>

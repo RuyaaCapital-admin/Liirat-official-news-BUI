@@ -38,12 +38,18 @@ function expressPlugin(): Plugin {
           console.log("🔍 API Request:", req.method, req.url);
 
           // Set CORS headers first
-          res.setHeader('Access-Control-Allow-Origin', '*');
-          res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-          res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
+          res.setHeader("Access-Control-Allow-Origin", "*");
+          res.setHeader(
+            "Access-Control-Allow-Methods",
+            "GET, POST, PUT, DELETE, OPTIONS",
+          );
+          res.setHeader(
+            "Access-Control-Allow-Headers",
+            "Content-Type, Authorization, Accept",
+          );
 
           // Handle preflight requests
-          if (req.method === 'OPTIONS') {
+          if (req.method === "OPTIONS") {
             res.statusCode = 200;
             res.end();
             return;
@@ -77,14 +83,16 @@ function expressPlugin(): Plugin {
           console.error("❌ Error handling API request:", error);
 
           // Set CORS headers for error responses too
-          res.setHeader('Access-Control-Allow-Origin', '*');
-          res.setHeader('Content-Type', 'application/json');
+          res.setHeader("Access-Control-Allow-Origin", "*");
+          res.setHeader("Content-Type", "application/json");
 
           res.statusCode = 500;
-          res.end(JSON.stringify({
-            error: "Internal Server Error",
-            message: error instanceof Error ? error.message : "Unknown error"
-          }));
+          res.end(
+            JSON.stringify({
+              error: "Internal Server Error",
+              message: error instanceof Error ? error.message : "Unknown error",
+            }),
+          );
         }
       });
 

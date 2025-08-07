@@ -1,9 +1,15 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Bot, TrendingUp, Brain, Zap, Newspaper } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Bot, TrendingUp, Brain, Zap, Newspaper } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const AITradingNav: React.FC = () => {
   const navigate = useNavigate();
@@ -12,18 +18,18 @@ const AITradingNav: React.FC = () => {
     {
       icon: <Brain className="h-6 w-6" />,
       title: "AI Market Analysis",
-      description: "Get intelligent insights on market trends and patterns"
+      description: "Get intelligent insights on market trends and patterns",
     },
     {
       icon: <TrendingUp className="h-6 w-6" />,
       title: "Live Market Charts",
-      description: "Interactive charts with EODHD data"
+      description: "Interactive charts with EODHD data",
     },
     {
       icon: <Newspaper className="h-6 w-6" />,
       title: "Real-time News",
-      description: "Stay updated with market-moving news"
-    }
+      description: "Stay updated with market-moving news",
+    },
   ];
 
   return (
@@ -31,7 +37,9 @@ const AITradingNav: React.FC = () => {
       <CardHeader className="text-center">
         <div className="flex items-center justify-center gap-3 mb-4">
           <Bot className="h-8 w-8 text-blue-400" />
-          <CardTitle className="text-2xl text-white">AI Trading Assistant</CardTitle>
+          <CardTitle className="text-2xl text-white">
+            AI Trading Assistant
+          </CardTitle>
         </div>
         <CardDescription className="text-gray-300 text-lg">
           Your intelligent companion for market analysis and trading strategies
@@ -54,10 +62,10 @@ const AITradingNav: React.FC = () => {
             </div>
           ))}
         </div>
-        
+
         <div className="text-center">
-          <Button 
-            onClick={() => navigate('/ai-trading')}
+          <Button
+            onClick={() => navigate("/ai-trading")}
             size="lg"
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3"
           >

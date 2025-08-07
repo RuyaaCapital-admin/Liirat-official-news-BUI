@@ -1,5 +1,5 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import OpenAI from 'openai';
+import { VercelRequest, VercelResponse } from "@vercel/node";
+import OpenAI from "openai";
 
 // Initialize OpenAI client with API key from environment variables
 const openai = new OpenAI({
@@ -14,24 +14,24 @@ async function getLivePrice(symbol: string) {
     return {
       error: "Live price data not available",
       message: `I don't have access to real-time price feeds for ${symbol}. Check your broker or EODHD for current prices.`,
-      symbol: symbol
+      symbol: symbol,
     };
   } catch (error) {
-    return { error: 'Failed to fetch price data' };
+    return { error: "Failed to fetch price data" };
   }
 }
 
-async function analyzeChartPattern(symbol: string, timeframe = '1h') {
+async function analyzeChartPattern(symbol: string, timeframe = "1h") {
   try {
     // Honest response - we don't have real chart analysis capability
     return {
       error: "Chart analysis not available",
       message: `I can't analyze live charts for ${symbol} right now. Use EODHD or your trading platform for technical analysis.`,
       symbol: symbol,
-      timeframe: timeframe
+      timeframe: timeframe,
     };
   } catch (error) {
-    return { error: 'Failed to analyze chart' };
+    return { error: "Failed to analyze chart" };
   }
 }
 
@@ -39,43 +39,47 @@ async function checkMarketSentiment(symbol?: string) {
   try {
     // Return general market context without fake data
     const generalSentiment = {
-      message: "I don't have access to real-time sentiment data. Check financial news and social sentiment tools for current market mood.",
-      suggestion: "Look at recent news, Fed announcements, and major economic events for sentiment clues."
+      message:
+        "I don't have access to real-time sentiment data. Check financial news and social sentiment tools for current market mood.",
+      suggestion:
+        "Look at recent news, Fed announcements, and major economic events for sentiment clues.",
     };
-    
+
     return generalSentiment;
   } catch (error) {
-    return { error: 'Failed to check sentiment' };
+    return { error: "Failed to check sentiment" };
   }
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Handle CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
     const { message, conversationHistory = [], context = {} } = req.body;
 
-    if (!message || typeof message !== 'string') {
-      return res.status(400).json({ error: 'Message is required and must be a string' });
+    if (!message || typeof message !== "string") {
+      return res
+        .status(400)
+        .json({ error: "Message is required and must be a string" });
     }
 
     if (!process.env.OPENAI_API_KEY) {
-      return res.status(500).json({ error: 'OpenAI API key not configured' });
+      return res.status(500).json({ error: "OpenAI API key not configured" });
     }
 
     // Build context information
-    let contextInfo = '';
+    let contextInfo = "";
     if (context.selectedSymbol) {
       contextInfo += `\nUser is looking at: ${context.selectedSymbol}`;
     }
@@ -89,7 +93,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Prepare messages for OpenAI API
     const messages = [
       {
-        role: 'system' as const,
+        role: "system" as const,
         content: `You are Alex, a sharp and experienced trading assistant at Liirat. You're conversational, direct, and cut through the noise.
 
 Your style:
@@ -112,25 +116,23 @@ What you DON'T do:
 - Be overly formal or robotic
 - Pretend to have data you don't have
 
-${contextInfo ? `Market context: ${contextInfo}` : ''}
+${contextInfo ? `Market context: ${contextInfo}` : ""}
 
-Keep it real, keep it short, keep it valuable. 🎯`
+Keep it real, keep it short, keep it valuable. 🎯`,
       },
       ...conversationHistory.map((msg: any) => ({
         role: msg.role,
-        content: msg.content
+        content: msg.content,
       })),
       {
-        role: 'user' as const,
-        content: message
-      }
+        role: "user" as const,
+        content: message,
+      },
     ];
-
-
 
     // Call OpenAI API - simplified for reliability
     const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: "gpt-3.5-turbo",
       messages: messages,
       max_tokens: 400,
       temperature: 0.7,
@@ -141,34 +143,34 @@ Keep it real, keep it short, keep it valuable. 🎯`
     const aiResponse = completion.choices[0]?.message?.content;
 
     if (!aiResponse) {
-      return res.status(500).json({ error: 'No response from AI' });
+      return res.status(500).json({ error: "No response from AI" });
     }
 
     return res.status(200).json({
       success: true,
       response: aiResponse,
-      usage: completion.usage
+      usage: completion.usage,
     });
-
   } catch (error: any) {
-    console.error('OpenAI API Error:', error);
-    
+    console.error("OpenAI API Error:", error);
+
     // Handle specific OpenAI errors
-    if (error.code === 'insufficient_quota') {
-      return res.status(429).json({ 
-        error: 'API quota exceeded. Please try again later.' 
-      });
-    }
-    
-    if (error.code === 'invalid_api_key') {
-      return res.status(401).json({ 
-        error: 'Invalid API key configuration.' 
+    if (error.code === "insufficient_quota") {
+      return res.status(429).json({
+        error: "API quota exceeded. Please try again later.",
       });
     }
 
-    return res.status(500).json({ 
-      error: 'Internal server error. Please try again later.',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    if (error.code === "invalid_api_key") {
+      return res.status(401).json({
+        error: "Invalid API key configuration.",
+      });
+    }
+
+    return res.status(500).json({
+      error: "Internal server error. Please try again later.",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 }

@@ -203,7 +203,10 @@ export function ChatWidget({ className }: ChatWidgetProps) {
 
         {!isMinimized && (
           <CardContent className="p-0 relative">
-            <ScrollArea className="h-64 sm:h-80 p-3 sm:p-4 touch-pan-y" onTouchStart={(e) => e.stopPropagation()}>
+            <ScrollArea
+              className="h-64 sm:h-80 p-3 sm:p-4 touch-pan-y"
+              onTouchStart={(e) => e.stopPropagation()}
+            >
               <div className="space-y-4">
                 {messages.map((message) => (
                   <div

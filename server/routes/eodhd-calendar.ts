@@ -46,9 +46,14 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
     } else {
       // If no date range specified, default to next 30 days for better relevance
       const today = new Date();
-      const thirtyDaysFromNow = new Date(today.getTime() + (30 * 24 * 60 * 60 * 1000));
-      apiUrl.searchParams.append("from", today.toISOString().split('T')[0]);
-      apiUrl.searchParams.append("to", thirtyDaysFromNow.toISOString().split('T')[0]);
+      const thirtyDaysFromNow = new Date(
+        today.getTime() + 30 * 24 * 60 * 60 * 1000,
+      );
+      apiUrl.searchParams.append("from", today.toISOString().split("T")[0]);
+      apiUrl.searchParams.append(
+        "to",
+        thirtyDaysFromNow.toISOString().split("T")[0],
+      );
     }
 
     console.log(`Fetching EODHD economic events: ${apiUrl.toString()}`);
@@ -96,10 +101,14 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
           // Create a properly formatted event name
           let eventName = event.type || "Economic Event";
           if (event.comparison && event.period) {
-            const comparisonText = event.comparison === 'mom' ? 'Month-over-Month' :
-                                 event.comparison === 'yoy' ? 'Year-over-Year' :
-                                 event.comparison === 'qoq' ? 'Quarter-over-Quarter' :
-                                 event.comparison.toUpperCase();
+            const comparisonText =
+              event.comparison === "mom"
+                ? "Month-over-Month"
+                : event.comparison === "yoy"
+                  ? "Year-over-Year"
+                  : event.comparison === "qoq"
+                    ? "Quarter-over-Quarter"
+                    : event.comparison.toUpperCase();
             eventName = `${event.type} (${comparisonText}) - ${event.period}`;
           } else if (event.period) {
             eventName = `${event.type} - ${event.period}`;
@@ -112,18 +121,33 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
           } else {
             // High impact events
             const highImpactEvents = [
-              'inflation rate', 'gdp', 'unemployment rate', 'interest rate',
-              'cpi', 'ppi', 'retail sales', 'nonfarm payrolls', 'fed funds rate'
+              "inflation rate",
+              "gdp",
+              "unemployment rate",
+              "interest rate",
+              "cpi",
+              "ppi",
+              "retail sales",
+              "nonfarm payrolls",
+              "fed funds rate",
             ];
             const mediumImpactEvents = [
-              'trade balance', 'current account', 'industrial production',
-              'manufacturing pmi', 'services pmi', 'consumer confidence'
+              "trade balance",
+              "current account",
+              "industrial production",
+              "manufacturing pmi",
+              "services pmi",
+              "consumer confidence",
             ];
 
-            const eventType = (event.type || '').toLowerCase();
-            if (highImpactEvents.some(keyword => eventType.includes(keyword))) {
+            const eventType = (event.type || "").toLowerCase();
+            if (
+              highImpactEvents.some((keyword) => eventType.includes(keyword))
+            ) {
               importance = 3;
-            } else if (mediumImpactEvents.some(keyword => eventType.includes(keyword))) {
+            } else if (
+              mediumImpactEvents.some((keyword) => eventType.includes(keyword))
+            ) {
               importance = 2;
             }
           }
@@ -135,9 +159,18 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
             event: eventName,
             category: event.category || event.type || "Economic",
             importance: importance,
-            actual: event.actual !== null && event.actual !== undefined ? String(event.actual) : undefined,
-            forecast: event.estimate !== null && event.estimate !== undefined ? String(event.estimate) : undefined,
-            previous: event.previous !== null && event.previous !== undefined ? String(event.previous) : undefined,
+            actual:
+              event.actual !== null && event.actual !== undefined
+                ? String(event.actual)
+                : undefined,
+            forecast:
+              event.estimate !== null && event.estimate !== undefined
+                ? String(event.estimate)
+                : undefined,
+            previous:
+              event.previous !== null && event.previous !== undefined
+                ? String(event.previous)
+                : undefined,
           };
         })
       : [];
@@ -145,8 +178,12 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
     // Filter events by importance if specified
     let filteredEvents = events;
     if (importance) {
-      const importanceLevels = (importance as string).split(',').map(level => parseInt(level.trim()));
-      filteredEvents = events.filter(event => importanceLevels.includes(event.importance));
+      const importanceLevels = (importance as string)
+        .split(",")
+        .map((level) => parseInt(level.trim()));
+      filteredEvents = events.filter((event) =>
+        importanceLevels.includes(event.importance),
+      );
     }
 
     // Sort events by date - upcoming events first
@@ -166,7 +203,9 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
       return dateA - dateB;
     });
 
-    console.log(`✅ Successfully processed ${filteredEvents.length} economic events from EODHD (filtered from ${events.length})`);
+    console.log(
+      `✅ Successfully processed ${filteredEvents.length} economic events from EODHD (filtered from ${events.length})`,
+    );
     if (filteredEvents.length > 0) {
       console.log("Sample event:", filteredEvents[0]);
     }

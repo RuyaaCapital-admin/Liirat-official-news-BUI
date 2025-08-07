@@ -95,7 +95,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
             const response = await fetch(
               `/api/eodhd-price?symbol=${symbol.symbol}`,
-              { signal: controller.signal }
+              { signal: controller.signal },
             );
 
             clearTimeout(timeoutId);

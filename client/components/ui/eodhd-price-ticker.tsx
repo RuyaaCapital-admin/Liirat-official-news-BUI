@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { TrendingUp, TrendingDown, Wifi, WifiOff } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React, { useEffect, useState, useRef } from "react";
+import { TrendingUp, TrendingDown, Wifi, WifiOff } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface PriceData {
   symbol: string;
@@ -16,22 +16,24 @@ interface EODHDPriceTickerProps {
 
 // Exactly 10 pairs as specified by user
 const SYMBOLS = [
-  { symbol: 'EURUSD.FOREX', display: 'EUR/USD' },
-  { symbol: 'USDJPY.FOREX', display: 'USD/JPY' },
-  { symbol: 'GBPUSD.FOREX', display: 'GBP/USD' },
-  { symbol: 'AUDUSD.FOREX', display: 'AUD/USD' },
-  { symbol: 'USDCHF.FOREX', display: 'USD/CHF' },
-  { symbol: 'USDCAD.FOREX', display: 'USD/CAD' },
-  { symbol: 'BTC-USD.CC', display: 'Bitcoin' },
-  { symbol: 'ETH-USD.CC', display: 'Ethereum' },
-  { symbol: 'XAUUSD.FOREX', display: 'Gold' },
-  { symbol: 'GSPC.INDX', display: 'S&P 500' },
+  { symbol: "EURUSD.FOREX", display: "EUR/USD" },
+  { symbol: "USDJPY.FOREX", display: "USD/JPY" },
+  { symbol: "GBPUSD.FOREX", display: "GBP/USD" },
+  { symbol: "AUDUSD.FOREX", display: "AUD/USD" },
+  { symbol: "USDCHF.FOREX", display: "USD/CHF" },
+  { symbol: "USDCAD.FOREX", display: "USD/CAD" },
+  { symbol: "BTC-USD.CC", display: "Bitcoin" },
+  { symbol: "ETH-USD.CC", display: "Ethereum" },
+  { symbol: "XAUUSD.FOREX", display: "Gold" },
+  { symbol: "GSPC.INDX", display: "S&P 500" },
 ];
 
 const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
   const [prices, setPrices] = useState<Record<string, PriceData>>({});
   const [isConnected, setIsConnected] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('disconnected');
+  const [connectionStatus, setConnectionStatus] = useState<
+    "connecting" | "connected" | "disconnected"
+  >("disconnected");
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttempts = useRef(0);
@@ -39,24 +41,30 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
   const connectWebSocket = () => {
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
 
-    setConnectionStatus('connecting');
+    setConnectionStatus("connecting");
 
     try {
       // Connect to EODHD WebSocket for real-time forex data
-      const wsUrl = 'wss://ws.eodhistoricaldata.com/ws/forex?api_token=6891e3b89ee5e1.29062933';
+      const wsUrl =
+        "wss://ws.eodhistoricaldata.com/ws/forex?api_token=6891e3b89ee5e1.29062933";
 
       wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
-        console.log('EODHD WebSocket connected');
+        console.log("EODHD WebSocket connected");
         setIsConnected(true);
-        setConnectionStatus('connected');
+        setConnectionStatus("connected");
         reconnectAttempts.current = 0;
 
         // Subscribe to all symbols
         const subscribeMessage = {
-          action: 'subscribe',
-          symbols: SYMBOLS.map(s => s.symbol.replace('.FOREX', '').replace('.CC', '').replace('.INDX', ''))
+          action: "subscribe",
+          symbols: SYMBOLS.map((s) =>
+            s.symbol
+              .replace(".FOREX", "")
+              .replace(".CC", "")
+              .replace(".INDX", ""),
+          ),
         };
         wsRef.current?.send(JSON.stringify(subscribeMessage));
       };
@@ -66,51 +74,51 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
           const data = JSON.parse(event.data);
           if (data.s && data.p) {
             // Find matching symbol
-            const matchingSymbol = SYMBOLS.find(sym =>
-              sym.symbol.includes(data.s) ||
-              data.s.includes(sym.symbol.split('.')[0])
+            const matchingSymbol = SYMBOLS.find(
+              (sym) =>
+                sym.symbol.includes(data.s) ||
+                data.s.includes(sym.symbol.split(".")[0]),
             );
 
             if (matchingSymbol) {
               const change = data.c || 0;
               const changePercent = data.cp || 0;
 
-              setPrices(prev => ({
+              setPrices((prev) => ({
                 ...prev,
                 [matchingSymbol.symbol]: {
                   symbol: matchingSymbol.symbol,
                   price: parseFloat(data.p),
                   change: parseFloat(change),
                   changePercent: parseFloat(changePercent),
-                  lastUpdate: new Date()
-                }
+                  lastUpdate: new Date(),
+                },
               }));
             }
           }
         } catch (error) {
-          console.error('Error parsing WebSocket message:', error);
+          console.error("Error parsing WebSocket message:", error);
         }
       };
 
       wsRef.current.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        setConnectionStatus('disconnected');
+        console.error("WebSocket error:", error);
+        setConnectionStatus("disconnected");
         setIsConnected(false);
       };
 
       wsRef.current.onclose = () => {
-        console.log('WebSocket connection closed');
+        console.log("WebSocket connection closed");
         setIsConnected(false);
-        setConnectionStatus('disconnected');
+        setConnectionStatus("disconnected");
         scheduleReconnect();
       };
 
       // Also fetch initial prices via REST API as fallback
       fetchInitialPrices();
-
     } catch (error) {
-      console.error('WebSocket connection failed:', error);
-      setConnectionStatus('disconnected');
+      console.error("WebSocket connection failed:", error);
+      setConnectionStatus("disconnected");
       scheduleReconnect();
       // Use REST API as fallback
       fetchInitialPrices();
@@ -122,7 +130,10 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
       // Fetch prices for all symbols using EODHD REST API
       const pricePromises = SYMBOLS.map(async ({ symbol, display }) => {
         try {
-          const baseSymbol = symbol.replace('.FOREX', '').replace('.CC', '').replace('.INDX', '');
+          const baseSymbol = symbol
+            .replace(".FOREX", "")
+            .replace(".CC", "")
+            .replace(".INDX", "");
           const response = await fetch(`/api/eodhd-price?symbol=${baseSymbol}`);
           if (response.ok) {
             const data = await response.json();
@@ -133,7 +144,7 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
                 price: parseFloat(data.price) || 0,
                 change: parseFloat(data.change || 0),
                 changePercent: parseFloat(data.change_p || 0),
-                lastUpdate: new Date()
+                lastUpdate: new Date(),
               };
             }
           }
@@ -153,22 +164,22 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
             price: result.price,
             change: result.change,
             changePercent: result.changePercent,
-            lastUpdate: result.lastUpdate
+            lastUpdate: result.lastUpdate,
           };
         }
       });
 
       if (Object.keys(newPrices).length > 0) {
-        setPrices(prevPrices => ({ ...prevPrices, ...newPrices }));
-        if (connectionStatus !== 'connected') {
-          setConnectionStatus('connected');
+        setPrices((prevPrices) => ({ ...prevPrices, ...newPrices }));
+        if (connectionStatus !== "connected") {
+          setConnectionStatus("connected");
           setIsConnected(true);
         }
       }
     } catch (error) {
-      console.error('Failed to fetch initial prices:', error);
-      if (connectionStatus !== 'disconnected') {
-        setConnectionStatus('disconnected');
+      console.error("Failed to fetch initial prices:", error);
+      if (connectionStatus !== "disconnected") {
+        setConnectionStatus("disconnected");
       }
     }
   };
@@ -177,10 +188,13 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
     }
-    
+
     reconnectAttempts.current++;
-    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 30000); // Exponential backoff, max 30s
-    
+    const delay = Math.min(
+      1000 * Math.pow(2, reconnectAttempts.current),
+      30000,
+    ); // Exponential backoff, max 30s
+
     reconnectTimeoutRef.current = setTimeout(() => {
       connectWebSocket();
     }, delay);
@@ -188,7 +202,7 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
 
   useEffect(() => {
     connectWebSocket();
-    
+
     return () => {
       if (wsRef.current) {
         wsRef.current.close();
@@ -200,39 +214,45 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
   }, []);
 
   const formatPrice = (price: number, symbol: string): string => {
-    if (symbol.includes('JPY')) {
+    if (symbol.includes("JPY")) {
       return price.toFixed(3);
-    } else if (symbol.includes('BTC') || symbol.includes('ETH')) {
-      return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    } else if (symbol.includes('XAUUSD')) {
+    } else if (symbol.includes("BTC") || symbol.includes("ETH")) {
+      return price.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    } else if (symbol.includes("XAUUSD")) {
       return price.toFixed(2);
-    } else if (symbol.includes('INDX')) {
+    } else if (symbol.includes("INDX")) {
       return price.toFixed(2);
     }
     return price.toFixed(4);
   };
 
   const formatChange = (change: number, changePercent: number): string => {
-    const sign = change >= 0 ? '+' : '';
+    const sign = change >= 0 ? "+" : "";
     return `${sign}${change.toFixed(2)} (${sign}${changePercent.toFixed(2)}%)`;
   };
 
   return (
-    <div className={cn('bg-background border-b border-border', className)}>
+    <div className={cn("bg-background border-b border-border", className)}>
       <div className="relative overflow-hidden h-12">
         <div className="flex items-center h-full">
           {/* Connection Status */}
           <div className="flex items-center gap-2 px-4 border-r border-border">
-            {connectionStatus === 'connected' ? (
+            {connectionStatus === "connected" ? (
               <Wifi className="h-4 w-4 text-green-500" />
-            ) : connectionStatus === 'connecting' ? (
+            ) : connectionStatus === "connecting" ? (
               <div className="h-4 w-4 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin" />
             ) : (
               <WifiOff className="h-4 w-4 text-red-500" />
             )}
             <span className="text-xs text-muted-foreground">
-              {connectionStatus === 'connected' ? 'Live' : 
-               connectionStatus === 'connecting' ? 'Connecting' : 'Offline'}
+              {connectionStatus === "connected"
+                ? "Live"
+                : connectionStatus === "connecting"
+                  ? "Connecting"
+                  : "Offline"}
             </span>
           </div>
 
@@ -243,7 +263,10 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
                 const priceData = prices[symbol];
                 if (!priceData) {
                   return (
-                    <div key={symbol} className="flex items-center gap-2 px-6 py-2">
+                    <div
+                      key={symbol}
+                      className="flex items-center gap-2 px-6 py-2"
+                    >
                       <span className="font-medium text-sm">{display}</span>
                       <div className="h-4 w-16 bg-muted animate-pulse rounded" />
                     </div>
@@ -251,54 +274,70 @@ const EODHDPriceTicker: React.FC<EODHDPriceTickerProps> = ({ className }) => {
                 }
 
                 const isPositive = priceData.change >= 0;
-                
+
                 return (
-                  <div key={symbol} className="flex items-center gap-3 px-6 py-2 border-r border-border/50">
+                  <div
+                    key={symbol}
+                    className="flex items-center gap-3 px-6 py-2 border-r border-border/50"
+                  >
                     <span className="font-medium text-sm">{display}</span>
                     <span className="font-mono text-sm">
                       {formatPrice(priceData.price, symbol)}
                     </span>
-                    <div className={cn(
-                      'flex items-center gap-1 text-xs',
-                      isPositive ? 'text-green-500' : 'text-red-500'
-                    )}>
+                    <div
+                      className={cn(
+                        "flex items-center gap-1 text-xs",
+                        isPositive ? "text-green-500" : "text-red-500",
+                      )}
+                    >
                       {isPositive ? (
                         <TrendingUp className="h-3 w-3" />
                       ) : (
                         <TrendingDown className="h-3 w-3" />
                       )}
                       <span className="font-mono">
-                        {formatChange(priceData.change, priceData.changePercent)}
+                        {formatChange(
+                          priceData.change,
+                          priceData.changePercent,
+                        )}
                       </span>
                     </div>
                   </div>
                 );
               })}
-              
+
               {/* Duplicate for seamless loop */}
               {SYMBOLS.map(({ symbol, display }) => {
                 const priceData = prices[symbol];
                 if (!priceData) return null;
 
                 const isPositive = priceData.change >= 0;
-                
+
                 return (
-                  <div key={`${symbol}-dup`} className="flex items-center gap-3 px-6 py-2 border-r border-border/50">
+                  <div
+                    key={`${symbol}-dup`}
+                    className="flex items-center gap-3 px-6 py-2 border-r border-border/50"
+                  >
                     <span className="font-medium text-sm">{display}</span>
                     <span className="font-mono text-sm">
                       {formatPrice(priceData.price, symbol)}
                     </span>
-                    <div className={cn(
-                      'flex items-center gap-1 text-xs',
-                      isPositive ? 'text-green-500' : 'text-red-500'
-                    )}>
+                    <div
+                      className={cn(
+                        "flex items-center gap-1 text-xs",
+                        isPositive ? "text-green-500" : "text-red-500",
+                      )}
+                    >
                       {isPositive ? (
                         <TrendingUp className="h-3 w-3" />
                       ) : (
                         <TrendingDown className="h-3 w-3" />
                       )}
                       <span className="font-mono">
-                        {formatChange(priceData.change, priceData.changePercent)}
+                        {formatChange(
+                          priceData.change,
+                          priceData.changePercent,
+                        )}
                       </span>
                     </div>
                   </div>
