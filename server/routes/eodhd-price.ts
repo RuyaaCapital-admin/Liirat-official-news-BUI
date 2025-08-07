@@ -176,7 +176,7 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
 
     // Filter out invalid prices (but keep prices that have valid previousClose for metals)
     prices = prices.filter(
-      (p) => p.price > 0 || (p.previous_close && p.previous_close > 0),
+      (p) => p.price > 0
     );
 
     console.log("Transformed prices:", JSON.stringify(prices, null, 2));
