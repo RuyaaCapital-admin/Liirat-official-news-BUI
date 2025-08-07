@@ -570,22 +570,15 @@ const AITradingAssistant: React.FC = () => {
                     <CardTitle className="text-xl">Live Market Data</CardTitle>
                   </div>
                 </CardHeader>
-                <CardContent className="p-0">
-                  <div className="h-[300px] w-full">
-                    <iframe
-                      src={`https://s.tradingview.com/embed-widget/hotlists/?locale=en#%7B%22colorTheme%22%3A%22${theme}%22%2C%22dateRange%22%3A%2212M%22%2C%22exchange%22%3A%22US%22%2C%22showChart%22%3Atrue%2C%22locale%22%3A%22en%22%2C%22width%22%3A%22100%25%22%2C%22height%22%3A%22300%22%2C%22largeChartUrl%22%3A%22%22%2C%22isTransparent%22%3A${theme === "dark" ? "true" : "false"}%2C%22showSymbolLogo%22%3Atrue%2C%22showFloatingTooltip%22%3Afalse%2C%22plotLineColorGrowing%22%3A%22hsl(85%2C%2070%25%2C%2050%25)%22%2C%22plotLineColorFalling%22%3A%22rgba(239%2C%2083%2C%2080%2C%201)%22%2C%22gridLineColor%22%3A%22rgba(240%2C%20243%2C%20250%2C%200.06)%22%2C%22scaleFontColor%22%3A%22rgba(209%2C%20212%2C%20220%2C%201)%22%2C%22belowLineFillColorGrowing%22%3A%22rgba(41%2C%2098%2C%20255%2C%200.12)%22%2C%22belowLineFillColorFalling%22%3A%22rgba(239%2C%2083%2C%2080%2C%200.12)%22%2C%22belowLineFillColorGrowingBottom%22%3A%22rgba(41%2C%2098%2C%20255%2C%200)%22%2C%22belowLineFillColorFallingBottom%22%3A%22rgba(239%2C%2083%2C%2080%2C%200)%22%2C%22symbolActiveColor%22%3A%22rgba(41%2C%2098%2C%20255%2C%200.12)%22%2C%22utm_source%22%3A%22liirat.com%22%2C%22utm_medium%22%3A%22widget_new%22%2C%22utm_campaign%22%3A%22hotlists%22%7D`}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        border: "none",
-                        backgroundColor:
-                          theme === "dark" ? "transparent" : "#ffffff",
-                      }}
-                      frameBorder="0"
-                      allowTransparency={theme === "dark"}
-                      scrolling="no"
-                      allowFullScreen
-                    />
+                <CardContent className="p-4">
+                  <div className="h-[250px] flex items-center justify-center bg-muted/30 rounded-lg">
+                    <div className="text-center space-y-3">
+                      <TrendingUp className="h-8 w-8 text-primary mx-auto" />
+                      <h3 className="font-semibold">EODHD Market Data</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Real-time data powered by EODHD API
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
