@@ -35,6 +35,8 @@ import {
   Filter,
   RefreshCw,
   ChevronDown,
+  Bell,
+  Plus,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -49,6 +51,7 @@ interface MacroCalendarTableProps {
     from?: string;
     to?: string;
   }) => void;
+  onCreateAlert?: (event: EconomicEvent) => void;
 }
 
 // Top economic countries that frequently affect markets
@@ -357,6 +360,7 @@ export function MacroCalendarTable({
   language = "en",
   dir = "ltr",
   onRefresh,
+  onCreateAlert,
 }: MacroCalendarTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [countrySearchTerm, setCountrySearchTerm] = useState("");
