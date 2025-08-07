@@ -76,20 +76,16 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       // Crypto API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/crypto");
       finalSymbol = symbolStr;
-    } else if (isMetal) {
-      // Direct single-symbol endpoint for metals (GOLD/SILVER)
-      apiUrl = new URL(`https://eodhd.com/api/real-time/${symbolStr}`);
-      // Don't add 's' parameter for direct single-symbol endpoint
+    } else if (isCommodity || isMetal) {
+      // Commodities API endpoint (includes COMEX metals)
+      apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
+      finalSymbol = symbolStr;
     } else if (isIndex) {
       // Indices API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
       finalSymbol = symbolStr;
     } else if (isUSStock) {
       // US Stocks API endpoint
-      apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
-      finalSymbol = symbolStr;
-    } else if (isCommodity) {
-      // Commodities API endpoint
       apiUrl = new URL("https://eodhd.com/api/real-time/stocks");
       finalSymbol = symbolStr;
     } else if (isForex) {
@@ -104,10 +100,8 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
         : symbolStr + ".FOREX";
     }
 
-    // Add API parameters - skip for metals using direct endpoint
-    if (!isMetal) {
-      apiUrl.searchParams.append("s", finalSymbol);
-    }
+    // Add API parameters
+    apiUrl.searchParams.append("s", finalSymbol);
     apiUrl.searchParams.append("api_token", apiKey);
     apiUrl.searchParams.append("fmt", fmt as string);
 
