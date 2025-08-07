@@ -110,8 +110,8 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
       // Initial fetch
       fetchPrice();
 
-      // Set up periodic updates (every 30 seconds)
-      const priceInterval = setInterval(fetchPrice, 30000);
+      // Set up periodic updates (every 60 seconds to reduce API calls)
+      const priceInterval = setInterval(fetchPrice, 60000);
 
       // Store interval for cleanup
       wsConnections.current[config.symbol] = { close: () => clearInterval(priceInterval) } as any;
