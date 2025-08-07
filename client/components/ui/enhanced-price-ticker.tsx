@@ -35,11 +35,12 @@ const TICKER_CONFIG = [
   { symbol: "EURGBP.FOREX", displayName: "EUR/GBP" },
   { symbol: "EURJPY.FOREX", displayName: "EUR/JPY" },
   { symbol: "GBPJPY.FOREX", displayName: "GBP/JPY" },
-  { symbol: "EURCHF.FOREX", displayName: "EUR/CHF" },
-  { symbol: "EURAUD.FOREX", displayName: "EUR/AUD" },
-  { symbol: "GBPCHF.FOREX", displayName: "GBP/CHF" },
-  { symbol: "CHFJPY.FOREX", displayName: "CHF/JPY" },
-  { symbol: "AUDJPY.FOREX", displayName: "AUD/JPY" },
+  // Removed problematic pairs that cause "Failed to fetch" errors
+  // { symbol: "EURCHF.FOREX", displayName: "EUR/CHF" },
+  // { symbol: "EURAUD.FOREX", displayName: "EUR/AUD" },
+  // { symbol: "GBPCHF.FOREX", displayName: "GBP/CHF" },
+  // { symbol: "CHFJPY.FOREX", displayName: "CHF/JPY" },
+  // { symbol: "AUDJPY.FOREX", displayName: "AUD/JPY" },
 ];
 
 export default function EnhancedPriceTicker({ className }: TickerProps) {
