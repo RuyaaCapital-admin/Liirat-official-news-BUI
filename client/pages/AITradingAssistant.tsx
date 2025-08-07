@@ -117,8 +117,8 @@ const AITradingAssistant: React.FC = () => {
       }
     } catch (error) {
       console.error("Error fetching news:", error);
-      // Set mock news as fallback
-      const newsData =
+      // No mock data - show empty array for production
+      setNews([]);
         language === "ar"
           ? [
               {
@@ -126,7 +126,7 @@ const AITradingAssistant: React.FC = () => {
                 title:
                   "بنك الاحتياطي الفيدرالي يشير إلى تخفيضات محتملة في أسعار الفائدة لعام 2024",
                 summary:
-                  "أشار بنك الاحتياطي الفيدرالي إلى موقف أكثر مرونة، مما يشير إلى تخفيضات محتملة في أسعار الفائدة في العام القادم.",
+                  "أشار بنك الاحتياطي الفيدرالي إلى موقف أكثر مرونة، مما يشير إلى تخفيضات محتملة في أس��ار الفائدة في العام القادم.",
                 source: "رويترز",
                 publishedAt: "2024-01-15T10:30:00Z",
                 impact: "high" as const,
