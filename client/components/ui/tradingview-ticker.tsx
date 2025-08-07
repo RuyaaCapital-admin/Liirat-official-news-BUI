@@ -99,24 +99,36 @@ const TradingViewTicker: React.FC<TradingViewTickerProps> = ({ className = '' })
 
   return (
     <div className={`tradingview-widget-container ${className}`}>
-      <div 
+      <div
         ref={containerRef}
-        className="tradingview-widget-container__widget"
-        style={{ 
+        className="tradingview-widget-container__widget relative"
+        style={{
           height: '50px',
-          width: '100%'
+          width: '100%',
+          pointerEvents: 'none' // Disable all clicks
         }}
       />
-      <div className="tradingview-widget-copyright">
-        <a 
-          href="https://www.tradingview.com/" 
-          rel="noopener nofollow" 
-          target="_blank"
-          className="text-xs text-muted-foreground hover:text-primary"
-        >
-          Track all markets on TradingView
-        </a>
-      </div>
+
+      {/* CSS to hide TradingView logo and disable clicks */}
+      <style jsx>{`
+        .tradingview-widget-container iframe {
+          pointer-events: none !important;
+        }
+
+        .tradingview-widget-container [class*="copyright"],
+        .tradingview-widget-container [class*="logo"],
+        .tradingview-widget-container [href*="tradingview"],
+        .tradingview-widget-container a[target="_blank"] {
+          display: none !important;
+          visibility: hidden !important;
+          opacity: 0 !important;
+        }
+
+        .tradingview-widget-container * {
+          pointer-events: none !important;
+          cursor: default !important;
+        }
+      `}</style>
     </div>
   );
 };
