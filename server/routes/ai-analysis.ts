@@ -14,6 +14,33 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
       });
     }
 
+    // Get client ID for rate limiting
+    const clientId = getClientId(req);
+
+    // Check rate limit
+    if (!apiOptimizer.checkRateLimit(clientId, 'analysis')) {
+      return res.status(429).json({
+        error: "Rate limit exceeded. Please try again later.",
+        analysis: language === "ar"
+          ? "تجاوز الحد المسموح من الطلبات"
+          : "Rate limit exceeded",
+        retryAfter: 60
+      });
+    }
+
+    // Generate cache key for AI analysis
+    const cacheKey = generateCacheKey('analysis', {
+      text: text.substring(0, 100), // Use first 100 chars for cache key
+      language,
+      type
+    });
+
+    // Check cache first
+    const cachedData = apiOptimizer.getCached(cacheKey, 'analysis');
+    if (cachedData) {
+      return res.json(cachedData);
+    }
+
     // Create analysis prompt based on type
     let prompt = "";
     if (type === "event") {
