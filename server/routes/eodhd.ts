@@ -69,17 +69,23 @@ export const getEconomicEvents: RequestHandler = async (req, res) => {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.warn(`EODHD API returned status: ${response.status}`);
-      // Return mock events instead of empty
-      const result: EconomicEventsResponse = { events: getMockEvents() };
+      console.error(`EODHD API returned status: ${response.status}`);
+      // Return error instead of mock data
+      const result: EconomicEventsResponse = {
+        events: [],
+        error: `EODHD API Error: ${response.status} - ${response.statusText}`
+      };
       return res.json(result);
     }
 
     // Check if response is JSON before parsing
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
-      console.warn(`EODHD API returned non-JSON content: ${contentType}`);
-      const result: EconomicEventsResponse = { events: getMockEvents() };
+      console.error(`EODHD API returned non-JSON content: ${contentType}`);
+      const result: EconomicEventsResponse = {
+        events: [],
+        error: "Invalid response format from EODHD API"
+      };
       return res.json(result);
     }
 
