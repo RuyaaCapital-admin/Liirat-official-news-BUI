@@ -146,7 +146,7 @@ async function fetchRealMarketData(): Promise<any[]> {
 // Real-time news fetcher
 async function fetchRealNews(): Promise<any[]> {
   try {
-    const response = await fetch("http://localhost:8080/api/news");
+    const response = await fetch("/api/news");
     if (response.ok) {
       const data = await response.json();
       if (data.news && Array.isArray(data.news)) {
