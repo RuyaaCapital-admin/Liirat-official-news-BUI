@@ -272,9 +272,9 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
           </div>
 
           <div className="text-lg font-bold">
-            {currentData.price > 0
+            {currentData.price && currentData.price > 0
               ? formatPrice(currentData.price, currentData.symbol)
-              : "--"}
+              : "Loading..."}
           </div>
 
           {currentData.price > 0 && (
