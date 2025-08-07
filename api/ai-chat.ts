@@ -13,7 +13,7 @@ async function getLivePrice(symbol: string) {
     // This is honest and prevents showing fake data as real
     return {
       error: "Live price data not available",
-      message: `I don't have access to real-time price feeds for ${symbol}. Check your broker or TradingView for current prices.`,
+      message: `I don't have access to real-time price feeds for ${symbol}. Check your broker or EODHD for current prices.`,
       symbol: symbol
     };
   } catch (error) {
@@ -26,7 +26,7 @@ async function analyzeChartPattern(symbol: string, timeframe = '1h') {
     // Honest response - we don't have real chart analysis capability
     return {
       error: "Chart analysis not available",
-      message: `I can't analyze live charts for ${symbol} right now. Use TradingView or your trading platform for technical analysis.`,
+      message: `I can't analyze live charts for ${symbol} right now. Use EODHD or your trading platform for technical analysis.`,
       symbol: symbol,
       timeframe: timeframe
     };
