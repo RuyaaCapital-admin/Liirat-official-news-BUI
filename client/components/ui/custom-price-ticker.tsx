@@ -154,30 +154,33 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
       <div className="flex items-center h-full animate-scroll whitespace-nowrap will-change-transform">
         {/* First Set */}
         {priceData.map((item, index) => (
-          <div
-            key={`${item.symbol}-1-${index}`}
-            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 min-w-fit"
-          >
-            <span className="font-medium text-xs sm:text-sm truncate max-w-[80px] sm:max-w-none">
-              {item.displayName}
-            </span>
-            <span className="font-mono text-xs sm:text-sm font-bold">
-              {formatPrice(item.price, item.symbol)}
-            </span>
-            <div
-              className={cn(
-                "flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs",
-                item.changePercent >= 0 ? "text-green-500" : "text-red-500"
-              )}
-            >
-              {item.changePercent >= 0 ? (
-                <TrendingUp className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-              ) : (
-                <TrendingDown className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-              )}
-              <span className="whitespace-nowrap">{formatChange(item.change, item.changePercent)}</span>
+          <React.Fragment key={`${item.symbol}-1-${index}`}>
+            <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 min-w-fit">
+              <span className="font-medium text-xs sm:text-sm truncate max-w-[80px] sm:max-w-none">
+                {item.displayName}
+              </span>
+              <span className="font-mono text-xs sm:text-sm font-bold">
+                {formatPrice(item.price, item.symbol)}
+              </span>
+              <div
+                className={cn(
+                  "flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs",
+                  item.changePercent >= 0 ? "text-green-500" : "text-red-500"
+                )}
+              >
+                {item.changePercent >= 0 ? (
+                  <TrendingUp className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                ) : (
+                  <TrendingDown className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                )}
+                <span className="whitespace-nowrap">{formatChange(item.change, item.changePercent)}</span>
+              </div>
             </div>
-          </div>
+            {/* Separator */}
+            {index < priceData.length - 1 && (
+              <div className="w-px h-6 bg-border mx-1"></div>
+            )}
+          </React.Fragment>
         ))}
         
         {/* Duplicate Set for Seamless Loop */}
