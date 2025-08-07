@@ -47,31 +47,62 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
   const lastFetchTime = useRef<Record<string, number>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Fetch price data for a specific symbol with retry logic
+  // Network connectivity check
+  const checkNetworkConnectivity = async (): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/status', {
+        method: 'GET',
+        cache: 'no-cache',
+        signal: AbortSignal.timeout(5000),
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  };
+
+  // Fetch price data with enhanced error handling and fallback
   const fetchPriceData = async (symbol: string, retryCount = 0) => {
-    const maxRetries = 3;
-    const retryDelay = 1000 * (retryCount + 1); // Progressive delay
+    const maxRetries = 2; // Reduced retries for production
+    const retryDelay = Math.min(2000 * (retryCount + 1), 10000); // Progressive delay, max 10s
 
     try {
       const now = Date.now();
       const lastFetch = lastFetchTime.current[symbol] || 0;
 
-      // Rate limiting: don't fetch if less than 20 seconds have passed
-      if (now - lastFetch < 20000 && retryCount === 0) {
+      // Rate limiting: don't fetch if less than 30 seconds have passed
+      if (now - lastFetch < 30000 && retryCount === 0) {
         return;
       }
 
       lastFetchTime.current[symbol] = now;
 
-      // Set connecting status
-      setPriceData((prev) => ({
-        ...prev,
-        [symbol]: { ...prev[symbol], status: "connecting" },
-      }));
+      // Set connecting status only on first attempt
+      if (retryCount === 0) {
+        setPriceData((prev) => ({
+          ...prev,
+          [symbol]: { ...prev[symbol], status: "connecting" },
+        }));
+      }
 
-      // Create fetch with timeout
+      // Check network connectivity first
+      const isOnline = await checkNetworkConnectivity();
+      if (!isOnline && retryCount === 0) {
+        console.warn(`No network connectivity detected for ${symbol}`);
+        setPriceData((prev) => ({
+          ...prev,
+          [symbol]: {
+            ...prev[symbol],
+            status: "disconnected",
+            lastUpdate: new Date(),
+          },
+        }));
+        return;
+      }
+
+      // Create fetch with shorter timeout for production
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
 
       const response = await fetch(
         `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
@@ -79,31 +110,39 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache',
           },
           signal: controller.signal,
+          // Add credentials and mode for CORS
+          mode: 'cors',
+          credentials: 'same-origin',
         }
       );
 
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        const errorText = await response.text().catch(() => 'Unknown error');
+        const errorText = await response.text().catch(() => 'No response body');
         console.error(
-          `API error for ${symbol}: ${response.status} - ${response.statusText}`,
-          errorText
+          `[TICKER] API error for ${symbol}: ${response.status} - ${response.statusText}`,
+          errorText.substring(0, 200)
         );
 
-        // Retry on 500+ errors or network issues
-        if ((response.status >= 500 || response.status === 429) && retryCount < maxRetries) {
-          console.log(`Retrying ${symbol} in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+        // Only retry on specific error codes
+        if ((response.status >= 500 || response.status === 429 || response.status === 0) && retryCount < maxRetries) {
+          console.log(`[TICKER] Retrying ${symbol} in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`);
           setTimeout(() => fetchPriceData(symbol, retryCount + 1), retryDelay);
           return;
         }
 
+        // Set disconnected status after all retries failed
         setPriceData((prev) => ({
           ...prev,
-          [symbol]: { ...prev[symbol], status: "disconnected" },
+          [symbol]: {
+            ...prev[symbol],
+            status: "disconnected",
+            lastUpdate: new Date(),
+          },
         }));
         return;
       }
@@ -126,24 +165,31 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
             status: "connected",
           },
         }));
-        console.log(`Successfully fetched price for ${symbol}: $${priceInfo.price}`);
+        console.log(`[TICKER] Successfully fetched ${symbol}: $${priceInfo.price}`);
       } else {
-        console.warn(`No price data received for ${symbol}`);
+        console.warn(`[TICKER] No price data received for ${symbol}`);
         setPriceData((prev) => ({
           ...prev,
           [symbol]: { ...prev[symbol], status: "disconnected" },
         }));
       }
     } catch (error) {
-      console.error(`Network error fetching price for ${symbol}:`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(`[TICKER] Network error for ${symbol}:`, errorMessage);
 
-      // Retry on network errors
-      if (retryCount < maxRetries) {
-        console.log(`Retrying ${symbol} due to network error in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+      // Check if it's a network error or timeout
+      const isNetworkError = errorMessage.includes('Failed to fetch') ||
+                           errorMessage.includes('NetworkError') ||
+                           errorMessage.includes('AbortError');
+
+      // Retry on network errors but with exponential backoff
+      if (isNetworkError && retryCount < maxRetries) {
+        console.log(`[TICKER] Retrying ${symbol} due to network error in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`);
         setTimeout(() => fetchPriceData(symbol, retryCount + 1), retryDelay);
         return;
       }
 
+      // Final failure - set disconnected status
       setPriceData((prev) => ({
         ...prev,
         [symbol]: {
