@@ -67,22 +67,56 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         clearTimeout(reconnectTimeouts.current[config.symbol]);
       }
 
-      // Determine correct WebSocket URL based on asset type
-      let wsUrl = "";
-      switch (config.wsType) {
-        case "forex":
-          wsUrl = `wss://ws.eodhistoricaldata.com/ws/forex?api_token=${EODHD_API_KEY}`;
-          break;
-        case "crypto":
-          wsUrl = `wss://ws.eodhistoricaldata.com/ws/crypto?api_token=${EODHD_API_KEY}`;
-          break;
-        case "us":
-          wsUrl = `wss://ws.eodhistoricaldata.com/ws/us?api_token=${EODHD_API_KEY}`;
-          break;
-        default:
-          console.error(`Unknown WebSocket type: ${config.wsType}`);
-          return;
-      }
+      // For now, we'll use fallback REST API calls instead of WebSocket
+      // to avoid exposing API keys in frontend and reduce connection overhead
+      console.log(`Price ticker: ${config.symbol} - using REST API fallback`);
+
+      // Instead of WebSocket, we'll use periodic REST API calls
+      const fetchPrice = async () => {
+        try {
+          const response = await fetch(`/api/eodhd-price?symbol=${config.symbol}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.price) {
+              const currentData = priceData[config.symbol];
+              const change = data.price - (currentData?.price || data.price);
+              const changePercent = currentData?.price ? (change / currentData.price) * 100 : 0;
+
+              setPriceData(prev => ({
+                ...prev,
+                [config.symbol]: {
+                  ...prev[config.symbol],
+                  price: data.price,
+                  change,
+                  changePercent,
+                  lastUpdate: new Date(),
+                  status: 'connected',
+                },
+              }));
+            }
+          }
+        } catch (error) {
+          console.error(`Failed to fetch price for ${config.symbol}:`, error);
+          setPriceData(prev => ({
+            ...prev,
+            [config.symbol]: {
+              ...prev[config.symbol],
+              status: 'disconnected',
+            },
+          }));
+        }
+      };
+
+      // Initial fetch
+      fetchPrice();
+
+      // Set up periodic updates (every 30 seconds)
+      const priceInterval = setInterval(fetchPrice, 30000);
+
+      // Store interval for cleanup
+      wsConnections.current[config.symbol] = { close: () => clearInterval(priceInterval) } as any;
+
+      return;
 
       console.log(`Connecting to ${config.symbol} via ${wsUrl}`);
 
