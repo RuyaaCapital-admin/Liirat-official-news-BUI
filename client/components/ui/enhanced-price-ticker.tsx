@@ -47,27 +47,60 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
   const lastFetchTime = useRef<Record<string, number>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Fetch price data for a specific symbol
-  const fetchPriceData = async (symbol: string) => {
+  // Fetch price data for a specific symbol with retry logic
+  const fetchPriceData = async (symbol: string, retryCount = 0) => {
+    const maxRetries = 3;
+    const retryDelay = 1000 * (retryCount + 1); // Progressive delay
+
     try {
       const now = Date.now();
       const lastFetch = lastFetchTime.current[symbol] || 0;
 
       // Rate limiting: don't fetch if less than 20 seconds have passed
-      if (now - lastFetch < 20000) {
+      if (now - lastFetch < 20000 && retryCount === 0) {
         return;
       }
 
       lastFetchTime.current[symbol] = now;
 
+      // Set connecting status
+      setPriceData((prev) => ({
+        ...prev,
+        [symbol]: { ...prev[symbol], status: "connecting" },
+      }));
+
+      // Create fetch with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
       const response = await fetch(
         `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+        {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          signal: controller.signal,
+        }
       );
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
+        const errorText = await response.text().catch(() => 'Unknown error');
         console.error(
-          `Failed to fetch price for ${symbol}: ${response.status}`,
+          `API error for ${symbol}: ${response.status} - ${response.statusText}`,
+          errorText
         );
+
+        // Retry on 500+ errors or network issues
+        if ((response.status >= 500 || response.status === 429) && retryCount < maxRetries) {
+          console.log(`Retrying ${symbol} in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+          setTimeout(() => fetchPriceData(symbol, retryCount + 1), retryDelay);
+          return;
+        }
+
         setPriceData((prev) => ({
           ...prev,
           [symbol]: { ...prev[symbol], status: "disconnected" },
@@ -93,17 +126,31 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
             status: "connected",
           },
         }));
+        console.log(`Successfully fetched price for ${symbol}: $${priceInfo.price}`);
       } else {
+        console.warn(`No price data received for ${symbol}`);
         setPriceData((prev) => ({
           ...prev,
           [symbol]: { ...prev[symbol], status: "disconnected" },
         }));
       }
     } catch (error) {
-      console.error(`Error fetching price for ${symbol}:`, error);
+      console.error(`Network error fetching price for ${symbol}:`, error);
+
+      // Retry on network errors
+      if (retryCount < maxRetries) {
+        console.log(`Retrying ${symbol} due to network error in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+        setTimeout(() => fetchPriceData(symbol, retryCount + 1), retryDelay);
+        return;
+      }
+
       setPriceData((prev) => ({
         ...prev,
-        [symbol]: { ...prev[symbol], status: "disconnected" },
+        [symbol]: {
+          ...prev[symbol],
+          status: "disconnected",
+          lastUpdate: new Date(),
+        },
       }));
     }
   };
