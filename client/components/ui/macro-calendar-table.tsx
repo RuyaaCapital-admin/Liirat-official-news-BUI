@@ -762,7 +762,7 @@ export function MacroCalendarTable({
             <PopoverContent className="w-56 p-3">
               <div className="space-y-3">
                 <div className="text-sm font-medium">
-                  {t("Select Impact Levels", "اختر مستويات التأثير")}
+                  {t("Select Impact Levels", "اختر مستويات ال��أثير")}
                 </div>
                 {[
                   {
@@ -874,7 +874,7 @@ export function MacroCalendarTable({
       <div>
         {/* Mobile Card Layout */}
         <div className="sm:hidden space-y-3">
-          {filteredEvents.length === 0 ? (
+          {displayedEvents.length === 0 ? (
             <div className="p-6 text-center text-muted-foreground bg-card rounded-lg border">
               {t(
                 "No events found matching your criteria",
