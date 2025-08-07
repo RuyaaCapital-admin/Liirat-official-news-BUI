@@ -223,7 +223,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
           currencyPairs.map(async (pair) => {
             try {
               const response = await fetch(
-                `/api/price-alert?symbol=${pair.symbol}`,
+                `/api/eodhd-price?symbol=${pair.symbol}`,
               );
 
               // Check if response is HTML (error page) instead of JSON
