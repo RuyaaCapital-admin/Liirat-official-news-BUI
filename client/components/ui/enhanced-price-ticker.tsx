@@ -260,21 +260,44 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
   useEffect(() => {
     console.log("[TICKER] Starting price updates immediately");
 
-    // Start fetching price data for all symbols (staggered) - reduce concurrent requests
-    TICKER_CONFIG.forEach((config, index) => {
+    // Start fetching by priority tiers to reduce load
+    const tier1 = TICKER_CONFIG.filter(c => c.priority === 1);
+    const tier2 = TICKER_CONFIG.filter(c => c.priority === 2);
+    const tier3 = TICKER_CONFIG.filter(c => c.priority === 3);
+
+    // Fetch tier 1 immediately (most important)
+    tier1.forEach((config, index) => {
       setTimeout(() => {
         fetchPriceData(config.symbol);
-      }, index * 2000); // 2 seconds between requests to reduce load
+      }, index * 1000); // 1 second between tier 1
     });
 
-    // Set up interval for continuous updates - less frequent
-    const interval = setInterval(() => {
-      TICKER_CONFIG.forEach((config, index) => {
+    // Fetch tier 2 after 10 seconds
+    setTimeout(() => {
+      tier2.forEach((config, index) => {
         setTimeout(() => {
           fetchPriceData(config.symbol);
-        }, index * 1500); // 1.5 seconds between each update request
+        }, index * 2000); // 2 seconds between tier 2
       });
-    }, 90000); // Update every 90 seconds to reduce API load
+    }, 10000);
+
+    // Fetch tier 3 after 30 seconds
+    setTimeout(() => {
+      tier3.forEach((config, index) => {
+        setTimeout(() => {
+          fetchPriceData(config.symbol);
+        }, index * 3000); // 3 seconds between tier 3
+      });
+    }, 30000);
+
+    // Set up interval for updates - only tier 1 updates frequently
+    const interval = setInterval(() => {
+      tier1.forEach((config, index) => {
+        setTimeout(() => {
+          fetchPriceData(config.symbol);
+        }, index * 2000);
+      });
+    }, 120000); // Update tier 1 every 2 minutes
 
     return () => clearInterval(interval);
   }, []); // Remove dependency on network status
