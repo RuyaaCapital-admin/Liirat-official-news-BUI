@@ -16,7 +16,7 @@ import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import EnhancedMacroCalendar from "@/components/ui/enhanced-macro-calendar";
 import RealtimeNewsTable from "@/components/ui/realtime-news-table";
-import SeparatedAlertSystem from "@/components/ui/separated-alert-system";
+import EnhancedAlertSystem from "@/components/ui/enhanced-alert-system";
 import { EconomicEventsResponse, EconomicEvent } from "@shared/api";
 import { NotificationSystem } from "@/components/ui/notification-system";
 import { NotificationDropdown } from "@/components/ui/notification-dropdown";
@@ -621,7 +621,7 @@ export default function Index() {
                     : "Create intelligent alerts for currency pairs with real-time price monitoring"}
                 </p>
               </div>
-              <SeparatedAlertSystem />
+              <EnhancedAlertSystem />
             </div>
           </section>
 
