@@ -388,6 +388,12 @@ export function MacroCalendarTable({
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [translatedContent, setTranslatedContent] = useState<
+    Record<string, string>
+  >({});
+  const [loadingTranslation, setLoadingTranslation] = useState<
+    Record<string, boolean>
+  >({});
 
   const t = (enText: string, arText: string) =>
     language === "ar" ? arText : enText;
@@ -405,6 +411,66 @@ export function MacroCalendarTable({
       window.removeEventListener("offline", handleOffline);
     };
   }, []);
+
+  // Handle translation for event titles in Arabic mode
+  const translateEventTitle = async (event: EconomicEvent) => {
+    const eventKey = `${event.event}-${event.country}`;
+
+    if (
+      translatedContent[eventKey] ||
+      loadingTranslation[eventKey] ||
+      language !== "ar"
+    ) {
+      return translatedContent[eventKey] || event.event;
+    }
+
+    setLoadingTranslation((prev) => ({ ...prev, [eventKey]: true }));
+
+    try {
+      const response = await fetch("/api/translate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: event.event,
+          targetLanguage: "ar",
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const translated = data.translatedText || event.event;
+        setTranslatedContent((prev) => ({ ...prev, [eventKey]: translated }));
+        return translated;
+      } else {
+        console.error(`Translation API error: ${response.status}`);
+        throw new Error(`Translation failed: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Translation failed:", error);
+      throw error;
+    } finally {
+      setLoadingTranslation((prev) => ({ ...prev, [eventKey]: false }));
+    }
+  };
+
+  // Auto-translate event titles when language changes to Arabic
+  React.useEffect(() => {
+    if (language === "ar" && displayedEvents.length > 0) {
+      const timer = setTimeout(() => {
+        displayedEvents.slice(0, 5).forEach((event, index) => {
+          setTimeout(() => {
+            translateEventTitle(event).catch((error) => {
+              console.debug("Translation failed for:", event.event);
+            });
+          }, index * 1000); // 1 second delay between requests
+        });
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [language, displayedEvents]);
 
   // Filter countries based on search
   const filteredCountries = useMemo(() => {
@@ -957,7 +1023,16 @@ export function MacroCalendarTable({
 
                 <div className="space-y-2">
                   <div className="font-medium text-sm leading-tight">
-                    {event.event}
+                    {language === "ar" &&
+                    translatedContent[`${event.event}-${event.country}`]
+                      ? translatedContent[`${event.event}-${event.country}`]
+                      : event.event}
+                    {language === "ar" &&
+                      loadingTranslation[`${event.event}-${event.country}`] && (
+                        <span className="ml-2 text-xs text-muted-foreground animate-pulse">
+                          (ترجمة...)
+                        </span>
+                      )}
                   </div>
 
                   <div className="text-xs text-muted-foreground flex items-center gap-1">
@@ -1143,7 +1218,20 @@ export function MacroCalendarTable({
                         )}
                       >
                         <div className="font-medium max-w-xs">
-                          {event.event}
+                          {language === "ar" &&
+                          translatedContent[`${event.event}-${event.country}`]
+                            ? translatedContent[
+                                `${event.event}-${event.country}`
+                              ]
+                            : event.event}
+                          {language === "ar" &&
+                            loadingTranslation[
+                              `${event.event}-${event.country}`
+                            ] && (
+                              <span className="ml-2 text-xs text-muted-foreground animate-pulse">
+                                (ترجمة...)
+                              </span>
+                            )}
                         </div>
                       </td>
                       <td

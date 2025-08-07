@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 import { NewLiquidToggle } from "@/components/ui/new-liquid-toggle";
 // Using EODHD data only - no TradingView widgets
@@ -126,7 +126,7 @@ const AITradingAssistant: React.FC = () => {
                 title:
                   "بنك الاحتياطي الفيدرالي يشير إلى تخفيضات محتملة في أسعار الفائدة لعام 2024",
                 summary:
-                  "أشار بنك الاحتياطي الفيدر��لي إلى موقف أكثر مرونة، مما يشير إلى تخفيضات محتملة في أسعار الفائدة في العام القادم.",
+                  "أشار بنك الاحتياطي الفيدرالي إلى موقف أكثر مرونة، مما يشير إلى تخفيضات محتملة في أسعار الفائدة في العام القادم.",
                 source: "رويترز",
                 publishedAt: "2024-01-15T10:30:00Z",
                 impact: "high",

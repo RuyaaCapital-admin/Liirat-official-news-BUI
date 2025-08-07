@@ -427,7 +427,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                 {language === "ar" ? "آخر أسبوع" : "Last week"}
               </SelectItem>
               <SelectItem value="1m">
-                {language === "ar" ? "آخر ش��ر" : "Last month"}
+                {language === "ar" ? "آخر شهر" : "Last month"}
               </SelectItem>
             </SelectContent>
           </Select>

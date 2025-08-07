@@ -720,7 +720,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                   type="button"
                 >
                   <Bell className="w-4 h-4" />
-                  {language === "ar" ? "��نشاء التنبيه" : "Create Alert"}
+                  {language === "ar" ? "إنشاء التنبيه" : "Create Alert"}
                 </Button>
               </div>
             </div>

@@ -16,30 +16,93 @@ interface TickerProps {
   className?: string;
 }
 
-// Configuration for the 10 required pairs with correct EODHD endpoints
+// Configuration for the most traded pairs with EODHD endpoints
 const TICKER_CONFIG = [
-  { symbol: "EURUSD.FOREX", displayName: "EUR/USD", wsType: "forex" },
-  { symbol: "USDJPY.FOREX", displayName: "USD/JPY", wsType: "forex" },
-  { symbol: "GBPUSD.FOREX", displayName: "GBP/USD", wsType: "forex" },
-  { symbol: "AUDUSD.FOREX", displayName: "AUD/USD", wsType: "forex" },
-  { symbol: "USDCHF.FOREX", displayName: "USD/CHF", wsType: "forex" },
-  { symbol: "USDCAD.FOREX", displayName: "USD/CAD", wsType: "forex" },
-  { symbol: "BTC-USD.CC", displayName: "BTC/USD", wsType: "crypto" },
-  { symbol: "ETH-USD.CC", displayName: "ETH/USD", wsType: "crypto" },
-  { symbol: "XAUUSD.FOREX", displayName: "XAU/USD", wsType: "forex" },
-  { symbol: "GSPC.INDX", displayName: "S&P 500", wsType: "us" },
+  { symbol: "EURUSD.FOREX", displayName: "EUR/USD" },
+  { symbol: "USDJPY.FOREX", displayName: "USD/JPY" },
+  { symbol: "GBPUSD.FOREX", displayName: "GBP/USD" },
+  { symbol: "AUDUSD.FOREX", displayName: "AUD/USD" },
+  { symbol: "USDCHF.FOREX", displayName: "USD/CHF" },
+  { symbol: "USDCAD.FOREX", displayName: "USD/CAD" },
+  { symbol: "NZDUSD.FOREX", displayName: "NZD/USD" },
+  { symbol: "EURGBP.FOREX", displayName: "EUR/GBP" },
+  { symbol: "EURJPY.FOREX", displayName: "EUR/JPY" },
+  { symbol: "GBPJPY.FOREX", displayName: "GBP/JPY" },
+  { symbol: "BTC-USD.CC", displayName: "BTC/USD" },
+  { symbol: "ETH-USD.CC", displayName: "ETH/USD" },
+  { symbol: "XAUUSD.FOREX", displayName: "XAU/USD" },
+  { symbol: "XAGUSD.FOREX", displayName: "XAG/USD" },
+  { symbol: "GSPC.INDX", displayName: "S&P 500" },
 ];
-
-// Note: API key should be handled on backend only
-// WebSocket connections will use public endpoints or backend proxy
 
 export default function EnhancedPriceTicker({ className }: TickerProps) {
   const [priceData, setPriceData] = useState<Record<string, PriceData>>({});
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const wsConnections = useRef<Record<string, WebSocket>>({});
-  const reconnectTimeouts = useRef<Record<string, NodeJS.Timeout>>({});
+  const [isScrolling, setIsScrolling] = useState(true);
+  const lastFetchTime = useRef<Record<string, number>>({});
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Initialize price data
+  // Fetch price data for a specific symbol
+  const fetchPriceData = async (symbol: string) => {
+    try {
+      const now = Date.now();
+      const lastFetch = lastFetchTime.current[symbol] || 0;
+
+      // Rate limiting: don't fetch if less than 20 seconds have passed
+      if (now - lastFetch < 20000) {
+        return;
+      }
+
+      lastFetchTime.current[symbol] = now;
+
+      const response = await fetch(
+        `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+      );
+
+      if (!response.ok) {
+        console.error(
+          `Failed to fetch price for ${symbol}: ${response.status}`,
+        );
+        setPriceData((prev) => ({
+          ...prev,
+          [symbol]: { ...prev[symbol], status: "disconnected" },
+        }));
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.prices && data.prices.length > 0) {
+        const priceInfo = data.prices[0];
+        const config = TICKER_CONFIG.find((c) => c.symbol === symbol);
+
+        setPriceData((prev) => ({
+          ...prev,
+          [symbol]: {
+            symbol,
+            displayName: config?.displayName || symbol,
+            price: priceInfo.price || 0,
+            change: priceInfo.change || 0,
+            changePercent: priceInfo.change_percent || 0,
+            lastUpdate: new Date(),
+            status: "connected",
+          },
+        }));
+      } else {
+        setPriceData((prev) => ({
+          ...prev,
+          [symbol]: { ...prev[symbol], status: "disconnected" },
+        }));
+      }
+    } catch (error) {
+      console.error(`Error fetching price for ${symbol}:`, error);
+      setPriceData((prev) => ({
+        ...prev,
+        [symbol]: { ...prev[symbol], status: "disconnected" },
+      }));
+    }
+  };
+
+  // Initialize price data and start fetching
   useEffect(() => {
     const initialData: Record<string, PriceData> = {};
     TICKER_CONFIG.forEach((config) => {
@@ -54,160 +117,34 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
       };
     });
     setPriceData(initialData);
-  }, []);
 
-  // Connect to WebSocket for a specific symbol
-  const connectWebSocket = (config: (typeof TICKER_CONFIG)[0]) => {
-    try {
-      // Clear existing connection and timeout
-      if (wsConnections.current[config.symbol]) {
-        wsConnections.current[config.symbol].close();
-      }
-      if (reconnectTimeouts.current[config.symbol]) {
-        clearTimeout(reconnectTimeouts.current[config.symbol]);
-      }
-
-      // For now, we'll use fallback REST API calls instead of WebSocket
-      // to avoid exposing API keys in frontend and reduce connection overhead
-      console.log(`Price ticker: ${config.symbol} - using REST API fallback`);
-
-      // Instead of WebSocket, we'll use periodic REST API calls
-      const fetchPrice = async () => {
-        try {
-          const response = await fetch(
-            `/api/eodhd-price?symbol=${config.symbol}`,
-          );
-          if (response.ok) {
-            const data = await response.json();
-            if (data.prices && data.prices.length > 0) {
-              const priceInfo = data.prices[0];
-              const currentData = priceData[config.symbol];
-              const change = priceInfo.change || 0;
-              const changePercent = priceInfo.change_percent || 0;
-
-              setPriceData((prev) => ({
-                ...prev,
-                [config.symbol]: {
-                  ...prev[config.symbol],
-                  price: priceInfo.price,
-                  change,
-                  changePercent,
-                  lastUpdate: new Date(),
-                  status: "connected",
-                },
-              }));
-            }
-          }
-        } catch (error) {
-          console.error(`Failed to fetch price for ${config.symbol}:`, error);
-          setPriceData((prev) => ({
-            ...prev,
-            [config.symbol]: {
-              ...prev[config.symbol],
-              status: "disconnected",
-            },
-          }));
-        }
-      };
-
-      // Initial fetch
-      fetchPrice();
-
-      // Set up periodic updates (every 30 seconds for better responsiveness)
-      const priceInterval = setInterval(fetchPrice, 30000);
-
-      // Store interval for cleanup
-      wsConnections.current[config.symbol] = {
-        close: () => clearInterval(priceInterval),
-      } as any;
-
-      return;
-    } catch (error) {
-      console.error(
-        `Failed to setup price updates for ${config.symbol}:`,
-        error,
-      );
-      setPriceData((prev) => ({
-        ...prev,
-        [config.symbol]: {
-          ...prev[config.symbol],
-          status: "disconnected",
-        },
-      }));
-    }
-  };
-
-  // Connect to all price feeds
-  useEffect(() => {
-    TICKER_CONFIG.forEach((config) => {
-      connectWebSocket(config);
+    // Start fetching price data for all symbols (staggered)
+    TICKER_CONFIG.forEach((config, index) => {
+      setTimeout(() => {
+        fetchPriceData(config.symbol);
+      }, index * 1000); // 1 second between each initial request
     });
 
-    // Cleanup on unmount
-    return () => {
-      Object.values(wsConnections.current).forEach((connection) => {
-        if (connection && typeof connection.close === "function") {
-          connection.close();
-        }
-      });
-      Object.values(reconnectTimeouts.current).forEach((timeout) => {
-        clearTimeout(timeout);
-      });
-    };
-  }, []);
-
-  // Auto-scroll through tickers (increased interval to reduce processing)
-  useEffect(() => {
+    // Set up interval for continuous updates
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % TICKER_CONFIG.length);
-    }, 5000); // Change every 5 seconds to reduce processing
+      TICKER_CONFIG.forEach((config, index) => {
+        setTimeout(() => {
+          fetchPriceData(config.symbol);
+        }, index * 500); // 500ms between each update request
+      });
+    }, 45000); // Update every 45 seconds
 
     return () => clearInterval(interval);
   }, []);
 
-  // Fallback to REST API if WebSocket fails
-  const fetchFallbackPrice = async (symbol: string) => {
-    try {
-      const response = await fetch(`/api/eodhd-price?symbol=${symbol}`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.price) {
-          const currentData = priceData[symbol];
-          const change = data.price - (currentData?.price || data.price);
-          const changePercent = currentData?.price
-            ? (change / currentData.price) * 100
-            : 0;
+  // Get valid price entries for display
+  const validPrices = Object.values(priceData).filter(
+    (data) => data.price > 0 && data.status === "connected",
+  );
 
-          setPriceData((prev) => ({
-            ...prev,
-            [symbol]: {
-              ...prev[symbol],
-              price: data.price,
-              change,
-              changePercent,
-              lastUpdate: new Date(),
-              status: "connected",
-            },
-          }));
-        }
-      }
-    } catch (error) {
-      console.error(`Fallback price fetch failed for ${symbol}:`, error);
-    }
-  };
-
-  // Fallback polling for disconnected symbols (reduced frequency)
-  useEffect(() => {
-    const fallbackInterval = setInterval(() => {
-      Object.entries(priceData).forEach(([symbol, data]) => {
-        if (data.status === "disconnected") {
-          fetchFallbackPrice(symbol);
-        }
-      });
-    }, 60000); // Every 60 seconds to reduce API calls
-
-    return () => clearInterval(fallbackInterval);
-  }, [priceData]);
+  // Handle scroll pause on hover
+  const handleMouseEnter = () => setIsScrolling(false);
+  const handleMouseLeave = () => setIsScrolling(true);
 
   const formatPrice = (price: number, symbol: string) => {
     if (symbol.includes("BTC") || symbol.includes("ETH")) {
@@ -215,120 +152,67 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       });
-    } else if (symbol.includes("JPY")) {
-      return price.toFixed(3);
-    } else {
-      return price.toFixed(5);
     }
+    return price.toFixed(5);
   };
 
-  const formatChange = (change: number, changePercent: number) => {
-    const sign = change >= 0 ? "+" : "";
-    return `${sign}${change.toFixed(4)} (${sign}${changePercent.toFixed(2)}%)`;
+  const formatPercent = (percent: number) => {
+    return `${percent >= 0 ? "+" : ""}${percent.toFixed(2)}%`;
   };
-
-  const currentTicker = TICKER_CONFIG[currentIndex];
-  const currentData = priceData[currentTicker?.symbol];
-
-  if (!currentData) {
-    return (
-      <div
-        className={cn(
-          "bg-primary/10 py-2 px-4 border-b border-border",
-          className,
-        )}
-      >
-        <div className="flex items-center justify-center text-sm text-muted-foreground">
-          Loading market data...
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div
       className={cn(
-        "bg-background/95 backdrop-blur-sm py-2 px-4 border-b border-border",
+        "relative overflow-hidden bg-background border-y border-border",
         className,
       )}
     >
-      <div className="flex items-center justify-between max-w-7xl mx-auto">
-        {/* Current Ticker Display */}
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <span className="font-semibold text-sm">
-              {currentData.displayName}
-            </span>
-            <div
-              className={cn(
-                "w-2 h-2 rounded-full",
-                currentData.status === "connected"
-                  ? "bg-green-500"
-                  : currentData.status === "connecting"
-                    ? "bg-yellow-500"
-                    : "bg-red-500",
-              )}
-            />
-          </div>
-
-          <div className="text-lg font-bold">
-            {currentData.price && currentData.price > 0
-              ? formatPrice(currentData.price, currentData.symbol)
-              : "Loading..."}
-          </div>
-
-          {currentData.price > 0 && (
-            <div
-              className={cn(
-                "flex items-center space-x-1 text-sm font-medium",
-                currentData.change >= 0 ? "text-green-600" : "text-red-600",
-              )}
-            >
-              {currentData.change >= 0 ? (
-                <TrendingUp className="w-3 h-3" />
-              ) : (
-                <TrendingDown className="w-3 h-3" />
-              )}
-              <span>
-                {formatChange(currentData.change, currentData.changePercent)}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Mini ticker strip for all symbols */}
-        <div className="hidden lg:flex items-center space-x-6 text-xs">
-          {TICKER_CONFIG.slice(0, 5).map((config) => {
-            const data = priceData[config.symbol];
-            if (!data || data.price === 0) return null;
-
-            return (
-              <div key={config.symbol} className="flex items-center space-x-1">
-                <span className="text-muted-foreground">
-                  {config.displayName}:
-                </span>
-                <span className="font-semibold">
-                  {formatPrice(data.price, config.symbol)}
-                </span>
-                <span
-                  className={cn(
-                    "text-xs",
-                    data.change >= 0 ? "text-green-600" : "text-red-600",
+      <div
+        ref={scrollRef}
+        className={cn(
+          "flex items-center whitespace-nowrap overflow-hidden",
+          isScrolling && "animate-scroll",
+        )}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* Duplicate the content for seamless scrolling */}
+        {[...Array(2)].map((_, duplicateIndex) => (
+          <div key={duplicateIndex} className="flex items-center">
+            {validPrices.map((data, index) => (
+              <div
+                key={`${duplicateIndex}-${data.symbol}`}
+                className="flex items-center gap-3 px-6 py-3 border-r border-border/50 min-w-[200px]"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-sm">
+                    {data.displayName}
+                  </span>
+                  {data.changePercent >= 0 ? (
+                    <TrendingUp className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <TrendingDown className="w-4 h-4 text-red-500" />
                   )}
-                >
-                  {data.change >= 0 ? "+" : ""}
-                  {data.changePercent.toFixed(1)}%
-                </span>
+                </div>
+                <div className="text-right">
+                  <div className="font-mono text-sm font-bold">
+                    {formatPrice(data.price, data.symbol)}
+                  </div>
+                  <div
+                    className={cn(
+                      "text-xs font-mono",
+                      data.changePercent >= 0
+                        ? "text-green-500"
+                        : "text-red-500",
+                    )}
+                  >
+                    {formatPercent(data.changePercent)}
+                  </div>
+                </div>
               </div>
-            );
-          })}
-        </div>
-
-        {/* Live indicator */}
-        <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-          <span>Live</span>
-        </div>
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   );

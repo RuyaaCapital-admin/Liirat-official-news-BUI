@@ -72,17 +72,85 @@ interface SeparatedAlertSystemProps {
   onPriceAlert?: (alert: PriceAlert) => void;
 }
 
-const POPULAR_SYMBOLS = [
-  { symbol: "EURUSD.FOREX", displayName: "EUR/USD" },
-  { symbol: "USDJPY.FOREX", displayName: "USD/JPY" },
-  { symbol: "GBPUSD.FOREX", displayName: "GBP/USD" },
-  { symbol: "AUDUSD.FOREX", displayName: "AUD/USD" },
-  { symbol: "USDCHF.FOREX", displayName: "USD/CHF" },
-  { symbol: "USDCAD.FOREX", displayName: "USD/CAD" },
-  { symbol: "BTC-USD.CC", displayName: "BTC/USD" },
-  { symbol: "ETH-USD.CC", displayName: "ETH/USD" },
-  { symbol: "XAUUSD.FOREX", displayName: "XAU/USD" },
-  { symbol: "GSPC.INDX", displayName: "S&P 500" },
+const ALL_SYMBOLS = [
+  // Major Forex Pairs
+  { symbol: "EURUSD.FOREX", displayName: "EUR/USD", type: "forex" },
+  { symbol: "USDJPY.FOREX", displayName: "USD/JPY", type: "forex" },
+  { symbol: "GBPUSD.FOREX", displayName: "GBP/USD", type: "forex" },
+  { symbol: "AUDUSD.FOREX", displayName: "AUD/USD", type: "forex" },
+  { symbol: "USDCHF.FOREX", displayName: "USD/CHF", type: "forex" },
+  { symbol: "USDCAD.FOREX", displayName: "USD/CAD", type: "forex" },
+  { symbol: "NZDUSD.FOREX", displayName: "NZD/USD", type: "forex" },
+  { symbol: "EURGBP.FOREX", displayName: "EUR/GBP", type: "forex" },
+  { symbol: "EURJPY.FOREX", displayName: "EUR/JPY", type: "forex" },
+  { symbol: "EURCHF.FOREX", displayName: "EUR/CHF", type: "forex" },
+  { symbol: "EURCAD.FOREX", displayName: "EUR/CAD", type: "forex" },
+  { symbol: "EURAUD.FOREX", displayName: "EUR/AUD", type: "forex" },
+  { symbol: "GBPJPY.FOREX", displayName: "GBP/JPY", type: "forex" },
+  { symbol: "GBPCHF.FOREX", displayName: "GBP/CHF", type: "forex" },
+  { symbol: "GBPCAD.FOREX", displayName: "GBP/CAD", type: "forex" },
+  { symbol: "GBPAUD.FOREX", displayName: "GBP/AUD", type: "forex" },
+  { symbol: "CHFJPY.FOREX", displayName: "CHF/JPY", type: "forex" },
+  { symbol: "CADJPY.FOREX", displayName: "CAD/JPY", type: "forex" },
+  { symbol: "AUDJPY.FOREX", displayName: "AUD/JPY", type: "forex" },
+  { symbol: "AUDCHF.FOREX", displayName: "AUD/CHF", type: "forex" },
+  { symbol: "AUDCAD.FOREX", displayName: "AUD/CAD", type: "forex" },
+  { symbol: "NZDJPY.FOREX", displayName: "NZD/JPY", type: "forex" },
+
+  // Major Cryptocurrencies
+  { symbol: "BTC-USD.CC", displayName: "Bitcoin (BTC/USD)", type: "crypto" },
+  { symbol: "ETH-USD.CC", displayName: "Ethereum (ETH/USD)", type: "crypto" },
+  { symbol: "ADA-USD.CC", displayName: "Cardano (ADA/USD)", type: "crypto" },
+  { symbol: "SOL-USD.CC", displayName: "Solana (SOL/USD)", type: "crypto" },
+  {
+    symbol: "AVAX-USD.CC",
+    displayName: "Avalanche (AVAX/USD)",
+    type: "crypto",
+  },
+  { symbol: "DOT-USD.CC", displayName: "Polkadot (DOT/USD)", type: "crypto" },
+  {
+    symbol: "MATIC-USD.CC",
+    displayName: "Polygon (MATIC/USD)",
+    type: "crypto",
+  },
+  {
+    symbol: "LINK-USD.CC",
+    displayName: "Chainlink (LINK/USD)",
+    type: "crypto",
+  },
+  { symbol: "UNI-USD.CC", displayName: "Uniswap (UNI/USD)", type: "crypto" },
+  { symbol: "LTC-USD.CC", displayName: "Litecoin (LTC/USD)", type: "crypto" },
+
+  // Commodities
+  { symbol: "XAUUSD.FOREX", displayName: "Gold (XAU/USD)", type: "commodity" },
+  {
+    symbol: "XAGUSD.FOREX",
+    displayName: "Silver (XAG/USD)",
+    type: "commodity",
+  },
+  { symbol: "WTIUSD.FOREX", displayName: "WTI Crude Oil", type: "commodity" },
+  {
+    symbol: "XPDUSD.FOREX",
+    displayName: "Palladium (XPD/USD)",
+    type: "commodity",
+  },
+  {
+    symbol: "XPTUSD.FOREX",
+    displayName: "Platinum (XPT/USD)",
+    type: "commodity",
+  },
+
+  // Major Stock Indices
+  { symbol: "GSPC.INDX", displayName: "S&P 500", type: "index" },
+  { symbol: "DJI.INDX", displayName: "Dow Jones", type: "index" },
+  { symbol: "IXIC.INDX", displayName: "NASDAQ", type: "index" },
+  { symbol: "RUT.INDX", displayName: "Russell 2000", type: "index" },
+  { symbol: "VIX.INDX", displayName: "VIX", type: "index" },
+  { symbol: "FTSE.INDX", displayName: "FTSE 100", type: "index" },
+  { symbol: "GDAXI.INDX", displayName: "DAX", type: "index" },
+  { symbol: "FCHI.INDX", displayName: "CAC 40", type: "index" },
+  { symbol: "N225.INDX", displayName: "Nikkei 225", type: "index" },
+  { symbol: "HSI.INDX", displayName: "Hang Seng", type: "index" },
 ];
 
 export default function SeparatedAlertSystem({
@@ -119,6 +187,140 @@ export default function SeparatedAlertSystem({
     changePercent: "",
     message: "",
   });
+
+  // Symbol search state
+  const [symbolSearch, setSymbolSearch] = useState("");
+  const [showSymbolSuggestions, setShowSymbolSuggestions] = useState(false);
+  const [currentPrice, setCurrentPrice] = useState<number | null>(null);
+  const [loadingPrice, setLoadingPrice] = useState(false);
+  const [selectedSymbol, setSelectedSymbol] = useState<
+    (typeof ALL_SYMBOLS)[0] | null
+  >(null);
+
+  // Filter symbols based on search
+  const filteredSymbols = React.useMemo(() => {
+    if (!symbolSearch || symbolSearch.length < 2)
+      return ALL_SYMBOLS.slice(0, 10);
+
+    const searchLower = symbolSearch.toLowerCase();
+    return ALL_SYMBOLS.filter(
+      (symbol) =>
+        symbol.displayName.toLowerCase().includes(searchLower) ||
+        symbol.symbol.toLowerCase().includes(searchLower),
+    ).slice(0, 15);
+  }, [symbolSearch]);
+
+  // Fetch real-time price for selected symbol
+  const fetchRealTimePrice = async (symbol: string) => {
+    if (!symbol) return;
+
+    setLoadingPrice(true);
+    try {
+      const response = await fetch(
+        `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+      );
+      if (response.ok) {
+        const data = await response.json();
+        if (data.prices && data.prices.length > 0 && data.prices[0].price) {
+          setCurrentPrice(data.prices[0].price);
+        } else {
+          setCurrentPrice(null);
+        }
+      } else {
+        console.error("Failed to fetch price:", response.status);
+        setCurrentPrice(null);
+      }
+    } catch (error) {
+      console.error("Error fetching price:", error);
+      setCurrentPrice(null);
+    } finally {
+      setLoadingPrice(false);
+    }
+  };
+
+  // Handle symbol selection
+  const handleSymbolSelect = (symbol: (typeof ALL_SYMBOLS)[0]) => {
+    setSelectedSymbol(symbol);
+    setPriceForm((prev) => ({ ...prev, symbol: symbol.symbol }));
+    setSymbolSearch(symbol.displayName);
+    setShowSymbolSuggestions(false);
+    fetchRealTimePrice(symbol.symbol);
+  };
+
+  // Monitor price alerts - check every 30 seconds
+  React.useEffect(() => {
+    if (priceAlerts.length === 0) return;
+
+    const checkAlerts = async () => {
+      for (const alert of priceAlerts.filter((a) => a.isActive)) {
+        try {
+          const response = await fetch(
+            `/api/eodhd-price?symbol=${encodeURIComponent(alert.symbol)}`,
+          );
+          if (response.ok) {
+            const data = await response.json();
+            if (data.prices && data.prices.length > 0 && data.prices[0].price) {
+              const currentPrice = data.prices[0].price;
+              const targetPrice = parseFloat(alert.targetPrice);
+
+              let shouldTrigger = false;
+
+              if (alert.condition === "above" && currentPrice >= targetPrice) {
+                shouldTrigger = true;
+              } else if (
+                alert.condition === "below" &&
+                currentPrice <= targetPrice
+              ) {
+                shouldTrigger = true;
+              } else if (alert.condition === "change_percent") {
+                // Calculate percentage change - would need previous price stored
+                // For now, skip this condition until we store previous prices
+              }
+
+              if (shouldTrigger) {
+                // Trigger alert notification
+                if (
+                  "Notification" in window &&
+                  Notification.permission === "granted"
+                ) {
+                  new Notification(`Price Alert: ${alert.symbol}`, {
+                    body: `${alert.symbol} is now ${currentPrice.toFixed(5)}. ${alert.message || ""}`,
+                    icon: "/favicon.ico",
+                  });
+                }
+
+                // Deactivate the alert since it triggered
+                setPriceAlerts((prev) =>
+                  prev.map((a) =>
+                    a.id === alert.id ? { ...a, isActive: false } : a,
+                  ),
+                );
+
+                console.log(
+                  `Alert triggered for ${alert.symbol}: ${currentPrice}`,
+                );
+              }
+            }
+          }
+        } catch (error) {
+          console.error(`Error checking alert for ${alert.symbol}:`, error);
+        }
+      }
+    };
+
+    // Check immediately and then every 30 seconds
+    checkAlerts();
+    const interval = setInterval(checkAlerts, 30000);
+
+    return () => clearInterval(interval);
+  }, [priceAlerts]);
+
+  // Request notification permission on component mount
+  React.useEffect(() => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
 
   // Create news/event alert
   const createNewsEventAlert = () => {
@@ -157,10 +359,9 @@ export default function SeparatedAlertSystem({
 
   // Create price alert
   const createPriceAlert = () => {
-    const selectedSymbol = POPULAR_SYMBOLS.find(
-      (s) => s.symbol === priceForm.symbol,
-    );
-    if (!selectedSymbol) return;
+    if (!selectedSymbol || !priceForm.targetPrice) {
+      return; // Don't create alert without proper symbol and target price
+    }
 
     const alert: PriceAlert = {
       id: Date.now().toString(),
@@ -189,7 +390,10 @@ export default function SeparatedAlertSystem({
       changePercent: "",
       message: "",
     });
-
+    setSymbolSearch("");
+    setSelectedSymbol(null);
+    setCurrentPrice(null);
+    setShowSymbolSuggestions(false);
     setIsPriceDialogOpen(false);
   };
 
@@ -423,7 +627,7 @@ export default function SeparatedAlertSystem({
                         <div>
                           <Label>
                             {language === "ar"
-                              ? "دقائق قبل الحدث"
+                              ? "��قائق قبل الحدث"
                               : "Minutes Before Event"}
                           </Label>
                           <Input
@@ -571,7 +775,7 @@ export default function SeparatedAlertSystem({
                     <Button className="flex items-center gap-2">
                       <Plus className="w-4 h-4" />
                       {language === "ar"
-                        ? "إضافة تنبيه سعر"
+                        ? "إضاف�� تنبيه سعر"
                         : "Add Price Alert"}
                     </Button>
                   </DialogTrigger>
@@ -585,33 +789,97 @@ export default function SeparatedAlertSystem({
                     </DialogHeader>
                     <div className="space-y-4" dir={dir}>
                       <div>
-                        <Label>{language === "ar" ? "الرمز" : "Symbol"}</Label>
-                        <Select
-                          value={priceForm.symbol}
-                          onValueChange={(value) =>
-                            setPriceForm((prev) => ({ ...prev, symbol: value }))
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue
-                              placeholder={
-                                language === "ar"
-                                  ? "اختر الرمز"
-                                  : "Select symbol"
-                              }
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {POPULAR_SYMBOLS.map((symbol) => (
-                              <SelectItem
-                                key={symbol.symbol}
-                                value={symbol.symbol}
-                              >
-                                {symbol.displayName}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Label>
+                          {language === "ar"
+                            ? "البحث عن الرمز"
+                            : "Search Symbol"}
+                        </Label>
+                        <div className="relative">
+                          <Input
+                            value={symbolSearch}
+                            onChange={(e) => {
+                              setSymbolSearch(e.target.value);
+                              setShowSymbolSuggestions(
+                                e.target.value.length >= 2,
+                              );
+                            }}
+                            onFocus={() =>
+                              setShowSymbolSuggestions(symbolSearch.length >= 2)
+                            }
+                            placeholder={
+                              language === "ar"
+                                ? "ابحث عن الرمز (مثل: EUR, BTC, GOLD)"
+                                : "Search symbol (e.g: EUR, BTC, GOLD)"
+                            }
+                            className="pr-10"
+                          />
+
+                          {/* Real-time price display */}
+                          {selectedSymbol && (
+                            <div className="mt-2 p-2 bg-muted/50 rounded border">
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">
+                                  {selectedSymbol.displayName}
+                                </span>
+                                <div className="text-right">
+                                  {loadingPrice ? (
+                                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                  ) : currentPrice ? (
+                                    <span className="text-lg font-bold text-primary">
+                                      {currentPrice.toFixed(
+                                        selectedSymbol.type === "crypto"
+                                          ? 2
+                                          : 5,
+                                      )}
+                                    </span>
+                                  ) : (
+                                    <span className="text-sm text-muted-foreground">
+                                      {language === "ar"
+                                        ? "السعر غير متاح"
+                                        : "Price unavailable"}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {language === "ar"
+                                  ? "السعر الحالي"
+                                  : "Current Price"}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Symbol suggestions dropdown */}
+                          {showSymbolSuggestions &&
+                            filteredSymbols.length > 0 && (
+                              <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border border-border/50 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                <div className="p-2">
+                                  <div className="text-xs text-muted-foreground mb-2 px-2">
+                                    {language === "ar"
+                                      ? "اختر الرمز:"
+                                      : "Select Symbol:"}
+                                  </div>
+                                  {filteredSymbols.map((symbol) => (
+                                    <div
+                                      key={symbol.symbol}
+                                      onClick={() => handleSymbolSelect(symbol)}
+                                      className="flex items-center gap-3 p-2 hover:bg-muted/50 cursor-pointer rounded text-sm"
+                                    >
+                                      <div className="flex-1">
+                                        <div className="font-medium">
+                                          {symbol.displayName}
+                                        </div>
+                                        <div className="text-xs text-muted-foreground">
+                                          {symbol.symbol} •{" "}
+                                          {symbol.type.toUpperCase()}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                        </div>
                       </div>
 
                       <div>

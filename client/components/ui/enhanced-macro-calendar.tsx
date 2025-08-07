@@ -65,7 +65,7 @@ const EVENT_CATEGORIES = [
     labelAr: "البنوك المركزية",
   },
   { value: "gdp", labelEn: "GDP", labelAr: "الناتج المحلي" },
-  { value: "retail", labelEn: "Retail Sales", labelAr: "مبي��ات التجزئة" },
+  { value: "retail", labelEn: "Retail Sales", labelAr: "مبيعات التجزئة" },
   { value: "manufacturing", labelEn: "Manufacturing", labelAr: "التصنيع" },
   { value: "housing", labelEn: "Housing", labelAr: "الإسكان" },
   { value: "earnings", labelEn: "Earnings", labelAr: "الأرباح" },
@@ -337,8 +337,8 @@ export default function EnhancedMacroCalendar({
 
   // Auto-translate events when language changes to Arabic (with debouncing)
   useEffect(() => {
-    // Translation temporarily disabled due to fetch errors - will re-enable once API is stable
-    if (false && language === "ar" && displayedEvents.length > 0) {
+    // Enable real-time translation for Arabic mode with proper API configuration
+    if (language === "ar" && displayedEvents.length > 0) {
       // Debounce translation requests to avoid overwhelming the API
       const timer = setTimeout(() => {
         displayedEvents.slice(0, 5).forEach((event, index) => {
@@ -401,16 +401,46 @@ export default function EnhancedMacroCalendar({
     }
   };
 
-  // Handle translation request - temporarily simplified to prevent fetch errors
+  // Handle translation request with proper error handling and API calls
   const translateContent = async (event: EconomicEvent) => {
     const eventKey = `${event.event}-${event.country}`;
 
-    // Always return original text for now to prevent fetch errors
-    // Translation functionality will be re-enabled once API connectivity is stable
-    setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
-    return event.event;
+    // Skip if already translated or currently translating
+    if (translatedContent[eventKey] || loadingTranslation[eventKey]) {
+      return translatedContent[eventKey] || event.event;
+    }
 
-    return event.event; // Fallback to original
+    setLoadingTranslation((prev) => ({ ...prev, [eventKey]: true }));
+
+    try {
+      const response = await fetch("/api/translate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: event.event,
+          targetLanguage: "ar",
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const translated = data.translatedText || event.event;
+        setTranslatedContent((prev) => ({ ...prev, [eventKey]: translated }));
+        return translated;
+      } else {
+        // Log error but don't show fallback - try again later
+        console.error(`Translation API error: ${response.status}`);
+        throw new Error(`Translation failed: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Translation failed:", error);
+      // Re-throw error to trigger retry later instead of using fallback
+      throw error;
+    } finally {
+      setLoadingTranslation((prev) => ({ ...prev, [eventKey]: false }));
+    }
   };
 
   // Handle AI analysis request with better error handling
@@ -448,11 +478,34 @@ export default function EnhancedMacroCalendar({
           throw new Error("No analysis received");
         }
       } else {
-        // Don't read response body twice - just use status for error
+        // Handle specific API key errors
+        const errorData = await response.json().catch(() => ({}));
         console.error(
           `AI Analysis API error: ${response.status} - ${response.statusText}`,
         );
-        throw new Error(`API error: ${response.status}`);
+
+        if (response.status === 401) {
+          // API key not configured or invalid
+          setAiAnalysis((prev) => ({
+            ...prev,
+            [event.event]:
+              language === "ar"
+                ? "⚠️ مفتاح OpenAI API غير صحيح أو غير مُعدّ. يرجى إعداد مفتاح صحيح في متغيرات البيئة."
+                : "⚠️ OpenAI API key is invalid or not configured. Please set a valid API key in environment variables.",
+          }));
+          return; // Exit early to avoid throwing error
+        } else if (response.status === 500) {
+          setAiAnalysis((prev) => ({
+            ...prev,
+            [event.event]:
+              language === "ar"
+                ? "❌ خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقاً."
+                : "❌ Server error. Please try again later.",
+          }));
+          return; // Exit early to avoid throwing error
+        } else {
+          throw new Error(`API error: ${response.status}`);
+        }
       }
     } catch (error) {
       console.error("AI analysis error:", error);
@@ -460,8 +513,8 @@ export default function EnhancedMacroCalendar({
         ...prev,
         [event.event]:
           language === "ar"
-            ? "تحليل الذكاء ��لاصطناعي غير متاح حاليًا"
-            : "AI analysis currently unavailable",
+            ? "❌ تحليل الذكاء الاصطناعي غير متاح حاليًا. يرجى التحقق من إعدادات API."
+            : "❌ AI analysis currently unavailable. Please check API configuration.",
       }));
     } finally {
       setLoadingAnalysis((prev) => ({ ...prev, [event.event]: false }));
@@ -528,20 +581,41 @@ export default function EnhancedMacroCalendar({
           </Button>
         </div>
 
-        {/* Filters Row - Always Visible */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg">
+        {/* Filters Row - Always Visible and Functional */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg border border-border/50 shadow-sm">
           <div className="md:col-span-4 mb-2">
-            <h4 className="font-medium text-sm">
-              {language === "ar" ? "فلاتر" : "Filters"}
-              {(searchTerm ||
-                selectedCountries.length > 0 ||
-                selectedImportance.length < 3 ||
-                selectedCategory !== "all") && (
-                <Badge variant="secondary" className="ml-2 text-xs">
-                  {language === "ar" ? "نشط" : "Active"}
-                </Badge>
-              )}
-            </h4>
+            <div className="flex items-center justify-between">
+              <h4 className="font-medium text-sm">
+                {language === "ar" ? "فلاتر" : "Filters"}
+                {(searchTerm ||
+                  selectedCountries.length > 0 ||
+                  selectedImportance.length < 3 ||
+                  selectedCategory !== "all") && (
+                  <Badge
+                    variant="secondary"
+                    className="ml-2 text-xs bg-primary/10 text-primary"
+                  >
+                    {language === "ar" ? "نشط" : "Active"}
+                  </Badge>
+                )}
+              </h4>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedCountries([]);
+                  setSelectedImportance([1, 2, 3]);
+                  setSelectedCategory("all");
+                  setDateFrom(undefined);
+                  setDateTo(undefined);
+                  setSelectedPeriod("this_week");
+                }}
+                className="text-xs text-muted-foreground hover:text-foreground"
+              >
+                {language === "ar" ? "مسح الكل" : "Clear All"}
+              </Button>
+            </div>
           </div>
 
           {/* Search */}
@@ -656,10 +730,13 @@ export default function EnhancedMacroCalendar({
                     );
                   }}
                   className={cn(
-                    "h-9 px-2 text-xs",
+                    "h-9 px-2 text-xs transition-all duration-200 hover:scale-105 border",
                     selectedImportance.includes(level)
-                      ? getImportanceColor(level)
-                      : "",
+                      ? cn(
+                          getImportanceColor(level),
+                          "shadow-md border-white/20",
+                        )
+                      : "hover:bg-muted border-border bg-background text-foreground",
                   )}
                 >
                   {getImportanceLabel(level)}

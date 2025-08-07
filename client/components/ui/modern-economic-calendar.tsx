@@ -54,19 +54,32 @@ export function ModernEconomicCalendar({
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedWeek, setSelectedWeek] = useState("this-week");
   const [selectedDay, setSelectedDay] = useState("all");
-  const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>(["all"]);
+  const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([
+    "all",
+  ]);
   const [selectedCountries, setSelectedCountries] = useState<string[]>(["all"]);
   const [selectedImportance, setSelectedImportance] = useState<string[]>(["3"]);
   const [events, setEvents] = useState<EconomicEvent[]>([]);
   const [isLoadingAI, setIsLoadingAI] = useState<string | null>(null);
+  const [translatedContent, setTranslatedContent] = useState<
+    Record<string, string>
+  >({});
+  const [loadingTranslation, setLoadingTranslation] = useState<
+    Record<string, boolean>
+  >({});
 
   // Search suggestions based on countries, events, and currencies (Arabic and English)
   const searchSuggestions = React.useMemo(() => {
-    if (!searchQuery || searchQuery.length < 1 || !Array.isArray(events)) return [];
+    if (!searchQuery || searchQuery.length < 1 || !Array.isArray(events))
+      return [];
 
-    const countries = [...new Set(events.map((e) => e.country).filter(Boolean))];
+    const countries = [
+      ...new Set(events.map((e) => e.country).filter(Boolean)),
+    ];
     const eventTerms = [...new Set(events.map((e) => e.event).filter(Boolean))];
-    const currencies = [...new Set(events.map((e) => e.currency).filter(Boolean))];
+    const currencies = [
+      ...new Set(events.map((e) => e.currency).filter(Boolean)),
+    ];
 
     // Add common English translations for better search
     const countryTranslations = [
@@ -97,10 +110,10 @@ export function ModernEconomicCalendar({
     return allSuggestions
       .filter(
         (s) =>
-          typeof s.text === 'string' &&
+          typeof s.text === "string" &&
           (s.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
             // Support Arabic search terms
-            (searchQuery.length >= 1 && s.text.includes(searchQuery)))
+            (searchQuery.length >= 1 && s.text.includes(searchQuery))),
       )
       .slice(0, 8);
   }, [searchQuery, events]);
@@ -111,6 +124,23 @@ export function ModernEconomicCalendar({
       searchQuery.length >= 1 && searchSuggestions.length > 0,
     );
   }, [searchQuery, searchSuggestions]);
+
+  // Auto-translate event titles when language changes to Arabic
+  useEffect(() => {
+    if (language === "ar" && filteredEvents.length > 0) {
+      const timer = setTimeout(() => {
+        filteredEvents.slice(0, 5).forEach((event, index) => {
+          setTimeout(() => {
+            translateEventTitle(event).catch((error) => {
+              console.debug("Translation failed for:", event.event);
+            });
+          }, index * 1000); // 1 second delay between requests
+        });
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [language, filteredEvents]);
 
   // Fetch real economic events data from API
   useEffect(() => {
@@ -155,15 +185,40 @@ export function ModernEconomicCalendar({
     { value: "CAD", label: "الدولار الكندي" },
   ];
   const countryFlagMap: Record<string, string> = {
-    US: "🇺🇸", DE: "🇩🇪", GB: "🇬🇧", JP: "🇯🇵", CA: "🇨🇦", FR: "🇫🇷", CN: "🇨🇳", RU: "🇷🇺", AU: "🇦🇺", BR: "🇧🇷", IN: "🇮🇳", IT: "🇮🇹", ES: "🇪🇸", CH: "🇨🇭", TR: "🇹🇷", KR: "🇰🇷", SA: "🇸🇦", AE: "🇦🇪"
+    US: "🇺🇸",
+    DE: "🇩🇪",
+    GB: "🇬🇧",
+    JP: "🇯🇵",
+    CA: "🇨🇦",
+    FR: "🇫🇷",
+    CN: "🇨🇳",
+    RU: "🇷🇺",
+    AU: "🇦🇺",
+    BR: "🇧🇷",
+    IN: "🇮🇳",
+    IT: "🇮🇹",
+    ES: "🇪🇸",
+    CH: "🇨🇭",
+    TR: "🇹🇷",
+    KR: "🇰🇷",
+    SA: "🇸🇦",
+    AE: "🇦🇪",
   };
 
   const timezones = [
-    "Dubai (GST)",
-    "London (GMT)",
-    "New York (EST)",
-    "Tokyo (JST)",
-    "Sydney (AEDT)",
+    { value: "Dubai (GST)", labelAr: "دبي (GST)", labelEn: "Dubai (GST)" },
+    { value: "London (GMT)", labelAr: "لندن (GMT)", labelEn: "London (GMT)" },
+    {
+      value: "New York (EST)",
+      labelAr: "نيويورك (EST)",
+      labelEn: "New York (EST)",
+    },
+    { value: "Tokyo (JST)", labelAr: "طوكيو (JST)", labelEn: "Tokyo (JST)" },
+    {
+      value: "Sydney (AEDT)",
+      labelAr: "سيدني (AEDT)",
+      labelEn: "Sydney (AEDT)",
+    },
   ];
 
   const getImportanceColor = (importance: 1 | 2 | 3) => {
@@ -200,6 +255,49 @@ export function ModernEconomicCalendar({
         return <TrendingDown className="w-4 h-4 text-red-500" />;
       default:
         return <Minus className="w-4 h-4 text-gray-500" />;
+    }
+  };
+
+  // Handle translation for event titles in Arabic mode
+  const translateEventTitle = async (event: EconomicEvent) => {
+    const eventKey = `${event.id}-${event.event}`;
+
+    if (
+      translatedContent[eventKey] ||
+      loadingTranslation[eventKey] ||
+      language !== "ar"
+    ) {
+      return translatedContent[eventKey] || event.event;
+    }
+
+    setLoadingTranslation((prev) => ({ ...prev, [eventKey]: true }));
+
+    try {
+      const response = await fetch("/api/translate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: event.event,
+          targetLanguage: "ar",
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const translated = data.translatedText || event.event;
+        setTranslatedContent((prev) => ({ ...prev, [eventKey]: translated }));
+        return translated;
+      } else {
+        console.error(`Translation API error: ${response.status}`);
+        throw new Error(`Translation failed: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Translation failed:", error);
+      throw error;
+    } finally {
+      setLoadingTranslation((prev) => ({ ...prev, [eventKey]: false }));
     }
   };
 
@@ -246,7 +344,7 @@ export function ModernEconomicCalendar({
     }
     // If only time is available, combine with today
     if (event.time) {
-      const todayStr = new Date().toISOString().split('T')[0];
+      const todayStr = new Date().toISOString().split("T")[0];
       return new Date(`${todayStr}T${event.time}`);
     }
     return new Date();
@@ -258,17 +356,41 @@ export function ModernEconomicCalendar({
           // Only show events from now onward
           const eventDate = getEventDate(event);
           if (eventDate < now) return false;
-          if (selectedCategory !== "all" && event.category !== selectedCategory) return false;
-          if (!selectedCurrencies.includes("all") && !selectedCurrencies.includes(event.currency)) return false;
-          if (!selectedCountries.includes("all") && !selectedCountries.includes(event.country)) return false;
-          if (!event.importance || !['1','2','3'].includes(event.importance.toString())) return true;
-          if (!selectedImportance.includes(event.importance.toString())) return false;
+          if (selectedCategory !== "all" && event.category !== selectedCategory)
+            return false;
+          if (
+            !selectedCurrencies.includes("all") &&
+            !selectedCurrencies.includes(event.currency)
+          )
+            return false;
+          if (
+            !selectedCountries.includes("all") &&
+            !selectedCountries.includes(event.country)
+          )
+            return false;
+          if (
+            !event.importance ||
+            !["1", "2", "3"].includes(event.importance.toString())
+          )
+            return true;
+          if (!selectedImportance.includes(event.importance.toString()))
+            return false;
           if (searchQuery) {
             const query = searchQuery.toLowerCase();
             // Normalize Arabic text to avoid encoding issues
-            const normalize = (str: string) => str ? str.normalize('NFC') : "";
-            const matchesArabic = (event.event && normalize(event.event).includes(normalize(searchQuery))) || (event.country && normalize(event.country).includes(normalize(searchQuery))) || (event.currency && normalize(event.currency).includes(normalize(searchQuery)));
-            const matchesEnglish = (event.event && event.event.toLowerCase().includes(query)) || (event.country && event.country.toLowerCase().includes(query)) || (event.currency && event.currency.toLowerCase().includes(query));
+            const normalize = (str: string) =>
+              str ? str.normalize("NFC") : "";
+            const matchesArabic =
+              (event.event &&
+                normalize(event.event).includes(normalize(searchQuery))) ||
+              (event.country &&
+                normalize(event.country).includes(normalize(searchQuery))) ||
+              (event.currency &&
+                normalize(event.currency).includes(normalize(searchQuery)));
+            const matchesEnglish =
+              (event.event && event.event.toLowerCase().includes(query)) ||
+              (event.country && event.country.toLowerCase().includes(query)) ||
+              (event.currency && event.currency.toLowerCase().includes(query));
             if (!matchesArabic && !matchesEnglish) return false;
           }
           return true;
@@ -299,7 +421,7 @@ export function ModernEconomicCalendar({
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
             <Filter className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-semibold">أدوات التصفية والبحث</h3>
+            <h3 className="text-lg font-semibold">أدو��ت التصفية والبحث</h3>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -319,8 +441,8 @@ export function ModernEconomicCalendar({
                 </SelectTrigger>
                 <SelectContent>
                   {timezones.map((tz) => (
-                    <SelectItem key={tz} value={tz}>
-                      {tz}
+                    <SelectItem key={tz.value} value={tz.value}>
+                      {language === "ar" ? tz.labelAr : tz.labelEn}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -447,12 +569,18 @@ export function ModernEconomicCalendar({
 
             {/* Currency Filter */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">العملة</label>
+              <label className="text-sm font-medium text-muted-foreground">
+                العملة
+              </label>
               <div className="flex flex-wrap gap-2">
                 {currencyOptions.map((currency) => (
                   <Button
                     key={currency.value}
-                    variant={selectedCurrencies.includes(currency.value) ? "default" : "outline"}
+                    variant={
+                      selectedCurrencies.includes(currency.value)
+                        ? "default"
+                        : "outline"
+                    }
                     size="sm"
                     onClick={() => {
                       if (currency.value === "all") {
@@ -461,7 +589,10 @@ export function ModernEconomicCalendar({
                         setSelectedCurrencies((prev) =>
                           prev.includes(currency.value)
                             ? prev.filter((c) => c !== currency.value)
-                            : [...prev.filter((c) => c !== "all"), currency.value]
+                            : [
+                                ...prev.filter((c) => c !== "all"),
+                                currency.value,
+                              ],
                         );
                       }
                     }}
@@ -472,12 +603,24 @@ export function ModernEconomicCalendar({
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">الدولة</label>
+              <label className="text-sm font-medium text-muted-foreground">
+                الدولة
+              </label>
               <div className="flex flex-wrap gap-2">
-                {[{ value: "all", label: "جميع البلدان" }, ...Object.keys(countryFlagMap).map((code) => ({ value: code, label: code }))].map((country) => (
+                {[
+                  { value: "all", label: "جميع البلدان" },
+                  ...Object.keys(countryFlagMap).map((code) => ({
+                    value: code,
+                    label: code,
+                  })),
+                ].map((country) => (
                   <Button
                     key={country.value}
-                    variant={selectedCountries.includes(country.value) ? "default" : "outline"}
+                    variant={
+                      selectedCountries.includes(country.value)
+                        ? "default"
+                        : "outline"
+                    }
                     size="sm"
                     onClick={() => {
                       if (country.value === "all") {
@@ -486,12 +629,17 @@ export function ModernEconomicCalendar({
                         setSelectedCountries((prev) =>
                           prev.includes(country.value)
                             ? prev.filter((c) => c !== country.value)
-                            : [...prev.filter((c) => c !== "all"), country.value]
+                            : [
+                                ...prev.filter((c) => c !== "all"),
+                                country.value,
+                              ],
                         );
                       }
                     }}
                   >
-                    <span className="text-lg mr-1">{countryFlagMap[country.value] || "🌐"}</span>
+                    <span className="text-lg mr-1">
+                      {countryFlagMap[country.value] || "🌐"}
+                    </span>
                     {country.label}
                   </Button>
                 ))}
@@ -518,7 +666,12 @@ export function ModernEconomicCalendar({
                       setSelectedImportance([...selectedImportance, "1"]);
                     }
                   }}
-                  className="flex-1 text-xs"
+                  className={cn(
+                    "flex-1 text-xs transition-all duration-200 border",
+                    selectedImportance.includes("1")
+                      ? "bg-green-500 text-white border-green-600 shadow-md hover:bg-green-600"
+                      : "hover:bg-muted border-border bg-background text-foreground",
+                  )}
                 >
                   عادي
                 </Button>
@@ -536,7 +689,12 @@ export function ModernEconomicCalendar({
                       setSelectedImportance([...selectedImportance, "2"]);
                     }
                   }}
-                  className="flex-1 text-xs"
+                  className={cn(
+                    "flex-1 text-xs transition-all duration-200 border",
+                    selectedImportance.includes("2")
+                      ? "bg-yellow-500 text-white border-yellow-600 shadow-md hover:bg-yellow-600"
+                      : "hover:bg-muted border-border bg-background text-foreground",
+                  )}
                 >
                   متوسط
                 </Button>
@@ -554,7 +712,12 @@ export function ModernEconomicCalendar({
                       setSelectedImportance([...selectedImportance, "3"]);
                     }
                   }}
-                  className="flex-1 text-xs"
+                  className={cn(
+                    "flex-1 text-xs transition-all duration-200 border",
+                    selectedImportance.includes("3")
+                      ? "bg-red-500 text-white border-red-600 shadow-md hover:bg-red-600"
+                      : "hover:bg-muted border-border bg-background text-foreground",
+                  )}
                 >
                   مرتفع
                 </Button>
@@ -611,11 +774,26 @@ export function ModernEconomicCalendar({
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">{countryFlagMap[event.country] || event.countryFlag || "🌐"}</span>
+                      <span className="text-lg">
+                        {countryFlagMap[event.country] ||
+                          event.countryFlag ||
+                          "🌐"}
+                      </span>
                       <span className="text-sm">{event.country}</span>
                     </div>
 
-                    <div className="font-medium text-sm">{event.event}</div>
+                    <div className="font-medium text-sm">
+                      {language === "ar" &&
+                      translatedContent[`${event.id}-${event.event}`]
+                        ? translatedContent[`${event.id}-${event.event}`]
+                        : event.event}
+                      {language === "ar" &&
+                        loadingTranslation[`${event.id}-${event.event}`] && (
+                          <span className="ml-2 text-xs text-muted-foreground animate-pulse">
+                            (ترجمة...)
+                          </span>
+                        )}
+                    </div>
 
                     <div className="flex items-center gap-2">
                       <div
@@ -683,7 +861,18 @@ export function ModernEconomicCalendar({
                       </div>
                     </div>
 
-                    <div className="font-medium">{event.event}</div>
+                    <div className="font-medium">
+                      {language === "ar" &&
+                      translatedContent[`${event.id}-${event.event}`]
+                        ? translatedContent[`${event.id}-${event.event}`]
+                        : event.event}
+                      {language === "ar" &&
+                        loadingTranslation[`${event.id}-${event.event}`] && (
+                          <span className="ml-2 text-xs text-muted-foreground animate-pulse">
+                            (ترجمة...)
+                          </span>
+                        )}
+                    </div>
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -755,7 +944,7 @@ export function ModernEconomicCalendar({
             {filteredEvents.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>لا توجد أحداث اقتصادية تطابق المرشحات المحددة</p>
+                <p>لا توجد أحداث اقتصادية تطابق المرشحا�� المحددة</p>
               </div>
             )}
           </div>
