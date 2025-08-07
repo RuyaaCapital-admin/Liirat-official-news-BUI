@@ -78,18 +78,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (from) {
       apiUrl.searchParams.append("from", from as string);
     } else {
-      // Default to today if no start date provided
-      const today = new Date().toISOString().split("T")[0];
-      apiUrl.searchParams.append("from", today);
+      // Default to start of current week to get current events
+      const today = new Date();
+      const startOfWeek = new Date(today);
+      startOfWeek.setDate(today.getDate() - today.getDay()); // Start of current week (Sunday)
+      const fromDate = startOfWeek.toISOString().split("T")[0];
+      apiUrl.searchParams.append("from", fromDate);
+      console.log(`Default from date: ${fromDate}`);
     }
 
     if (to) {
       apiUrl.searchParams.append("to", to as string);
     } else {
-      // Default to 30 days from now if no end date provided
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 30);
-      apiUrl.searchParams.append("to", futureDate.toISOString().split("T")[0]);
+      // Default to end of next week to get upcoming events
+      const today = new Date();
+      const endOfNextWeek = new Date(today);
+      endOfNextWeek.setDate(today.getDate() - today.getDay() + 13); // End of next week (Saturday)
+      const toDate = endOfNextWeek.toISOString().split("T")[0];
+      apiUrl.searchParams.append("to", toDate);
+      console.log(`Default to date: ${toDate}`);
     }
 
     console.log(`Fetching EODHD economic events: ${apiUrl.toString()}`);
