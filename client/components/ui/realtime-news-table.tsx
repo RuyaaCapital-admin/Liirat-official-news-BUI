@@ -422,18 +422,26 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     }
   };
 
+  // Safe date parsing utilities
+  function parseIso(input?: string | null) {
+    if (!input) return null;
+    const d = new Date(input);
+    return isNaN(+d) ? null : d;
+  }
+
+  function formatUtc(iso?: string | null, tz: string = 'UTC') {
+    const d = parseIso(iso);
+    if (!d) return '—';
+    return new Intl.DateTimeFormat('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+      timeZone: tz
+    }).format(d);
+  }
+
   // Format date with timezone - always use English format to avoid Hijri calendar
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("en-US", {
-      timeZone: selectedTimezone,
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }).format(date);
+    return formatUtc(dateString, selectedTimezone);
   };
 
   // Get importance color with better contrast for light mode
@@ -515,7 +523,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                   Trade: language === "ar" ? "التجارة" : "Trade",
                   Manufacturing:
                     language === "ar" ? "التصنيع" : "Manufacturing",
-                  Services: language === "ar" ? "الخدمات" : "Services",
+                  Services: language === "ar" ? "الخدم��ت" : "Services",
                   Housing: language === "ar" ? "الإسكان" : "Housing",
                   Consumer: language === "ar" ? "المستهلك" : "Consumer",
                 };
@@ -697,7 +705,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                   <div className="flex flex-col items-end gap-2 ml-4">
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Clock className="w-3 h-3" />
-                      {formatDate(article.date)}
+                      {formatUtc(article.datetimeIso, selectedTimezone)}
                     </div>
 
                     <div className="flex gap-2">
