@@ -179,19 +179,23 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     if (language === "ar" && filteredArticles.length > 0) {
       // Debounce translation requests to avoid overwhelming the API
       const timer = setTimeout(() => {
+        // Translate ALL visible articles, not just first 5
         filteredArticles
-          .slice(0, Math.min(5, itemsToShow))
+          .slice(0, itemsToShow)
           .forEach((article, index) => {
-            // Stagger requests to avoid rate limiting
-            setTimeout(() => {
-              translateTitle(article);
-            }, index * 600);
+            // Only translate if not already translated
+            if (!translatedTitles[article.id] && !loadingTranslation[article.id]) {
+              // Stagger requests to avoid rate limiting
+              setTimeout(() => {
+                translateTitle(article);
+              }, index * 400); // Reduced delay for faster translation
+            }
           });
-      }, 1000);
+      }, 500); // Reduced debounce time
 
       return () => clearTimeout(timer);
     }
-  }, [language, filteredArticles, itemsToShow]);
+  }, [language, filteredArticles, itemsToShow, translatedTitles, loadingTranslation]);
 
   // Apply filters
   useEffect(() => {
