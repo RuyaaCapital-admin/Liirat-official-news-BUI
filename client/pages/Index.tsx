@@ -15,7 +15,7 @@ import TradingViewTicker from "@/components/ui/trading-view-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
-import { MarketauxNewsResponse, MarketauxNewsItem } from "@shared/api";
+import { EconomicEventsResponse, EconomicEvent } from "@shared/api";
 import { AdvancedAlertSystem } from "@/components/ui/advanced-alert-system";
 import { NotificationSystem } from "@/components/ui/notification-system";
 import { NotificationDropdown } from "@/components/ui/notification-dropdown";
@@ -45,10 +45,10 @@ export default function Index() {
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
 
-  // News Data State
-  const [marketauxNews, setMarketauxNews] = useState<MarketauxNewsItem[]>([]);
-  const [isLoadingMarketaux, setIsLoadingMarketaux] = useState(true);
-  const [marketauxError, setMarketauxError] = useState<string | null>(null);
+  // Economic Events Data State
+  const [economicEvents, setEconomicEvents] = useState<EconomicEvent[]>([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
+  const [eventsError, setEventsError] = useState<string | null>(null);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -85,13 +85,13 @@ export default function Index() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Fetch news data with language support
-  const fetchMarketauxNews = async (lang: string = language) => {
+  // Fetch economic events data with language support
+  const fetchEconomicEvents = async (lang: string = language) => {
     try {
-      setIsLoadingMarketaux(true);
-      setMarketauxError(null);
+      setIsLoadingEvents(true);
+      setEventsError(null);
 
-      console.log(`Fetching news for language: ${lang}`);
+      console.log(`Fetching economic events for language: ${lang}`);
 
       // First test basic server connectivity
       try {
@@ -105,9 +105,9 @@ export default function Index() {
         throw new Error("Server not reachable");
       }
 
-      // Now try the actual news endpoint
+      // Fetch from EODHD calendar endpoint
       const response = await fetch(
-        `/api/marketaux-news?language=${lang}&limit=3&countries=us,gb,ae`,
+        `/api/eodhd-calendar?limit=20&importance=3`,
         {
           method: "GET",
           headers: {
@@ -120,50 +120,50 @@ export default function Index() {
       if (response.ok) {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
-          const data: MarketauxNewsResponse = await response.json();
+          const data: EconomicEventsResponse = await response.json();
           if (data.error) {
-            setMarketauxError(data.error);
-            setMarketauxNews([]);
+            setEventsError(data.error);
+            setEconomicEvents([]);
           } else {
-            setMarketauxNews(data.news || []);
-            setMarketauxError(null);
+            setEconomicEvents(data.events || []);
+            setEventsError(null);
           }
         } else {
-          console.warn("News API returned non-JSON content:", contentType);
-          setMarketauxError("Invalid response format");
-          setMarketauxNews([]);
+          console.warn("Events API returned non-JSON content:", contentType);
+          setEventsError("Invalid response format");
+          setEconomicEvents([]);
         }
       } else {
-        console.warn("News API returned non-OK status:", response.status);
-        setMarketauxError(`API Error: ${response.status}`);
-        setMarketauxNews([]);
+        console.warn("Events API returned non-OK status:", response.status);
+        setEventsError(`API Error: ${response.status}`);
+        setEconomicEvents([]);
       }
     } catch (error) {
-      console.error("Failed to fetch news:", error);
+      console.error("Failed to fetch economic events:", error);
 
       // Provide more specific error messages
-      let errorMessage = "Network error - unable to fetch news";
+      let errorMessage = "Network error - unable to fetch events";
       if (error instanceof TypeError && error.message.includes("fetch")) {
         errorMessage = "Connection failed - check network or server status";
       } else if (error instanceof Error) {
         errorMessage = `Request failed: ${error.message}`;
       }
 
-      setMarketauxError(errorMessage);
-      setMarketauxNews([]);
+      setEventsError(errorMessage);
+      setEconomicEvents([]);
     } finally {
-      setIsLoadingMarketaux(false);
+      setIsLoadingEvents(false);
     }
   };
 
-  // Fetch news data on component mount
+  // Fetch economic events on component mount
   useEffect(() => {
-    fetchMarketauxNews();
+    fetchEconomicEvents();
   }, []);
 
-  // Fetch news when language changes
+  // Fetch events when language changes
   useEffect(() => {
-    fetchMarketauxNews(language);
+    fetchEconomicEvents(language);
   }, [language]);
 
   // Enhanced economic calendar data with mixed language support
@@ -324,61 +324,47 @@ export default function Index() {
                   <CardTitle className="flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-primary" />
                     {language === "ar"
-                      ? "الأخبار المالية المباشرة"
-                      : "Live Financial News"}
+                      ? "التقويم الاقتصادي المباشر"
+                      : "Live Economic Calendar"}
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "آخر الأخبار المالية والاقتصادية"
-                      : "Latest financial and economic news"}
+                      ? "الأحداث الاقتصادية المهمة والإعلانات المالية"
+                      : "Important economic events and financial announcements"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {isLoadingMarketaux ? (
+                  {isLoadingEvents ? (
                     <div className="flex items-center justify-center py-12">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                       <span className="ml-2">
                         {language === "ar"
-                          ? "جاري تحميل الأخبار المالية..."
-                          : "Loading financial news..."}
+                          ? "جاري تحميل ال��قويم الاقتصادي..."
+                          : "Loading economic calendar..."}
                       </span>
                     </div>
                   ) : (
                     <div>
-                      {marketauxError && (
+                      {eventsError && (
                         <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
                           <div className="flex items-center text-destructive text-sm">
                             <AlertTriangle className="w-4 h-4 mr-2" />
                             <span>
                               {language === "ar"
-                                ? "خطأ في تحميل الأخبار المباشرة:"
-                                : "Error loading live news:"}{" "}
-                              {marketauxError}
+                                ? "خطأ في تحميل التقويم الاقتصادي:"
+                                : "Error loading economic calendar:"}{" "}
+                              {eventsError}
                             </span>
                           </div>
                           <div className="text-xs text-muted-foreground mt-1">
                             {language === "ar"
-                              ? "يتم عرض بيانات تجريبية أدناه"
-                              : "Showing sample data below"}
+                              ? "يرجى المحاولة مرة أخرى لاحقاً"
+                              : "Please try again later"}
                           </div>
                         </div>
                       )}
                       <MacroCalendarTable
-                        events={
-                          marketauxNews.length > 0
-                            ? marketauxNews.map((item) => ({
-                                date: item.date,
-                                time: new Date(item.date).toLocaleTimeString(),
-                                country: item.country,
-                                event: item.event,
-                                category: item.source || "Financial News",
-                                importance: item.importance,
-                                actual: item.actual || undefined,
-                                forecast: item.forecast || undefined,
-                                previous: item.previous || undefined,
-                              }))
-                            : []
-                        }
+                        events={economicEvents}
                         className="rounded-lg overflow-hidden"
                         language={language}
                         dir={dir}
