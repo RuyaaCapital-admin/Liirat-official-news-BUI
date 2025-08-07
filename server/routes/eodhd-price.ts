@@ -62,7 +62,6 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     }
 
     // Determine symbol type and format correctly for EODHD
-    const symbolStr = (symbol || symbols) as string;
     const isCrypto =
       symbolStr.includes("-USD") ||
       symbolStr.includes("BTC") ||
