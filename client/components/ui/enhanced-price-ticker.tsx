@@ -261,9 +261,9 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
     console.log("[TICKER] Starting price updates immediately");
 
     // Start fetching by priority tiers to reduce load
-    const tier1 = TICKER_CONFIG.filter(c => c.priority === 1);
-    const tier2 = TICKER_CONFIG.filter(c => c.priority === 2);
-    const tier3 = TICKER_CONFIG.filter(c => c.priority === 3);
+    const tier1 = TICKER_CONFIG.filter((c) => c.priority === 1);
+    const tier2 = TICKER_CONFIG.filter((c) => c.priority === 2);
+    const tier3 = TICKER_CONFIG.filter((c) => c.priority === 3);
 
     // Fetch tier 1 immediately (most important)
     tier1.forEach((config, index) => {

@@ -11,8 +11,8 @@ export const handleStatus: RequestHandler = async (req, res) => {
       checks: {
         server: { status: "ok", message: "Server is running" },
         database: { status: "ok", message: "No database checks needed" },
-        api: { status: "ok", message: "API endpoints available" }
-      }
+        api: { status: "ok", message: "API endpoints available" },
+      },
     };
 
     res.json(status);
@@ -21,7 +21,7 @@ export const handleStatus: RequestHandler = async (req, res) => {
     res.status(500).json({
       status: "error",
       timestamp: new Date().toISOString(),
-      error: error instanceof Error ? error.message : "Unknown error"
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };

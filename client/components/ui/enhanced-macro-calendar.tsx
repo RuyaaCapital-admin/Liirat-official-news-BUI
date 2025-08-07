@@ -499,12 +499,17 @@ export default function EnhancedMacroCalendar({
         return translated;
       } else {
         // Log error but don't throw - use original text as fallback
-        console.warn(`[TRANSLATION] API error ${response.status}, using original text as fallback`);
+        console.warn(
+          `[TRANSLATION] API error ${response.status}, using original text as fallback`,
+        );
         setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
         return event.event;
       }
     } catch (error) {
-      console.warn("[TRANSLATION] Error occurred, using original text as fallback:", error);
+      console.warn(
+        "[TRANSLATION] Error occurred, using original text as fallback:",
+        error,
+      );
       // Always fallback to original text instead of throwing error
       setTranslatedContent((prev) => ({ ...prev, [eventKey]: event.event }));
       return event.event;
