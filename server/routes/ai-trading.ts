@@ -91,7 +91,7 @@ export const handleAIChat = async (req: Request, res: Response) => {
       return res.status(500).json({
         error:
           language === "ar"
-            ? "خدمة الذكاء الاصطناعي غير ��توفرة"
+            ? "خدمة الذكاء الاصطناعي غير متوفرة"
             : "AI service unavailable",
       });
     }
@@ -152,7 +152,7 @@ USER MESSAGE: ${message}`;
     const response =
       completion.choices[0]?.message?.content ||
       (language === "ar"
-        ? "عذراً، لم ��ستطع إنشاء رد."
+        ? "عذراً، لم أستطع إنشاء رد."
         : "Sorry, I could not generate a response.");
 
     res.json({

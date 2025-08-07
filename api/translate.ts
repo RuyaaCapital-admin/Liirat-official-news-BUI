@@ -40,7 +40,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       "Industrial Production": "الإنتاج الصناعي",
       "Retail Sales": "مبيعات التجزئة",
       Employment: "التوظيف",
-      Payrolls: "كشوف ال��رتبات",
+      Payrolls: "كشوف المرتبات",
       Wages: "الأجور",
       Manufacturing: "التصنيع",
       Services: "الخدمات",
