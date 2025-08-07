@@ -117,7 +117,7 @@ function CustomPriceTicker({ className }: CustomPriceTickerProps) {
         )}
       >
         <div className="animate-pulse text-xs sm:text-sm text-muted-foreground">
-          Loading real-time EODHD market data...
+          Loading market data...
         </div>
       </div>
     );
