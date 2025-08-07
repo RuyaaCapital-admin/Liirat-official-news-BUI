@@ -200,6 +200,7 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       prices: [],
       total: 0,
       error: errorMessage,
+      errorAr: errorMessageAr, // Include Arabic error message
       timestamp: new Date().toISOString(),
     });
   }
