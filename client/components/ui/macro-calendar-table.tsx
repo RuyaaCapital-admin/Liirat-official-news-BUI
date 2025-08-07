@@ -311,7 +311,7 @@ const getCountryName = (country: string, language: string) => {
     GB: { en: "United Kingdom", ar: "المملكة المتحدة" },
     JP: { en: "Japan", ar: "اليابان" },
     CA: { en: "Canada", ar: "كندا" },
-    AU: { en: "Australia", ar: "��ستراليا" },
+    AU: { en: "Australia", ar: "أستراليا" },
     CHF: { en: "Switzerland", ar: "سويسرا" },
     DE: { en: "Germany", ar: "ألمانيا" },
     FR: { en: "France", ar: "فرنسا" },
@@ -1012,6 +1012,14 @@ export function MacroCalendarTable({
                   )}
                 >
                   {t("Previous", "السابق")}
+                </th>
+                <th
+                  className={cn(
+                    "p-3 font-semibold text-sm border-b",
+                    dir === "rtl" ? "text-right" : "text-left",
+                  )}
+                >
+                  {t("Alerts", "التنبيهات")}
                 </th>
               </tr>
             </thead>
