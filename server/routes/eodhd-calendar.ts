@@ -86,17 +86,50 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
 
     // Transform EODHD response to our format
     const events: EconomicEvent[] = Array.isArray(data)
-      ? data.map((event: any) => ({
-          date: event.date || new Date().toISOString(),
-          time: event.time || undefined,
-          country: event.country || event.currency || "Unknown",
-          event: event.event || event.title || event.name || "Economic Event",
-          category: event.category || event.type || "Economic",
-          importance: parseInt(event.importance) || parseInt(event.impact) || 1,
-          actual: event.actual !== null && event.actual !== undefined ? String(event.actual) : undefined,
-          forecast: event.forecast !== null && event.forecast !== undefined ? String(event.forecast) : undefined,
-          previous: event.previous !== null && event.previous !== undefined ? String(event.previous) : undefined,
-        }))
+      ? data.map((event: any) => {
+          // Create a descriptive event name from type, comparison, and period
+          let eventName = event.type || "Economic Event";
+          if (event.comparison && event.period) {
+            eventName = `${event.type} (${event.comparison.toUpperCase()}) - ${event.period}`;
+          } else if (event.period) {
+            eventName = `${event.type} - ${event.period}`;
+          }
+
+          // Determine importance based on event type and other factors
+          let importance = 1; // Default to low
+          if (event.importance) {
+            importance = parseInt(event.importance);
+          } else {
+            // High impact events
+            const highImpactEvents = [
+              'inflation rate', 'gdp', 'unemployment rate', 'interest rate',
+              'cpi', 'ppi', 'retail sales', 'nonfarm payrolls', 'fed funds rate'
+            ];
+            const mediumImpactEvents = [
+              'trade balance', 'current account', 'industrial production',
+              'manufacturing pmi', 'services pmi', 'consumer confidence'
+            ];
+
+            const eventType = (event.type || '').toLowerCase();
+            if (highImpactEvents.some(keyword => eventType.includes(keyword))) {
+              importance = 3;
+            } else if (mediumImpactEvents.some(keyword => eventType.includes(keyword))) {
+              importance = 2;
+            }
+          }
+
+          return {
+            date: event.date || new Date().toISOString(),
+            time: event.time || undefined,
+            country: event.country || event.currency || "Unknown",
+            event: eventName,
+            category: event.category || event.type || "Economic",
+            importance: importance,
+            actual: event.actual !== null && event.actual !== undefined ? String(event.actual) : undefined,
+            forecast: event.estimate !== null && event.estimate !== undefined ? String(event.estimate) : undefined,
+            previous: event.previous !== null && event.previous !== undefined ? String(event.previous) : undefined,
+          };
+        })
       : [];
 
     console.log(`✅ Successfully transformed ${events.length} economic events from EODHD`);
