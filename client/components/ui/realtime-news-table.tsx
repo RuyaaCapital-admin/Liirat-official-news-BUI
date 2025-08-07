@@ -225,6 +225,14 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       return translatedTitles[article.id];
     }
 
+    // Check if title is already in Arabic (contains Arabic characters)
+    const hasArabic = /[\u0600-\u06FF]/.test(article.title);
+    if (hasArabic) {
+      // Already in Arabic, no need to translate
+      setTranslatedTitles((prev) => ({ ...prev, [article.id]: article.title }));
+      return article.title;
+    }
+
     if (language !== "ar") {
       return article.title; // Return original if not Arabic mode
     }
