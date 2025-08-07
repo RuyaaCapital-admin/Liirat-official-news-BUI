@@ -182,13 +182,17 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
   } catch (error) {
     console.error("Error fetching EODHD price data:", error);
 
-    // Handle specific error types
+    // Handle specific error types with basic localization (no lang param available)
     let errorMessage = "Failed to fetch price data";
+    let errorMessageAr = "فشل في جلب بيانات الأسعار";
+
     if (error instanceof Error) {
       if (error.name === "AbortError") {
         errorMessage = "Request timeout - EODHD API took too long to respond";
+        errorMessageAr = "انتهت مهلة الطلب - استغرق EODHD API وقتاً طويلاً للاستجابة";
       } else {
         errorMessage = error.message;
+        errorMessageAr = `خطأ: ${error.message}`;
       }
     }
 
