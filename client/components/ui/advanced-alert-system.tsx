@@ -78,7 +78,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     { symbol: "EURUSD", name: "EUR/USD", nameAr: "يورو/دولار" },
     { symbol: "USDJPY", name: "USD/JPY", nameAr: "دولار/ين" },
     { symbol: "GBPUSD", name: "GBP/USD", nameAr: "جنيه/دولار" },
-    { symbol: "AUDUSD", name: "AUD/USD", nameAr: "دولار أسترالي/دولار" },
+    { symbol: "AUDUSD", name: "AUD/USD", nameAr: "دولار أسترالي/دول��ر" },
     { symbol: "USDCHF", name: "USD/CHF", nameAr: "دولار/فرنك" },
     { symbol: "USDCAD", name: "USD/CAD", nameAr: "دولار/دولار كندي" },
     { symbol: "BTC-USD", name: "Bitcoin/USD", nameAr: "بيتكوين/دولار" },
@@ -501,8 +501,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
         <span>
           {isConnected
             ? language === "ar"
-              ? "متصل بـ EODHD"
-              : "Connected to EODHD"
+              ? "متصل"
+              : "Connected"
             : language === "ar"
               ? "غير متصل"
               : "Disconnected"}
