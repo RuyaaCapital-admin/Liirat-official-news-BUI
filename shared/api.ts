@@ -6,10 +6,10 @@ export interface DemoResponse {
 // EODHD Economic Events
 export interface EconomicEvent {
   date: string;
-  time: string;
+  time?: string;
   country: string;
   event: string;
-  category: string;
+  category?: string;
   importance: number; // 1-3 scale
   actual?: string;
   forecast?: string;
