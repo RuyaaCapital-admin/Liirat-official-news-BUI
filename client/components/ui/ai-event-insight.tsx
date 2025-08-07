@@ -81,7 +81,7 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
     return `Event: ${eventData.event}. Actual: ${eventData.actual}. Forecast: ${eventData.forecast}. Previous: ${eventData.previous}. Date: ${eventData.date}. Write a single, short, actionable sentence for traders. No intro, no extra text. Maximum 25 words. Language: ${languageText}.`;
   };
 
-  // Generate demo analysis for testing without API
+  // Call OpenAI API
   const generateDemoAnalysis = (
     eventData: EconomicEvent,
     language: "ar" | "en",
