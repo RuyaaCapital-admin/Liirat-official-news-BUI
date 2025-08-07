@@ -14,6 +14,13 @@ import { getEconomicEvents, getNews } from "./routes/eodhd";
 import { handlePriceAlert } from "./routes/price-alert";
 import { handleMarketauxNews } from "./routes/marketaux-news";
 import { handleAIAnalysis, handleTranslation } from "./routes/ai-analysis";
+import {
+  handleEODHDSearch,
+  handleEODHDPrice,
+  handleEODHDCalendar,
+  handleEODHDNews,
+  handleEODHDPing
+} from "./routes/eodhd-api";
 import { handleStatus } from "./routes/status";
 
 export function createServer() {
