@@ -65,6 +65,12 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
       const now = Date.now();
       const lastFetch = lastFetchTime.current[symbol] || 0;
 
+      // Skip if symbol is blacklisted (repeatedly failed)
+      if (failedSymbols.current.has(symbol)) {
+        console.log(`[TICKER] Skipping blacklisted symbol: ${symbol}`);
+        return;
+      }
+
       // Rate limiting: don't fetch if less than 30 seconds have passed
       if (now - lastFetch < 30000 && retryCount === 0) {
         return;
@@ -191,7 +197,10 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         return;
       }
 
-      // Final failure - set disconnected status but keep symbol visible
+      // Final failure - blacklist symbol and set disconnected status
+      console.warn(`[TICKER] Blacklisting symbol ${symbol} after repeated failures`);
+      failedSymbols.current.add(symbol);
+
       const config = TICKER_CONFIG.find((c) => c.symbol === symbol);
       setPriceData((prev) => ({
         ...prev,
