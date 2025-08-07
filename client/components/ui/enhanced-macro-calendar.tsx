@@ -56,7 +56,7 @@ interface EnhancedMacroCalendarProps {
 
 // Economic event categories
 const EVENT_CATEGORIES = [
-  { value: "all", labelEn: "All Categories", labelAr: "جميع الفئا��" },
+  { value: "all", labelEn: "All Categories", labelAr: "جميع الفئات" },
   { value: "inflation", labelEn: "Inflation", labelAr: "التضخم" },
   { value: "employment", labelEn: "Employment", labelAr: "التوظيف" },
   {
@@ -330,6 +330,15 @@ export default function EnhancedMacroCalendar({
     if (showAll) return filteredEvents;
     return filteredEvents.slice(0, itemsPerPage);
   }, [filteredEvents, showAll, itemsPerPage]);
+
+  // Auto-translate events when language changes to Arabic
+  useEffect(() => {
+    if (language === "ar" && displayedEvents.length > 0) {
+      displayedEvents.forEach((event) => {
+        translateContent(event);
+      });
+    }
+  }, [language, displayedEvents]);
 
   // Handle time period changes
   const handlePeriodChange = (period: string) => {
