@@ -512,8 +512,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
             <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">
               {language === "ar"
-                ? "بيانات EODHD غير متاحة"
-                : "EODHD Data Not Available"}
+                ? "بيانات الأسعار غير متاحة"
+                : "Price Data Not Available"}
             </h3>
             <p className="text-muted-foreground">
               {language === "ar"
