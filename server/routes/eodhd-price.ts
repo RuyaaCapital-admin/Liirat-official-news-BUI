@@ -169,26 +169,7 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       }
     }
 
-    // Special fallback for gold if no data received
-    if (prices.length === 0 && isGold) {
-      console.log("[GOLD FALLBACK] Using real gold price as EODHD data unavailable");
-      // Use current market gold price (update this periodically)
-      prices = [{
-        symbol: symbolStr,
-        name: "Gold Spot Price",
-        price: 3370.24, // Real current gold price in USD
-        change: -5.50,
-        change_percent: -0.16,
-        currency: "USD",
-        timestamp: new Date().toISOString(),
-        market_status: "open",
-        volume: undefined,
-        high: 3378.00,
-        low: 3365.00,
-        open: 3375.74,
-        previous_close: 3375.74,
-      }];
-    }
+    // NO MOCK DATA - ONLY REAL DATA ALLOWED
 
     // Filter out invalid prices (but keep prices that have valid previousClose for gold)
     prices = prices.filter((p) => p.price > 0 || (p.previous_close && p.previous_close > 0));
