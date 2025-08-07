@@ -344,6 +344,12 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       return translatedTitles[article.id];
     }
 
+    // Skip empty or very short titles
+    if (!article.title || article.title.trim().length < 3) {
+      setTranslatedTitles((prev) => ({ ...prev, [article.id]: article.title }));
+      return article.title;
+    }
+
     // Check if title is already in Arabic (contains Arabic characters)
     const hasArabic = /[\u0600-\u06FF]/.test(article.title);
     if (hasArabic) {
