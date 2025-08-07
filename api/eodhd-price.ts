@@ -77,7 +77,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       symbolStr.includes("-USD.CC") ||
       symbolStr.includes("BTC") ||
       symbolStr.includes("ETH");
-    const isMetal = symbolStr.includes("GC.COMEX") || symbolStr.includes("SI.COMEX");
+    const isMetal =
+      symbolStr.includes("GC.COMEX") || symbolStr.includes("SI.COMEX");
     const isIndex = symbolStr === "GSPC" || symbolStr.includes(".INDX");
 
     // Use the official real-time API endpoint format
@@ -206,7 +207,9 @@ function transformPriceData(item: any, originalSymbol: string): PriceData {
     console.log(`Using previousClose for ${item.code}: ${price}`);
   }
 
-  const change = parseFloat(item.change || 0) || (price && previousClose ? price - previousClose : 0);
+  const change =
+    parseFloat(item.change || 0) ||
+    (price && previousClose ? price - previousClose : 0);
   const change_percent =
     parseFloat(item.change_p || item.change_percent || 0) ||
     (previousClose > 0 && change !== 0 ? (change / previousClose) * 100 : 0);
@@ -222,9 +225,10 @@ function transformPriceData(item: any, originalSymbol: string): PriceData {
     change: change,
     change_percent: change_percent,
     currency: item.currency || undefined,
-    timestamp: item.timestamp && item.timestamp !== "NA"
-      ? new Date(item.timestamp * 1000).toISOString()
-      : new Date().toISOString(),
+    timestamp:
+      item.timestamp && item.timestamp !== "NA"
+        ? new Date(item.timestamp * 1000).toISOString()
+        : new Date().toISOString(),
     market_status: item.market_status || undefined,
     volume: parseFloat(item.volume || 0) || undefined,
     high: parseFloat(item.high || 0) || undefined,

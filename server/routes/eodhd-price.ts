@@ -66,8 +66,10 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     const isIndex = symbolStr.includes(".INDX");
     const isForex = symbolStr.includes(".FOREX");
     const isUSStock = symbolStr.includes(".US");
-    const isCommodity = symbolStr.includes(".F") || symbolStr.includes(".COMEX");
-    const isMetal = symbolStr.includes("GC.COMEX") || symbolStr.includes("SI.COMEX");
+    const isCommodity =
+      symbolStr.includes(".F") || symbolStr.includes(".COMEX");
+    const isMetal =
+      symbolStr.includes("GC.COMEX") || symbolStr.includes("SI.COMEX");
 
     let apiUrl: URL;
     let finalSymbol = symbolStr;
@@ -165,7 +167,12 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       prices = data
         .filter((item: any) => {
           // Include items with valid previousClose even if close is NA (for metals)
-          return item && item.code && (item.close !== "NA" || (item.previousClose && item.previousClose !== "NA"));
+          return (
+            item &&
+            item.code &&
+            (item.close !== "NA" ||
+              (item.previousClose && item.previousClose !== "NA"))
+          );
         })
         .map((item: any) => transformPriceData(item, symbolStr));
     } else if (data && typeof data === "object" && data.code) {
@@ -178,9 +185,7 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
     // NO MOCK DATA - ONLY REAL DATA ALLOWED
 
     // Filter out invalid prices (but keep prices that have valid previousClose for metals)
-    prices = prices.filter(
-      (p) => p.price > 0
-    );
+    prices = prices.filter((p) => p.price > 0);
 
     console.log("Transformed prices:", JSON.stringify(prices, null, 2));
 
@@ -260,9 +265,10 @@ function transformPriceData(item: any, originalSymbol: string): PriceData {
     change: change,
     change_percent: change_percent,
     currency: item.currency || undefined,
-    timestamp: item.timestamp && item.timestamp !== "NA"
-      ? new Date(item.timestamp * 1000).toISOString()
-      : new Date().toISOString(),
+    timestamp:
+      item.timestamp && item.timestamp !== "NA"
+        ? new Date(item.timestamp * 1000).toISOString()
+        : new Date().toISOString(),
     market_status: item.market_status || undefined,
     volume: parseFloat(item.volume || 0) || undefined,
     high: parseFloat(item.high || 0) || undefined,
