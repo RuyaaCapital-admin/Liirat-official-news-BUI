@@ -205,12 +205,12 @@ export default function EnhancedAlertSystem({
     for (const alert of activeAlerts) {
       try {
         const response = await fetch(
-          `/api/eodhd-price?symbol=${encodeURIComponent(alert.symbol)}`,
+          `/api/eodhd/price?symbols=${encodeURIComponent(alert.symbol)}`,
         );
         if (response.ok) {
           const data = await response.json();
-          if (data.prices && data.prices.length > 0) {
-            const currentPrice = data.prices[0].price;
+          if (data.ok && data.items && data.items.length > 0) {
+            const currentPrice = data.items[0].price;
             const targetPrice = alert.targetPrice;
 
             let shouldTrigger = false;
@@ -383,7 +383,7 @@ export default function EnhancedAlertSystem({
             <DialogTrigger asChild>
               <Button className="neumorphic-button-small">
                 <Plus className="h-4 w-4 mr-2" />
-                {language === "ar" ? "إضافة تنبيه" : "Add Alert"}
+                {language === "ar" ? "إضافة تنبي��" : "Add Alert"}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
