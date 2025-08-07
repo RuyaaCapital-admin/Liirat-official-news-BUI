@@ -37,6 +37,18 @@ function expressPlugin(): Plugin {
         try {
           console.log("🔍 API Request:", req.method, req.url);
 
+          // Set CORS headers first
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+          res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
+
+          // Handle preflight requests
+          if (req.method === 'OPTIONS') {
+            res.statusCode = 200;
+            res.end();
+            return;
+          }
+
           // Dynamically import and create the Express app
           const { createServer } = await import("./server/index.ts");
           const app = createServer();
@@ -63,8 +75,16 @@ function expressPlugin(): Plugin {
           app(req, res, next);
         } catch (error) {
           console.error("❌ Error handling API request:", error);
+
+          // Set CORS headers for error responses too
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          res.setHeader('Content-Type', 'application/json');
+
           res.statusCode = 500;
-          res.end("Internal Server Error");
+          res.end(JSON.stringify({
+            error: "Internal Server Error",
+            message: error instanceof Error ? error.message : "Unknown error"
+          }));
         }
       });
 
