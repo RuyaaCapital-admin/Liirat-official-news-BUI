@@ -36,6 +36,7 @@ import {
   BellRing,
   Bot,
   AlertTriangle,
+  Newspaper,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTheme } from "@/hooks/use-theme";
@@ -392,7 +393,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "تابع الأحداث الاقتصادية المهمة والأخبار المالية في الوقت الفعلي"
+                    ? "تابع الأحداث الاقتصادية المهمة والأخبار المال��ة في الوقت الفعلي"
                     : "Track important economic events and real-time financial news"}
                 </p>
               </div>
