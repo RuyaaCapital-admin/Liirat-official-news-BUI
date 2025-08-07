@@ -18,6 +18,12 @@ interface TickerProps {
 
 // Configuration for the most traded pairs with EODHD endpoints
 const TICKER_CONFIG = [
+  // Gold (XAU)
+  { symbol: "XAUUSD.FOREX", displayName: "GOLD" },
+  // Crypto (BTC and ETH only)
+  { symbol: "BTC-USD.CC", displayName: "BTC/USD" },
+  { symbol: "ETH-USD.CC", displayName: "ETH/USD" },
+  // Most traded forex pairs (15 pairs)
   { symbol: "EURUSD.FOREX", displayName: "EUR/USD" },
   { symbol: "USDJPY.FOREX", displayName: "USD/JPY" },
   { symbol: "GBPUSD.FOREX", displayName: "GBP/USD" },
@@ -28,12 +34,11 @@ const TICKER_CONFIG = [
   { symbol: "EURGBP.FOREX", displayName: "EUR/GBP" },
   { symbol: "EURJPY.FOREX", displayName: "EUR/JPY" },
   { symbol: "GBPJPY.FOREX", displayName: "GBP/JPY" },
-  { symbol: "BTC-USD.CC", displayName: "BTC/USD" },
-  { symbol: "ETH-USD.CC", displayName: "ETH/USD" },
-  { symbol: "XAUUSD.FOREX", displayName: "XAU/USD" },
-  { symbol: "XAGUSD.FOREX", displayName: "XAG/USD" },
-  { symbol: "GSPC.INDX", displayName: "S&P 500" },
-  { symbol: "IXIC.INDX", displayName: "NASDAQ" },
+  { symbol: "EURCHF.FOREX", displayName: "EUR/CHF" },
+  { symbol: "EURAUD.FOREX", displayName: "EUR/AUD" },
+  { symbol: "GBPCHF.FOREX", displayName: "GBP/CHF" },
+  { symbol: "CHFJPY.FOREX", displayName: "CHF/JPY" },
+  { symbol: "AUDJPY.FOREX", displayName: "AUD/JPY" },
 ];
 
 export default function EnhancedPriceTicker({ className }: TickerProps) {
