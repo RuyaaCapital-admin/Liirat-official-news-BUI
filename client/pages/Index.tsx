@@ -131,12 +131,36 @@ export default function Index() {
         }
       }
 
+      // Build query parameters with filters
+      const params = new URLSearchParams();
+      params.append("limit", "100"); // Increased limit for better coverage
+
+      // Add importance filter
+      if (filters?.importance?.length) {
+        params.append("importance", filters.importance.join(","));
+      } else {
+        params.append("importance", "3,2,1"); // Default to all importance levels
+      }
+
+      // Add country filter
+      if (filters?.country) {
+        params.append("country", filters.country);
+      }
+
+      // Add date range filters
+      if (filters?.from) {
+        params.append("from", filters.from);
+      }
+      if (filters?.to) {
+        params.append("to", filters.to);
+      }
+
       // Fetch from EODHD calendar endpoint with better error handling
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
       const response = await fetch(
-        `/api/eodhd-calendar?limit=50&importance=3,2`,
+        `/api/eodhd-calendar?${params.toString()}`,
         {
           method: "GET",
           headers: {
@@ -502,7 +526,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيهات ذكية لأزواج العملات مع مراقبة الأسعار في الوقت الفعلي"
+                    ? "قم بإنشاء تنبيهات ذكية لأزواج العملات مع مراقبة ال��سعار في الوقت الفعلي"
                     : "Create intelligent alerts for currency pairs with real-time price monitoring"}
                 </p>
               </div>
