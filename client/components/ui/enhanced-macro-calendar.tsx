@@ -528,20 +528,38 @@ export default function EnhancedMacroCalendar({
           </Button>
         </div>
 
-        {/* Filters Row - Always Visible */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg">
+        {/* Filters Row - Always Visible and Functional */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg border border-border/50 shadow-sm">
           <div className="md:col-span-4 mb-2">
-            <h4 className="font-medium text-sm">
-              {language === "ar" ? "فلاتر" : "Filters"}
-              {(searchTerm ||
-                selectedCountries.length > 0 ||
-                selectedImportance.length < 3 ||
-                selectedCategory !== "all") && (
-                <Badge variant="secondary" className="ml-2 text-xs">
-                  {language === "ar" ? "نشط" : "Active"}
-                </Badge>
-              )}
-            </h4>
+            <div className="flex items-center justify-between">
+              <h4 className="font-medium text-sm">
+                {language === "ar" ? "فلاتر" : "Filters"}
+                {(searchTerm ||
+                  selectedCountries.length > 0 ||
+                  selectedImportance.length < 3 ||
+                  selectedCategory !== "all") && (
+                  <Badge variant="secondary" className="ml-2 text-xs bg-primary/10 text-primary">
+                    {language === "ar" ? "نشط" : "Active"}
+                  </Badge>
+                )}
+              </h4>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedCountries([]);
+                  setSelectedImportance([1, 2, 3]);
+                  setSelectedCategory("all");
+                  setDateFrom(undefined);
+                  setDateTo(undefined);
+                  setSelectedPeriod("this_week");
+                }}
+                className="text-xs text-muted-foreground hover:text-foreground"
+              >
+                {language === "ar" ? "مسح الكل" : "Clear All"}
+              </Button>
+            </div>
           </div>
 
           {/* Search */}
@@ -553,7 +571,7 @@ export default function EnhancedMacroCalendar({
               <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder={
-                  language === "ar" ? "البحث في الأحداث..." : "Search events..."
+                  language === "ar" ? "البحث في ��لأحداث..." : "Search events..."
                 }
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -656,10 +674,10 @@ export default function EnhancedMacroCalendar({
                     );
                   }}
                   className={cn(
-                    "h-9 px-2 text-xs",
+                    "h-9 px-2 text-xs transition-all duration-200 hover:scale-105",
                     selectedImportance.includes(level)
-                      ? getImportanceColor(level)
-                      : "",
+                      ? cn(getImportanceColor(level), "shadow-md")
+                      : "hover:bg-muted",
                   )}
                 >
                   {getImportanceLabel(level)}
