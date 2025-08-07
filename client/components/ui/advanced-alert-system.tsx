@@ -25,6 +25,8 @@ import {
   AlertTriangle,
   Clock,
   Target,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -35,6 +37,7 @@ interface CurrencyPair {
   currentPrice: number;
   change: number;
   changePercent: number;
+  lastUpdate: Date;
 }
 
 interface PriceAlert {
@@ -45,6 +48,7 @@ interface PriceAlert {
   isActive: boolean;
   createdAt: Date;
   name: string;
+  lastTriggered?: Date;
 }
 
 interface AdvancedAlertSystemProps {
@@ -60,27 +64,27 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
   const [selectedPair, setSelectedPair] = useState<CurrencyPair | null>(null);
   const [targetPrice, setTargetPrice] = useState("");
   const [condition, setCondition] = useState<"above" | "below">("above");
+  const [isConnected, setIsConnected] = useState(false);
+  const [lastPriceUpdate, setLastPriceUpdate] = useState<Date | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
-  // EODHD-supported symbols - NO MOCK PRICES, only symbol definitions
+  // EODHD-supported symbols - using exactly the same symbols as the price ticker
   const [currencyPairs, setCurrencyPairs] = useState<CurrencyPair[]>([]);
   const [isLoadingPairs, setIsLoadingPairs] = useState(true);
 
   // Define supported symbols - prices will be fetched from EODHD
   const supportedSymbols = [
     { symbol: "EURUSD", name: "EUR/USD", nameAr: "يورو/دولار" },
-    { symbol: "GBPUSD", name: "GBP/USD", nameAr: "جنيه/دولار" },
     { symbol: "USDJPY", name: "USD/JPY", nameAr: "دولار/ين" },
-    { symbol: "USDCHF", name: "USD/CHF", nameAr: "دولار/فرنك" },
+    { symbol: "GBPUSD", name: "GBP/USD", nameAr: "جنيه/دولار" },
     { symbol: "AUDUSD", name: "AUD/USD", nameAr: "دولار أسترالي/دولار" },
+    { symbol: "USDCHF", name: "USD/CHF", nameAr: "دولار/فرنك" },
     { symbol: "USDCAD", name: "USD/CAD", nameAr: "دولار/دولار كندي" },
-    { symbol: "NZDUSD", name: "NZD/USD", nameAr: "دولار نيوزيلندي/دولار" },
-    { symbol: "EURGBP", name: "EUR/GBP", nameAr: "يورو/جنيه" },
-    { symbol: "EURJPY", name: "EUR/JPY", nameAr: "يورو/ين" },
-    { symbol: "GBPJPY", name: "GBP/JPY", nameAr: "جنيه/ين" },
-    { symbol: "BTCUSD", name: "Bitcoin/USD", nameAr: "بيتكوين/دولار" },
-    { symbol: "ETHUSD", name: "Ethereum/USD", nameAr: "إيثريوم/دولار" },
+    { symbol: "BTC-USD", name: "Bitcoin/USD", nameAr: "بيتكوين/دولار" },
+    { symbol: "ETH-USD", name: "Ethereum/USD", nameAr: "إيثريوم/دولار" },
+    { symbol: "XAUUSD", name: "Gold/USD", nameAr: "ذهب/دولار" },
+    { symbol: "GSPC", name: "S&P 500", nameAr: "إس&بي 500" },
   ];
 
   // Fetch real prices for all supported symbols on component mount
@@ -88,13 +92,25 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     const fetchAllPrices = async () => {
       setIsLoadingPairs(true);
       try {
+        console.log("Fetching prices for all supported symbols...");
         const pricePromises = supportedSymbols.map(async (symbol) => {
           try {
+            let apiSymbol = symbol.symbol;
+            // Format symbol for EODHD API based on type
+            if (symbol.symbol === "BTC-USD" || symbol.symbol === "ETH-USD") {
+              // Keep crypto symbols as is
+            } else if (symbol.symbol === "GSPC") {
+              apiSymbol = "GSPC.INDX"; // Add index suffix
+            } else {
+              // Forex symbols - keep as is, API will handle
+            }
+
+            console.log(`Fetching price for ${symbol.symbol} (API symbol: ${apiSymbol})`);
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
             const response = await fetch(
-              `/api/eodhd-price?symbol=${symbol.symbol}`,
+              `/api/eodhd-price?symbol=${apiSymbol}`,
               { signal: controller.signal },
             );
 
@@ -102,52 +118,45 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
             if (response.ok) {
               const data = await response.json();
+              console.log(`Price response for ${symbol.symbol}:`, data);
               const priceData = data.prices?.[0];
               if (priceData) {
+                setIsConnected(true);
                 return {
                   symbol: symbol.symbol,
                   name: symbol.name,
                   nameAr: symbol.nameAr,
-                  currentPrice: priceData.price || 0,
-                  change: priceData.change || 0,
-                  changePercent: priceData.change_percent || 0,
+                  currentPrice: parseFloat(priceData.price) || 0,
+                  change: parseFloat(priceData.change || 0),
+                  changePercent: parseFloat(priceData.change_percent || 0),
+                  lastUpdate: new Date(),
                 };
               }
             }
 
-            // Return symbol with mock price for demo when API fails
-            const mockPrice = Math.random() * 2 + 0.5; // Random price between 0.5-2.5
-            return {
-              symbol: symbol.symbol,
-              name: symbol.name,
-              nameAr: symbol.nameAr,
-              currentPrice: mockPrice,
-              change: (Math.random() - 0.5) * 0.01, // Random change
-              changePercent: (Math.random() - 0.5) * 2, // Random percent change
-            };
+            console.warn(`Failed to fetch price for ${symbol.symbol}, API response:`, response.status);
+            return null;
           } catch (error) {
-            console.warn(`Failed to fetch price for ${symbol.symbol}:`, error);
-
-            // Return symbol with mock price for demo
-            const mockPrice = Math.random() * 2 + 0.5;
-            return {
-              symbol: symbol.symbol,
-              name: symbol.name,
-              nameAr: symbol.nameAr,
-              currentPrice: mockPrice,
-              change: (Math.random() - 0.5) * 0.01,
-              changePercent: (Math.random() - 0.5) * 2,
-            };
+            console.warn(`Error fetching price for ${symbol.symbol}:`, error);
+            return null;
           }
         });
 
         const results = await Promise.all(pricePromises);
-        const validPairs = results.filter(
-          (pair): pair is CurrencyPair => pair !== null,
-        );
+        const validPairs = results.filter((pair): pair is CurrencyPair => pair !== null);
+        
+        console.log(`Successfully fetched ${validPairs.length} of ${supportedSymbols.length} symbols`);
         setCurrencyPairs(validPairs);
+        
+        if (validPairs.length > 0) {
+          setIsConnected(true);
+          setLastPriceUpdate(new Date());
+        } else {
+          setIsConnected(false);
+        }
       } catch (error) {
         console.error("Error fetching currency pair prices:", error);
+        setIsConnected(false);
       } finally {
         setIsLoadingPairs(false);
       }
@@ -155,6 +164,66 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
     fetchAllPrices();
   }, []);
+
+  // Periodic price updates every 30 seconds
+  useEffect(() => {
+    if (currencyPairs.length === 0) return;
+
+    const updatePrices = async () => {
+      try {
+        console.log("Updating prices for currency pairs...");
+        const updatedPairs = await Promise.all(
+          currencyPairs.map(async (pair) => {
+            try {
+              let apiSymbol = pair.symbol;
+              if (pair.symbol === "BTC-USD" || pair.symbol === "ETH-USD") {
+                // Keep crypto symbols as is
+              } else if (pair.symbol === "GSPC") {
+                apiSymbol = "GSPC.INDX";
+              }
+
+              const response = await fetch(
+                `/api/eodhd-price?symbol=${apiSymbol}`,
+                { signal: AbortSignal.timeout(8000) }, // 8 second timeout
+              );
+
+              if (response.ok) {
+                const data = await response.json();
+                const priceData = data.prices?.[0];
+                if (priceData) {
+                  setIsConnected(true);
+                  return {
+                    ...pair,
+                    currentPrice: parseFloat(priceData.price) || pair.currentPrice,
+                    change: parseFloat(priceData.change || 0),
+                    changePercent: parseFloat(priceData.change_percent || 0),
+                    lastUpdate: new Date(),
+                  };
+                }
+              }
+              
+              console.warn(`Failed to update price for ${pair.symbol}`);
+              return pair; // Return original if update fails
+            } catch (error) {
+              console.warn(`Error updating price for ${pair.symbol}:`, error);
+              return pair; // Return original if error
+            }
+          }),
+        );
+        
+        setCurrencyPairs(updatedPairs);
+        setLastPriceUpdate(new Date());
+        console.log("Price update completed successfully");
+      } catch (error) {
+        console.error("Error updating prices:", error);
+        setIsConnected(false);
+      }
+    };
+
+    // Update prices every 30 seconds
+    const interval = setInterval(updatePrices, 30000);
+    return () => clearInterval(interval);
+  }, [currencyPairs.length]);
 
   // Filter pairs based on search query
   const filteredPairs = currencyPairs.filter(
@@ -168,44 +237,6 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
   useEffect(() => {
     setShowSuggestions(searchQuery.length > 0 && !selectedPair);
   }, [searchQuery, selectedPair]);
-
-  // Fetch real-time price when pair is selected
-  useEffect(() => {
-    if (selectedPair) {
-      const fetchRealTimePrice = async () => {
-        try {
-          const response = await fetch(
-            `/api/eodhd-price?symbol=${selectedPair.symbol}`,
-          );
-          if (response.ok) {
-            const data = await response.json();
-            const priceData = data.prices?.[0];
-            if (priceData) {
-              // Update the selected pair with real-time price
-              setSelectedPair((prev) =>
-                prev
-                  ? {
-                      ...prev,
-                      currentPrice: priceData.price || prev.currentPrice,
-                      change: priceData.change || prev.change,
-                      changePercent:
-                        priceData.change_percent || prev.changePercent,
-                    }
-                  : null,
-              );
-            }
-          }
-        } catch (error) {
-          console.warn(
-            `Failed to fetch real-time price for ${selectedPair.symbol}:`,
-            error,
-          );
-        }
-      };
-
-      fetchRealTimePrice();
-    }
-  }, [selectedPair?.symbol]);
 
   // Close suggestions when clicking outside
   useEffect(() => {
@@ -226,7 +257,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
   // Load alerts from localStorage on mount
   useEffect(() => {
-    const savedAlerts = localStorage.getItem("price-alerts");
+    const savedAlerts = localStorage.getItem("eodhd-price-alerts");
     if (savedAlerts) {
       try {
         const parsed = JSON.parse(savedAlerts);
@@ -234,6 +265,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
           parsed.map((alert: any) => ({
             ...alert,
             createdAt: new Date(alert.createdAt),
+            lastTriggered: alert.lastTriggered ? new Date(alert.lastTriggered) : undefined,
           })),
         );
       } catch (error) {
@@ -242,197 +274,67 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     }
   }, []);
 
-  // Fetch real-time prices for currency pairs
-  useEffect(() => {
-    let retryCount = 0;
-    const maxRetries = 3;
-    const baseDelay = 5000; // 5 seconds
-
-    const fetchRealPrices = async () => {
-      try {
-        const updatedPairs = await Promise.all(
-          currencyPairs.map(async (pair) => {
-            try {
-              const response = await fetch(
-                `/api/eodhd-price?symbol=${pair.symbol}`,
-              );
-
-              // Check if response is HTML (error page) instead of JSON
-              const contentType = response.headers.get("content-type");
-              if (!contentType || !contentType.includes("application/json")) {
-                console.warn(
-                  `API returned non-JSON response for ${pair.symbol}, using mock data`,
-                );
-                return pair; // Return original with mock data
-              }
-
-              if (response.ok) {
-                const data = await response.json();
-                const priceData = data.prices?.[0]; // EODHD returns prices array
-                return {
-                  ...pair,
-                  currentPrice: priceData?.price || pair.currentPrice,
-                  change: priceData?.change || pair.change,
-                  changePercent:
-                    priceData?.change_percent || pair.changePercent,
-                };
-              } else {
-                // Handle rate limiting with exponential backoff
-                if (response.status === 429 && retryCount < maxRetries) {
-                  retryCount++;
-                  const delay = baseDelay * Math.pow(2, retryCount - 1);
-                  console.warn(
-                    `Rate limited for ${pair.symbol}, retrying in ${delay}ms (attempt ${retryCount}/${maxRetries})`,
-                  );
-                  await new Promise((resolve) => setTimeout(resolve, delay));
-                  // Don't retry here to avoid infinite loops, just log and continue
-                }
-                console.warn(
-                  `API request failed for ${pair.symbol}: ${response.status}`,
-                );
-                return pair; // Return original with mock data
-              }
-            } catch (error) {
-              // Handle JSON parsing errors and other issues
-              if (
-                error instanceof SyntaxError &&
-                error.message.includes("Unexpected token")
-              ) {
-                console.warn(
-                  `API returned HTML instead of JSON for ${pair.symbol}, likely endpoint not available in dev mode`,
-                );
-              } else {
-                console.warn(
-                  `Failed to fetch price for ${pair.symbol}:`,
-                  error,
-                );
-              }
-              return pair; // Return original with mock data
-            }
-          }),
-        );
-        setCurrencyPairs(updatedPairs);
-        retryCount = 0; // Reset retry count on successful batch
-      } catch (error) {
-        console.error("Error fetching real prices:", error);
-        // Implement exponential backoff for general errors
-        if (retryCount < maxRetries) {
-          retryCount++;
-          const delay = baseDelay * Math.pow(2, retryCount - 1);
-          console.warn(`Retrying price fetch in ${delay}ms due to error`);
-          setTimeout(fetchRealPrices, delay);
-        }
-      }
-    };
-
-    // Initial fetch
-    fetchRealPrices();
-
-    // Update prices every 10 minutes to prevent rate limiting completely
-    const interval = setInterval(fetchRealPrices, 600000);
-    return () => clearInterval(interval);
-  }, []);
-
   // Save alerts to localStorage whenever alerts change
   useEffect(() => {
-    localStorage.setItem("price-alerts", JSON.stringify(alerts));
+    localStorage.setItem("eodhd-price-alerts", JSON.stringify(alerts));
   }, [alerts]);
 
-  // Monitor price alerts using Polygon.io API
+  // Monitor price alerts using EODHD data
   useEffect(() => {
-    const checkPriceAlerts = async () => {
+    if (alerts.length === 0 || currencyPairs.length === 0) return;
+
+    const checkPriceAlerts = () => {
+      console.log("Checking price alerts...");
+      
       for (const alert of alerts) {
         if (!alert.isActive) continue;
 
-        try {
-          // Fetch real-time price from EODHD API
-          const response = await fetch(`/api/eodhd-price?symbol=${alert.pair}`);
+        const pair = currencyPairs.find(p => p.symbol === alert.pair);
+        if (!pair) continue;
 
-          // Check if response is HTML (error page) instead of JSON
-          const contentType = response.headers.get("content-type");
-          if (!contentType || !contentType.includes("application/json")) {
-            console.warn(
-              `EODHD API returned HTML for ${alert.pair}, skipping alert check`,
-            );
-            continue;
-          }
+        const currentPrice = pair.currentPrice;
+        const isTriggered =
+          (alert.condition === "above" && currentPrice >= alert.targetPrice) ||
+          (alert.condition === "below" && currentPrice <= alert.targetPrice);
 
-          if (!response.ok) {
-            console.warn(
-              `Failed to fetch price for ${alert.pair} from EODHD:`,
-              response.statusText,
-            );
-            continue;
-          }
+        if (isTriggered) {
+          console.log(`Alert triggered for ${alert.pair}: ${currentPrice} ${alert.condition} ${alert.targetPrice}`);
+          
+          // Trigger notification
+          const message =
+            language === "ar"
+              ? `تنبيه سعر: ${alert.name} ${alert.condition === "above" ? "فوق" : "تحت"} ${alert.targetPrice.toFixed(4)} | السعر الحالي: ${currentPrice.toFixed(4)}`
+              : `Price Alert: ${alert.name} ${alert.condition === "above" ? "above" : "below"} ${alert.targetPrice.toFixed(4)} | Current: ${currentPrice.toFixed(4)}`;
 
-          const data = await response.json();
-          const priceData = data.prices?.[0];
-          const currentPrice = priceData?.price;
+          addAlert({
+            eventName: `${alert.pair} ${language === "ar" ? "تنبيه سعر" : "Price Alert"}`,
+            message,
+            importance: 3,
+          });
 
-          if (!currentPrice) continue;
+          // Update alert as triggered and deactivate to prevent spam
+          setAlerts((prev) =>
+            prev.map((a) =>
+              a.id === alert.id 
+                ? { ...a, isActive: false, lastTriggered: new Date() } 
+                : a,
+            ),
+          );
 
-          const isTriggered =
-            (alert.condition === "above" &&
-              currentPrice >= alert.targetPrice) ||
-            (alert.condition === "below" && currentPrice <= alert.targetPrice);
-
-          if (isTriggered) {
-            // Trigger notification using the global notification system
-            if ((window as any).addPriceNotification) {
-              (window as any).addPriceNotification({
-                symbol: alert.pair,
-                currentPrice,
-                targetPrice: alert.targetPrice,
-                condition: alert.condition,
-              });
-            }
-
-            // Also add to alert context for legacy compatibility
-            const message =
-              language === "ar"
-                ? `تنبيه سعر: ${alert.name} ${alert.condition === "above" ? "فوق" : "تحت"} ${alert.targetPrice.toFixed(4)}`
-                : `Price Alert: ${alert.name} ${alert.condition === "above" ? "above" : "below"} ${alert.targetPrice.toFixed(4)}`;
-
-            addAlert({
-              eventName: `${alert.pair} ${language === "ar" ? "تنبيه سعر" : "Price Alert"}`,
-              message,
-              importance: 3,
+          // Browser notification if supported
+          if ("Notification" in window && Notification.permission === "granted") {
+            new Notification(`EODHD Price Alert: ${alert.pair}`, {
+              body: message,
+              icon: "/liirat-logo-new.png",
             });
-
-            // Deactivate the alert to prevent spam
-            setAlerts((prev) =>
-              prev.map((a) =>
-                a.id === alert.id ? { ...a, isActive: false } : a,
-              ),
-            );
-          }
-        } catch (error) {
-          // Handle JSON parsing errors gracefully
-          if (
-            error instanceof SyntaxError &&
-            error.message.includes("Unexpected token")
-          ) {
-            console.warn(
-              `API endpoint returned HTML for ${alert.pair}, likely not available in development mode`,
-            );
-          } else {
-            console.warn(`Error checking price for ${alert.pair}:`, error);
           }
         }
       }
     };
 
-    if (alerts.length === 0) return;
-
-    // Initial check
+    // Check alerts every time prices update
     checkPriceAlerts();
-
-    // Set up interval - increased to 15 minutes to completely prevent rate limiting
-    // This prevents 429/403 errors and reduces server load significantly
-    const interval = setInterval(checkPriceAlerts, 900000); // 15 minutes
-
-    return () => clearInterval(interval);
-  }, [alerts, addAlert, language]);
+  }, [currencyPairs, alerts, addAlert, language]);
 
   const handlePairSelect = (pair: CurrencyPair) => {
     setSelectedPair(pair);
@@ -442,7 +344,6 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
   const handleCreateAlert = () => {
     if (!selectedPair || !targetPrice || isNaN(parseFloat(targetPrice))) {
-      // Show error feedback if validation fails
       console.warn("Invalid alert data:", { selectedPair, targetPrice });
       return;
     }
@@ -465,7 +366,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
     setAlerts((prev) => [...prev, newAlert]);
 
-    // Show success feedback via notification system
+    // Show success feedback
     const message =
       language === "ar"
         ? `تم إنشاء تنبيه لـ ${selectedPair.symbol} عند ${targetPriceNum.toFixed(4)}`
@@ -500,6 +401,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     const pair = currencyPairs.find((p) => p.symbol === alert.pair);
     if (!pair) return "unknown";
 
+    if (alert.lastTriggered) return "triggered";
+
     if (alert.condition === "above") {
       return pair.currentPrice >= alert.targetPrice ? "triggered" : "waiting";
     } else {
@@ -508,8 +411,25 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
   };
 
   const getPriceDisplay = (pair: CurrencyPair) => {
-    return pair.currentPrice.toFixed(pair.symbol.includes("JPY") ? 2 : 4);
+    if (pair.symbol.includes("JPY")) {
+      return pair.currentPrice.toFixed(3);
+    } else if (pair.symbol.includes("BTC") || pair.symbol.includes("ETH")) {
+      return pair.currentPrice.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    } else if (pair.symbol.includes("XAU") || pair.symbol === "GSPC") {
+      return pair.currentPrice.toFixed(2);
+    }
+    return pair.currentPrice.toFixed(4);
   };
+
+  // Request notification permission
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
 
   // Show loading state while fetching currency pairs
   if (isLoadingPairs) {
@@ -520,8 +440,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-muted-foreground">
               {language === "ar"
-                ? "جاري تحميل أزواج العملات..."
-                : "Loading currency pairs..."}
+                ? "جاري تحميل أزواج العملات من EODHD..."
+                : "Loading currency pairs from EODHD..."}
             </p>
           </CardContent>
         </Card>
@@ -538,13 +458,13 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
             <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">
               {language === "ar"
-                ? "بيانات الأسعار غير متاحة"
-                : "Price Data Not Available"}
+                ? "بيانات الأسعار غير متاحة من EODHD"
+                : "EODHD Price Data Not Available"}
             </h3>
             <p className="text-muted-foreground">
               {language === "ar"
-                ? "لا يمكن الوصول إلى بيانات الأسعار. يرجى المحاولة لاحقاً أو التواصل مع admin@ruyaacapital.com"
-                : "Unable to access price data. Please try again later or contact admin@ruyaacapital.com"}
+                ? "لا يمكن الوصول إلى بيانات الأسعار من EODHD. يرجى التحقق من مفتاح API أو المحاولة لاحقاً."
+                : "Unable to access EODHD price data. Please check API key or try again later."}
             </p>
           </CardContent>
         </Card>
@@ -554,12 +474,32 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
   return (
     <div className={cn("w-full space-y-6", className)} dir={dir}>
+      {/* Connection Status */}
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        {isConnected ? (
+          <Wifi className="h-4 w-4 text-green-500" />
+        ) : (
+          <WifiOff className="h-4 w-4 text-red-500" />
+        )}
+        <span>
+          {isConnected 
+            ? (language === "ar" ? "متصل بـ EODHD" : "Connected to EODHD")
+            : (language === "ar" ? "غير متصل" : "Disconnected")
+          }
+        </span>
+        {lastPriceUpdate && (
+          <span className="text-xs">
+            • {language === "ar" ? "آخر تحديث:" : "Last update:"} {lastPriceUpdate.toLocaleTimeString()}
+          </span>
+        )}
+      </div>
+
       {/* Create New Alert Card */}
       <Card className="bg-card/50 backdrop-blur-sm border-border/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <Plus className="w-5 h-5 text-primary" />
-            {language === "ar" ? "إنشاء تنبيه جديد" : "Create New Alert"}
+            {language === "ar" ? "إنشاء تنبيه سعر جديد" : "Create New Price Alert"}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -567,8 +507,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
           <div className="space-y-2 relative" style={{ zIndex: 10000 }}>
             <Label className="text-sm font-medium">
               {language === "ar"
-                ? "البحث عن زوج العملات"
-                : "Search Currency Pair"}
+                ? "البحث عن زوج العملات أو الأصل"
+                : "Search Currency Pair or Asset"}
             </Label>
             <div className="relative">
               <Search
@@ -591,8 +531,8 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                 )}
                 placeholder={
                   language === "ar"
-                    ? "اكتب اسم الزوج (مثل EUR, USD, GBP)"
-                    : "Type pair name (e.g., EUR, USD, GBP)"
+                    ? "اكتب اسم الزوج (مثل EUR, USD, BTC)"
+                    : "Type pair name (e.g., EUR, USD, BTC)"
                 }
                 dir={dir}
               />
@@ -771,9 +711,14 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Bell className="w-5 h-5 text-primary" />
-              {language === "ar" ? "التنبيهات النشطة" : "Active Alerts"} (
+              {language === "ar" ? "التنبيهات النشطة" : "Active Price Alerts"} (
               {alerts.length})
             </div>
+            {alerts.some(a => a.isActive) && (
+              <Badge variant="secondary" className="text-xs">
+                {alerts.filter(a => a.isActive).length} {language === "ar" ? "نشط" : "active"}
+              </Badge>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -784,6 +729,11 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                 {language === "ar"
                   ? "لا توجد تنبيهات نشطة"
                   : "No active alerts"}
+              </p>
+              <p className="text-sm mt-1">
+                {language === "ar"
+                  ? "قم بإنشاء تنبيه لمراقبة الأسعار في الوقت الفعلي"
+                  : "Create an alert to monitor prices in real-time"}
               </p>
             </div>
           ) : (
@@ -837,17 +787,17 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
 
                         <Badge
                           variant={
-                            status === "triggered" ? "destructive" : "outline"
+                            status === "triggered" ? "destructive" : 
+                            alert.isActive ? "outline" : "secondary"
                           }
                           className="text-xs whitespace-nowrap"
                         >
                           {status === "triggered"
-                            ? language === "ar"
-                              ? "تم التنشيط"
-                              : "Triggered"
-                            : language === "ar"
-                              ? "في الانتظار"
-                              : "Waiting"}
+                            ? language === "ar" ? "تم التنشيط" : "Triggered"
+                            : alert.isActive 
+                              ? language === "ar" ? "في الانتظار" : "Waiting"
+                              : language === "ar" ? "متوقف" : "Inactive"
+                          }
                         </Badge>
                       </div>
 
@@ -857,6 +807,10 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                           size="sm"
                           onClick={() => toggleAlert(alert.id)}
                           className="h-8 w-8 p-0"
+                          title={alert.isActive 
+                            ? (language === "ar" ? "إيقاف التنبيه" : "Deactivate alert")
+                            : (language === "ar" ? "تنشيط التنبيه" : "Activate alert")
+                          }
                         >
                           {alert.isActive ? (
                             <Bell className="w-4 h-4" />
@@ -869,11 +823,18 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
                           size="sm"
                           onClick={() => deleteAlert(alert.id)}
                           className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+                          title={language === "ar" ? "حذف التنبيه" : "Delete alert"}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
+
+                    {alert.lastTriggered && (
+                      <div className="text-xs text-muted-foreground mt-2 pt-2 border-t border-border/30">
+                        {language === "ar" ? "آخر تنشيط:" : "Last triggered:"} {alert.lastTriggered.toLocaleString()}
+                      </div>
+                    )}
                   </div>
                 );
               })}
