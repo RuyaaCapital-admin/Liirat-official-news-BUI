@@ -21,17 +21,23 @@ interface TickerProps {
 const TICKER_CONFIG = [
   // Gold (XAU) - FIRST as user specifically requested - XAUUSD.FOREX
   { symbol: "XAUUSD.FOREX", displayName: "GOLD" },
-  // Crypto (BTC and ETH only) - MOST RELIABLE, always work
+  // Major Cryptocurrencies
   { symbol: "BTC-USD.CC", displayName: "BTC/USD" },
   { symbol: "ETH-USD.CC", displayName: "ETH/USD" },
-  // Only the top 3 forex pairs that work consistently in production
+  { symbol: "ADA-USD.CC", displayName: "ADA/USD" },
+  { symbol: "SOL-USD.CC", displayName: "SOL/USD" },
+  // Major Forex Pairs
   { symbol: "EURUSD.FOREX", displayName: "EUR/USD" },
   { symbol: "USDJPY.FOREX", displayName: "USD/JPY" },
   { symbol: "GBPUSD.FOREX", displayName: "GBP/USD" },
-  // Removed all other forex pairs that cause "Failed to fetch" errors:
-  // { symbol: "AUDUSD.FOREX", displayName: "AUD/USD" },
-  // { symbol: "USDCAD.FOREX", displayName: "USD/CAD" }, // This was failing!
-  // { symbol: "EURGBP.FOREX", displayName: "EUR/GBP" },
+  { symbol: "AUDUSD.FOREX", displayName: "AUD/USD" },
+  { symbol: "USDCAD.FOREX", displayName: "USD/CAD" },
+  { symbol: "USDCHF.FOREX", displayName: "USD/CHF" },
+  { symbol: "EURGBP.FOREX", displayName: "EUR/GBP" },
+  { symbol: "EURJPY.FOREX", displayName: "EUR/JPY" },
+  { symbol: "GBPJPY.FOREX", displayName: "GBP/JPY" },
+  // Oil/Commodities
+  { symbol: "BRENT.CC", displayName: "BRENT OIL" },
 ];
 
 export default function EnhancedPriceTicker({ className }: TickerProps) {
