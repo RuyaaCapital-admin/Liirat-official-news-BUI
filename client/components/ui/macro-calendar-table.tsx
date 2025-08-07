@@ -474,6 +474,9 @@ export function MacroCalendarTable({
     dateRange,
   ]);
 
+  // Display logic - show first 10 by default, expand to show all
+  const displayedEvents = isExpanded ? filteredEvents : filteredEvents.slice(0, 10);
+
   const handleUpdate = () => {
     // Update online status from navigator
     setIsOnline(navigator.onLine);
@@ -939,7 +942,7 @@ export function MacroCalendarTable({
                     dir === "rtl" ? "text-right" : "text-left",
                   )}
                 >
-                  {t("Impact", "الت��ثير")}
+                  {t("Impact", "التأثير")}
                 </th>
                 <th
                   className={cn(
