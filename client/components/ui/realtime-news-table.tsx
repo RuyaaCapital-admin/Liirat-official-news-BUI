@@ -226,7 +226,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         ...prev,
         [article.id]:
           language === "ar"
-            ? "تحليل الذكاء الاصطناعي غير متاح حاليًا"
+            ? "تحليل الذكاء الاصطناعي غير متاح حال��ًا"
             : "AI analysis currently unavailable",
       }));
     } finally {
@@ -294,7 +294,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
               <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder={
-                  language === "ar" ? "ال��حث في الأخبار..." : "Search news..."
+                  language === "ar" ? "البحث في الأخبار..." : "Search news..."
                 }
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -600,115 +600,6 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
           </div>
         )}
       </CardContent>
-
-      {/* Alert Creation Dialog */}
-      <Dialog open={showAlertDialog} onOpenChange={setShowAlertDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle dir={dir} className="flex items-center gap-2">
-              <Bell className="w-5 h-5 text-primary" />
-              {language === "ar" ? "إنشاء تنبيه للخبر" : "Create News Alert"}
-            </DialogTitle>
-          </DialogHeader>
-
-          {selectedArticle && (
-            <div className="space-y-4" dir={dir}>
-              {/* Article Preview */}
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge className={getImportanceColor(selectedArticle.importance)}>
-                    {getImportanceLabel(selectedArticle.importance)}
-                  </Badge>
-                  <Badge variant="outline">{selectedArticle.category}</Badge>
-                </div>
-                <h4 className="font-medium text-sm line-clamp-2 mb-1">
-                  {selectedArticle.title}
-                </h4>
-                <p className="text-xs text-muted-foreground line-clamp-2">
-                  {selectedArticle.content}
-                </p>
-              </div>
-
-              {/* Alert Timing Options */}
-              <div className="space-y-3">
-                <h4 className="font-medium text-sm">
-                  {language === "ar" ? "توقيت التنبيه:" : "Alert Timing:"}
-                </h4>
-
-                <div className="space-y-2">
-                  <Button
-                    variant={alertTiming === "instant" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setAlertTiming("instant")}
-                    className="w-full justify-start gap-2"
-                  >
-                    <Bell className="w-4 h-4" />
-                    {language === "ar" ? "تنبيه فوري" : "Instant Alert"}
-                  </Button>
-
-                  <Button
-                    variant={alertTiming === "15min" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setAlertTiming("15min")}
-                    className="w-full justify-start gap-2"
-                  >
-                    <Timer className="w-4 h-4" />
-                    {language === "ar" ? "تذكير خلال 15 دقيقة" : "Reminder in 15 minutes"}
-                  </Button>
-
-                  <Button
-                    variant={alertTiming === "30min" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setAlertTiming("30min")}
-                    className="w-full justify-start gap-2"
-                  >
-                    <Timer className="w-4 h-4" />
-                    {language === "ar" ? "تذكير خلال 30 دقيقة" : "Reminder in 30 minutes"}
-                  </Button>
-
-                  <Button
-                    variant={alertTiming === "60min" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setAlertTiming("60min")}
-                    className="w-full justify-start gap-2"
-                  >
-                    <Timer className="w-4 h-4" />
-                    {language === "ar" ? "تذكير خلال ساعة" : "Reminder in 1 hour"}
-                  </Button>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-2 pt-2">
-                <Button
-                  onClick={() => {
-                    createNewsAlert(selectedArticle, alertTiming);
-                    setShowAlertDialog(false);
-                    setSelectedArticle(null);
-                    setAlertTiming("instant");
-                  }}
-                  className="flex-1 gap-2"
-                >
-                  <Bell className="w-4 h-4" />
-                  {language === "ar" ? "إنشاء التنبيه" : "Create Alert"}
-                </Button>
-
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowAlertDialog(false);
-                    setSelectedArticle(null);
-                    setAlertTiming("instant");
-                  }}
-                  className="flex-1"
-                >
-                  {language === "ar" ? "إلغاء" : "Cancel"}
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </Card>
   );
 }
