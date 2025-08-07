@@ -251,9 +251,9 @@ export default function Index() {
       {/* All content with relative positioning */}
       <div className="relative z-10 pt-[120px]">
         <main role="main">
-          {/* Real-Time Market Ticker - Always Visible */}
+          {/* Real-Time EODHD Market Ticker - Always Visible */}
           <div className="fixed top-0 left-0 right-0 z-[70] w-full">
-            <TradingViewTicker className="w-full" />
+            <EODHDPriceTicker className="w-full" />
           </div>
 
           {/* Floating Navigation Header */}
