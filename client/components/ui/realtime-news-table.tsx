@@ -397,7 +397,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
           </div>
         ) : (
           <div className="space-y-4">
-            {filteredArticles.map((article) => (
+            {filteredArticles.slice(0, itemsToShow).map((article) => (
               <div
                 key={article.id}
                 className="border border-border rounded-lg p-4 hover:bg-muted/30 transition-colors"
