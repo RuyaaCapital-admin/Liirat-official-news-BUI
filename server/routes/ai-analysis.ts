@@ -19,8 +19,11 @@ export const handleAIAnalysis: RequestHandler = async (req, res) => {
     }
 
     if (!openaiApiKey) {
+      const errorMessage = language === "ar"
+        ? "مفتاح OpenAI غير مُعدّ"
+        : "OpenAI API key not configured";
       return res.status(500).json({
-        error: "OpenAI API key not configured",
+        error: errorMessage,
         analysis:
           language === "ar"
             ? "مفتاح OpenAI غير متوفر"
