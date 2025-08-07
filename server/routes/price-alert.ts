@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 async function getRealPriceData(symbol: string, res: Response) {
   try {
     const response = await fetch(
-      `http://localhost:8080/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+      `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
     );
 
     if (!response.ok) {
