@@ -192,33 +192,54 @@ export default function EnhancedMacroCalendar({
 
   const formatDateTime = (dateString: string, timeString?: string) => {
     try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) return dateString;
+      // Handle various date formats
+      let date: Date;
 
-      // Force Gregorian calendar and Arabic numerals
-      if (language === "ar") {
-        // Use English locale with Arabic labels to avoid hijri calendar
-        const englishFormat = new Intl.DateTimeFormat("en-US", {
-          timeZone: selectedTimezone,
-          month: "short",
-          day: "numeric",
-          hour: timeString ? "2-digit" : undefined,
-          minute: timeString ? "2-digit" : undefined,
-          hour12: false,
-        }).format(date);
-        return englishFormat; // Return English format even in Arabic mode
+      // Clean up the date string if it has weird formatting
+      if (dateString.includes('T00:00:00')) {
+        // Remove the weird T00:00:00Z suffix
+        date = new Date(dateString.split('T')[0]);
       } else {
-        return new Intl.DateTimeFormat("en-US", {
-          timeZone: selectedTimezone,
-          month: "short",
-          day: "numeric",
-          hour: timeString ? "2-digit" : undefined,
-          minute: timeString ? "2-digit" : undefined,
-          hour12: false,
-        }).format(date);
+        date = new Date(dateString);
       }
+
+      if (isNaN(date.getTime())) {
+        // If still invalid, try parsing as YYYY-MM-DD
+        const cleanDate = dateString.replace(/[^0-9-]/g, '').split('-');
+        if (cleanDate.length >= 3) {
+          date = new Date(parseInt(cleanDate[0]), parseInt(cleanDate[1]) - 1, parseInt(cleanDate[2]));
+        } else {
+          return dateString;
+        }
+      }
+
+      // Simple, clean formatting for both Arabic and English
+      const options: Intl.DateTimeFormatOptions = {
+        month: "short",
+        day: "numeric",
+        timeZone: "Asia/Dubai", // Always use Dubai time
+      };
+
+      // Add time if provided and valid
+      if (timeString && timeString !== "00:00" && !timeString.includes('T')) {
+        options.hour = "2-digit";
+        options.minute = "2-digit";
+        options.hour12 = false;
+
+        // Create a new date with the time
+        const [hours, minutes] = timeString.split(':').map(Number);
+        if (!isNaN(hours) && !isNaN(minutes)) {
+          date.setHours(hours, minutes, 0, 0);
+        }
+      }
+
+      // Always use en-US locale for clean, consistent formatting
+      return new Intl.DateTimeFormat("en-US", options).format(date);
+
     } catch (error) {
-      return dateString;
+      console.error('Date formatting error:', error, 'for:', dateString);
+      // Return just the date part if there's an error
+      return dateString.split('T')[0] || dateString;
     }
   };
 
