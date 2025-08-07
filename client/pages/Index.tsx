@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import CustomPriceTicker from "@/components/ui/custom-price-ticker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
-import { MacroCalendarTable } from "@/components/ui/macro-calendar-table";
+import { ModernEconomicCalendar } from "@/components/ui/modern-economic-calendar";
 import { EconomicEventsResponse, EconomicEvent } from "@shared/api";
 import { AdvancedAlertSystem } from "@/components/ui/advanced-alert-system";
 import { NotificationSystem } from "@/components/ui/notification-system";
@@ -123,10 +123,6 @@ export default function Index() {
           const data: EconomicEventsResponse = await response.json();
           if (data.error) {
             setEventsError(data.error);
-            setEconomicEvents([]);
-          } else if (data.message && data.events?.length === 0) {
-            // Handle API access restricted message
-            setEventsError(data.message);
             setEconomicEvents([]);
           } else {
             setEconomicEvents(data.events || []);
@@ -367,12 +363,8 @@ export default function Index() {
                           </div>
                         </div>
                       )}
-                      <MacroCalendarTable
-                        events={economicEvents}
+                      <ModernEconomicCalendar
                         className="rounded-lg overflow-hidden"
-                        language={language}
-                        dir={dir}
-                        onRefresh={() => fetchEconomicEvents(language)}
                       />
                     </div>
                   )}
