@@ -162,13 +162,17 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
           return;
         }
 
-        // Set disconnected status for all symbols after retries
+        // Set appropriate status for all symbols after retries/auth errors
         symbols.forEach(symbol => {
+          const config = TICKER_CONFIG.find((c) => c.symbol === symbol);
           setPriceData((prev) => ({
             ...prev,
             [symbol]: {
               ...prev[symbol],
-              status: "disconnected",
+              symbol,
+              displayName: config?.displayName || symbol,
+              // Show demo data for auth errors, disconnected for other errors
+              status: (response.status === 502 && errorDetails.includes('Unauthenticated')) ? "connecting" : "disconnected",
               lastUpdate: new Date(),
             },
           }));
