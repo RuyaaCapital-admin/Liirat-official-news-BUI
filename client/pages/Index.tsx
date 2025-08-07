@@ -93,19 +93,40 @@ export default function Index() {
 
       console.log(`Fetching economic events for language: ${lang}`);
 
-      // First test basic server connectivity
-      try {
-        const pingResponse = await fetch("/api/ping", {
-          method: "GET",
-          headers: { Accept: "application/json" },
-        });
-        console.log(`Server ping status: ${pingResponse.status}`);
-      } catch (pingError) {
-        console.error("Server ping failed:", pingError);
-        throw new Error("Server not reachable");
+      // First test basic server connectivity with timeout and retries
+      let pingSuccessful = false;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+          const pingResponse = await fetch("/api/ping", {
+            method: "GET",
+            headers: { Accept: "application/json" },
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeoutId);
+          console.log(`Server ping status: ${pingResponse.status} (attempt ${attempt})`);
+
+          if (pingResponse.ok) {
+            pingSuccessful = true;
+            break;
+          }
+        } catch (pingError) {
+          console.warn(`Server ping failed (attempt ${attempt}/3):`, pingError);
+          if (attempt === 3) {
+            console.error("All ping attempts failed, proceeding with fallback");
+            // Don't throw error, just log and continue with mock data
+          }
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Progressive delay
+        }
       }
 
-      // Fetch from EODHD calendar endpoint
+      // Fetch from EODHD calendar endpoint with better error handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
       const response = await fetch(
         `/api/eodhd-calendar?limit=50&importance=3,2`,
         {
@@ -114,8 +135,11 @@ export default function Index() {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
+          signal: controller.signal,
         },
       );
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const contentType = response.headers.get("content-type");
