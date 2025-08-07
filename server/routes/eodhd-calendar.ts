@@ -131,14 +131,38 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
         })
       : [];
 
-    console.log(`✅ Successfully transformed ${events.length} economic events from EODHD`);
-    if (events.length > 0) {
-      console.log("Sample event:", events[0]);
+    // Filter events by importance if specified
+    let filteredEvents = events;
+    if (importance) {
+      const importanceLevels = (importance as string).split(',').map(level => parseInt(level.trim()));
+      filteredEvents = events.filter(event => importanceLevels.includes(event.importance));
+    }
+
+    // Sort events by date - upcoming events first
+    filteredEvents.sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      const now = Date.now();
+
+      // Prioritize upcoming events over past events
+      const aIsUpcoming = dateA >= now;
+      const bIsUpcoming = dateB >= now;
+
+      if (aIsUpcoming && !bIsUpcoming) return -1;
+      if (!aIsUpcoming && bIsUpcoming) return 1;
+
+      // Within the same category (upcoming or past), sort by date
+      return dateA - dateB;
+    });
+
+    console.log(`✅ Successfully processed ${filteredEvents.length} economic events from EODHD (filtered from ${events.length})`);
+    if (filteredEvents.length > 0) {
+      console.log("Sample event:", filteredEvents[0]);
     }
 
     res.json({
-      events,
-      total: events.length,
+      events: filteredEvents,
+      total: filteredEvents.length,
       filters: {
         country,
         importance,
