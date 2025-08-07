@@ -77,7 +77,8 @@ function expressPlugin(): Plugin {
             "/api/eodhd-price",
           ]);
 
-          // Use the Express app to handle the request
+          // Strip /api prefix and handle the request
+          req.url = req.url.replace(/^\/api/, "") || "/";
           app(req, res, next);
         } catch (error) {
           console.error("❌ Error handling API request:", error);
