@@ -35,9 +35,8 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
     if (country) {
       apiUrl.searchParams.append("country", country as string);
     }
-    if (importance) {
-      apiUrl.searchParams.append("importance", importance as string);
-    }
+    // Note: EODHD API doesn't support importance filtering directly
+    // We'll filter the results after fetching
     if (from) {
       apiUrl.searchParams.append("from", from as string);
     }
