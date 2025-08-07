@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+import { apiOptimizer, generateCacheKey, getClientId } from "../utils/rate-limiter";
 
 interface PriceData {
   symbol: string;
