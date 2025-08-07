@@ -36,8 +36,14 @@ interface PriceData {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Set comprehensive CORS headers for production
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept, X-Requested-With");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS",
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, Accept, X-Requested-With",
+  );
   res.setHeader("Access-Control-Max-Age", "86400"); // 24 hours
   res.setHeader("Cache-Control", "public, max-age=30"); // Cache for 30 seconds
 
@@ -78,7 +84,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     apiUrl.searchParams.append("api_token", apiKey);
     apiUrl.searchParams.append("fmt", fmt as string);
 
-    console.log(`[PRICE API] Fetching EODHD data for ${symbolStr}: ${apiUrl.toString()}`);
+    console.log(
+      `[PRICE API] Fetching EODHD data for ${symbolStr}: ${apiUrl.toString()}`,
+    );
 
     // Create abort controller for timeout
     const controller = new AbortController();

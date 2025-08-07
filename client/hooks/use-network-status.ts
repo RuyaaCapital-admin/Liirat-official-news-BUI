@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from "react";
 
 interface NetworkStatus {
   isOnline: boolean;
   isChecking: boolean;
   lastChecked: Date | null;
-  apiStatus: 'online' | 'offline' | 'degraded' | 'unknown';
+  apiStatus: "online" | "offline" | "degraded" | "unknown";
 }
 
 export function useNetworkStatus() {
@@ -12,18 +12,20 @@ export function useNetworkStatus() {
     isOnline: navigator.onLine,
     isChecking: false,
     lastChecked: null,
-    apiStatus: 'unknown',
+    apiStatus: "unknown",
   });
 
   // Check API connectivity
-  const checkApiStatus = useCallback(async (): Promise<'online' | 'offline' | 'degraded'> => {
+  const checkApiStatus = useCallback(async (): Promise<
+    "online" | "offline" | "degraded"
+  > => {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-      const response = await fetch('/api/status', {
-        method: 'GET',
-        cache: 'no-cache',
+      const response = await fetch("/api/status", {
+        method: "GET",
+        cache: "no-cache",
         signal: controller.signal,
       });
 
@@ -31,30 +33,30 @@ export function useNetworkStatus() {
 
       if (response.ok) {
         const data = await response.json();
-        
+
         // Check if critical services are working
         const hasErrors = Object.values(data.checks || {}).some(
-          (check: any) => check.status === 'error'
+          (check: any) => check.status === "error",
         );
-        
-        return hasErrors ? 'degraded' : 'online';
+
+        return hasErrors ? "degraded" : "online";
       } else {
-        return 'degraded';
+        return "degraded";
       }
     } catch (error) {
-      console.warn('[NETWORK] API status check failed:', error);
-      return 'offline';
+      console.warn("[NETWORK] API status check failed:", error);
+      return "offline";
     }
   }, []);
 
   // Full network check
   const checkNetworkStatus = useCallback(async () => {
-    setStatus(prev => ({ ...prev, isChecking: true }));
+    setStatus((prev) => ({ ...prev, isChecking: true }));
 
     try {
       const apiStatus = await checkApiStatus();
-      
-      setStatus(prev => ({
+
+      setStatus((prev) => ({
         ...prev,
         isOnline: navigator.onLine,
         isChecking: false,
@@ -62,12 +64,12 @@ export function useNetworkStatus() {
         apiStatus,
       }));
     } catch (error) {
-      setStatus(prev => ({
+      setStatus((prev) => ({
         ...prev,
         isOnline: false,
         isChecking: false,
         lastChecked: new Date(),
-        apiStatus: 'offline',
+        apiStatus: "offline",
       }));
     }
   }, [checkApiStatus]);
@@ -75,24 +77,24 @@ export function useNetworkStatus() {
   // Listen to browser online/offline events
   useEffect(() => {
     const handleOnline = () => {
-      setStatus(prev => ({ ...prev, isOnline: true }));
+      setStatus((prev) => ({ ...prev, isOnline: true }));
       checkNetworkStatus(); // Re-check API when coming back online
     };
 
     const handleOffline = () => {
-      setStatus(prev => ({ 
-        ...prev, 
-        isOnline: false, 
-        apiStatus: 'offline' 
+      setStatus((prev) => ({
+        ...prev,
+        isOnline: false,
+        apiStatus: "offline",
       }));
     };
 
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
 
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
     };
   }, [checkNetworkStatus]);
 
@@ -115,7 +117,7 @@ export function useNetworkStatus() {
   return {
     ...status,
     checkNetworkStatus,
-    isApiAvailable: status.apiStatus === 'online',
-    isDegraded: status.apiStatus === 'degraded',
+    isApiAvailable: status.apiStatus === "online",
+    isDegraded: status.apiStatus === "degraded",
   };
 }

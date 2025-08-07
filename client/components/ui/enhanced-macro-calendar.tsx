@@ -196,18 +196,22 @@ export default function EnhancedMacroCalendar({
       let date: Date;
 
       // Clean up the date string if it has weird formatting
-      if (dateString.includes('T00:00:00')) {
+      if (dateString.includes("T00:00:00")) {
         // Remove the weird T00:00:00Z suffix
-        date = new Date(dateString.split('T')[0]);
+        date = new Date(dateString.split("T")[0]);
       } else {
         date = new Date(dateString);
       }
 
       if (isNaN(date.getTime())) {
         // If still invalid, try parsing as YYYY-MM-DD
-        const cleanDate = dateString.replace(/[^0-9-]/g, '').split('-');
+        const cleanDate = dateString.replace(/[^0-9-]/g, "").split("-");
         if (cleanDate.length >= 3) {
-          date = new Date(parseInt(cleanDate[0]), parseInt(cleanDate[1]) - 1, parseInt(cleanDate[2]));
+          date = new Date(
+            parseInt(cleanDate[0]),
+            parseInt(cleanDate[1]) - 1,
+            parseInt(cleanDate[2]),
+          );
         } else {
           return dateString;
         }
@@ -221,13 +225,13 @@ export default function EnhancedMacroCalendar({
       };
 
       // Add time if provided and valid
-      if (timeString && timeString !== "00:00" && !timeString.includes('T')) {
+      if (timeString && timeString !== "00:00" && !timeString.includes("T")) {
         options.hour = "2-digit";
         options.minute = "2-digit";
         options.hour12 = false;
 
         // Create a new date with the time
-        const [hours, minutes] = timeString.split(':').map(Number);
+        const [hours, minutes] = timeString.split(":").map(Number);
         if (!isNaN(hours) && !isNaN(minutes)) {
           date.setHours(hours, minutes, 0, 0);
         }
@@ -235,11 +239,10 @@ export default function EnhancedMacroCalendar({
 
       // Always use en-US locale for clean, consistent formatting
       return new Intl.DateTimeFormat("en-US", options).format(date);
-
     } catch (error) {
-      console.error('Date formatting error:', error, 'for:', dateString);
+      console.error("Date formatting error:", error, "for:", dateString);
       // Return just the date part if there's an error
-      return dateString.split('T')[0] || dateString;
+      return dateString.split("T")[0] || dateString;
     }
   };
 
@@ -780,11 +783,15 @@ export default function EnhancedMacroCalendar({
                     variant="outline"
                     className={cn(
                       "w-full justify-start text-left font-normal h-9",
-                      !dateFrom && "text-muted-foreground"
+                      !dateFrom && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateFrom ? format(dateFrom, "MMM dd, yyyy") : (language === "ar" ? "اختر التاريخ" : "Pick a date")}
+                    {dateFrom
+                      ? format(dateFrom, "MMM dd, yyyy")
+                      : language === "ar"
+                        ? "اختر التاريخ"
+                        : "Pick a date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -808,11 +815,15 @@ export default function EnhancedMacroCalendar({
                     variant="outline"
                     className={cn(
                       "w-full justify-start text-left font-normal h-9",
-                      !dateTo && "text-muted-foreground"
+                      !dateTo && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateTo ? format(dateTo, "MMM dd, yyyy") : (language === "ar" ? "اختر التاريخ" : "Pick a date")}
+                    {dateTo
+                      ? format(dateTo, "MMM dd, yyyy")
+                      : language === "ar"
+                        ? "اختر التاريخ"
+                        : "Pick a date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -821,7 +832,7 @@ export default function EnhancedMacroCalendar({
                     selected={dateTo}
                     onSelect={setDateTo}
                     initialFocus
-                    disabled={(date) => dateFrom ? date < dateFrom : false}
+                    disabled={(date) => (dateFrom ? date < dateFrom : false)}
                   />
                 </PopoverContent>
               </Popover>
@@ -835,9 +846,15 @@ export default function EnhancedMacroCalendar({
                     onRefresh({
                       from: dateFrom.toISOString().split("T")[0],
                       to: dateTo.toISOString().split("T")[0],
-                      country: selectedCountries.length > 0 ? selectedCountries.join(",") : undefined,
+                      country:
+                        selectedCountries.length > 0
+                          ? selectedCountries.join(",")
+                          : undefined,
                       importance: selectedImportance.map(String),
-                      category: selectedCategory !== "all" ? selectedCategory : undefined,
+                      category:
+                        selectedCategory !== "all"
+                          ? selectedCategory
+                          : undefined,
                     });
                   }
                 }}
@@ -845,7 +862,9 @@ export default function EnhancedMacroCalendar({
                 className="gap-2"
               >
                 <CalendarIcon className="w-4 h-4" />
-                {language === "ar" ? "تطبيق التاريخ المخصص" : "Apply Custom Range"}
+                {language === "ar"
+                  ? "تطبيق التاريخ المخصص"
+                  : "Apply Custom Range"}
               </Button>
             </div>
           </div>

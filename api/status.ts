@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 /**
  * API Status and Health Check Endpoint
- * 
+ *
  * This endpoint helps debug network connectivity issues by:
  * 1. Testing basic API functionality
  * 2. Checking EODHD API connectivity
@@ -43,17 +43,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Test 2: Environment variables
     status.checks.environment = {
-      status: process.env.EODHD_API_KEY || process.env.API_KEY ? "ok" : "warning",
-      message: process.env.EODHD_API_KEY || process.env.API_KEY 
-        ? "API key configured" 
-        : "Using fallback API key",
+      status:
+        process.env.EODHD_API_KEY || process.env.API_KEY ? "ok" : "warning",
+      message:
+        process.env.EODHD_API_KEY || process.env.API_KEY
+          ? "API key configured"
+          : "Using fallback API key",
       hasApiKey: !!(process.env.EODHD_API_KEY || process.env.API_KEY),
     };
 
     // Test 3: EODHD API connectivity (test with a simple symbol)
     try {
       const testSymbol = "EURUSD.FOREX";
-      const apiKey = process.env.EODHD_API_KEY || process.env.API_KEY || "6891e3b89ee5e1.29062933";
+      const apiKey =
+        process.env.EODHD_API_KEY ||
+        process.env.API_KEY ||
+        "6891e3b89ee5e1.29062933";
       const testUrl = `https://eodhd.com/api/real-time/${testSymbol}?api_token=${apiKey}&fmt=json`;
 
       console.log(`[STATUS] Testing EODHD connectivity: ${testUrl}`);
@@ -75,8 +80,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       status.checks.eodhd = {
         status: eodhResponse.ok ? "ok" : "error",
         statusCode: eodhResponse.status,
-        message: eodhResponse.ok 
-          ? "EODHD API is accessible" 
+        message: eodhResponse.ok
+          ? "EODHD API is accessible"
           : `EODHD API error: ${eodhResponse.status}`,
         testSymbol,
         testUrl: testUrl.replace(apiKey, "***"),
@@ -88,13 +93,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           status.checks.eodhd.sampleData = {
             hasData: !!testData,
             dataType: typeof testData,
-            keys: testData && typeof testData === 'object' ? Object.keys(testData) : [],
+            keys:
+              testData && typeof testData === "object"
+                ? Object.keys(testData)
+                : [],
           };
         } catch (e) {
           status.checks.eodhd.parseError = "Failed to parse response as JSON";
         }
       }
-
     } catch (eodhError) {
       status.checks.eodhd = {
         status: "error",
@@ -113,19 +120,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
 
     // Overall status
-    const hasErrors = Object.values(status.checks).some(check => check.status === "error");
-    const hasWarnings = Object.values(status.checks).some(check => check.status === "warning");
+    const hasErrors = Object.values(status.checks).some(
+      (check) => check.status === "error",
+    );
+    const hasWarnings = Object.values(status.checks).some(
+      (check) => check.status === "warning",
+    );
 
     res.status(200).json({
       ...status,
       overall: hasErrors ? "error" : hasWarnings ? "warning" : "ok",
-      summary: hasErrors 
-        ? "Some services are experiencing issues" 
-        : hasWarnings 
-        ? "All services operational with minor warnings"
-        : "All services operational",
+      summary: hasErrors
+        ? "Some services are experiencing issues"
+        : hasWarnings
+          ? "All services operational with minor warnings"
+          : "All services operational",
     });
-
   } catch (error) {
     console.error("Status check error:", error);
     res.status(500).json({

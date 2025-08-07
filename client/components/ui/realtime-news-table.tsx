@@ -180,22 +180,29 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       // Debounce translation requests to avoid overwhelming the API
       const timer = setTimeout(() => {
         // Translate ALL visible articles, not just first 5
-        filteredArticles
-          .slice(0, itemsToShow)
-          .forEach((article, index) => {
-            // Only translate if not already translated
-            if (!translatedTitles[article.id] && !loadingTranslation[article.id]) {
-              // Stagger requests to avoid rate limiting
-              setTimeout(() => {
-                translateTitle(article);
-              }, index * 400); // Reduced delay for faster translation
-            }
-          });
+        filteredArticles.slice(0, itemsToShow).forEach((article, index) => {
+          // Only translate if not already translated
+          if (
+            !translatedTitles[article.id] &&
+            !loadingTranslation[article.id]
+          ) {
+            // Stagger requests to avoid rate limiting
+            setTimeout(() => {
+              translateTitle(article);
+            }, index * 400); // Reduced delay for faster translation
+          }
+        });
       }, 500); // Reduced debounce time
 
       return () => clearTimeout(timer);
     }
-  }, [language, filteredArticles, itemsToShow, translatedTitles, loadingTranslation]);
+  }, [
+    language,
+    filteredArticles,
+    itemsToShow,
+    translatedTitles,
+    loadingTranslation,
+  ]);
 
   // Apply filters
   useEffect(() => {
@@ -222,9 +229,9 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
   // Network connectivity check for translations
   const checkNetworkStatus = async (): Promise<boolean> => {
     try {
-      const response = await fetch('/api/status', {
-        method: 'GET',
-        cache: 'no-cache',
+      const response = await fetch("/api/status", {
+        method: "GET",
+        cache: "no-cache",
         signal: AbortSignal.timeout(3000),
       });
       return response.ok;
@@ -254,7 +261,9 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     // Check network connectivity first
     const isOnline = await checkNetworkStatus();
     if (!isOnline) {
-      console.warn(`[NEWS] No network connectivity for translation of article ${article.id}`);
+      console.warn(
+        `[NEWS] No network connectivity for translation of article ${article.id}`,
+      );
       // Cache original title to avoid repeated attempts
       setTranslatedTitles((prev) => ({ ...prev, [article.id]: article.title }));
       return article.title;
@@ -289,14 +298,25 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
         console.warn(`Translation failed with status: ${response.status}`);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
 
       if (error instanceof Error && error.name === "AbortError") {
-        console.warn(`[NEWS] Translation request timed out for article ${article.id}`);
-      } else if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
-        console.warn(`[NEWS] Network error during translation for article ${article.id}: ${errorMessage}`);
+        console.warn(
+          `[NEWS] Translation request timed out for article ${article.id}`,
+        );
+      } else if (
+        errorMessage.includes("Failed to fetch") ||
+        errorMessage.includes("NetworkError")
+      ) {
+        console.warn(
+          `[NEWS] Network error during translation for article ${article.id}: ${errorMessage}`,
+        );
       } else {
-        console.error(`[NEWS] Translation error for article ${article.id}:`, errorMessage);
+        console.error(
+          `[NEWS] Translation error for article ${article.id}:`,
+          errorMessage,
+        );
       }
 
       // Cache original title to avoid repeated failed attempts

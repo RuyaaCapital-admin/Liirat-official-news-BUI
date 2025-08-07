@@ -226,14 +226,16 @@ export default function EnhancedCalendarTable({
       const dateFormatted = date.toLocaleDateString(locale, {
         month: "short",
         day: "numeric",
-        timeZone: "Asia/Dubai"
-      });
-      const timeFormatted = timeStr || date.toLocaleTimeString(locale, {
-        hour: "2-digit",
-        minute: "2-digit",
         timeZone: "Asia/Dubai",
-        hour12: false
       });
+      const timeFormatted =
+        timeStr ||
+        date.toLocaleTimeString(locale, {
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "Asia/Dubai",
+          hour12: false,
+        });
 
       return (
         <div

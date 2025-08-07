@@ -52,9 +52,9 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
   // Network connectivity check
   const checkNetworkConnectivity = async (): Promise<boolean> => {
     try {
-      const response = await fetch('/api/status', {
-        method: 'GET',
-        cache: 'no-cache',
+      const response = await fetch("/api/status", {
+        method: "GET",
+        cache: "no-cache",
         signal: AbortSignal.timeout(5000),
       });
       return response.ok;
@@ -97,30 +97,37 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
       const response = await fetch(
         `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
         {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Accept': 'application/json',
-            'Cache-Control': 'no-cache',
+            Accept: "application/json",
+            "Cache-Control": "no-cache",
           },
           signal: controller.signal,
           // Add credentials and mode for CORS
-          mode: 'cors',
-          credentials: 'same-origin',
-        }
+          mode: "cors",
+          credentials: "same-origin",
+        },
       );
 
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        const errorText = await response.text().catch(() => 'No response body');
+        const errorText = await response.text().catch(() => "No response body");
         console.error(
           `[TICKER] API error for ${symbol}: ${response.status} - ${response.statusText}`,
-          errorText.substring(0, 200)
+          errorText.substring(0, 200),
         );
 
         // Only retry on specific error codes
-        if ((response.status >= 500 || response.status === 429 || response.status === 0) && retryCount < maxRetries) {
-          console.log(`[TICKER] Retrying ${symbol} in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+        if (
+          (response.status >= 500 ||
+            response.status === 429 ||
+            response.status === 0) &&
+          retryCount < maxRetries
+        ) {
+          console.log(
+            `[TICKER] Retrying ${symbol} in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`,
+          );
           setTimeout(() => fetchPriceData(symbol, retryCount + 1), retryDelay);
           return;
         }
@@ -155,7 +162,9 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
             status: "connected",
           },
         }));
-        console.log(`[TICKER] Successfully fetched ${symbol}: $${priceInfo.price}`);
+        console.log(
+          `[TICKER] Successfully fetched ${symbol}: $${priceInfo.price}`,
+        );
       } else {
         console.warn(`[TICKER] No price data received for ${symbol}`);
         setPriceData((prev) => ({
@@ -164,17 +173,21 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         }));
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       console.error(`[TICKER] Network error for ${symbol}:`, errorMessage);
 
       // Check if it's a network error or timeout
-      const isNetworkError = errorMessage.includes('Failed to fetch') ||
-                           errorMessage.includes('NetworkError') ||
-                           errorMessage.includes('AbortError');
+      const isNetworkError =
+        errorMessage.includes("Failed to fetch") ||
+        errorMessage.includes("NetworkError") ||
+        errorMessage.includes("AbortError");
 
       // Retry on network errors but with exponential backoff
       if (isNetworkError && retryCount < maxRetries) {
-        console.log(`[TICKER] Retrying ${symbol} due to network error in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+        console.log(
+          `[TICKER] Retrying ${symbol} due to network error in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`,
+        );
         setTimeout(() => fetchPriceData(symbol, retryCount + 1), retryDelay);
         return;
       }
@@ -215,7 +228,7 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
 
   // Start fetching data immediately
   useEffect(() => {
-    console.log('[TICKER] Starting price updates immediately');
+    console.log("[TICKER] Starting price updates immediately");
 
     // Start fetching price data for all symbols (staggered) - ALWAYS TRY
     TICKER_CONFIG.forEach((config, index) => {
@@ -301,7 +314,9 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
                 </div>
                 <div className="text-right">
                   <div className="font-mono text-sm font-bold">
-                    {data.status === "connecting" ? "..." : formatPrice(data.price, data.symbol)}
+                    {data.status === "connecting"
+                      ? "..."
+                      : formatPrice(data.price, data.symbol)}
                   </div>
                   <div
                     className={cn(
