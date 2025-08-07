@@ -4,7 +4,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 async function getRealPriceData(symbol: string): Promise<any | null> {
   try {
     const response = await fetch(
-      `https://eodhd.com/api/real-time/forex?s=${encodeURIComponent(symbol)}&api_token=6891e3b89ee5e1.29062933&fmt=json`
+      `https://eodhd.com/api/real-time/forex?s=${encodeURIComponent(symbol)}&api_token=6891e3b89ee5e1.29062933&fmt=json`,
     );
 
     if (!response.ok) {
@@ -61,9 +61,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { symbol } = req.query;
 
   if (!symbol || typeof symbol !== "string") {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: "Symbol parameter required",
-      realTime: false 
+      realTime: false,
     });
   }
 

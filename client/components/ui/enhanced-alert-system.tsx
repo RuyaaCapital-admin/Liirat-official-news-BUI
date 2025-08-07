@@ -63,48 +63,52 @@ interface NewsAlert {
 function getHijriDate(): string {
   try {
     const now = new Date();
-    const hijriDate = new Intl.DateTimeFormat('ar-SA', {
-      calendar: 'islamic',
-      numberingSystem: 'arab',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    const hijriDate = new Intl.DateTimeFormat("ar-SA", {
+      calendar: "islamic",
+      numberingSystem: "arab",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     }).format(now);
     return hijriDate;
   } catch (error) {
-    console.error('Error getting Hijri date:', error);
-    return '';
+    console.error("Error getting Hijri date:", error);
+    return "";
   }
 }
 
 // Browser notification utility
 function requestNotificationPermission(): Promise<NotificationPermission> {
-  if (!('Notification' in window)) {
-    console.warn('This browser does not support notifications');
-    return Promise.resolve('denied');
+  if (!("Notification" in window)) {
+    console.warn("This browser does not support notifications");
+    return Promise.resolve("denied");
   }
-  
+
   return Notification.requestPermission();
 }
 
-function showNotification(title: string, body: string, playSound: boolean = true) {
-  if (Notification.permission === 'granted') {
+function showNotification(
+  title: string,
+  body: string,
+  playSound: boolean = true,
+) {
+  if (Notification.permission === "granted") {
     const notification = new Notification(title, {
       body,
-      icon: '/favicon.ico',
-      badge: '/favicon.ico',
-      tag: 'liirat-alert',
+      icon: "/favicon.ico",
+      badge: "/favicon.ico",
+      tag: "liirat-alert",
       requireInteraction: true,
     });
 
     // Play notification sound
     if (playSound) {
       try {
-        const audio = new Audio('/notification-sound.mp3');
+        const audio = new Audio("/notification-sound.mp3");
         audio.volume = 0.3;
         audio.play().catch(console.error);
       } catch (error) {
-        console.error('Could not play notification sound:', error);
+        console.error("Could not play notification sound:", error);
       }
     }
 
@@ -120,16 +124,16 @@ function showNotification(title: string, body: string, playSound: boolean = true
 
 // LocalStorage utilities
 const STORAGE_KEYS = {
-  PRICE_ALERTS: 'liirat_price_alerts',
-  NEWS_ALERTS: 'liirat_news_alerts',
-  ALERT_SETTINGS: 'liirat_alert_settings',
+  PRICE_ALERTS: "liirat_price_alerts",
+  NEWS_ALERTS: "liirat_news_alerts",
+  ALERT_SETTINGS: "liirat_alert_settings",
 };
 
 function saveToStorage<T>(key: string, data: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
-    console.error('Error saving to localStorage:', error);
+    console.error("Error saving to localStorage:", error);
   }
 }
 
@@ -138,7 +142,7 @@ function loadFromStorage<T>(key: string, defaultValue: T): T {
     const item = localStorage.getItem(key);
     return item ? JSON.parse(item) : defaultValue;
   } catch (error) {
-    console.error('Error loading from localStorage:', error);
+    console.error("Error loading from localStorage:", error);
     return defaultValue;
   }
 }
@@ -147,13 +151,16 @@ interface EnhancedAlertSystemProps {
   className?: string;
 }
 
-export default function EnhancedAlertSystem({ className }: EnhancedAlertSystemProps) {
+export default function EnhancedAlertSystem({
+  className,
+}: EnhancedAlertSystemProps) {
   const { language } = useLanguage();
   const [priceAlerts, setPriceAlerts] = useState<PriceAlert[]>([]);
   const [newsAlerts, setNewsAlerts] = useState<NewsAlert[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAlert, setEditingAlert] = useState<PriceAlert | null>(null);
-  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
+  const [notificationPermission, setNotificationPermission] =
+    useState<NotificationPermission>("default");
 
   // Form states
   const [symbol, setSymbol] = useState("");
@@ -164,9 +171,15 @@ export default function EnhancedAlertSystem({ className }: EnhancedAlertSystemPr
 
   // Load data from localStorage on mount
   useEffect(() => {
-    const savedPriceAlerts = loadFromStorage<PriceAlert[]>(STORAGE_KEYS.PRICE_ALERTS, []);
-    const savedNewsAlerts = loadFromStorage<NewsAlert[]>(STORAGE_KEYS.NEWS_ALERTS, []);
-    
+    const savedPriceAlerts = loadFromStorage<PriceAlert[]>(
+      STORAGE_KEYS.PRICE_ALERTS,
+      [],
+    );
+    const savedNewsAlerts = loadFromStorage<NewsAlert[]>(
+      STORAGE_KEYS.NEWS_ALERTS,
+      [],
+    );
+
     setPriceAlerts(savedPriceAlerts);
     setNewsAlerts(savedNewsAlerts);
 
@@ -185,11 +198,15 @@ export default function EnhancedAlertSystem({ className }: EnhancedAlertSystemPr
 
   // Real-time price checking
   const checkPriceAlerts = useCallback(async () => {
-    const activeAlerts = priceAlerts.filter(alert => alert.isActive && !alert.triggeredAt);
-    
+    const activeAlerts = priceAlerts.filter(
+      (alert) => alert.isActive && !alert.triggeredAt,
+    );
+
     for (const alert of activeAlerts) {
       try {
-        const response = await fetch(`/api/eodhd-price?symbol=${encodeURIComponent(alert.symbol)}`);
+        const response = await fetch(
+          `/api/eodhd-price?symbol=${encodeURIComponent(alert.symbol)}`,
+        );
         if (response.ok) {
           const data = await response.json();
           if (data.prices && data.prices.length > 0) {
@@ -199,33 +216,40 @@ export default function EnhancedAlertSystem({ className }: EnhancedAlertSystemPr
             let shouldTrigger = false;
             if (alert.condition === "above" && currentPrice >= targetPrice) {
               shouldTrigger = true;
-            } else if (alert.condition === "below" && currentPrice <= targetPrice) {
+            } else if (
+              alert.condition === "below" &&
+              currentPrice <= targetPrice
+            ) {
               shouldTrigger = true;
             }
 
             if (shouldTrigger) {
               // Update alert as triggered
-              setPriceAlerts(prev => prev.map(a => 
-                a.id === alert.id 
-                  ? { ...a, triggeredAt: new Date().toISOString() }
-                  : a
-              ));
+              setPriceAlerts((prev) =>
+                prev.map((a) =>
+                  a.id === alert.id
+                    ? { ...a, triggeredAt: new Date().toISOString() }
+                    : a,
+                ),
+              );
 
               // Create notification
               const hijriDate = getHijriDate();
-              const dubaiTime = new Date().toLocaleString('ar-AE', {
-                timeZone: 'Asia/Dubai',
-                hour: '2-digit',
-                minute: '2-digit'
+              const dubaiTime = new Date().toLocaleString("ar-AE", {
+                timeZone: "Asia/Dubai",
+                hour: "2-digit",
+                minute: "2-digit",
               });
 
-              const title = language === "ar" 
-                ? `تنبيه سعر ${alert.symbolName}`
-                : `Price Alert: ${alert.symbolName}`;
-              
-              const body = language === "ar"
-                ? `السعر الحالي: $${currentPrice.toLocaleString()}\nالهدف: ${alert.condition === 'above' ? 'أعلى من' : 'أقل من'} $${targetPrice.toLocaleString()}\n${hijriDate} - ${dubaiTime}`
-                : `Current price: $${currentPrice.toLocaleString()}\nTarget: ${alert.condition} $${targetPrice.toLocaleString()}\n${dubaiTime} Dubai time`;
+              const title =
+                language === "ar"
+                  ? `تنبيه سعر ${alert.symbolName}`
+                  : `Price Alert: ${alert.symbolName}`;
+
+              const body =
+                language === "ar"
+                  ? `السعر الحالي: $${currentPrice.toLocaleString()}\nالهدف: ${alert.condition === "above" ? "أعلى من" : "أقل من"} $${targetPrice.toLocaleString()}\n${hijriDate} - ${dubaiTime}`
+                  : `Current price: $${currentPrice.toLocaleString()}\nTarget: ${alert.condition} $${targetPrice.toLocaleString()}\n${dubaiTime} Dubai time`;
 
               // Show browser notification
               if (alert.notificationEnabled) {
@@ -259,7 +283,11 @@ export default function EnhancedAlertSystem({ className }: EnhancedAlertSystemPr
   // Create new price alert
   const createPriceAlert = () => {
     if (!symbol || !targetPrice) {
-      toast.error(language === "ar" ? "يرجى ملء جميع الحقول المطلوبة" : "Please fill in all required fields");
+      toast.error(
+        language === "ar"
+          ? "يرجى ملء جميع الحقول المطلوبة"
+          : "Please fill in all required fields",
+      );
       return;
     }
 
@@ -287,12 +315,16 @@ export default function EnhancedAlertSystem({ className }: EnhancedAlertSystemPr
     };
 
     if (editingAlert) {
-      setPriceAlerts(prev => prev.map(alert => 
-        alert.id === editingAlert.id ? { ...newAlert, id: editingAlert.id } : alert
-      ));
+      setPriceAlerts((prev) =>
+        prev.map((alert) =>
+          alert.id === editingAlert.id
+            ? { ...newAlert, id: editingAlert.id }
+            : alert,
+        ),
+      );
       setEditingAlert(null);
     } else {
-      setPriceAlerts(prev => [...prev, newAlert]);
+      setPriceAlerts((prev) => [...prev, newAlert]);
     }
 
     // Reset form
@@ -302,27 +334,32 @@ export default function EnhancedAlertSystem({ className }: EnhancedAlertSystemPr
     setIsDialogOpen(false);
 
     toast.success(
-      language === "ar" ? "تم إنشاء التنبيه بنجاح" : "Alert created successfully"
+      language === "ar"
+        ? "تم إنشاء التنبيه بنجاح"
+        : "Alert created successfully",
     );
   };
 
   // Delete alert
   const deleteAlert = (id: string) => {
-    setPriceAlerts(prev => prev.filter(alert => alert.id !== id));
-    toast.success(
-      language === "ar" ? "تم حذف التنبيه" : "Alert deleted"
-    );
+    setPriceAlerts((prev) => prev.filter((alert) => alert.id !== id));
+    toast.success(language === "ar" ? "تم حذف التنبيه" : "Alert deleted");
   };
 
   // Toggle alert active state
   const toggleAlert = (id: string) => {
-    setPriceAlerts(prev => prev.map(alert => 
-      alert.id === id ? { ...alert, isActive: !alert.isActive } : alert
-    ));
+    setPriceAlerts((prev) =>
+      prev.map((alert) =>
+        alert.id === id ? { ...alert, isActive: !alert.isActive } : alert,
+      ),
+    );
   };
 
   const symbolOptions = [
-    { value: "XAUUSD.FOREX", label: language === "ar" ? "الذهب (XAU/USD)" : "Gold (XAU/USD)" },
+    {
+      value: "XAUUSD.FOREX",
+      label: language === "ar" ? "الذهب (XAU/USD)" : "Gold (XAU/USD)",
+    },
     { value: "BTC-USD.CC", label: "Bitcoin (BTC/USD)" },
     { value: "ETH-USD.CC", label: "Ethereum (ETH/USD)" },
     { value: "EURUSD.FOREX", label: "EUR/USD" },
@@ -338,7 +375,9 @@ export default function EnhancedAlertSystem({ className }: EnhancedAlertSystemPr
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-2xl font-bold flex items-center gap-2">
             <Bell className="h-6 w-6 text-primary" />
-            {language === "ar" ? "نظام التنبيهات المحسن" : "Enhanced Alert System"}
+            {language === "ar"
+              ? "نظام التنبيهات المحسن"
+              : "Enhanced Alert System"}
           </CardTitle>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
@@ -350,10 +389,13 @@ export default function EnhancedAlertSystem({ className }: EnhancedAlertSystemPr
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>
-                  {editingAlert 
-                    ? (language === "ar" ? "تعديل التنبيه" : "Edit Alert")
-                    : (language === "ar" ? "إنشاء تنبيه جديد" : "Create New Alert")
-                  }
+                  {editingAlert
+                    ? language === "ar"
+                      ? "تعديل التنبيه"
+                      : "Edit Alert"
+                    : language === "ar"
+                      ? "إنشاء تنبيه جديد"
+                      : "Create New Alert"}
                 </DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
@@ -363,10 +405,14 @@ export default function EnhancedAlertSystem({ className }: EnhancedAlertSystemPr
                   </Label>
                   <Select value={symbol} onValueChange={setSymbol}>
                     <SelectTrigger>
-                      <SelectValue placeholder={language === "ar" ? "اختر الرمز" : "Select symbol"} />
+                      <SelectValue
+                        placeholder={
+                          language === "ar" ? "اختر الرمز" : "Select symbol"
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      {symbolOptions.map(option => (
+                      {symbolOptions.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
                         </SelectItem>
@@ -374,12 +420,17 @@ export default function EnhancedAlertSystem({ className }: EnhancedAlertSystemPr
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div className="grid gap-2">
                   <Label htmlFor="condition">
                     {language === "ar" ? "الشرط" : "Condition"}
                   </Label>
-                  <Select value={condition} onValueChange={(value: "above" | "below") => setCondition(value)}>
+                  <Select
+                    value={condition}
+                    onValueChange={(value: "above" | "below") =>
+                      setCondition(value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -404,7 +455,9 @@ export default function EnhancedAlertSystem({ className }: EnhancedAlertSystemPr
                     step="0.00001"
                     value={targetPrice}
                     onChange={(e) => setTargetPrice(e.target.value)}
-                    placeholder={language === "ar" ? "أدخل السعر" : "Enter price"}
+                    placeholder={
+                      language === "ar" ? "أدخل السعر" : "Enter price"
+                    }
                   />
                 </div>
 
@@ -415,7 +468,9 @@ export default function EnhancedAlertSystem({ className }: EnhancedAlertSystemPr
                     onCheckedChange={setNotificationEnabled}
                   />
                   <Label htmlFor="notifications">
-                    {language === "ar" ? "تفعيل الإشعارات" : "Enable Notifications"}
+                    {language === "ar"
+                      ? "تفعيل الإشعارات"
+                      : "Enable Notifications"}
                   </Label>
                 </div>
 
@@ -431,29 +486,36 @@ export default function EnhancedAlertSystem({ className }: EnhancedAlertSystemPr
                 </div>
 
                 <Button onClick={createPriceAlert} className="w-full">
-                  {editingAlert 
-                    ? (language === "ar" ? "تحديث التنبيه" : "Update Alert")
-                    : (language === "ar" ? "إنشاء التنبيه" : "Create Alert")
-                  }
+                  {editingAlert
+                    ? language === "ar"
+                      ? "تحديث التنبيه"
+                      : "Update Alert"
+                    : language === "ar"
+                      ? "إنشاء التنبيه"
+                      : "Create Alert"}
                 </Button>
               </div>
             </DialogContent>
           </Dialog>
         </CardHeader>
         <CardContent>
-          {notificationPermission !== 'granted' && (
+          {notificationPermission !== "granted" && (
             <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-yellow-600" />
                 <p className="text-sm text-yellow-800">
-                  {language === "ar" 
-                    ? "يرجى السماح بالإشعارات لتلقي تنبيهات الأسعار" 
+                  {language === "ar"
+                    ? "يرجى السماح بالإشعارات لتلقي تنبيهات الأسعار"
                     : "Please enable notifications to receive price alerts"}
                 </p>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  onClick={() => requestNotificationPermission().then(setNotificationPermission)}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    requestNotificationPermission().then(
+                      setNotificationPermission,
+                    )
+                  }
                 >
                   {language === "ar" ? "تفعيل" : "Enable"}
                 </Button>
@@ -465,28 +527,36 @@ export default function EnhancedAlertSystem({ className }: EnhancedAlertSystemPr
             {priceAlerts.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>{language === "ar" ? "لا توجد تنبيهات حالياً" : "No alerts yet"}</p>
+                <p>
+                  {language === "ar"
+                    ? "لا توجد تنبيهات حالياً"
+                    : "No alerts yet"}
+                </p>
                 <p className="text-sm">
-                  {language === "ar" 
-                    ? "قم بإنشاء تنبيه لمتابعة أسعار الأسهم والعملات" 
+                  {language === "ar"
+                    ? "قم بإنشاء تنبيه لمتابعة أسعار الأسهم والعملات"
                     : "Create an alert to track stock and currency prices"}
                 </p>
               </div>
             ) : (
-              priceAlerts.map(alert => (
-                <div key={alert.id} className="flex items-center justify-between p-4 border rounded-lg neumorphic-sm">
+              priceAlerts.map((alert) => (
+                <div
+                  key={alert.id}
+                  className="flex items-center justify-between p-4 border rounded-lg neumorphic-sm"
+                >
                   <div className="flex items-center gap-3">
-                    <div className={cn(
-                      "w-3 h-3 rounded-full",
-                      alert.isActive ? "bg-green-500" : "bg-gray-400"
-                    )} />
+                    <div
+                      className={cn(
+                        "w-3 h-3 rounded-full",
+                        alert.isActive ? "bg-green-500" : "bg-gray-400",
+                      )}
+                    />
                     <div>
                       <div className="font-medium">{alert.symbolName}</div>
                       <div className="text-sm text-muted-foreground">
-                        {language === "ar" 
-                          ? `${alert.condition === 'above' ? 'أعلى من' : 'أقل من'} $${alert.targetPrice.toLocaleString()}`
-                          : `${alert.condition} $${alert.targetPrice.toLocaleString()}`
-                        }
+                        {language === "ar"
+                          ? `${alert.condition === "above" ? "أعلى من" : "أقل من"} $${alert.targetPrice.toLocaleString()}`
+                          : `${alert.condition} $${alert.targetPrice.toLocaleString()}`}
                       </div>
                       {alert.triggeredAt && (
                         <Badge variant="outline" className="text-xs mt-1">
@@ -496,8 +566,12 @@ export default function EnhancedAlertSystem({ className }: EnhancedAlertSystemPr
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {alert.notificationEnabled && <Bell className="h-4 w-4 text-blue-500" />}
-                    {alert.soundEnabled && <Volume2 className="h-4 w-4 text-green-500" />}
+                    {alert.notificationEnabled && (
+                      <Bell className="h-4 w-4 text-blue-500" />
+                    )}
+                    {alert.soundEnabled && (
+                      <Volume2 className="h-4 w-4 text-green-500" />
+                    )}
                     <Switch
                       checked={alert.isActive}
                       onCheckedChange={() => toggleAlert(alert.id)}

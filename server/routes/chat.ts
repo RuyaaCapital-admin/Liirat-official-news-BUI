@@ -130,46 +130,58 @@ async function generateSmartFallbackResponse(
 
     if (marketData.length > 0) {
       let priceInfo = "";
-      
+
       // Check for specific symbols mentioned
       if (lowerMessage.includes("btc") || lowerMessage.includes("bitcoin")) {
         const btc = marketData.find((item) => item.symbol.includes("BTC"));
         if (btc) {
-          priceInfo = language === "ar" 
-            ? `سعر البيتكوين الحالي: $${btc.price.toLocaleString()} (${btc.changePercent >= 0 ? '+' : ''}${btc.changePercent.toFixed(2)}%)`
-            : `Current Bitcoin price: $${btc.price.toLocaleString()} (${btc.changePercent >= 0 ? '+' : ''}${btc.changePercent.toFixed(2)}%)`;
+          priceInfo =
+            language === "ar"
+              ? `سعر البيتكوين الحالي: $${btc.price.toLocaleString()} (${btc.changePercent >= 0 ? "+" : ""}${btc.changePercent.toFixed(2)}%)`
+              : `Current Bitcoin price: $${btc.price.toLocaleString()} (${btc.changePercent >= 0 ? "+" : ""}${btc.changePercent.toFixed(2)}%)`;
         }
       } else if (lowerMessage.includes("eur") && lowerMessage.includes("usd")) {
         const eur = marketData.find((item) => item.symbol === "EURUSD");
         if (eur) {
-          priceInfo = language === "ar"
-            ? `سعر اليورو مقابل الدولار: ${eur.price.toFixed(5)} (${eur.changePercent >= 0 ? '+' : ''}${eur.changePercent.toFixed(2)}%)`
-            : `EUR/USD price: ${eur.price.toFixed(5)} (${eur.changePercent >= 0 ? '+' : ''}${eur.changePercent.toFixed(2)}%)`;
+          priceInfo =
+            language === "ar"
+              ? `سعر اليورو مقابل الدولار: ${eur.price.toFixed(5)} (${eur.changePercent >= 0 ? "+" : ""}${eur.changePercent.toFixed(2)}%)`
+              : `EUR/USD price: ${eur.price.toFixed(5)} (${eur.changePercent >= 0 ? "+" : ""}${eur.changePercent.toFixed(2)}%)`;
         }
-      } else if (lowerMessage.includes("gold") || lowerMessage.includes("ذهب")) {
+      } else if (
+        lowerMessage.includes("gold") ||
+        lowerMessage.includes("ذهب")
+      ) {
         const gold = marketData.find((item) => item.symbol.includes("XAU"));
         if (gold) {
-          priceInfo = language === "ar"
-            ? `سعر الذهب الحالي: $${gold.price.toLocaleString()} (${gold.changePercent >= 0 ? '+' : ''}${gold.changePercent.toFixed(2)}%)`
-            : `Current Gold price: $${gold.price.toLocaleString()} (${gold.changePercent >= 0 ? '+' : ''}${gold.changePercent.toFixed(2)}%)`;
+          priceInfo =
+            language === "ar"
+              ? `سعر الذهب الحالي: $${gold.price.toLocaleString()} (${gold.changePercent >= 0 ? "+" : ""}${gold.changePercent.toFixed(2)}%)`
+              : `Current Gold price: $${gold.price.toLocaleString()} (${gold.changePercent >= 0 ? "+" : ""}${gold.changePercent.toFixed(2)}%)`;
         }
       } else {
         // Show general price info
         const topPrices = marketData.slice(0, 3);
-        priceInfo = topPrices.map(item => 
-          `${item.displayName}: $${typeof item.price === 'number' ? item.price.toLocaleString() : item.price} (${item.changePercent >= 0 ? '+' : ''}${item.changePercent.toFixed(2)}%)`
-        ).join('\n');
+        priceInfo = topPrices
+          .map(
+            (item) =>
+              `${item.displayName}: $${typeof item.price === "number" ? item.price.toLocaleString() : item.price} (${item.changePercent >= 0 ? "+" : ""}${item.changePercent.toFixed(2)}%)`,
+          )
+          .join("\n");
       }
 
-      const timeStamp = dubaiTime.toLocaleString(language === "ar" ? "ar-AE" : "en-US", {
-        timeZone: "Asia/Dubai",
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
+      const timeStamp = dubaiTime.toLocaleString(
+        language === "ar" ? "ar-AE" : "en-US",
+        {
+          timeZone: "Asia/Dubai",
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        },
+      );
 
       return language === "ar"
         ? `${priceInfo}\n\nالوقت الحالي: ${timeStamp} (توقيت دبي)\nمساعد ليرات للأخبار المالية`
@@ -185,10 +197,11 @@ async function generateSmartFallbackResponse(
   ) {
     const news = await fetchRealNews();
     if (news.length > 0) {
-      const newsText = news.slice(0, 3).map((item, index) => 
-        `${index + 1}. ${item.title} - ${item.source}`
-      ).join('\n');
-      
+      const newsText = news
+        .slice(0, 3)
+        .map((item, index) => `${index + 1}. ${item.title} - ${item.source}`)
+        .join("\n");
+
       return language === "ar"
         ? `آخر الأخبار المالية:\n${newsText}\n\nللمزيد من الأخبار، تابع الصفحة الرئيسية.`
         : `Latest financial news:\n${newsText}\n\nFor more news, check the main page.`;
@@ -199,11 +212,14 @@ async function generateSmartFallbackResponse(
   const dubaiTime = new Date(
     new Date().toLocaleString("en-US", { timeZone: "Asia/Dubai" }),
   );
-  const timeStamp = dubaiTime.toLocaleString(language === "ar" ? "ar-AE" : "en-US", {
-    timeZone: "Asia/Dubai",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const timeStamp = dubaiTime.toLocaleString(
+    language === "ar" ? "ar-AE" : "en-US",
+    {
+      timeZone: "Asia/Dubai",
+      hour: "2-digit",
+      minute: "2-digit",
+    },
+  );
 
   if (language === "ar") {
     if (
@@ -249,8 +265,13 @@ export const handleChat = async (req: Request, res: Response) => {
     ]);
 
     if (!openai) {
-      console.log("OpenAI API key not found, using smart fallback responses with real data");
-      const fallbackResponse = await generateSmartFallbackResponse(message, language);
+      console.log(
+        "OpenAI API key not found, using smart fallback responses with real data",
+      );
+      const fallbackResponse = await generateSmartFallbackResponse(
+        message,
+        language,
+      );
 
       const dubaiTime = new Date(
         new Date().toLocaleString("en-US", { timeZone: "Asia/Dubai" }),
@@ -295,7 +316,7 @@ CURRENT LIVE MARKET DATA:
 ${marketData
   .map(
     (item) =>
-      `${item.displayName}: $${typeof item.price === 'number' ? item.price.toLocaleString() : item.price} (${item.changePercent >= 0 ? "+" : ""}${item.changePercent.toFixed(2)}%)`,
+      `${item.displayName}: $${typeof item.price === "number" ? item.price.toLocaleString() : item.price} (${item.changePercent >= 0 ? "+" : ""}${item.changePercent.toFixed(2)}%)`,
   )
   .join("\n")}
 
