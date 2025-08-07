@@ -17,6 +17,8 @@ export interface EconomicEvent {
 }
 
 export interface EconomicEventsResponse {
+  [x: string]: boolean;
+  message: boolean;
   events: EconomicEvent[];
   total?: number;
   filters?: {
