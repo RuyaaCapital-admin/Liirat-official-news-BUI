@@ -137,7 +137,7 @@ const getImportanceLabel = (importance: number, language: string) => {
       case 2:
         return "متوسط";
       case 1:
-        return "��نخفض";
+        return "منخفض";
       default:
         return "غير محدد";
     }
@@ -236,6 +236,7 @@ const getCountryCode = (country: string): string => {
     KR: "KR",
     "South Korea": "KR",
     SG: "SG",
+    SGP: "SG",
     Singapore: "SG",
     HK: "HK",
     "Hong Kong": "HK",
