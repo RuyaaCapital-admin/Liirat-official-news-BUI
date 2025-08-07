@@ -201,49 +201,18 @@ export default function Index() {
     } catch (error) {
       console.error("Failed to fetch economic events:", error);
 
-      // Provide fallback mock data instead of empty array
-      const fallbackEvents: EconomicEvent[] = [
-        {
-          date: new Date().toISOString(),
-          country: "US",
-          event: "Federal Reserve Interest Rate Decision",
-          importance: 3,
-          actual: "",
-          forecast: "5.25%",
-          previous: "5.00%",
-        },
-        {
-          date: new Date(Date.now() + 3600000).toISOString(), // 1 hour from now
-          country: "EUR",
-          event: "European Central Bank Rate Decision",
-          importance: 3,
-          actual: "",
-          forecast: "4.50%",
-          previous: "4.25%",
-        },
-        {
-          date: new Date(Date.now() + 7200000).toISOString(), // 2 hours from now
-          country: "GB",
-          event: "UK Employment Change",
-          importance: 2,
-          actual: "",
-          forecast: "2.1%",
-          previous: "1.8%",
-        },
-      ];
-
-      // Provide more specific error messages
-      let errorMessage = "Using offline demo data - API temporarily unavailable";
+      // NO MOCK DATA - show only real API data
+      let errorMessage = "Failed to load economic data. Please check your connection and try again.";
       if (error instanceof TypeError && error.message.includes("fetch")) {
-        errorMessage = "Connection failed - displaying demo data";
+        errorMessage = "Connection failed. Please check your internet connection.";
       } else if (error instanceof Error && error.message.includes("aborted")) {
-        errorMessage = "Request timeout - showing demo data";
+        errorMessage = "Request timeout. Please try again.";
       } else if (error instanceof Error) {
-        errorMessage = `API unavailable - showing demo data (${error.message})`;
+        errorMessage = `API unavailable: ${error.message}`;
       }
 
       setEventsError(errorMessage);
-      setEconomicEvents(fallbackEvents);
+      setEconomicEvents([]); // Empty array - no mock data
     } finally {
       setIsLoadingEvents(false);
     }
