@@ -372,6 +372,19 @@ export default function Index() {
                     className="text-primary px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg font-semibold neumorphic-hover"
                     onClick={() =>
                       document
+                        .getElementById("news")
+                        ?.scrollIntoView({ behavior: "smooth" })
+                    }
+                    aria-label="Navigate to news section"
+                  >
+                    {language === "ar" ? "الأخبار المباشرة" : "Live News"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="text-primary px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg font-semibold neumorphic-hover"
+                    onClick={() =>
+                      document
                         .getElementById("alerts")
                         ?.scrollIntoView({ behavior: "smooth" })
                     }
@@ -393,7 +406,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "تابع الأحداث الاقتصادية المهمة والأخبار المال��ة في الوقت الفعلي"
+                    ? "تابع الأحداث الاقتصادية المهمة والأخبار المالية في الوقت الفعلي"
                     : "Track important economic events and real-time financial news"}
                 </p>
               </div>
