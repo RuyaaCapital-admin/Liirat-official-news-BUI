@@ -1027,7 +1027,7 @@ export function MacroCalendarTable({
               {displayedEvents.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={8}
                     className="p-8 text-center text-muted-foreground"
                   >
                     {t(
