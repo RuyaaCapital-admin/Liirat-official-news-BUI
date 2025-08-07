@@ -217,12 +217,12 @@ export default function SeparatedAlertSystem({
     setLoadingPrice(true);
     try {
       const response = await fetch(
-        `/api/eodhd-price?symbol=${encodeURIComponent(symbol)}`,
+        `/api/eodhd/price?symbols=${encodeURIComponent(symbol)}`,
       );
       if (response.ok) {
         const data = await response.json();
-        if (data.prices && data.prices.length > 0 && data.prices[0].price) {
-          setCurrentPrice(data.prices[0].price);
+        if (data.ok && data.items && data.items.length > 0 && data.items[0].price) {
+          setCurrentPrice(data.items[0].price);
         } else {
           setCurrentPrice(null);
         }
@@ -1043,7 +1043,7 @@ export default function SeparatedAlertSystem({
                             {alert.condition === "above" && (
                               <span>
                                 {language === "ar"
-                                  ? "تنبيه عندما يتجاوز السعر"
+                                  ? "تنبيه عندما يتجاو�� السعر"
                                   : "Alert when price goes above"}{" "}
                                 {alert.targetPrice}
                               </span>
