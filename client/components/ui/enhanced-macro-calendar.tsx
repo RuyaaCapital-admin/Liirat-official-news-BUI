@@ -123,9 +123,7 @@ export default function EnhancedMacroCalendar({
   // State management
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
-  const [selectedImportance, setSelectedImportance] = useState<number[]>([
-    1, 2, 3,
-  ]);
+  const [selectedImportance, setSelectedImportance] = useState<"all"|"high"|"medium"|"low">("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedTimezone, setSelectedTimezone] = useState("UTC");
   const [selectedPeriod, setSelectedPeriod] = useState("this_week");
