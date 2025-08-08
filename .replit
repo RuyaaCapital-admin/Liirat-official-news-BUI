@@ -10,3 +10,14 @@ run = ["sh", "-c", "npm run dev"]
 [[ports]]
 localPort = 8080
 externalPort = 80
+
+[workflows]
+
+[[workflows.workflow]]
+name = "Deploy to Replit"
+author = 46130887
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run build:client"
