@@ -144,8 +144,11 @@ const getImportanceColor = (importance: number) => {
 };
 
 const getImportanceLabel = (importance: number, language: string) => {
+  // Map null/undefined to LOW importance (1) instead of showing "Unknown"
+  const validImportance = importance === null || importance === undefined ? 1 : importance;
+
   if (language === "ar") {
-    switch (importance) {
+    switch (validImportance) {
       case 3:
         return "عالي";
       case 2:
@@ -153,10 +156,10 @@ const getImportanceLabel = (importance: number, language: string) => {
       case 1:
         return "منخفض";
       default:
-        return "غير مح��د";
+        return "��نخفض"; // Default to LOW instead of "غير محدد"
     }
   }
-  switch (importance) {
+  switch (validImportance) {
     case 3:
       return "HIGH";
     case 2:
@@ -164,7 +167,7 @@ const getImportanceLabel = (importance: number, language: string) => {
     case 1:
       return "LOW";
     default:
-      return "Unknown";
+      return "LOW"; // Default to LOW instead of "Unknown"
   }
 };
 
