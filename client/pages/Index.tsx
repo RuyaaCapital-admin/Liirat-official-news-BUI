@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
-import EnhancedPriceTicker from "@/components/ui/enhanced-price-ticker";
+import PriceTicker from "@/components/PriceTicker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import EnhancedMacroCalendar from "@/components/ui/enhanced-macro-calendar";
