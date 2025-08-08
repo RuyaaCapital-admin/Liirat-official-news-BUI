@@ -587,21 +587,18 @@ export default function EnhancedMacroCalendar({
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      const response = await fetch(
-        new URL("/api/ai-analysis", location.origin),
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            text: `${event.event} - ${event.country}. Previous: ${event.previous || "N/A"}, Forecast: ${event.forecast || "N/A"}, Actual: ${event.actual || "N/A"}`,
-            language: language,
-            type: "event",
-          }),
-          signal: controller.signal,
+      const response = await fetch("/api/ai-analysis", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          text: `${event.event} - ${event.country}. Previous: ${event.previous || "N/A"}, Forecast: ${event.forecast || "N/A"}, Actual: ${event.actual || "N/A"}`,
+          language: language,
+          type: "event",
+        }),
+        signal: controller.signal,
+      });
 
       clearTimeout(timeoutId);
 
@@ -619,16 +616,16 @@ export default function EnhancedMacroCalendar({
           `AI Analysis API error: ${response.status} - ${response.statusText}`,
         );
 
-        if (response.status === 401) {
+        if (response.status === 500 && errorData.error?.includes("OpenAI")) {
           // API key not configured or invalid
           setAiAnalysis((prev) => ({
             ...prev,
             [event.event]:
               language === "ar"
-                ? "⚠️ مفتاح OpenAI API غير صحيح أو غير مُعدّ. يرجى إعداد مفتاح صحيح في متغيرات البيئة."
-                : "⚠️ OpenAI API key is invalid or not configured. Please set a valid API key in environment variables.",
+                ? "⚠️ مفتاح OpenAI API غير مُعدّ في متغيرات البيئة. يرجى إعداد OPENAI_API_KEY في Vercel."
+                : "⚠️ OpenAI API key not configured in environment variables. Please set OPENAI_API_KEY in Vercel.",
           }));
-          return; // Exit early to avoid throwing error
+          return;
         } else if (response.status === 500) {
           setAiAnalysis((prev) => ({
             ...prev,
@@ -637,7 +634,7 @@ export default function EnhancedMacroCalendar({
                 ? "❌ خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقاً."
                 : "❌ Server error. Please try again later.",
           }));
-          return; // Exit early to avoid throwing error
+          return;
         } else {
           throw new Error(`API error: ${response.status}`);
         }
@@ -794,15 +791,17 @@ export default function EnhancedMacroCalendar({
           </div>
 
           {/* Countries */}
-          <div className="space-y-1">
+          <div className="space-y-1 relative">
             <label className="text-xs font-medium text-muted-foreground">
               {language === "ar" ? "الدول" : "Countries"}
             </label>
-            <CountrySelect
-              value={selectedCountries}
-              onChange={setSelectedCountries}
-              options={COUNTRIES.map((code) => ({ code, name: code }))}
-            />
+            <div className="relative z-50">
+              <CountrySelect
+                value={selectedCountries}
+                onChange={setSelectedCountries}
+                options={COUNTRIES.map((code) => ({ code, name: code }))}
+              />
+            </div>
           </div>
 
           {/* Importance Filter */}
@@ -1098,7 +1097,14 @@ export default function EnhancedMacroCalendar({
                               dir === "rtl" ? "text-right" : "text-left",
                             )}
                           >
-                            {event.title || event.event || "Economic Event"}
+                            {language === "ar" &&
+                            translatedContent[
+                              `${event.title || event.event}-${event.country}`
+                            ]
+                              ? translatedContent[
+                                  `${event.title || event.event}-${event.country}`
+                                ]
+                              : event.title || event.event || "Economic Event"}
                             {language === "ar" &&
                               loadingTranslation[
                                 `${event.title || event.event}-${event.country}`

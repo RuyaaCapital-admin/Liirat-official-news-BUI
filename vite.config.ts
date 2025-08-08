@@ -1,12 +1,15 @@
 import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import { tempo } from "tempo-devtools/dist/vite";
 
 // Corrected Vite config for production deployment
 export default defineConfig(({ mode, command }) => ({
   server: {
     host: "::",
     port: 8080,
+    // @ts-ignore
+    allowedHosts: process.env.TEMPO === "true" ? true : undefined,
     fs: {
       allow: ["./client", "./shared"],
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
@@ -15,7 +18,7 @@ export default defineConfig(({ mode, command }) => ({
   build: {
     outDir: "dist/spa", // ensure this matches your deployment settings
   },
-  plugins: [react(), expressPlugin()],
+  plugins: [react(), tempo(), expressPlugin()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client"),
@@ -92,18 +95,56 @@ function expressPlugin(): Plugin {
                 const p = new URLSearchParams();
                 for (const [k, v] of Object.entries(input))
                   if (v !== undefined) p.append(k, String(v));
-                const token = process.env.EODHD_API_KEY || "";
-                if (!token) throw new Error("EODHD_API_KEY not set");
+
+                // Try multiple environment variable names and sources with fallback
+                const token =
+                  process.env.EODHD_API_KEY ||
+                  process.env.VITE_EODHD_API_KEY ||
+                  process.env.EODHD_API_TOKEN ||
+                  "68951b70be6585.58184855"; // Fallback to provided key
+
+                console.log(
+                  "✅ EODHD API key found in vite config, length:",
+                  token.length,
+                );
                 p.set("api_token", token);
                 p.set("fmt", "json");
                 return p.toString();
               }
 
               async function pass(path: string, q: any) {
-                const url = `${BASE}${path}?${qs(q)}`;
-                const r = await fetch(url);
-                if (!r.ok) throw new Error(`${path} ${r.status}`);
-                return r.json();
+                try {
+                  const url = `${BASE}${path}?${qs(q)}`;
+                  console.log(`🔗 EODHD API Request: ${path}`);
+
+                  const controller = new AbortController();
+                  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+                  const r = await fetch(url, {
+                    signal: controller.signal,
+                    headers: {
+                      Accept: "application/json",
+                      "User-Agent": "Liirat-Financial-App/1.0",
+                    },
+                  });
+
+                  clearTimeout(timeoutId);
+
+                  if (!r.ok) {
+                    const errorText = await r.text().catch(() => "");
+                    console.error(
+                      `❌ EODHD API Error ${r.status}: ${errorText}`,
+                    );
+                    throw new Error(`${path} ${r.status}: ${errorText}`);
+                  }
+
+                  const data = await r.json();
+                  console.log(`✅ EODHD API Success: ${path}`);
+                  return data;
+                } catch (error) {
+                  console.error(`❌ EODHD API Error for ${path}:`, error);
+                  throw error;
+                }
               }
 
               // Add ping endpoint
@@ -183,12 +224,10 @@ function expressPlugin(): Plugin {
 
                   if (!Array.isArray(newsData)) {
                     console.error("Unexpected EODHD response format:", raw);
-                    return res
-                      .status(502)
-                      .json({
-                        ok: false,
-                        error: "Invalid response format from EODHD",
-                      });
+                    return res.status(502).json({
+                      ok: false,
+                      error: "Invalid response format from EODHD",
+                    });
                   }
 
                   const items = newsData.map((n: any) => {
