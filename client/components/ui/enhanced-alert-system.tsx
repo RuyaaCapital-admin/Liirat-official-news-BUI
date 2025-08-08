@@ -423,7 +423,7 @@ export default function EnhancedAlertSystem({
 
                 <div className="grid gap-2">
                   <Label htmlFor="condition">
-                    {language === "ar" ? "الشرط" : "Condition"}
+                    {language === "ar" ? "نوع التنبيه" : "Condition"}
                   </Label>
                   <Select
                     value={condition}
