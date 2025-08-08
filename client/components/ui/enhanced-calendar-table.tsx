@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { EconomicEvent } from "@shared/api";
 import { cn } from "@/lib/utils";
+import { fetchCalendar, adaptCalendar, formatCalendarDate, getCurrentWeekRange } from "@/lib/calendar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -78,7 +79,7 @@ const translations = {
     loading: "جاري التحميل...",
     noEvents: "لا توجد أحداث اقتصادية متاحة",
     noEventsFiltered: "لا توجد أحداث مطابقة للمرشحات المحددة",
-    error: "خطأ في تحميل التقويم الاقتصادي",
+    error: "خطأ في تحميل التقو��م الاقتصادي",
     networkError: "خطأ في الشبكة",
     retryMessage: "فشل في تحميل البيانات. يرجى المحاولة مرة أخرى.",
 
@@ -198,44 +199,12 @@ export default function EnhancedCalendarTable({
     ? filteredEvents
     : filteredEvents.slice(0, 10);
 
-  // Format date and time
+  // Format date and time using Gregorian calendar only
   const formatDateTime = (dateStr: string, timeStr?: string) => {
     try {
-      let date: Date;
-
-      // Handle different date formats
-      if (dateStr.includes("T")) {
-        date = new Date(dateStr);
-      } else if (dateStr.includes("-")) {
-        // Handle YYYY-MM-DD format
-        const fullDateTime = timeStr
-          ? `${dateStr}T${timeStr}:00.000Z`
-          : `${dateStr}T12:00:00.000Z`;
-        date = new Date(fullDateTime);
-      } else {
-        // Try to parse as-is
-        date = new Date(dateStr);
-      }
-
-      if (!date || isNaN(date.getTime())) {
-        return language === "ar" ? "تاريخ غير صالح" : "Invalid date";
-      }
-
-      // Format with Arabic locale support
-      const locale = language === "ar" ? "ar-AE" : "en-US";
-      const dateFormatted = date.toLocaleDateString(locale, {
-        month: "short",
-        day: "numeric",
-        timeZone: "Asia/Dubai",
-      });
-      const timeFormatted =
-        timeStr ||
-        date.toLocaleTimeString(locale, {
-          hour: "2-digit",
-          minute: "2-digit",
-          timeZone: "Asia/Dubai",
-          hour12: false,
-        });
+      // Use the new Gregorian-only formatter from calendar utilities
+      const fullDateTime = timeStr ? `${dateStr} ${timeStr}` : dateStr;
+      const formattedDate = formatCalendarDate(fullDateTime, language === "ar" ? "ar-AE" : "en-US");
 
       return (
         <div
@@ -244,8 +213,10 @@ export default function EnhancedCalendarTable({
             language === "ar" ? "text-right" : "text-left",
           )}
         >
-          <div className="font-medium">{dateFormatted}</div>
-          <div className="text-muted-foreground">{timeFormatted}</div>
+          <div className="font-medium">{formattedDate}</div>
+          {timeStr && (
+            <div className="text-muted-foreground">{timeStr}</div>
+          )}
         </div>
       );
     } catch (error) {
