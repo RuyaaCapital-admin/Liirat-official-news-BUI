@@ -55,9 +55,18 @@ function expressPlugin(): Plugin {
             return;
           }
 
-          // Dynamically import and create the Express app
-          const { createServer } = await import("./server/index.ts");
-          const app = createServer();
+          // Import the new consolidated API
+          const { default: handler } = await import("./api/index.ts");
+
+          // Create a simple Express app to handle the request
+          const express = await import("express");
+          const app = express.default();
+          app.use(express.default.json());
+
+          // Use our new serverless handler
+          app.use('/', (req: any, res: any) => {
+            handler(req, res);
+          });
 
           console.log("🚀 API request intercepted:", req.method, req.url);
           console.log("🎯 Available routes:", [
