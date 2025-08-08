@@ -338,12 +338,12 @@ export default function EnhancedMacroCalendar({
         return false;
       }
 
-      // Importance filter
+      // Importance filter - exact match with API values
       if (selectedImportance !== "all") {
-        const impStr = String(event.importance).toLowerCase();
-        if (selectedImportance === "high" && !impStr.includes("high")) return false;
-        if (selectedImportance === "medium" && !impStr.includes("medium")) return false;
-        if (selectedImportance === "low" && !impStr.includes("low")) return false;
+        const impStr = String(event.importance || "").toLowerCase();
+        if (selectedImportance === "high" && impStr !== "high") return false;
+        if (selectedImportance === "medium" && impStr !== "medium") return false;
+        if (selectedImportance === "low" && impStr !== "low") return false;
       }
 
       // Category filter
