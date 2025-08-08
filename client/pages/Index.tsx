@@ -25,6 +25,7 @@ import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 
 import { useLanguage } from "@/contexts/language-context";
 import { useAlerts } from "@/contexts/alert-context";
+import { fetchCalendar, adaptCalendar } from "@/lib/calendar";
 import {
   Calendar,
   Bell,
@@ -119,7 +120,6 @@ export default function Index() {
       const pad = (n:number)=>String(n).padStart(2,"0");
       const fmt = (d:Date)=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 
-      const { fetchCalendar, adaptCalendar } = await import("@/lib/calendar");
 
       const raw = await fetchCalendar({
         from: filters?.from || fmt(today),
@@ -454,7 +454,7 @@ export default function Index() {
                             // Create an actual alert for the economic event
                             const message =
                               language === "ar"
-                                ? `تنبيه حدث اقتصادي: ${event.event} - ${event.country} - الوقت: ${event.time || "غير محدد"}`
+                                ? `تنبيه حدث اقتصادي: ${event.event} - ${event.country} - ��لوقت: ${event.time || "غير محدد"}`
                                 : `Economic Event Alert: ${event.event} - ${event.country} - Time: ${event.time || "TBD"}`;
 
                             const eventName =
