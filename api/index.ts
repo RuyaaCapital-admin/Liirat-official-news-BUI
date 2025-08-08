@@ -72,17 +72,34 @@ r.get('/eodhd/news', async (req, res) => {
     }
 
     // Transform response to match frontend expectations
-    const items = newsData.map((n: any) => ({
-      datetimeIso: n.date || n.datetime || n.published_at || n.time,
-      title: String(n.title || ''),
-      content: String(n.content || n.description || n.title || ''),
-      source: String(n.source || ''),
-      symbols: n.symbols || [],
-      tags: n.tags || n.symbols || [],
-      url: n.link || n.url || '',
-      country: n.country || '',
-      category: n.category || 'financial',
-    }));
+    const items = newsData.map((n: any) => {
+      // Handle different date formats from EODHD
+      let datetimeIso = null;
+      const dateField = n.date || n.datetime || n.published_at || n.time;
+      if (dateField) {
+        try {
+          // Try to parse and convert to ISO format
+          const date = new Date(dateField);
+          if (!isNaN(date.getTime())) {
+            datetimeIso = date.toISOString();
+          }
+        } catch (e) {
+          console.warn('Failed to parse date:', dateField);
+        }
+      }
+
+      return {
+        datetimeIso,
+        title: String(n.title || ''),
+        content: String(n.content || n.description || n.title || ''),
+        source: String(n.source || ''),
+        symbols: n.symbols || [],
+        tags: n.tags || n.symbols || [],
+        url: n.link || n.url || '',
+        country: n.country || '',
+        category: n.category || 'financial',
+      };
+    });
 
     console.log(`Transformed ${items.length} news items`);
     res.json({ ok: true, items });
