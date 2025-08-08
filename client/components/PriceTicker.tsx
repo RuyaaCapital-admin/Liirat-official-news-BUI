@@ -38,8 +38,8 @@ export default function PriceTicker(){
   return (
     <div className="ticker-wrap">
       <div className="ticker-track">
-        {items.map(renderItem)}
-        {items.map(renderItem)} {/* duplicate for seamless loop */}
+        {items.map((q,i)=>renderItem({...q,key:`a-${i}`}))}
+        {items.map((q,i)=>renderItem({...q,key:`b-${i}`}))}
       </div>
     </div>
   );
