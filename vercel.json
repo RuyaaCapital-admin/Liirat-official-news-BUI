@@ -1,12 +1,10 @@
 {
   "version": 2,
   "functions": {
-    "api/index.ts": {
-      "runtime": "@vercel/node@3.0.0"
-    }
+    "api/**/*.ts": { "runtime": "nodejs22.x" },
+    "api/**/*.js": { "runtime": "nodejs22.x" }
   },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.ts" },
     { "source": "/((?!api).*)", "destination": "/index.html" }
   ]
 }
