@@ -7,8 +7,13 @@ const BASE = "https://eodhd.com/api";
 // Helper to build query string with API token
 function qs(input: Record<string, any> = {}) {
   const token = process.env.EODHD_API_KEY || "";
-  if (!token) throw new Error("EODHD_API_KEY not set");
-  
+  if (!token) {
+    console.error("🚨 EODHD_API_KEY not set in environment variables");
+    throw new Error("EODHD_API_KEY not set");
+  }
+
+  console.log("🔑 API Key exists:", token.slice(0, 8) + "..." + token.slice(-4));
+
   const params = new URLSearchParams();
   params.set("api_token", token);
   params.set("fmt", "json");
