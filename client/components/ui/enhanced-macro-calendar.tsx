@@ -136,7 +136,7 @@ export default function EnhancedMacroCalendar({
 
   // Pagination state
   const [showAll, setShowAll] = useState(false);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(6);
 
   // AI Analysis state
   const [aiAnalysis, setAiAnalysis] = useState<Record<string, string>>({});
@@ -411,16 +411,26 @@ export default function EnhancedMacroCalendar({
 
   // Paginated events
   const displayedEvents = useMemo(() => {
-    if (showAll) return filteredEvents;
+    if (showAll) return filteredEvents.slice(0, 50);
     return filteredEvents.slice(0, itemsPerPage);
   }, [filteredEvents, showAll, itemsPerPage]);
 
   // Auto-translate events when language changes to Arabic (with debouncing)
   useEffect(() => {
-    // Disable auto-translation to prevent API errors and show real event titles
-    // Translation will only happen on manual request to avoid overwhelming the API
-    // and ensure users see real event data immediately
-    return;
+    if (language === "ar" && displayedEvents.length > 0) {
+      // Translate only the first few events to avoid overwhelming the API
+      const timer = setTimeout(() => {
+        displayedEvents.slice(0, 3).forEach((event, index) => {
+          setTimeout(() => {
+            translateContent(event).catch(() => {
+              // Silent fail - keep original text
+            });
+          }, index * 500); // Stagger requests
+        });
+      }, 1000); // Debounce
+
+      return () => clearTimeout(timer);
+    }
   }, [language, displayedEvents]);
 
   // Handle time period changes
@@ -541,7 +551,7 @@ export default function EnhancedMacroCalendar({
 
       if (response.ok) {
         const data = await response.json();
-        const translated = data.translatedText || event.event;
+        const translated = data.result || event.event;
         setTranslatedContent((prev) => ({ ...prev, [eventKey]: translated }));
         return translated;
       } else {

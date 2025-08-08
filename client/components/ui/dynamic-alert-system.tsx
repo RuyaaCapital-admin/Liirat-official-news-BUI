@@ -438,7 +438,7 @@ export default function DynamicAlertSystem({
   // Delete alert
   const deleteAlert = (id: string) => {
     setPriceAlerts((prev) => prev.filter((alert) => alert.id !== id));
-    toast.success(language === "ar" ? "تم حذف التنبيه" : "Alert deleted");
+    toast.success(language === "ar" ? "تم حذف الت��بيه" : "Alert deleted");
   };
 
   // Toggle alert active state
@@ -456,7 +456,7 @@ export default function DynamicAlertSystem({
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-2xl font-bold flex items-center gap-2">
             <Bell className="h-6 w-6 text-primary" />
-            {language === "ar" ? "نظام التنب��هات الذكي" : "Smart Alert System"}
+            {language === "ar" ? "نظام التنبيهات الذكي" : "Smart Alert System"}
           </CardTitle>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
@@ -593,7 +593,7 @@ export default function DynamicAlertSystem({
 
                 <div className="grid gap-2">
                   <Label htmlFor="condition">
-                    {language === "ar" ? "الشرط" : "Condition"}
+                    {language === "ar" ? "نوع التنبيه" : "Condition"}
                   </Label>
                   <Select
                     value={condition}

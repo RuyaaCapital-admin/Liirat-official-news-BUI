@@ -99,7 +99,7 @@ export default function PriceTicker() {
   }
 
   return (
-    <div className="ticker-wrap bg-background/95 backdrop-blur-sm border-b border-border/50">
+    <div className="ticker-wrap bg-background/95 backdrop-blur-sm border-b border-border/50 sticky top-0 z-40">
       <div className="ticker-track">
         {items.map((q, i) => renderItem({ ...q, key: `first-${i}` }))}
         {items.map((q, i) => renderItem({ ...q, key: `second-${i}` }))}

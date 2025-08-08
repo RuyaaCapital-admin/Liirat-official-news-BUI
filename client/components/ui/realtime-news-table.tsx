@@ -56,7 +56,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
   const [filteredArticles, setFilteredArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [itemsToShow, setItemsToShow] = useState(10);
+  const [itemsToShow, setItemsToShow] = useState(15);
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
@@ -340,7 +340,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     }
 
     setFilteredArticles(filtered);
-    setItemsToShow(10); // Reset pagination when filters change
+    setItemsToShow(15); // Reset pagination when filters change
   }, [articles, searchTerm]);
 
   // Network connectivity check for translations
@@ -369,7 +369,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       Investment: "الاستثمار",
       Bank: "البنك",
       Currency: "العملة",
-      Dollar: "ا��دولار",
+      Dollar: "الدولار",
       Euro: "اليورو",
       Gold: "الذهب",
       Oil: "النفط",
@@ -580,13 +580,13 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                   "Central Banks":
                     language === "ar" ? "البنوك المركزية" : "Central Banks",
                   Inflation: language === "ar" ? "التضخم" : "Inflation",
-                  Forex: language === "ar" ? "تداو�� العملات" : "Forex",
+                  Forex: language === "ar" ? "تداول العملات" : "Forex",
                   Economic: language === "ar" ? "اقتصادي" : "Economic",
                   Employment: language === "ar" ? "التوظيف" : "Employment",
                   Trade: language === "ar" ? "التجارة" : "Trade",
                   Manufacturing:
                     language === "ar" ? "التصنيع" : "Manufacturing",
-                  Services: language === "ar" ? "الخدم��ت" : "Services",
+                  Services: language === "ar" ? "الخدمات" : "Services",
                   Housing: language === "ar" ? "الإسكان" : "Housing",
                   Consumer: language === "ar" ? "المستهلك" : "Consumer",
                 };
@@ -820,7 +820,10 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                   variant="outline"
                   onClick={() =>
                     setItemsToShow((prev) =>
-                      Math.min(prev + 10, filteredArticles.length),
+                      Math.min(
+                        prev + 10,
+                        Math.min(filteredArticles.length, 50),
+                      ),
                     )
                   }
                   className="flex items-center gap-2"
@@ -833,11 +836,11 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
               </div>
             )}
 
-            {itemsToShow > 10 && (
+            {itemsToShow > 15 && (
               <div className="flex justify-center gap-2 mt-2">
                 <Button
                   variant="outline"
-                  onClick={() => setItemsToShow(10)}
+                  onClick={() => setItemsToShow(15)}
                   className="flex items-center gap-2"
                 >
                   {language === "ar" ? "عرض أقل" : "Show Less"}

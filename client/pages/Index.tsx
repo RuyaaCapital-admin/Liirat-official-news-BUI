@@ -379,7 +379,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "تابع الأحداث الاق��صادية المهمة والأخبار المالية في الوقت الفعلي"
+                    ? "تابع الأحداث الاقتصادية المهمة والأخبار المالية في الوقت الفعلي"
                     : "Track important economic events and real-time financial news"}
                 </p>
               </div>
@@ -390,7 +390,7 @@ export default function Index() {
                   <CardTitle className="flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-primary" />
                     {language === "ar"
-                      ? "التقويم الاقتصا��ي المباشر"
+                      ? "التقويم الاقتصادي المباشر"
                       : "Live Economic Calendar"}
                   </CardTitle>
                   <CardDescription>
@@ -446,7 +446,7 @@ export default function Index() {
                               <Bell className="w-4 h-4 mr-2" />
                               <span>
                                 {language === "ar"
-                                  ? "عرض بيانات تجريبية - سيتم التحديث عند استعادة الاتصال"
+                                  ? "عرض بيانات تجريبية - سيتم التحديث ��ند استعادة الاتصال"
                                   : "Data will update when connection is restored"}
                               </span>
                             </div>
@@ -468,7 +468,7 @@ export default function Index() {
                             // Create an actual alert for the economic event
                             const message =
                               language === "ar"
-                                ? `تنبيه حدث ��قتصادي: ${event.event} - ${event.country} - الوقت: ${event.time || "غير محدد"}`
+                                ? `تنبيه حدث اقتصادي: ${event.event} - ${event.country} - الوقت: ${event.time || "غير محدد"}`
                                 : `Economic Event Alert: ${event.event} - ${event.country} - Time: ${event.time || "TBD"}`;
 
                             const eventName =
@@ -588,7 +588,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيه��ت ذكية لأي رمز مالي مع مراقبة الأسعار في الوقت الفعلي"
+                    ? "قم بإنشاء تنبيهات ذكية لأي رمز مالي مع مراقبة الأسعار في الوقت الفعلي"
                     : "Create intelligent alerts for any financial symbol with real-time price monitoring"}
                 </p>
               </div>

@@ -127,11 +127,15 @@ export function getDisplayedEvents(
   events: EconomicEvent[],
   isExpanded: boolean,
 ) {
-  return isExpanded ? events : events.slice(0, 10);
+  return isExpanded ? events.slice(0, 50) : events.slice(0, 6);
 }
 
 const getImportanceColor = (importance: number) => {
-  switch (importance) {
+  // Map null/undefined to LOW importance (1) for consistent coloring
+  const validImportance =
+    importance === null || importance === undefined ? 1 : importance;
+
+  switch (validImportance) {
     case 3:
       return "bg-red-500 text-white"; // HIGH impact
     case 2:
@@ -139,13 +143,17 @@ const getImportanceColor = (importance: number) => {
     case 1:
       return "bg-green-500 text-white"; // LOW impact
     default:
-      return "bg-gray-500 text-white";
+      return "bg-green-500 text-white"; // Default to LOW (green)
   }
 };
 
 const getImportanceLabel = (importance: number, language: string) => {
+  // Map null/undefined to LOW importance (1) instead of showing "Unknown"
+  const validImportance =
+    importance === null || importance === undefined ? 1 : importance;
+
   if (language === "ar") {
-    switch (importance) {
+    switch (validImportance) {
       case 3:
         return "عالي";
       case 2:
@@ -153,10 +161,10 @@ const getImportanceLabel = (importance: number, language: string) => {
       case 1:
         return "منخفض";
       default:
-        return "��ير محدد";
+        return "منخفض"; // Default to LOW instead of "غير محدد"
     }
   }
-  switch (importance) {
+  switch (validImportance) {
     case 3:
       return "HIGH";
     case 2:
@@ -164,7 +172,7 @@ const getImportanceLabel = (importance: number, language: string) => {
     case 1:
       return "LOW";
     default:
-      return "Unknown";
+      return "LOW"; // Default to LOW instead of "Unknown"
   }
 };
 
@@ -322,13 +330,13 @@ const getCountryName = (country: string, language: string) => {
     US: { en: "United States", ar: "الولايات المتحدة" },
     EUR: { en: "Eurozone", ar: "منطقة اليورو" },
     GB: { en: "United Kingdom", ar: "المملكة المتحدة" },
-    JP: { en: "Japan", ar: "اليابان" },
+    JP: { en: "Japan", ar: "اليا��ان" },
     CA: { en: "Canada", ar: "كندا" },
     AU: { en: "Australia", ar: "أستراليا" },
     CHF: { en: "Switzerland", ar: "سويسرا" },
     DE: { en: "Germany", ar: "ألمانيا" },
     FR: { en: "France", ar: "فرن��ا" },
-    CN: { en: "China", ar: "الصين" },
+    CN: { en: "China", ar: "الصي��" },
     CH: { en: "Switzerland", ar: "سويسرا" },
   };
   return countryNames[country]?.[language] || country;
@@ -447,7 +455,7 @@ export function MacroCalendarTable({
 
       if (response.ok) {
         const data = await response.json();
-        const translated = data.translatedText || event.event;
+        const translated = data.result || event.event;
         setTranslatedContent((prev) => ({ ...prev, [eventKey]: translated }));
         return translated;
       } else {
@@ -612,7 +620,7 @@ export function MacroCalendarTable({
           <Filter className="h-4 w-4 text-primary" />
           <div className="flex items-center justify-between w-full">
             <h3 className="font-semibold text-sm">
-              {t("Economic Calendar Filters", "فلاتر التقويم الاقتصادي")}
+              {t("Economic Calendar Filters", "فلاتر ��لتقويم الاقتصادي")}
             </h3>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Clock className="h-3 w-3" />
@@ -749,7 +757,12 @@ export function MacroCalendarTable({
                 <ChevronDown className="h-4 w-4 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 p-0">
+            <PopoverContent
+              className="w-80 p-0 z-50"
+              sideOffset={5}
+              side="bottom"
+              align="start"
+            >
               <div className="p-3 border-b">
                 <div className="relative">
                   <Search
@@ -769,7 +782,7 @@ export function MacroCalendarTable({
                   />
                 </div>
               </div>
-              <div className="max-h-60 overflow-y-auto">
+              <div className="max-h-60 overflow-y-auto overscroll-contain">
                 <div className="p-2">
                   <div
                     className="px-2 py-1 cursor-pointer hover:bg-muted rounded text-sm"
@@ -792,7 +805,9 @@ export function MacroCalendarTable({
                       <div
                         key={country}
                         className="px-2 py-1 cursor-pointer hover:bg-muted rounded text-sm flex items-center gap-2"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
                           setSelectedCountry(country);
                           setIsCountryOpen(false);
                         }}
@@ -819,7 +834,9 @@ export function MacroCalendarTable({
                         <div
                           key={country}
                           className="px-2 py-1 cursor-pointer hover:bg-muted rounded text-sm flex items-center gap-2"
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
                             setSelectedCountry(country);
                             setIsCountryOpen(false);
                           }}
@@ -873,7 +890,7 @@ export function MacroCalendarTable({
                   },
                   {
                     value: "2",
-                    label: t("Medium Impact", "متوسط التأثير"),
+                    label: t("Medium Impact", "مت��سط التأثير"),
                     color: "text-yellow-600",
                   },
                   {
@@ -949,7 +966,7 @@ export function MacroCalendarTable({
                 `عرض ${displayedEvents.length} من ${filteredEvents.length} حدث`,
               )}
             </span>
-            {filteredEvents.length > 10 && (
+            {filteredEvents.length > 6 && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -957,7 +974,7 @@ export function MacroCalendarTable({
                 className="text-xs h-auto p-1 hover:bg-muted"
               >
                 {isExpanded
-                  ? t("Show Less", "عر�� أقل")
+                  ? t("Show Less", "عرض أقل")
                   : t(
                       `Show All ${filteredEvents.length}`,
                       `عرض جميع ${filteredEvents.length}`,
