@@ -45,11 +45,17 @@ export default function PriceTicker(){
   },[]);
 
   const renderItem=(q:any)=>(
-    <div key={q.key||q.code} className="flex items-center gap-1 min-w-max">
-      <span>{q.code}</span>
-      <strong>{q.price?.toLocaleString()}</strong>
-      <span className={q.change>=0?"text-green-500":"text-red-500"}>
-        {q.change ?? "-"} ({q.changePercent ?? "-"}%)
+    <div key={q.key||q.code} className="flex items-center gap-1 sm:gap-2 min-w-max text-xs sm:text-sm">
+      <span className="font-medium text-muted-foreground">{q.code}</span>
+      <strong className="text-foreground">{q.price?.toLocaleString()}</strong>
+      <span className={cn(
+        "text-xs",
+        q.change>=0 ? "text-green-500" : "text-red-500"
+      )}>
+        {q.change !== undefined ? (q.change >= 0 ? "+" : "") + q.change?.toFixed(2) : "-"}
+        {q.changePercent !== undefined && (
+          <span className="hidden sm:inline"> ({(q.changePercent >= 0 ? "+" : "") + q.changePercent?.toFixed(2)}%)</span>
+        )}
       </span>
     </div>
   );
