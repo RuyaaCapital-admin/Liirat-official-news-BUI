@@ -255,7 +255,7 @@ export default function Index() {
                   className="flex items-center space-x-1 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
                 >
                   <Newspaper className="w-3 h-3" />
-                  <span>{language === "ar" ? "الأخبار" : "News"}</span>
+                  <span>{translate("navNews", language, "News")}</span>
                 </a>
                 <a
                   href="#alerts"
@@ -553,7 +553,7 @@ export default function Index() {
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {language === "ar"
-                    ? "الأخ��ار المالية المباشرة"
+                    ? "الأخبار المالية المباشرة"
                     : "Real-Time Financial News"}
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
