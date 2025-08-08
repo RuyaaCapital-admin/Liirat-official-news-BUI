@@ -67,11 +67,23 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
         throw new Error(data.error);
       }
 
-      // Use the exact format returned by our API
-      const price = data.price || 0;
-      const rawData = data.raw || {};
-      const change = rawData.change || 0;
-      const changePct = rawData.change_p || 0;
+      // Handle both our API format and raw EODHD format
+      let price = 0;
+      let change = 0;
+      let changePct = 0;
+
+      if (data.price !== undefined) {
+        // Our transformed API format
+        price = data.price || 0;
+        const rawData = data.raw || {};
+        change = rawData.change || 0;
+        changePct = rawData.change_p || 0;
+      } else {
+        // Raw EODHD format (development mode)
+        price = data.close || data.price || 0;
+        change = data.change || 0;
+        changePct = data.change_p || 0;
+      }
 
       if (price > 0) {
         lastFetchTime.current[symbol] = Date.now();
