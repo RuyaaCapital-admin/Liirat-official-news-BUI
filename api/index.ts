@@ -79,18 +79,15 @@ r.get("/eodhd/price", async (req, res) => {
 
 r.get("/eodhd/quotes", async (req, res) => {
   try {
-    const symbolList = String(req.query.symbols || "").split(",").map(s => s.trim()).filter(Boolean);
-    if (!symbolList.length) return res.status(400).json({ error: "symbols required" });
-    
-    // For multi-symbol, use first symbol as base and rest in 's' parameter
-    const [first, ...rest] = symbolList;
-    const queryParams = rest.length ? { s: rest.join(",") } : {};
-    
-    const data = await pass(`/real-time/${encodeURIComponent(first)}`, queryParams);
-    res.set("Content-Type", "application/json; charset=utf-8").json(data);
-  } catch (e: any) {
-    res.status(500).json({ error: e.message });
-  }
+    const list = String(req.query.symbols || "").split(",").map(s=>s.trim()).filter(Boolean);
+    if (!list.length) return res.status(400).json({ error: "symbols required" });
+    const first = list[0], rest = list.slice(1).join(",");
+    const url = new URL(`${BASE}/real-time/${encodeURIComponent(first)}`);
+    url.search = qs(rest ? { s: rest } : {});
+    const rr = await fetch(url.toString());
+    if (!rr.ok) throw new Error(`real-time ${rr.status}`);
+    res.set("Content-Type","application/json; charset=utf-8").json(await rr.json());
+  } catch (e:any) { res.status(500).json({ error: e.message }); }
 });
 
 r.get("/eodhd/calendar", async (req, res) => {
