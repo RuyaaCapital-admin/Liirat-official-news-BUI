@@ -443,7 +443,7 @@ export default function EnhancedMacroCalendar({
     const offlineTranslations: Record<string, string> = {
       Exports: "الصادرات",
       Imports: "الواردات",
-      GDP: "الناتج المحلي الإجمالي",
+      GDP: "الناتج ��لمحلي الإجمالي",
       Inflation: "التضخم",
       Unemployment: "البطالة",
       "Interest Rate": "سعر الفائدة",
@@ -485,7 +485,7 @@ export default function EnhancedMacroCalendar({
     try {
       let response;
       try {
-        response = await fetch("/api/translate", {
+        response = await fetch(new URL("/api/translate", location.origin), {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -590,7 +590,7 @@ export default function EnhancedMacroCalendar({
             ...prev,
             [event.event]:
               language === "ar"
-                ? "❌ خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقاً."
+                ? "❌ خطأ في الخادم. يرجى ��لمحاولة مرة أخرى لاحقاً."
                 : "❌ Server error. Please try again later.",
           }));
           return; // Exit early to avoid throwing error
