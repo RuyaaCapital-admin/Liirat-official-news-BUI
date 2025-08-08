@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { EconomicEvent } from "@shared/api";
 import { cn } from "@/lib/utils";
+import { formatCalendarDate, getCurrentWeekRange } from "@/lib/calendar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -192,7 +193,19 @@ export default function EnhancedMacroCalendar({
 
   const formatDateTime = (dateString: string, timeString?: string) => {
     try {
-      // Handle various date formats
+      // Use the new Gregorian-only formatter from calendar utilities
+      const fullDateTime = timeString ? `${dateString} ${timeString}` : dateString;
+      return formatCalendarDate(fullDateTime, language === "ar" ? "ar-AE" : "en-US");
+    } catch (error) {
+      console.error("Date formatting error:", error);
+      return dateString; // Fallback to original string
+    }
+  };
+
+  // Simple fallback formatting function
+  const formatSimpleDateTime = (dateString: string, timeString?: string) => {
+    try {
+      // Handle various date formats with Gregorian calendar only
       let date: Date;
 
       // Clean up the date string if it has weird formatting
@@ -217,8 +230,9 @@ export default function EnhancedMacroCalendar({
         }
       }
 
-      // Simple, clean formatting for both Arabic and English
+      // Simple, clean formatting for both Arabic and English - Gregorian calendar only
       const options: Intl.DateTimeFormatOptions = {
+        calendar: "gregory", // Explicitly use Gregorian calendar
         month: "short",
         day: "numeric",
         timeZone: "Asia/Dubai", // Always use Dubai time
@@ -237,7 +251,7 @@ export default function EnhancedMacroCalendar({
         }
       }
 
-      // Always use en-US locale for clean, consistent formatting
+      // Always use Gregorian calendar for formatting
       return new Intl.DateTimeFormat("en-US", options).format(date);
     } catch (error) {
       console.error("Date formatting error:", error, "for:", dateString);
@@ -1217,7 +1231,7 @@ export default function EnhancedMacroCalendar({
       {filteredEvents.length > 0 && (
         <div className="text-sm text-muted-foreground text-center">
           {language === "ar"
-            ? `عرض ${displayedEvents.length} من ${filteredEvents.length} حدث اقتصادي (${events.length} المجموع)`
+            ? `عرض ${displayedEvents.length} من ${filteredEvents.length} حدث ا��تصادي (${events.length} المجموع)`
             : `Showing ${displayedEvents.length} of ${filteredEvents.length} events (${events.length} total)`}
         </div>
       )}
