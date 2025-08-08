@@ -24,6 +24,7 @@ import { NotificationDropdown } from "@/components/ui/notification-dropdown";
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 
 import { useLanguage } from "@/contexts/language-context";
+import { translate } from "@/i18n";
 import { useAlerts } from "@/contexts/alert-context";
 import { fetchCalendar, adaptCal, sortCalendarByTime, shortDT } from "@/lib/calendar";
 import {
@@ -552,7 +553,7 @@ export default function Index() {
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {language === "ar"
-                    ? "الأخبار المالية المباشرة"
+                    ? "الأخ��ار المالية المباشرة"
                     : "Real-Time Financial News"}
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
