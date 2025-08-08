@@ -228,7 +228,7 @@ export default function DynamicAlertSystem({
       setPriceLoading(true);
       try {
         const response = await fetch(
-          `/api/eodhd/price?symbols=${encodeURIComponent(symbolData.symbol)}`,
+          `/api/eodhd/price?s=${encodeURIComponent(symbolData.symbol)}`,
         );
 
         if (response.ok) {
