@@ -263,7 +263,7 @@ export default function EnhancedMacroCalendar({
   const matchesCategory = (event: EconomicEvent, category: string) => {
     if (category === "all") return true;
 
-    const eventLower = event.event.toLowerCase();
+    const eventLower = (event.title || event.event || "").toLowerCase();
     const categoryLower = event.category?.toLowerCase() || "";
 
     switch (category) {
@@ -441,7 +441,7 @@ export default function EnhancedMacroCalendar({
   // Offline translation fallback for common economic terms
   const getOfflineTranslation = (text: string): string => {
     const offlineTranslations: Record<string, string> = {
-      Exports: "الصادرا��",
+      Exports: "الصادرات",
       Imports: "الواردات",
       GDP: "الناتج المحلي الإجمالي",
       Inflation: "التضخم",
@@ -450,7 +450,7 @@ export default function EnhancedMacroCalendar({
       "Trade Balance": "الميزان التجاري",
       "Consumer Price Index": "مؤشر أسعار المستهلك",
       "Producer Price Index": "مؤشر أسعار المنتجين",
-      "Industrial Production": "الإنتاج الصناعي",
+      "Industrial Production": "الإنتاج ال��ناعي",
       "Retail Sales": "مبيعات التجزئة",
       Employment: "التوظيف",
       Manufacturing: "التصنيع",
@@ -1220,7 +1220,7 @@ export default function EnhancedMacroCalendar({
       {filteredEvents.length > 0 && (
         <div className="text-sm text-muted-foreground text-center">
           {language === "ar"
-            ? `عرض ${displayedEvents.length} من ${filteredEvents.length} حدث ا��تصادي (${events.length} المجموع)`
+            ? `��رض ${displayedEvents.length} من ${filteredEvents.length} حدث ا��تصادي (${events.length} المجموع)`
             : `Showing ${displayedEvents.length} of ${filteredEvents.length} events (${events.length} total)`}
         </div>
       )}
