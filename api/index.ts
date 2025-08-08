@@ -2,7 +2,6 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { handleDemo } from "../server/routes/demo";
 import {
   handleAIChat,
   handleMarketData,
@@ -49,7 +48,9 @@ app.get("/ping", (_req, res) => {
   });
 });
 
-app.get("/demo", handleDemo);
+app.get("/demo", (_req, res) => {
+  res.json({ message: "Demo endpoint", status: "working" });
+});
 
 // Chat widget route
 app.post("/chat", handleChat);
