@@ -324,7 +324,7 @@ const getCountryName = (country: string, language: string) => {
     GB: { en: "United Kingdom", ar: "المملكة المتحدة" },
     JP: { en: "Japan", ar: "اليابان" },
     CA: { en: "Canada", ar: "كندا" },
-    AU: { en: "Australia", ar: "أست��اليا" },
+    AU: { en: "Australia", ar: "أستراليا" },
     CHF: { en: "Switzerland", ar: "سويسرا" },
     DE: { en: "Germany", ar: "ألمانيا" },
     FR: { en: "France", ar: "فرن��ا" },
@@ -769,7 +769,7 @@ export function MacroCalendarTable({
                   />
                 </div>
               </div>
-              <div className="max-h-60 overflow-y-auto">
+              <div className="max-h-60 overflow-y-auto overscroll-contain">
                 <div className="p-2">
                   <div
                     className="px-2 py-1 cursor-pointer hover:bg-muted rounded text-sm"
@@ -1051,7 +1051,7 @@ export function MacroCalendarTable({
                     {event.actual && event.actual !== "-" && (
                       <div className="bg-primary/10 text-primary rounded p-1 text-center">
                         <div className="text-[10px] text-muted-foreground">
-                          {t("Actual", "الفعلي")}
+                          {t("Actual", "الفعل��")}
                         </div>
                         <div className="font-medium">{event.actual}</div>
                       </div>
