@@ -13,7 +13,7 @@ export const TICKERS = [
 ];
 
 // Safely convert values, handling "NA" and invalid data
-const tryNum = (v: any): number | undefined => {
+const asNum = (v: any): number | undefined => {
   if (v === undefined || v === null || v === "NA" || v === "") return undefined;
   const num = Number(v);
   return isNaN(num) ? undefined : num;
@@ -27,9 +27,9 @@ export function normalizeQuotes(payload: any) {
     
     out.push({
       code,
-      price: tryNum(row.price ?? row.close ?? row.last ?? row.adjusted_close ?? row.c),
-      change: tryNum(row.change ?? row.d),
-      changePercent: tryNum(row.change_percent ?? row.dp ?? row.change_p)
+      price: asNum(row.price ?? row.close ?? row.last ?? row.adjusted_close ?? row.c),
+      change: asNum(row.change ?? row.d),
+      changePercent: asNum(row.change_percent ?? row.dp ?? row.change_p)
     });
   };
   
@@ -51,13 +51,13 @@ export function normalizeQuotes(payload: any) {
 }
 
 // Fetch batch quotes using multi-symbol API
-export async function getBatchQuotes(symbols: string[]) {
+export async function getBatchQuotes(symbols: string[], opts: {signal?: AbortSignal} = {}) {
   const u = new URL("/api/eodhd/quotes", location.origin);
   u.searchParams.set("symbols", symbols.join(","));
-  
-  const r = await fetch(u.toString());
-  if (!r.ok) throw new Error(`Quotes API error: ${r.status}`);
-  
+
+  const r = await fetch(u.toString(), { signal: opts.signal });
+  if (!r.ok) throw new Error("quotes");
+
   const data = await r.json();
   return normalizeQuotes(data);
 }
