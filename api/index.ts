@@ -10,8 +10,8 @@ const BASE = 'https://eodhd.com/api';
 function qs(input: Record<string, any> = {}) {
   const p = new URLSearchParams();
   for (const [k, v] of Object.entries(input)) if (v !== undefined) p.append(k, String(v));
-  const token = process.env.EODHD_API_TOKEN || '';
-  if (!token) throw new Error('EODHD_API_TOKEN not set');
+  const token = process.env.EODHD_API_KEY || '';
+  if (!token) throw new Error('EODHD_API_KEY not set');
   p.set('api_token', token);
   p.set('fmt', 'json');
   return p.toString();
