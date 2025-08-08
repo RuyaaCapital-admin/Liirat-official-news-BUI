@@ -330,7 +330,7 @@ const getCountryName = (country: string, language: string) => {
     US: { en: "United States", ar: "الولايات المتحدة" },
     EUR: { en: "Eurozone", ar: "منطقة اليورو" },
     GB: { en: "United Kingdom", ar: "المملكة المتحدة" },
-    JP: { en: "Japan", ar: "اليابان" },
+    JP: { en: "Japan", ar: "اليا��ان" },
     CA: { en: "Canada", ar: "كندا" },
     AU: { en: "Australia", ar: "أستراليا" },
     CHF: { en: "Switzerland", ar: "سويسرا" },
@@ -870,9 +870,9 @@ export function MacroCalendarTable({
                       ? selectedImportances[0] === "3"
                         ? t("High Impact", "عالي التأثير")
                         : selectedImportances[0] === "2"
-                          ? t("Medium Impact", "متوسط ال��أثير")
+                          ? t("Medium Impact", "متوسط التأثير")
                           : t("Low Impact", "منخفض التأثير")
-                      : `${selectedImportances.length} ${t("Impact Levels", "مستويات التأثي��")}`}
+                      : `${selectedImportances.length} ${t("Impact Levels", "مستويات التأثير")}`}
                 </span>
                 <ChevronDown className="h-4 w-4 opacity-50" />
               </Button>
@@ -890,7 +890,7 @@ export function MacroCalendarTable({
                   },
                   {
                     value: "2",
-                    label: t("Medium Impact", "متوسط التأثير"),
+                    label: t("Medium Impact", "مت��سط التأثير"),
                     color: "text-yellow-600",
                   },
                   {
@@ -974,7 +974,7 @@ export function MacroCalendarTable({
                 className="text-xs h-auto p-1 hover:bg-muted"
               >
                 {isExpanded
-                  ? t("Show Less", "عرض ��قل")
+                  ? t("Show Less", "عرض أقل")
                   : t(
                       `Show All ${filteredEvents.length}`,
                       `عرض جميع ${filteredEvents.length}`,
@@ -1001,7 +1001,7 @@ export function MacroCalendarTable({
               <p className="font-medium">
                 {t(
                   "No events found matching your criteria",
-                  "لا توجد أحد��ث تطابق معاييرك",
+                  "لا توجد أحداث تطابق معاييرك",
                 )}
               </p>
               <p className="text-sm mt-1">
@@ -1068,7 +1068,7 @@ export function MacroCalendarTable({
                     {event.actual && event.actual !== "-" && (
                       <div className="bg-primary/10 text-primary rounded p-1 text-center">
                         <div className="text-[10px] text-muted-foreground">
-                          {t("Actual", "الفعل��")}
+                          {t("Actual", "الفعلي")}
                         </div>
                         <div className="font-medium">{event.actual}</div>
                       </div>
