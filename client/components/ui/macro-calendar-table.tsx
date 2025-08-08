@@ -957,7 +957,7 @@ export function MacroCalendarTable({
                 className="text-xs h-auto p-1 hover:bg-muted"
               >
                 {isExpanded
-                  ? t("Show Less", "عر�� أقل")
+                  ? t("Show Less", "عرض أقل")
                   : t(
                       `Show All ${filteredEvents.length}`,
                       `عرض جميع ${filteredEvents.length}`,
