@@ -157,7 +157,7 @@ export default function Index() {
         if (error.message.includes("Network connection failed")) {
           errorMessage =
             language === "ar"
-              ? "خطأ في الاتصال بالشبكة. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى."
+              ? "خطأ في الاتصال بالشبكة. يرجى التحقق من اتصال الإنترنت والمح��ولة مرة أخرى."
               : "Network connection failed. Please check your internet connection and try again.";
         } else if (error.message.includes("Request timeout")) {
           errorMessage =
@@ -379,7 +379,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "تابع الأحدا�� الاق��صادية المهمة والأخبار المالية في الوقت الفعلي"
+                    ? "تابع الأحداث الاقتصادية المهمة والأخبار المالية في الوقت الفعلي"
                     : "Track important economic events and real-time financial news"}
                 </p>
               </div>
