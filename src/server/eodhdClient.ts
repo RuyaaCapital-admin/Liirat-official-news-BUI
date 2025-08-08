@@ -1,11 +1,12 @@
 const BASE = "https://eodhd.com/api";
-const key = process.env.EODHD_API_KEY;
-if (!key) throw new Error("EODHD_API_KEY missing");
 
 export async function eodFetch(
   path: string,
   q: Record<string, string | number | undefined> = {},
 ) {
+  const key = process.env.EODHD_API_KEY;
+  if (!key) throw new Error("EODHD_API_KEY missing");
+  
   const u = new URL(BASE + path);
   Object.entries(q).forEach(
     ([k, v]) => v !== undefined && u.searchParams.set(k, String(v)),

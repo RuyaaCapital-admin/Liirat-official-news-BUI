@@ -1,9 +1,24 @@
+
 {
-  "version": 2,
   "buildCommand": "npm run build:client",
   "outputDirectory": "dist/spa",
-  "framework": "vite",
-  "rewrites": [
-    { "source": "/((?!api).*)", "destination": "/index.html" }
-  ]
+  "framework": null,
+  "functions": {
+    "api/**/*.ts": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }

@@ -1,12 +1,12 @@
 import { RequestHandler } from "express";
 import { toIsoUtc } from "../../src/server/date";
 const BASE = "https://eodhd.com/api";
-const key = process.env.EODHD_API_KEY;
 
 async function eodFetch(
   path: string,
   q: Record<string, string | number | undefined> = {},
 ) {
+  const key = process.env.EODHD_API_KEY;
   if (!key) throw new Error("EODHD_API_KEY missing");
 
   const u = new URL(BASE + path);
