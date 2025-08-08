@@ -29,39 +29,26 @@ export async function getBatchQuotes(symbols:string[], opts:{signal?:AbortSignal
   const u=new URL("/api/eodhd/price", location.origin);
   u.searchParams.set("symbols", symbols.join(","));
 
-  console.log("Fetching quotes from:", u.toString());
+  const r=await fetch(u.toString(), { signal: opts.signal });
+  const ct=r.headers.get("content-type")||"";
 
-  try {
-    const r=await fetch(u.toString(), { signal: opts.signal });
-    const ct=r.headers.get("content-type")||"";
+  if (!r.ok) {
+    const errorText = await r.text();
+    throw new Error(`quotes ${r.status}: ${errorText}`);
+  }
 
-    console.log("Response status:", r.status);
-    console.log("Response content-type:", ct);
+  if(!ct.includes("application/json")) {
+    const responseText = await r.text();
+    throw new Error(`Non-JSON response: ${ct}. Body: ${responseText.slice(0, 200)}`);
+  }
 
-    if (!r.ok) {
-      const errorText = await r.text();
-      console.error("API Error:", errorText);
-      throw new Error(`quotes ${r.status}: ${errorText}`);
-    }
+  const data = await r.json();
 
-    if(!ct.includes("application/json")) {
-      const responseText = await r.text();
-      console.error("Non-JSON response body:", responseText);
-      throw new Error(`Non-JSON response: ${ct}. Body: ${responseText.slice(0, 200)}`);
-    }
-
-    const data = await r.json();
-    console.log("Raw quotes data:", data);
-
-    // Handle the server response format: { ok: true, items: [...] }
-    if (data.ok && data.items) {
-      return normalizeQuotes(data.items);
-    } else {
-      // Fallback to raw data
-      return normalizeQuotes(data);
-    }
-  } catch (error) {
-    console.error("getBatchQuotes error:", error);
-    throw error;
+  // Handle the server response format: { ok: true, items: [...] }
+  if (data.ok && data.items) {
+    return normalizeQuotes(data.items);
+  } else {
+    // Fallback to raw data
+    return normalizeQuotes(data);
   }
 }
