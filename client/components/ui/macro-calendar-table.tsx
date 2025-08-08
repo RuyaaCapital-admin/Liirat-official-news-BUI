@@ -328,7 +328,7 @@ const getCountryName = (country: string, language: string) => {
     CHF: { en: "Switzerland", ar: "سويسرا" },
     DE: { en: "Germany", ar: "ألمانيا" },
     FR: { en: "France", ar: "فرن��ا" },
-    CN: { en: "China", ar: "الصين" },
+    CN: { en: "China", ar: "الصي��" },
     CH: { en: "Switzerland", ar: "سويسرا" },
   };
   return countryNames[country]?.[language] || country;
@@ -967,7 +967,7 @@ export function MacroCalendarTable({
           </div>
           {lastUpdated && (
             <span className="text-xs">
-              {t("Last updated", "آخر تحدي��")}:{" "}
+              {t("Last updated", "آخر تحديث")}:{" "}
               {lastUpdated.toLocaleTimeString()}
             </span>
           )}
