@@ -54,7 +54,11 @@ r.get('/eodhd/news', async (req, res) => {
   try {
     console.log('Fetching news with params:', req.query);
     const raw = await pass('/news', req.query);
-    console.log('Raw EODHD response:', JSON.stringify(raw).slice(0, 200) + '...');
+    console.log('Raw EODHD response:', JSON.stringify(raw).slice(0, 500) + '...');
+    if (raw && raw.length > 0) {
+      console.log('First item keys:', Object.keys(raw[0] || {}));
+      console.log('First item sample:', JSON.stringify(raw[0]).slice(0, 300) + '...');
+    }
 
     // Handle different response formats from EODHD
     let newsData = raw;
