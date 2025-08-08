@@ -145,9 +145,7 @@ function expressPlugin(): Plugin {
                 }
 
                 try {
-                  console.log('Fetching news with params:', req.query);
                   const raw = await pass('/news', req.query);
-                  console.log('Raw EODHD response type:', typeof raw, Array.isArray(raw) ? 'array' : 'object');
 
                   let newsData = raw;
                   if (raw.data) {
@@ -190,7 +188,6 @@ function expressPlugin(): Plugin {
                     };
                   });
 
-                  console.log(`Transformed ${items.length} news items`);
                   res.json({ ok: true, items });
                 } catch (e: any) {
                   console.error('News endpoint error:', e);
