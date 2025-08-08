@@ -151,12 +151,13 @@ export default function EnhancedMacroCalendar({
   >({});
 
   // Helper functions
-  const getImportanceColor = (importance: number) => {
-    switch (importance) {
+  const getImportanceColor = (importance: number | string) => {
+    const normalizedImp = normalizeImportance(importance);
+    switch (normalizedImp) {
       case 3:
         return "bg-red-500 text-white";
       case 2:
-        return "bg-yellow-500 text-white";
+        return "bg-orange-500 text-white";
       case 1:
         return "bg-green-500 text-white";
       default:
@@ -164,9 +165,24 @@ export default function EnhancedMacroCalendar({
     }
   };
 
-  const getImportanceLabel = (importance: number) => {
+  const normalizeImportance = (importance: number | string): number => {
+    if (typeof importance === 'number') return importance;
+    const str = String(importance).toLowerCase();
+    switch (str) {
+      case 'high': return 3;
+      case 'medium': return 2;
+      case 'low': return 1;
+      case '3': return 3;
+      case '2': return 2;
+      case '1': return 1;
+      default: return 0;
+    }
+  };
+
+  const getImportanceLabel = (importance: number | string) => {
+    const normalizedImp = normalizeImportance(importance);
     if (language === "ar") {
-      switch (importance) {
+      switch (normalizedImp) {
         case 3:
           return "عالي";
         case 2:
@@ -177,7 +193,7 @@ export default function EnhancedMacroCalendar({
           return "غير محدد";
       }
     } else {
-      switch (importance) {
+      switch (normalizedImp) {
         case 3:
           return "High";
         case 2:
@@ -338,12 +354,11 @@ export default function EnhancedMacroCalendar({
         return false;
       }
 
-      // Importance filter - exact match with API values
+      // Importance filter - handle both string and number formats
       if (selectedImportance !== "all") {
-        const impStr = String(event.importance || "").toLowerCase();
-        if (selectedImportance === "high" && impStr !== "high") return false;
-        if (selectedImportance === "medium" && impStr !== "medium") return false;
-        if (selectedImportance === "low" && impStr !== "low") return false;
+        const normalizedEventImp = normalizeImportance(event.importance);
+        const selectedImpNum = selectedImportance === "high" ? 3 : selectedImportance === "medium" ? 2 : selectedImportance === "low" ? 1 : 0;
+        if (normalizedEventImp !== selectedImpNum) return false;
       }
 
       // Category filter
@@ -880,7 +895,7 @@ export default function EnhancedMacroCalendar({
                     {dateTo
                       ? format(dateTo, "MMM dd, yyyy")
                       : language === "ar"
-                        ? "اختر التاريخ"
+                        ? "اخت�� التاريخ"
                         : "Pick a date"}
                   </Button>
                 </PopoverTrigger>
