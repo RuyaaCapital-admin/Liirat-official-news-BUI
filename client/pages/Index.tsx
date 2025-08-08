@@ -294,7 +294,7 @@ export default function Index() {
           </div>
 
           {/* Hero Section */}
-          <section className="pt-24 pb-12 sm:py-20 lg:py-32 relative overflow-hidden px-2 sm:px-0">
+          <section className="pt-[calc(var(--nav-h)+4rem)] pb-12 sm:py-20 lg:py-32 relative overflow-hidden px-2 sm:px-0">
             {/* Official Logo Background Pattern */}
             <div className="absolute inset-0">
               <div className="w-full h-full bg-gradient-to-br from-primary/5 via-background to-primary/10"></div>
@@ -572,7 +572,7 @@ export default function Index() {
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   {language === "ar"
-                    ? "��ظام التنبيهات المتقدم"
+                    ? "نظام التنبيهات المتقدم"
                     : "Advanced Alert System"}
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
