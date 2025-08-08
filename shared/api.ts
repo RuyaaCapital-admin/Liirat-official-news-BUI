@@ -9,8 +9,9 @@ export interface EconomicEvent {
   time?: string;
   country: string;
   event: string;
+  title?: string; // Alternative event name field
   category?: string;
-  importance: number; // 1-3 scale
+  importance: number | string; // 1-3 scale or "low"/"medium"/"high"
   actual?: string;
   forecast?: string;
   previous?: string;
