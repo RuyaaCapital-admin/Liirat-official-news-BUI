@@ -79,15 +79,35 @@ r.get("/eodhd/price", async (req, res) => {
 
 r.get("/eodhd/quotes", async (req, res) => {
   try {
+    console.log("📈 QUOTES REQUEST:", req.query);
+
     const list = String(req.query.symbols || "").split(",").map(s=>s.trim()).filter(Boolean);
     if (!list.length) return res.status(400).json({ error: "symbols required" });
+
     const first = list[0], rest = list.slice(1).join(",");
     const url = new URL(`${BASE}/real-time/${encodeURIComponent(first)}`);
     url.search = qs(rest ? { s: rest } : {});
+
+    console.log("🔗 EODHD URL:", url.toString());
+
     const rr = await fetch(url.toString());
-    if (!rr.ok) throw new Error(`real-time ${rr.status}`);
-    res.set("Content-Type","application/json; charset=utf-8").json(await rr.json());
-  } catch (e:any) { res.status(500).json({ error: e.message }); }
+
+    console.log("📊 EODHD Response:", rr.status, rr.headers.get("content-type"));
+
+    if (!rr.ok) {
+      const errorText = await rr.text();
+      console.error("❌ EODHD Error:", errorText);
+      throw new Error(`real-time ${rr.status}: ${errorText}`);
+    }
+
+    const data = await rr.json();
+    console.log("✅ QUOTES DATA:", typeof data, Array.isArray(data) ? `Array[${data.length}]` : Object.keys(data || {}));
+
+    res.set("Content-Type","application/json; charset=utf-8").json(data);
+  } catch (e:any) {
+    console.error("🚨 QUOTES ERROR:", e.message);
+    res.status(500).json({ error: e.message });
+  }
 });
 
 r.get("/eodhd/calendar", async (req, res) => {
