@@ -87,7 +87,7 @@ const TIMEZONES = [
 // Time period options
 const TIME_PERIODS = [
   { value: "this_week", labelEn: "This Week", labelAr: "هذا الأسبوع" },
-  { value: "next_week", labelEn: "Next Week", labelAr: "الأسبوع القادم" },
+  { value: "next_week", labelEn: "Next Week", labelAr: "الأسبوع الق��دم" },
   { value: "this_month", labelEn: "This Month", labelAr: "هذا الشهر" },
   { value: "custom", labelEn: "Custom Range", labelAr: "فترة مخصصة" },
 ];
@@ -804,33 +804,30 @@ export default function EnhancedMacroCalendar({
               {language === "ar" ? "مستوى الأهمية" : "Importance"}
             </label>
             <div className="flex gap-1">
-              {[3, 2, 1].map((level) => (
-                <Button
-                  key={level}
-                  variant={
-                    selectedImportance.includes(level) ? "default" : "outline"
-                  }
-                  size="sm"
-                  onClick={() => {
-                    setSelectedImportance((prev) =>
-                      prev.includes(level)
-                        ? prev.filter((l) => l !== level)
-                        : [...prev, level],
-                    );
-                  }}
-                  className={cn(
-                    "h-9 px-2 text-xs transition-all duration-200 hover:scale-105 border",
-                    selectedImportance.includes(level)
-                      ? cn(
-                          getImportanceColor(level),
-                          "shadow-md border-white/20",
-                        )
-                      : "hover:bg-muted border-border bg-background text-foreground",
-                  )}
-                >
-                  {getImportanceLabel(level)}
-                </Button>
-              ))}
+              <button
+                onClick={() => setSelectedImportance("high")}
+                className={`px-3 py-1 rounded ${selectedImportance === "high" ? "bg-green-600 text-white" : "bg-zinc-800"}`}
+              >
+                {language === "ar" ? "عالي" : "High"}
+              </button>
+              <button
+                onClick={() => setSelectedImportance("medium")}
+                className={`px-3 py-1 rounded ${selectedImportance === "medium" ? "bg-green-600 text-white" : "bg-zinc-800"}`}
+              >
+                {language === "ar" ? "متوسط" : "Medium"}
+              </button>
+              <button
+                onClick={() => setSelectedImportance("low")}
+                className={`px-3 py-1 rounded ${selectedImportance === "low" ? "bg-green-600 text-white" : "bg-zinc-800"}`}
+              >
+                {language === "ar" ? "منخفض" : "Low"}
+              </button>
+              <button
+                onClick={() => setSelectedImportance("all")}
+                className={`px-3 py-1 rounded ${selectedImportance === "all" ? "bg-green-600 text-white" : "bg-zinc-800"}`}
+              >
+                {language === "ar" ? "الكل" : "All"}
+              </button>
             </div>
           </div>
         </div>
