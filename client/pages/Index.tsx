@@ -347,16 +347,14 @@ export default function Index() {
       </div>
 
       {/* All content with relative positioning */}
-      <div className="relative z-10 pt-[120px]">
+      <div className="relative z-10">
         <main role="main">
-          {/* Real-Time EODHD Market Ticker - Always Visible */}
-          <div className="fixed top-0 left-0 right-0 z-[70] w-full">
-            <EnhancedPriceTicker className="w-full" />
-          </div>
+          {/* Real-Time EODHD Market Ticker - Sticky below navbar */}
+          <EnhancedPriceTicker className="w-full" />
 
           {/* Floating Navigation Header */}
           <header
-            className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? "top-16" : "top-16"} mx-2 max-w-[calc(100vw-1rem)]`}
+            className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? "top-4" : "top-4"} mx-2 max-w-[calc(100vw-1rem)]`}
           >
             <div className="neumorphic-card bg-background/95 backdrop-blur-md rounded-full px-2 sm:px-4 lg:px-6 py-2 sm:py-3 flex items-center justify-between shadow-lg border border-border/50 w-full max-w-full">
               <div className="flex items-center">
@@ -424,7 +422,7 @@ export default function Index() {
           </header>
 
           {/* Hero Section */}
-          <section className="pt-20 pb-12 sm:py-20 lg:py-32 relative overflow-hidden px-2 sm:px-0">
+          <section className="pt-24 pb-12 sm:py-20 lg:py-32 relative overflow-hidden px-2 sm:px-0">
             {/* Official Logo Background Pattern */}
             <div className="absolute inset-0">
               <div className="w-full h-full bg-gradient-to-br from-primary/5 via-background to-primary/10"></div>
