@@ -30,7 +30,7 @@ export const adaptNews = (n: any) => ({
 // Analysis function for news articles
 export async function analyzeNews(text: string): Promise<string> {
   try {
-    const response = await fetch("/api/analysis", {
+    const response = await fetch(new URL("/api/analysis", location.origin), {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
