@@ -12,54 +12,27 @@ export const TICKERS = [
   "AAPL.US", "MSFT.US", "NVDA.US", "TSLA.US", "GOOGL.US", "AMZN.US"
 ];
 
-// Safely convert values, handling "NA" and invalid data
-const asNum = (v: any): number | undefined => {
-  if (v === undefined || v === null || v === "NA" || v === "") return undefined;
-  const num = Number(v);
-  return isNaN(num) ? undefined : num;
-};
-
-// Normalize EODHD quotes response
-export function normalizeQuotes(payload: any) {
-  const push = (row: any) => {
-    const code = row?.code || row?.symbol || row?.ticker;
-    if (!code) return;
-    
-    out.push({
-      code,
-      price: asNum(row.price ?? row.close ?? row.last ?? row.adjusted_close ?? row.c),
-      change: asNum(row.change ?? row.d),
-      changePercent: asNum(row.change_percent ?? row.dp ?? row.change_p)
+const asNum = (v:any)=> v==null || v==="NA" ? undefined : Number(v);
+export function normalizeQuotes(payload:any){
+  const rows:any[]=[]; const push=(r:any)=>{ const code=r?.code||r?.symbol||r?.ticker; if(!code) return;
+    rows.push({ code,
+      price: asNum(r.price??r.close??r.last??r.adjusted_close??r.c),
+      change: asNum(r.change??r.d),
+      changePercent: asNum(r.change_percent??r.dp)
     });
   };
-  
-  const out: any[] = [];
-  
-  if (Array.isArray(payload)) {
-    payload.forEach(push);
-  } else if (payload && typeof payload === "object") {
-    // Single object response
-    if (payload.code || payload.symbol) {
-      push(payload);
-    } else {
-      // Object with multiple symbols as properties
-      Object.values(payload).forEach(push);
-    }
-  }
-  
-  return out;
+  if (Array.isArray(payload)) payload.forEach(push);
+  else if (payload && typeof payload==="object") { if (payload.code||payload.symbol) push(payload); else Object.values(payload).forEach(push); }
+  return rows.filter(r=>Number.isFinite(r.price));
 }
 
-// Fetch batch quotes using multi-symbol API
-export async function getBatchQuotes(symbols: string[], opts: {signal?: AbortSignal} = {}) {
+export async function getBatchQuotes(symbols:string[], opts:{signal?:AbortSignal}={}){
   const u = new URL("/api/eodhd/quotes", location.origin);
   u.searchParams.set("symbols", symbols.join(","));
-
   const r = await fetch(u.toString(), { signal: opts.signal });
+  const ct = r.headers.get("content-type")||""; if (!ct.includes("application/json")) throw new Error("Non-JSON response");
   if (!r.ok) throw new Error("quotes");
-
-  const data = await r.json();
-  return normalizeQuotes(data);
+  return normalizeQuotes(await r.json());
 }
 
 // Fetch single symbol quote
