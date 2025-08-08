@@ -6,9 +6,9 @@ import { useNetworkStatus } from "@/hooks/use-network-status";
 interface PriceData {
   symbol: string;
   displayName: string;
-  price: number;
-  change: number;
-  changePercent: number;
+  price: number | null;
+  change: number | null;
+  changePercent: number | null;
   lastUpdate: Date;
   status: "connected" | "connecting" | "disconnected";
 }
