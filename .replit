@@ -5,13 +5,15 @@ run = "npm run dev"
 channel = "stable-25_05"
 
 [deployment]
-run = ["sh", "-c", "npm run dev"]
+run = ["sh", "-c", "npm start"]
+build = ["sh", "-c", "npm run build:client"]
 
 [[ports]]
 localPort = 8080
 externalPort = 80
 
 [workflows]
+runButton = "Production Build"
 
 [[workflows.workflow]]
 name = "Deploy to Replit"
@@ -21,3 +23,16 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run build:client"
+
+[[workflows.workflow]]
+name = "Production Build"
+author = 46130887
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run build:client"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm start"
