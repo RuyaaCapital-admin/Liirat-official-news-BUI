@@ -282,12 +282,12 @@ export default function DynamicAlertSystem({
     for (const alert of activeAlerts) {
       try {
         const response = await fetch(
-          `/api/eodhd/price?symbols=${encodeURIComponent(alert.symbol)}`,
+          `/api/eodhd/price?s=${encodeURIComponent(alert.symbol)}`,
         );
         if (response.ok) {
           const data = await response.json();
-          if (data.ok && data.items && data.items.length > 0) {
-            const currentPrice = data.items[0].price;
+          const currentPrice = data.price || data.close || 0;
+          if (currentPrice > 0) {
             const targetPrice = alert.targetPrice;
 
             let shouldTrigger = false;
