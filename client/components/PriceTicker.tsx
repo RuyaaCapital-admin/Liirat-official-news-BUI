@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { getBatchQuotes } from "@/lib/quotes";
 import { TICKERS } from "@/lib/watchlist";
+import { cn } from "@/lib/utils";
 import "@/styles/ticker.css";
 
 const POLL_MS = 12000;
