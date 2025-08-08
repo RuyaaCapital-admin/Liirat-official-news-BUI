@@ -1,148 +1,83 @@
-// Single serverless function proxy to EODHD (no hardcoding, token from env)
-import express from 'express';
-import serverless from 'serverless-http';
+import express from "express";
+import serverless from "serverless-http";
+import OpenAI from "openai";
 
 const app = express();
 app.use(express.json());
+app.set("trust proxy", true);
 
-// Add CORS headers
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-
-  next();
-});
-
-const BASE = 'https://eodhd.com/api';
-
+const BASE = "https://eodhd.com/api";
 function qs(input: Record<string, any> = {}) {
   const p = new URLSearchParams();
   for (const [k, v] of Object.entries(input)) if (v !== undefined) p.append(k, String(v));
-  const token = process.env.EODHD_API_KEY || '';
-  if (!token) throw new Error('EODHD_API_KEY not set');
-  p.set('api_token', token);
-  p.set('fmt', 'json');
+  const token = process.env.EODHD_API_TOKEN || "";
+  if (!token) throw new Error("EODHD_API_TOKEN not set");
+  p.set("api_token", token);
+  p.set("fmt", "json");
   return p.toString();
 }
-
 async function pass(path: string, q: any) {
   const url = `${BASE}${path}?${qs(q)}`;
   const r = await fetch(url);
   if (!r.ok) throw new Error(`${path} ${r.status}`);
   return r.json();
 }
+function pickPrice(obj: any) {
+  // Show exactly what EODHD returns; no fabrication.
+  const k = ["close","price","last","adjusted_close"];
+  for (const key of k) if (obj && obj[key] != null) return Number(obj[key]);
+  return null;
+}
 
 const r = express.Router();
 
-// health
-r.get('/ping', (_req, res) => res.json({ ok: true, ts: Date.now() }));
+// Health
+r.get("/ping", (_req, res) => res.json({ ok: true, ts: Date.now() }));
 
-// ---- EODHD official endpoints (no hardcode) ----
-r.get('/eodhd/news', async (req, res) => {
-  const { s, t, from, to, limit, offset } = req.query;
-
-  if (!s && !t) {
-    return res.status(400).json({ ok: false, code: 'MISSING_S_OR_T' });
-  }
-
-  try {
-    console.log('Fetching news with params:', req.query);
-    const raw = await pass('/news', req.query);
-    console.log('Raw EODHD response:', JSON.stringify(raw).slice(0, 500) + '...');
-    if (raw && raw.length > 0) {
-      console.log('First item keys:', Object.keys(raw[0] || {}));
-      console.log('First item sample:', JSON.stringify(raw[0]).slice(0, 300) + '...');
-    }
-
-    // Handle different response formats from EODHD
-    let newsData = raw;
-    if (raw.data) {
-      newsData = raw.data;
-    } else if (Array.isArray(raw)) {
-      newsData = raw;
-    } else if (raw.items) {
-      newsData = raw.items;
-    }
-
-    if (!Array.isArray(newsData)) {
-      console.error('Unexpected EODHD response format:', raw);
-      return res.status(502).json({ ok: false, error: 'Invalid response format from EODHD' });
-    }
-
-    // Transform response to match frontend expectations
-    const items = newsData.map((n: any) => {
-      // Handle different date formats from EODHD
-      let datetimeIso = null;
-      const dateField = n.date || n.datetime || n.published_at || n.time;
-      if (dateField) {
-        try {
-          // Try to parse and convert to ISO format
-          const date = new Date(dateField);
-          if (!isNaN(date.getTime())) {
-            datetimeIso = date.toISOString();
-          }
-        } catch (e) {
-          console.warn('Failed to parse date:', dateField);
-        }
-      }
-
-      return {
-        datetimeIso,
-        title: String(n.title || ''),
-        content: String(n.content || n.description || n.title || ''),
-        source: String(n.source || ''),
-        symbols: n.symbols || [],
-        tags: n.tags || n.symbols || [],
-        url: n.link || n.url || '',
-        country: n.country || '',
-        category: n.category || 'financial',
-      };
-    });
-
-    console.log(`Transformed ${items.length} news items`);
-    res.json({ ok: true, items });
-  }
-  catch (e:any) {
-    console.error('News endpoint error:', e);
-    res.status(500).json({ ok: false, error: e.message });
-  }
-});
-
-r.get('/eodhd/calendar', async (req, res) => {
-  try { res.json(await pass('/economic-events', req.query)); }
+// ---- EODHD (no hardcode)
+r.get("/eodhd/news", async (req, res) => {
+  try { res.set("Content-Type","application/json; charset=utf-8").json(await pass("/news", req.query)); }
   catch (e:any) { res.status(500).json({ error: e.message }); }
 });
-
-r.get('/eodhd/price', async (req, res) => {
+r.get("/eodhd/calendar", async (req, res) => {
+  try { res.set("Content-Type","application/json; charset=utf-8").json(await pass("/economic-events", req.query)); }
+  catch (e:any) { res.status(500).json({ error: e.message }); }
+});
+r.get("/eodhd/price", async (req, res) => {
   const s = (req.query.s as string) || (req.query.symbol as string);
-  if (!s) return res.status(400).json({ error: 'Missing query param: s (or symbol)' });
+  if (!s) return res.status(400).json({ error: "Missing query param: s (or symbol)" });
   try {
     const url = `${BASE}/real-time/${encodeURIComponent(s)}?${qs(req.query)}`;
     const r2 = await fetch(url);
     if (!r2.ok) throw new Error(`real-time ${r2.status}`);
-    res.json(await r2.json());
+    const json = await r2.json();
+    res.set("Content-Type","application/json; charset=utf-8").json({ raw: json, price: pickPrice(json) });
   } catch (e:any) { res.status(500).json({ error: e.message }); }
 });
-
-r.get('/eodhd/search', async (req, res) => {
+r.get("/eodhd/search", async (req, res) => {
   const q = (req.query.q as string) || (req.query.query as string);
-  if (!q) return res.status(400).json({ error: 'Missing query param: q' });
+  if (!q) return res.status(400).json({ error: "Missing query param: q" });
   try {
     const url = `${BASE}/search/${encodeURIComponent(q)}?${qs(req.query)}`;
     const r2 = await fetch(url);
     if (!r2.ok) throw new Error(`search ${r2.status}`);
-    res.json(await r2.json());
+    res.set("Content-Type","application/json; charset=utf-8").json(await r2.json());
   } catch (e:any) { res.status(500).json({ error: e.message }); }
 });
 
-// mount for both /api/* and /*
-app.use('/api', r);
-app.use('/', r);
+// ---- OpenAI analysis (fixes prior TS errors; no 'stream' misuse)
+r.post("/analysis", async (req, res) => {
+  try {
+    if (!process.env.OPENAI_API_KEY) return res.status(500).json({ error: "OPENAI_API_KEY not set" });
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const { text } = req.body || {};
+    const messages = [{ role: "system", content: "Be concise. Analyze market impact from the provided economic/news text." },
+                      { role: "user", content: String(text || "") }];
+    const out = await openai.chat.completions.create({ model: "gpt-4o-mini", messages });
+    res.json({ result: out.choices?.[0]?.message?.content ?? "" });
+  } catch (e:any) { res.status(500).json({ error: e.message }); }
+});
 
+app.use("/api", r);
+app.use("/", r);
 export default serverless(app);
