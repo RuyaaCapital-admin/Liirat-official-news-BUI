@@ -766,31 +766,59 @@ export default function EnhancedMacroCalendar({
             <label className="text-xs font-medium text-muted-foreground">
               {language === "ar" ? "مستوى الأهمية" : "Importance"}
             </label>
-            <div className="flex gap-1">
-              <button
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                variant={selectedImportance === "high" ? "default" : "outline"}
+                size="sm"
                 onClick={() => setSelectedImportance("high")}
-                className={`px-3 py-1 rounded ${selectedImportance === "high" ? "bg-green-600 text-white" : "bg-zinc-800"}`}
+                className={cn(
+                  "text-xs transition-all",
+                  selectedImportance === "high"
+                    ? "bg-red-500 hover:bg-red-600 text-white border-red-500"
+                    : "hover:bg-red-50 hover:border-red-200 dark:hover:bg-red-950"
+                )}
               >
                 {language === "ar" ? "عالي" : "High"}
-              </button>
-              <button
+              </Button>
+              <Button
+                variant={selectedImportance === "medium" ? "default" : "outline"}
+                size="sm"
                 onClick={() => setSelectedImportance("medium")}
-                className={`px-3 py-1 rounded ${selectedImportance === "medium" ? "bg-green-600 text-white" : "bg-zinc-800"}`}
+                className={cn(
+                  "text-xs transition-all",
+                  selectedImportance === "medium"
+                    ? "bg-orange-500 hover:bg-orange-600 text-white border-orange-500"
+                    : "hover:bg-orange-50 hover:border-orange-200 dark:hover:bg-orange-950"
+                )}
               >
                 {language === "ar" ? "متوسط" : "Medium"}
-              </button>
-              <button
+              </Button>
+              <Button
+                variant={selectedImportance === "low" ? "default" : "outline"}
+                size="sm"
                 onClick={() => setSelectedImportance("low")}
-                className={`px-3 py-1 rounded ${selectedImportance === "low" ? "bg-green-600 text-white" : "bg-zinc-800"}`}
+                className={cn(
+                  "text-xs transition-all",
+                  selectedImportance === "low"
+                    ? "bg-green-500 hover:bg-green-600 text-white border-green-500"
+                    : "hover:bg-green-50 hover:border-green-200 dark:hover:bg-green-950"
+                )}
               >
                 {language === "ar" ? "منخفض" : "Low"}
-              </button>
-              <button
+              </Button>
+              <Button
+                variant={selectedImportance === "all" ? "default" : "outline"}
+                size="sm"
                 onClick={() => setSelectedImportance("all")}
-                className={`px-3 py-1 rounded ${selectedImportance === "all" ? "bg-green-600 text-white" : "bg-zinc-800"}`}
+                className={cn(
+                  "text-xs transition-all",
+                  selectedImportance === "all"
+                    ? "bg-primary hover:bg-primary/90 text-primary-foreground"
+                    : "hover:bg-muted"
+                )}
               >
                 {language === "ar" ? "الكل" : "All"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
