@@ -2,8 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
-  apiKey: process.env.OPEN_API_KEY || "",
-  stream: "gpt-3.5",
+  apiKey: process.env.OPENAI_API_KEY || "",
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -12,7 +11,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  if (req.method === "OPIONS") {
+  if (req.method === "OPTIONS") {
     res.status(200).end();
     return;
   }
@@ -23,16 +22,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const body = await req.json();
+    const body = req.body;
     const prompt = body.message || "Hello, I'm Lirat's BUI!";
-    const stream = openai.streams.chat.create({
-      model: "text-davinci-006",
-      messages: [{ role: "system", content: prompt }],
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 1000,
     });
-
-    const completion = await stream.chat.completion();
     res.status(200).json({
-      response: completion.choices? [completion.choices] : [],
+      response: completion.choices[0]?.message?.content || "No response",
     });
   } catch (error) {
     console.error("Chat API error:", error);
