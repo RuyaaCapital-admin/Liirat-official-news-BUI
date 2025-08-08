@@ -88,7 +88,7 @@ const TIMEZONES = [
 // Time period options
 const TIME_PERIODS = [
   { value: "this_week", labelEn: "This Week", labelAr: "هذا الأسبوع" },
-  { value: "next_week", labelEn: "Next Week", labelAr: "الأسبوع الق��دم" },
+  { value: "next_week", labelEn: "Next Week", labelAr: "الأسبوع القادم" },
   { value: "this_month", labelEn: "This Month", labelAr: "هذا الشهر" },
   { value: "custom", labelEn: "Custom Range", labelAr: "فترة مخصصة" },
 ];
@@ -174,7 +174,7 @@ export default function EnhancedMacroCalendar({
         case 1:
           return "منخفض";
         default:
-          return "غير م��دد";
+          return "غير محدد";
       }
     } else {
       switch (importance) {
@@ -1138,7 +1138,7 @@ export default function EnhancedMacroCalendar({
                               loadingAnalysis[event.event] && "animate-pulse",
                             )}
                             title={
-                              language === "ar" ? "تحليل ذك��" : "AI Analysis"
+                              language === "ar" ? "تحليل ذكي" : "AI Analysis"
                             }
                           >
                             <Bot
@@ -1178,8 +1178,8 @@ export default function EnhancedMacroCalendar({
                             <div className="flex-1">
                               <div className="text-xs font-medium text-primary mb-1">
                                 {language === "ar"
-                                  ? "تحليل الذكاء الا��طناعي:"
-                                  : "AI Analysis:"}
+                                  ? "تحليل الذكاء الاصطناعي:"
+                                : "AI Analysis:"}
                               </div>
                               <div className="text-sm text-muted-foreground">
                                 {aiAnalysis[event.event]}
@@ -1224,7 +1224,7 @@ export default function EnhancedMacroCalendar({
       {filteredEvents.length > 0 && (
         <div className="text-sm text-muted-foreground text-center">
           {language === "ar"
-            ? `عرض ${displayedEvents.length} من ${filteredEvents.length} حدث ا��تصادي (${events.length} المجموع)`
+            ? `عرض ${displayedEvents.length} من ${filteredEvents.length} حدث اقتصادي (${events.length} المجموع)`
             : `Showing ${displayedEvents.length} of ${filteredEvents.length} events (${events.length} total)`}
         </div>
       )}
