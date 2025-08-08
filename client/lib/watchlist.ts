@@ -1,0 +1,6 @@
+export const TICKERS = [
+  "BTC-USD.CC","ETH-USD.CC",
+  "EURUSD.FOREX","GBPUSD.FOREX","USDJPY.FOREX","XAUUSD.FOREX",
+  "GSPC.INDX","DJI.INDX","IXIC.INDX",
+  "AAPL.US","MSFT.US","NVDA.US","TSLA.US"
+]; // 13 total; adjust here only
