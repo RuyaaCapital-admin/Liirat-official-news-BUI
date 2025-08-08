@@ -25,7 +25,7 @@ import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 
 import { useLanguage } from "@/contexts/language-context";
 import { useAlerts } from "@/contexts/alert-context";
-import { fetchCalendar, adaptCalendar } from "@/lib/calendar";
+import { fetchCalendar, adaptCal, sortCalendarByTime, shortDT } from "@/lib/calendar";
 import {
   Calendar,
   Bell,
@@ -128,11 +128,11 @@ export default function Index() {
         limit: 50
       });
 
-      const rows = (Array.isArray(raw) ? raw : []).map(adaptCalendar)
-        .filter(r => filterImportance(r.importance) && filterCategory(r.event));
-      rows.sort((a,b)=> new Date(a.date + " " + (a.time || "")).getTime() - new Date(b.date + " " + (b.time || "")).getTime());
+      const rows = (Array.isArray(raw) ? raw : []).map(adaptCal)
+        .filter(r => filterImportance(r.importance) && filterCategory(r.title));
+      const sorted = sortCalendarByTime(rows);
 
-      const initial = rows.slice(0,10); // show 10 immediately
+      const initial = sorted.slice(0,10); // show 10 nearest by time immediately
       setEconomicEvents(initial);
       setEventsError(null);
     } catch (error) {
@@ -454,7 +454,7 @@ export default function Index() {
                             // Create an actual alert for the economic event
                             const message =
                               language === "ar"
-                                ? `تنبيه حدث اقتصادي: ${event.event} - ${event.country} - الوقت: ${event.time || "غير محدد"}`
+                                ? `تنبيه حدث ��قتصادي: ${event.event} - ${event.country} - الوقت: ${event.time || "غير محدد"}`
                                 : `Economic Event Alert: ${event.event} - ${event.country} - Time: ${event.time || "TBD"}`;
 
                             const eventName =
