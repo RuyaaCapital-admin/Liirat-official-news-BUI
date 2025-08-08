@@ -287,6 +287,11 @@ export default function Index() {
             </div>
           </header>
 
+          {/* Real-Time EODHD Market Ticker - Below fixed navbar */}
+          <div className="pt-20">
+            <PriceTicker />
+          </div>
+
           {/* Hero Section */}
           <section className="pt-24 pb-12 sm:py-20 lg:py-32 relative overflow-hidden px-2 sm:px-0">
             {/* Official Logo Background Pattern */}
@@ -481,7 +486,7 @@ export default function Index() {
                             addAlert({
                               eventName:
                                 language === "ar"
-                                  ? "تأكيد ��لتنبيه"
+                                  ? "تأكيد التنبيه"
                                   : "Alert Confirmation",
                               message: successMessage,
                               importance: 1,
