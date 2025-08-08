@@ -324,7 +324,7 @@ export default function EnhancedMacroCalendar({
       // Search filter
       if (
         searchTerm &&
-        !event.event.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !(event.title || event.event || "").toLowerCase().includes(searchTerm.toLowerCase()) &&
         !event.country.toLowerCase().includes(searchTerm.toLowerCase())
       ) {
         return false;
@@ -450,7 +450,7 @@ export default function EnhancedMacroCalendar({
       "Trade Balance": "الميزان التجاري",
       "Consumer Price Index": "مؤشر أسعار المستهلك",
       "Producer Price Index": "مؤشر أسعار المنتجين",
-      "Industrial Production": "الإنتاج ال��ناعي",
+      "Industrial Production": "الإنتاج الصناعي",
       "Retail Sales": "مبيعات التجزئة",
       Employment: "التوظيف",
       Manufacturing: "التصنيع",
@@ -1220,7 +1220,7 @@ export default function EnhancedMacroCalendar({
       {filteredEvents.length > 0 && (
         <div className="text-sm text-muted-foreground text-center">
           {language === "ar"
-            ? `��رض ${displayedEvents.length} من ${filteredEvents.length} حدث ا��تصادي (${events.length} المجموع)`
+            ? `عرض ${displayedEvents.length} من ${filteredEvents.length} حدث ا��تصادي (${events.length} المجموع)`
             : `Showing ${displayedEvents.length} of ${filteredEvents.length} events (${events.length} total)`}
         </div>
       )}
