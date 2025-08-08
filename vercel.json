@@ -1,10 +1,12 @@
 {
   "version": 2,
-  "buildCommand": "npm run build:client",
-  "outputDirectory": "dist/spa",
-  "framework": "vite",
-  "functions": { "api/**/*.ts": { "runtime": "nodejs22.x" } },
+  "functions": {
+    "api/index.ts": {
+      "runtime": "@vercel/node@3.0.0"
+    }
+  },
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.ts" },
     { "source": "/((?!api).*)", "destination": "/index.html" }
   ]
 }
