@@ -444,7 +444,7 @@ export default function EnhancedMacroCalendar({
       Exports: "الصادرات",
       Imports: "الواردات",
       GDP: "الناتج المحلي الإجمالي",
-      Inflation: "التض��م",
+      Inflation: "التضخم",
       Unemployment: "البطالة",
       "Interest Rate": "سعر الفائدة",
       "Trade Balance": "الميزان التجاري",
@@ -651,15 +651,13 @@ export default function EnhancedMacroCalendar({
                   <Globe className="w-4 h-4 mr-2" />
                   <SelectValue />
                 </SelectTrigger>
-                <SelectPortal>
-                  <SelectContent className="z-[100] max-h-72 overflow-auto">
-                    {TIMEZONES.map((tz) => (
-                      <SelectItem key={tz.value} value={tz.value}>
-                        {tz.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </SelectPortal>
+                <SelectContent className="z-[100] max-h-72 overflow-auto">
+                  {TIMEZONES.map((tz) => (
+                    <SelectItem key={tz.value} value={tz.value}>
+                      {tz.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
           </div>
