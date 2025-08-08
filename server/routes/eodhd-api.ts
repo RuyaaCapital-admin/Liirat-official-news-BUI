@@ -145,6 +145,7 @@ export const handleEODHDPrice: RequestHandler = async (req, res) => {
       }
     }
 
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
     res.status(200).json({ ok: true, items: results });
   } catch (error) {
     res.status(500).json({
