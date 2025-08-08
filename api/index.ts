@@ -31,8 +31,31 @@ r.get('/ping', (_req, res) => res.json({ ok: true, ts: Date.now() }));
 
 // ---- EODHD official endpoints (no hardcode) ----
 r.get('/eodhd/news', async (req, res) => {
-  try { res.json(await pass('/news', req.query)); }
-  catch (e:any) { res.status(500).json({ error: e.message }); }
+  const { s, t, from, to, limit, offset } = req.query;
+
+  if (!s && !t) {
+    return res.status(400).json({ ok: false, code: 'MISSING_S_OR_T' });
+  }
+
+  try {
+    const raw = await pass('/news', req.query);
+
+    // Transform response to match frontend expectations
+    const items = (raw.data || raw || []).map((n: any) => ({
+      datetimeIso: n.date || n.datetime || n.published_at || n.time,
+      title: String(n.title || ''),
+      content: String(n.content || n.description || n.title || ''),
+      source: String(n.source || ''),
+      symbols: n.symbols || [],
+      tags: n.tags || n.symbols || [],
+      url: n.link || n.url || '',
+      country: n.country || '',
+      category: n.category || 'financial',
+    }));
+
+    res.json({ ok: true, items });
+  }
+  catch (e:any) { res.status(500).json({ ok: false, error: e.message }); }
 });
 
 r.get('/eodhd/calendar', async (req, res) => {
