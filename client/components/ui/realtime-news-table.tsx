@@ -369,7 +369,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       Investment: "الاستثمار",
       Bank: "البنك",
       Currency: "العملة",
-      Dollar: "ا��دولار",
+      Dollar: "الدولار",
       Euro: "اليورو",
       Gold: "الذهب",
       Oil: "النفط",
@@ -580,13 +580,13 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                   "Central Banks":
                     language === "ar" ? "البنوك المركزية" : "Central Banks",
                   Inflation: language === "ar" ? "التضخم" : "Inflation",
-                  Forex: language === "ar" ? "تداو�� العملات" : "Forex",
+                  Forex: language === "ar" ? "تداول العملات" : "Forex",
                   Economic: language === "ar" ? "اقتصادي" : "Economic",
                   Employment: language === "ar" ? "التوظيف" : "Employment",
                   Trade: language === "ar" ? "التجارة" : "Trade",
                   Manufacturing:
                     language === "ar" ? "التصنيع" : "Manufacturing",
-                  Services: language === "ar" ? "الخدم��ت" : "Services",
+                  Services: language === "ar" ? "الخدمات" : "Services",
                   Housing: language === "ar" ? "الإسكان" : "Housing",
                   Consumer: language === "ar" ? "المستهلك" : "Consumer",
                 };
