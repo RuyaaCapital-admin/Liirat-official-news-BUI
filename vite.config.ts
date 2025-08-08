@@ -99,6 +99,43 @@ function expressPlugin(): Plugin {
                 return r.json();
               }
 
+              // Add ping endpoint
+              app.get('/eodhd/ping', async (req: any, res: any) => {
+                res.json({ ok: true, ts: Date.now() });
+              });
+
+              // Add price endpoint
+              app.get('/eodhd/price', async (req: any, res: any) => {
+                const s = (req.query.s as string) || (req.query.symbol as string) || (req.query.symbols as string);
+                if (!s) return res.status(400).json({ error: 'Missing query param: s (or symbol)' });
+                try {
+                  const url = `${BASE}/real-time/${encodeURIComponent(s)}?${qs(req.query)}`;
+                  const r2 = await fetch(url);
+                  if (!r2.ok) throw new Error(`real-time ${r2.status}`);
+                  res.json(await r2.json());
+                } catch (e: any) { res.status(500).json({ error: e.message }); }
+              });
+
+              // Add search endpoint
+              app.get('/eodhd/search', async (req: any, res: any) => {
+                const q = (req.query.q as string) || (req.query.query as string);
+                if (!q) return res.status(400).json({ error: 'Missing query param: q' });
+                try {
+                  const url = `${BASE}/search/${encodeURIComponent(q)}?${qs(req.query)}`;
+                  const r2 = await fetch(url);
+                  if (!r2.ok) throw new Error(`search ${r2.status}`);
+                  res.json(await r2.json());
+                } catch (e: any) { res.status(500).json({ error: e.message }); }
+              });
+
+              // Add calendar endpoint
+              app.get('/eodhd/calendar', async (req: any, res: any) => {
+                try {
+                  const raw = await pass('/economic-events', req.query);
+                  res.json(raw);
+                } catch (e: any) { res.status(500).json({ error: e.message }); }
+              });
+
               // Add news endpoint
               app.get('/eodhd/news', async (req: any, res: any) => {
                 const { s, t, from, to, limit, offset } = req.query;
