@@ -17,18 +17,27 @@ interface TickerProps {
   className?: string;
 }
 
-// Configuration for symbols using EODHD format
+// Configuration for symbols using EODHD format - 15 symbols as requested
 const TICKER_CONFIG = [
+  // Crypto (.CC)
   { symbol: "BTC-USD.CC", displayName: "BTC/USD", priority: 1 },
   { symbol: "ETH-USD.CC", displayName: "ETH/USD", priority: 1 },
+  // Forex (.FOREX)
   { symbol: "EURUSD.FOREX", displayName: "EUR/USD", priority: 1 },
   { symbol: "GBPUSD.FOREX", displayName: "GBP/USD", priority: 1 },
   { symbol: "USDJPY.FOREX", displayName: "USD/JPY", priority: 1 },
-  { symbol: "XAUUSD.FOREX", displayName: "XAU/USD", priority: 2 },
+  { symbol: "XAUUSD.FOREX", displayName: "XAU/USD", priority: 1 },
+  // Indices (.INDX)
+  { symbol: "GSPC.INDX", displayName: "S&P 500", priority: 1 },
+  { symbol: "DJI.INDX", displayName: "DOW JONES", priority: 1 },
+  { symbol: "IXIC.INDX", displayName: "NASDAQ", priority: 1 },
+  // US Leaders (.US)
   { symbol: "AAPL.US", displayName: "APPLE", priority: 2 },
   { symbol: "MSFT.US", displayName: "MICROSOFT", priority: 2 },
   { symbol: "NVDA.US", displayName: "NVIDIA", priority: 2 },
   { symbol: "TSLA.US", displayName: "TESLA", priority: 2 },
+  { symbol: "GOOGL.US", displayName: "GOOGLE", priority: 2 },
+  { symbol: "AMZN.US", displayName: "AMAZON", priority: 2 },
 ];
 
 export default function EnhancedPriceTicker({ className }: TickerProps) {
@@ -37,6 +46,14 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
   const lastFetchTime = useRef<Record<string, number>>({});
   const intervalRef = useRef<NodeJS.Timeout>();
   const { isOnline } = useNetworkStatus();
+
+  // Normalize EODHD response data to handle "NA" values
+  const normalizeValue = (value: any): number | null => {
+    if (value === "NA" || value === null || value === undefined || isNaN(Number(value))) {
+      return null;
+    }
+    return Number(value);
+  };
 
   // Fetch price for a single symbol
   const fetchSymbolPrice = async (symbol: string): Promise<void> => {
@@ -56,54 +73,55 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
       }));
 
       const response = await fetch(`/api/eodhd/price?s=${encodeURIComponent(symbol)}`);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
 
       const data = await response.json();
-      
+
       if (data.error) {
         throw new Error(data.error);
       }
 
-      // Handle both our API format and raw EODHD format
-      let price = 0;
-      let change = 0;
-      let changePct = 0;
+      // Handle both our API format and raw EODHD format with "NA" value normalization
+      let price = normalizeValue(data.close || data.price || data.last);
+      let change = normalizeValue(data.change || data.d);
+      let changePct = normalizeValue(data.change_p || data.dp);
 
-      if (data.price !== undefined) {
-        // Our transformed API format
-        price = data.price || 0;
-        const rawData = data.raw || {};
-        change = rawData.change || 0;
-        changePct = rawData.change_p || 0;
-      } else {
-        // Raw EODHD format (development mode)
-        price = data.close || data.price || 0;
-        change = data.change || 0;
-        changePct = data.change_p || 0;
+      // If current values are "NA", try previous values
+      if (price === null) {
+        price = normalizeValue(data.previousClose);
       }
 
-      if (price > 0) {
+      // Only update if we have valid price data
+      if (price !== null && price > 0) {
         lastFetchTime.current[symbol] = Date.now();
-        
+
         setPriceData((prev) => ({
           ...prev,
           [symbol]: {
             symbol,
             displayName: TICKER_CONFIG.find((c) => c.symbol === symbol)?.displayName || symbol,
             price,
-            change,
-            changePercent: changePct,
+            change: change || 0,
+            changePercent: changePct || 0,
             lastUpdate: new Date(),
             status: "connected",
           },
         }));
 
-        console.log(`[TICKER] Updated ${symbol}: $${price?.toFixed(4) || '-.--'} (${changePct > 0 ? "+" : ""}${changePct?.toFixed(2) || '0.00'}%)`);
+        console.log(`[TICKER] Updated ${symbol}: $${price?.toFixed(4) || '-.--'} (${changePct && changePct > 0 ? "+" : ""}${changePct?.toFixed(2) || '0.00'}%)`);
       } else {
-        throw new Error(`Invalid price: ${price}`);
+        // Keep previous data but mark as disconnected
+        setPriceData((prev) => ({
+          ...prev,
+          [symbol]: {
+            ...prev[symbol],
+            lastUpdate: new Date(),
+            status: "disconnected",
+          },
+        }));
       }
     } catch (error) {
       console.warn(`[TICKER] Error fetching ${symbol}:`, error);
@@ -123,26 +141,37 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
     }
   };
 
-  // Fetch all symbols with staggered timing
+  // Fetch all symbols with staggered timing to avoid rate limits
   const fetchAllPrices = async (): Promise<void> => {
     if (!isOnline) return;
 
     const symbols = TICKER_CONFIG.map(config => config.symbol);
-    
-    // Fetch symbols in parallel with some delay to avoid rate limiting
-    for (let i = 0; i < symbols.length; i++) {
-      const symbol = symbols[i];
-      setTimeout(() => fetchSymbolPrice(symbol), i * 200); // 200ms delay between requests
+
+    // Fetch symbols in batches with staggered timing to avoid rate limiting
+    // Split into groups of 3-4 symbols each with delays between groups
+    const batchSize = 3;
+    for (let i = 0; i < symbols.length; i += batchSize) {
+      const batch = symbols.slice(i, i + batchSize);
+
+      // Fetch batch in parallel
+      batch.forEach((symbol, index) => {
+        setTimeout(() => fetchSymbolPrice(symbol), index * 100); // 100ms between symbols in batch
+      });
+
+      // Wait before next batch
+      if (i + batchSize < symbols.length) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
     }
   };
 
-  // Auto-refresh prices every 5 seconds
+  // Auto-refresh prices every 8 seconds (increased from 5s to reduce API load)
   useEffect(() => {
     fetchAllPrices(); // Initial fetch
-    
+
     intervalRef.current = setInterval(() => {
       fetchAllPrices();
-    }, 5000);
+    }, 8000); // Increased interval to 8 seconds
 
     return () => {
       if (intervalRef.current) {
