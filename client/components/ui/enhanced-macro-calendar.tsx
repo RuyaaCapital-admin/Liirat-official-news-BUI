@@ -441,7 +441,7 @@ export default function EnhancedMacroCalendar({
   // Offline translation fallback for common economic terms
   const getOfflineTranslation = (text: string): string => {
     const offlineTranslations: Record<string, string> = {
-      Exports: "الصادرات",
+      Exports: "الصادرا��",
       Imports: "الواردات",
       GDP: "الناتج المحلي الإجمالي",
       Inflation: "التضخم",
@@ -463,16 +463,17 @@ export default function EnhancedMacroCalendar({
 
   // Handle translation request with proper error handling and API calls
   const translateContent = async (event: EconomicEvent) => {
-    const eventKey = `${event.event}-${event.country}`;
+    const eventTitle = event.title || event.event || "Economic Event";
+    const eventKey = `${eventTitle}-${event.country}`;
 
     // Skip if already translated or currently translating
     if (translatedContent[eventKey] || loadingTranslation[eventKey]) {
-      return translatedContent[eventKey] || event.event;
+      return translatedContent[eventKey] || eventTitle;
     }
 
     // Try offline translation first
-    const offlineTranslation = getOfflineTranslation(event.event);
-    if (offlineTranslation !== event.event) {
+    const offlineTranslation = getOfflineTranslation(eventTitle);
+    if (offlineTranslation !== eventTitle) {
       setTranslatedContent((prev) => ({
         ...prev,
         [eventKey]: offlineTranslation,
