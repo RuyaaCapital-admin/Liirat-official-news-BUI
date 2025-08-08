@@ -149,11 +149,11 @@ const getImportanceLabel = (importance: number, language: string) => {
       case 3:
         return "عالي";
       case 2:
-        return "��توسط";
+        return "متوسط";
       case 1:
         return "منخفض";
       default:
-        return "غير محدد";
+        return "غير مح��د";
     }
   }
   switch (importance) {
