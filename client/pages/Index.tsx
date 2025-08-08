@@ -350,7 +350,7 @@ export default function Index() {
                     }
                     aria-label="Navigate to news section"
                   >
-                    {language === "ar" ? "الأخبار المباشرة" : "Live News"}
+                    {language === "ar" ? "الأ��بار المباشرة" : "Live News"}
                   </Button>
                   <Button
                     variant="outline"
@@ -379,7 +379,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "تابع الأحداث الاق��صادية المهمة والأخبار المالية في الوقت الفعلي"
+                    ? "تابع الأحدا�� الاق��صادية المهمة والأخبار المالية في الوقت الفعلي"
                     : "Track important economic events and real-time financial news"}
                 </p>
               </div>
@@ -468,7 +468,7 @@ export default function Index() {
                             // Create an actual alert for the economic event
                             const message =
                               language === "ar"
-                                ? `تنبيه حدث ��قتصادي: ${event.event} - ${event.country} - الوقت: ${event.time || "غير محدد"}`
+                                ? `تنبيه حدث اقتصادي: ${event.event} - ${event.country} - الوقت: ${event.time || "غير محدد"}`
                                 : `Economic Event Alert: ${event.event} - ${event.country} - Time: ${event.time || "TBD"}`;
 
                             const eventName =
