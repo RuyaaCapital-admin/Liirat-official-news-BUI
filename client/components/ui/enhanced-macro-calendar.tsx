@@ -541,7 +541,7 @@ export default function EnhancedMacroCalendar({
 
       if (response.ok) {
         const data = await response.json();
-        const translated = data.translatedText || event.event;
+        const translated = data.result || event.event;
         setTranslatedContent((prev) => ({ ...prev, [eventKey]: translated }));
         return translated;
       } else {
