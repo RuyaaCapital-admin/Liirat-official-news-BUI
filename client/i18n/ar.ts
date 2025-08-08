@@ -16,7 +16,7 @@ export const ar = {
   
   // Economic Calendar
   economicCalendar: "التقويم الاقتصادي المباشر",
-  calendarDescription: "تابع أهم الأحداث الاقتصادي�� والمؤشرات المالية في الوقت الفعلي مع إمكانيات تصفية متقدمة",
+  calendarDescription: "تابع أهم الأحداث الاقتصادية والمؤشرات المالية في الوقت الفعلي مع إمكانيات تصفية متقدمة",
   
   // Importance levels
   importanceHigh: "عالي",
