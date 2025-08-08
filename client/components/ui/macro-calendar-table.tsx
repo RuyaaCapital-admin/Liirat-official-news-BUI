@@ -805,7 +805,9 @@ export function MacroCalendarTable({
                       <div
                         key={country}
                         className="px-2 py-1 cursor-pointer hover:bg-muted rounded text-sm flex items-center gap-2"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
                           setSelectedCountry(country);
                           setIsCountryOpen(false);
                         }}
@@ -832,7 +834,9 @@ export function MacroCalendarTable({
                         <div
                           key={country}
                           className="px-2 py-1 cursor-pointer hover:bg-muted rounded text-sm flex items-center gap-2"
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
                             setSelectedCountry(country);
                             setIsCountryOpen(false);
                           }}
@@ -866,7 +870,7 @@ export function MacroCalendarTable({
                       ? selectedImportances[0] === "3"
                         ? t("High Impact", "عالي التأثير")
                         : selectedImportances[0] === "2"
-                          ? t("Medium Impact", "متوسط التأثير")
+                          ? t("Medium Impact", "متوسط ال��أثير")
                           : t("Low Impact", "منخفض التأثير")
                       : `${selectedImportances.length} ${t("Impact Levels", "مستويات التأثي��")}`}
                 </span>
@@ -970,7 +974,7 @@ export function MacroCalendarTable({
                 className="text-xs h-auto p-1 hover:bg-muted"
               >
                 {isExpanded
-                  ? t("Show Less", "عرض أقل")
+                  ? t("Show Less", "عرض ��قل")
                   : t(
                       `Show All ${filteredEvents.length}`,
                       `عرض جميع ${filteredEvents.length}`,
