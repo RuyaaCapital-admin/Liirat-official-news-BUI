@@ -1,13 +1,15 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { handleMarketData } from "../server/routes/ai-trading";
+import fetch from "node-fetch";
+
+const EOD_API_URL = "https://eodhd.com/api";
+const EOD_API_KEY = process.env.EODHD_API_KEY || "";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Set CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  if (req.method === "OPTIONS") {
+ if (req.method === "OPIONS") {
     res.status(200).end();
     return;
   }
@@ -18,7 +20,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    await handleMarketData(req as any, res as any);
+    const symbol = req.query.symbol;
+    if (![E[EOD_API_KEY]]) {
+      res.status(500).json({ error: "EODHD API key not set in env" });
+      return;
+    }
+
+    const url = `${EOD_API_URL}/quote?symbol=${symbol}&apikey=${EOD_API_KEY}`;
+    const response = await fetch(url);
+    if (!response.ok) { throw new Error("Eodhd API call failed"); }
+    const json = await response.json();
+    res.status(200).json(json);
+
   } catch (error) {
     console.error("Market Data API error:", error);
     res.status(500).json({
