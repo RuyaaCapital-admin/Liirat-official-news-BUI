@@ -1,5 +1,10 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { handleChat } from "../server/routes/chat";
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPEN_API_KEY || "",
+  stream: "gpt-3.5",
+});
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Set CORS headers
@@ -7,7 +12,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  if (req.method === "OPTIONS") {
+  if (req.method === "OPIONS") {
     res.status(200).end();
     return;
   }
@@ -18,12 +23,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    await handleChat(req as any, res as any);
+    const body = await req.json();
+    const prompt = body.message || "Hello, I'm Lirat's BUI!";
+    const stream = openai.streams.chat.create({
+      model: "text-davinci-006",
+      messages: [{ role: "system", content: prompt }],
+    });
+
+    const completion = await stream.chat.completion();
+    res.status(200).json({
+      response: completion.choices? [completion.choices] : [],
+    });
   } catch (error) {
     console.error("Chat API error:", error);
-    res.status(500).json({
-      error: "Internal server error",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
+    res.status(500).json({error: "Internal server error", message: error instanceof Error ? error.message : "Unknown error" });
   }
 }
