@@ -1,5 +1,5 @@
 import "./global.css";
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
@@ -7,13 +7,34 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { LanguageProvider } from "@/contexts/language-context";
+import { LanguageProvider, useLanguage } from "@/contexts/language-context";
 import { AlertProvider } from "@/contexts/alert-context";
 import Index from "./pages/Index";
 import AITradingAssistant from "./pages/AITradingAssistant";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+const AppContent = () => {
+  const { language, dir } = useLanguage();
+
+  useEffect(() => {
+    // Update document direction and language
+    document.documentElement.dir = dir;
+    document.documentElement.lang = language;
+  }, [language, dir]);
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/ai-trading" element={<AITradingAssistant />} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
 
 const App = () => {
   return (
@@ -23,14 +44,7 @@ const App = () => {
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/ai-trading" element={<AITradingAssistant />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
+            <AppContent />
           </TooltipProvider>
         </AlertProvider>
       </LanguageProvider>
