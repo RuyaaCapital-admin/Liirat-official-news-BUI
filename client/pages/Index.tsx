@@ -281,7 +281,7 @@ export default function Index() {
               </nav>
 
               <div className="flex items-center space-x-0.5 sm:space-x-1">
-                <NotificationDropdown className="h-8 w-8" />
+                <NotificationDropdown className="h-6 w-6 sm:h-8 sm:w-8" />
                 <SimpleLanguageToggle />
                 <NewLiquidToggle />
               </div>
