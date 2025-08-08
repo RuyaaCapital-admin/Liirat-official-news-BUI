@@ -153,7 +153,7 @@ const getImportanceLabel = (importance: number, language: string) => {
       case 1:
         return "منخفض";
       default:
-        return "غير محدد";
+        return "��ير محدد";
     }
   }
   switch (importance) {
@@ -327,7 +327,7 @@ const getCountryName = (country: string, language: string) => {
     AU: { en: "Australia", ar: "أستراليا" },
     CHF: { en: "Switzerland", ar: "سويسرا" },
     DE: { en: "Germany", ar: "ألمانيا" },
-    FR: { en: "France", ar: "فرنسا" },
+    FR: { en: "France", ar: "فرن��ا" },
     CN: { en: "China", ar: "الصين" },
     CH: { en: "Switzerland", ar: "سويسرا" },
   };
@@ -434,7 +434,7 @@ export function MacroCalendarTable({
     setLoadingTranslation((prev) => ({ ...prev, [eventKey]: true }));
 
     try {
-      const response = await fetch("/api/translate", {
+      const response = await fetch(new URL("/api/translate", location.origin), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -957,7 +957,7 @@ export function MacroCalendarTable({
                 className="text-xs h-auto p-1 hover:bg-muted"
               >
                 {isExpanded
-                  ? t("Show Less", "عرض أقل")
+                  ? t("Show Less", "عر�� أقل")
                   : t(
                       `Show All ${filteredEvents.length}`,
                       `عرض جميع ${filteredEvents.length}`,
@@ -1297,7 +1297,7 @@ export function MacroCalendarTable({
                           onClick={() => onCreateAlert?.(event)}
                           title={t(
                             "Create Alert for this Event",
-                            "إنشاء تنبيه لهذا الحدث",
+                            "إنشاء تنبيه ��هذا الحدث",
                           )}
                         >
                           <Bell className="h-4 w-4" />
