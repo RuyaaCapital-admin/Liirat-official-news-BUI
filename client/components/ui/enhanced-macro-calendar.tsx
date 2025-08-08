@@ -1253,7 +1253,7 @@ export default function EnhancedMacroCalendar({
             ) : (
               <>
                 <ChevronDown className="w-4 h-4" />
-                {language === "ar" ? "ع��ض المزيد" : "Show More"}
+                {language === "ar" ? "عرض المزيد" : "Show More"}
               </>
             )}
           </Button>
