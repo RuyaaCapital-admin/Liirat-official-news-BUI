@@ -392,20 +392,10 @@ export default function EnhancedMacroCalendar({
 
   // Auto-translate events when language changes to Arabic (with debouncing)
   useEffect(() => {
-    // Enable real-time translation for Arabic mode with proper API configuration
-    if (language === "ar" && displayedEvents.length > 0) {
-      // Debounce translation requests to avoid overwhelming the API
-      const timer = setTimeout(() => {
-        displayedEvents.slice(0, 5).forEach((event, index) => {
-          // Stagger requests to avoid rate limiting and reduce API load
-          setTimeout(() => {
-            translateContent(event);
-          }, index * 2000); // 2 second delay between requests to reduce load
-        });
-      }, 1000);
-
-      return () => clearTimeout(timer);
-    }
+    // Disable auto-translation to prevent API errors and show real event titles
+    // Translation will only happen on manual request to avoid overwhelming the API
+    // and ensure users see real event data immediately
+    return;
   }, [language, displayedEvents]);
 
   // Handle time period changes
