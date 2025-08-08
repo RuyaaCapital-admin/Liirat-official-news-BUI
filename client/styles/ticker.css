@@ -1,6 +1,6 @@
 :root {
   --nav-h: 64px;
-  --ticker-duration: 40s;
+  --ticker-duration: 120s;
 }
 
 .ticker-wrap {
@@ -32,7 +32,7 @@
   }
 
   :root {
-    --ticker-duration: 30s;
+    --ticker-duration: 90s;
   }
 }
 
@@ -43,7 +43,7 @@
   }
 
   :root {
-    --ticker-duration: 25s;
+    --ticker-duration: 75s;
   }
 }
 

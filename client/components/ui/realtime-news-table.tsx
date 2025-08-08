@@ -400,7 +400,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
   // Handle translation request with OpenAI API
   const translateTitle = async (article: NewsArticle) => {
     if (translatedTitles[article.id] || loadingTranslation[article.id]) {
-      return translatedTitles[article.id];
+      return translatedTitles[article.id] || article.title;
     }
 
     // Skip empty or very short titles
@@ -439,7 +439,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
 
       if (response.ok) {
         const data = await response.json();
-        const translated = data.translatedText || article.title;
+        const translated = data.translatedText || data.result || article.title;
         setTranslatedTitles((prev) => ({ ...prev, [article.id]: translated }));
         return translated;
       } else {
