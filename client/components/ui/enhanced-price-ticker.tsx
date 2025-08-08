@@ -86,21 +86,21 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
           },
         }));
 
-        console.log(`[TICKER] Updated ${symbol}: $${price.toFixed(4)} (${changePct > 0 ? "+" : ""}${changePct.toFixed(2)}%)`);
+        console.log(`[TICKER] Updated ${symbol}: $${price?.toFixed(4) || '-.--'} (${changePct > 0 ? "+" : ""}${changePct?.toFixed(2) || '0.00'}%)`);
       } else {
         throw new Error(`Invalid price: ${price}`);
       }
     } catch (error) {
       console.warn(`[TICKER] Error fetching ${symbol}:`, error);
-      
+
       setPriceData((prev) => ({
         ...prev,
         [symbol]: {
           symbol,
           displayName: TICKER_CONFIG.find((c) => c.symbol === symbol)?.displayName || symbol,
-          price: prev[symbol]?.price || 0,
-          change: prev[symbol]?.change || 0,
-          changePercent: prev[symbol]?.changePercent || 0,
+          price: prev[symbol]?.price || null,
+          change: prev[symbol]?.change || null,
+          changePercent: prev[symbol]?.changePercent || null,
           lastUpdate: new Date(),
           status: "disconnected",
         },
