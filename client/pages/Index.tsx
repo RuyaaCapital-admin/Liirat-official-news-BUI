@@ -219,7 +219,7 @@ export default function Index() {
       <div className="relative z-10">
         <main role="main">
           {/* Real-Time EODHD Market Ticker - Sticky below navbar */}
-          <EnhancedPriceTicker className="w-full" />
+          <PriceTicker />
 
           {/* Floating Navigation Header */}
           <header
@@ -376,7 +376,7 @@ export default function Index() {
                   <CardTitle className="flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-primary" />
                     {language === "ar"
-                      ? "التقويم الاقتصادي المباشر"
+                      ? "التقويم الاقتصا��ي المباشر"
                       : "Live Economic Calendar"}
                   </CardTitle>
                   <CardDescription>
