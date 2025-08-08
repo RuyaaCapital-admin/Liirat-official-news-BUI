@@ -754,50 +754,11 @@ export default function EnhancedMacroCalendar({
             <label className="text-xs font-medium text-muted-foreground">
               {language === "ar" ? "الدول" : "Countries"}
             </label>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-between h-9 text-sm"
-                >
-                  {selectedCountries.length === 0
-                    ? language === "ar"
-                      ? "جميع الدول"
-                      : "All Countries"
-                    : `${selectedCountries.length} ${language === "ar" ? "دولة" : "selected"}`}
-                  <ChevronDown className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
-                <DropdownMenuItem onClick={() => setSelectedCountries([])}>
-                  {language === "ar" ? "جميع الدول" : "All Countries"}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                {COUNTRIES.map((country) => (
-                  <DropdownMenuItem
-                    key={country}
-                    onClick={() => {
-                      setSelectedCountries((prev) =>
-                        prev.includes(country)
-                          ? prev.filter((c) => c !== country)
-                          : [...prev, country],
-                      );
-                    }}
-                  >
-                    <Checkbox
-                      checked={selectedCountries.includes(country)}
-                      className="mr-2"
-                    />
-                    <ReactCountryFlag
-                      countryCode={country}
-                      svg
-                      className="mr-2"
-                    />
-                    {country}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <CountrySelect
+              value={selectedCountries}
+              onChange={setSelectedCountries}
+              options={COUNTRIES.map(code => ({code, name: code}))}
+            />
           </div>
 
           {/* Importance Filter */}
