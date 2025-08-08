@@ -289,7 +289,7 @@ export default function Index() {
           </header>
 
           {/* Real-Time EODHD Market Ticker - Below fixed navbar */}
-          <div className="pt-20">
+          <div className="pt-16 sm:pt-20">
             <PriceTicker />
           </div>
 
