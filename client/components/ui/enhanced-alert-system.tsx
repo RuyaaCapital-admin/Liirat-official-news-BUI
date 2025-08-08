@@ -391,7 +391,7 @@ export default function EnhancedAlertSystem({
                 <DialogTitle>
                   {editingAlert
                     ? language === "ar"
-                      ? "ت��ديل التنبيه"
+                      ? "تعديل التنبيه"
                       : "Edit Alert"
                     : language === "ar"
                       ? "إنشاء تنبيه جديد"
