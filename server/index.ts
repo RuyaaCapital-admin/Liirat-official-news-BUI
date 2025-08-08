@@ -10,7 +10,6 @@ import {
 } from "./routes/ai-trading";
 import { handleChat } from "./routes/chat";
 import { handlePriceAlert } from "./routes/price-alert";
-import { handleMarketauxNews } from "./routes/marketaux-news";
 import { handleAIAnalysis, handleTranslation } from "./routes/ai-analysis";
 import {
   handleEODHDSearch,
@@ -46,8 +45,6 @@ export function createServer() {
   app.post("/chart-indicator", handleChartIndicator);
   app.post("/technical-analysis", handleTechnicalAnalysis);
 
-  // Marketaux News API route
-  app.get("/marketaux-news", handleMarketauxNews);
 
   // Price alert route
   app.get("/price-alert", handlePriceAlert);
