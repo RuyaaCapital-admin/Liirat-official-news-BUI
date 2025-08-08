@@ -131,7 +131,10 @@ export function getDisplayedEvents(
 }
 
 const getImportanceColor = (importance: number) => {
-  switch (importance) {
+  // Map null/undefined to LOW importance (1) for consistent coloring
+  const validImportance = importance === null || importance === undefined ? 1 : importance;
+
+  switch (validImportance) {
     case 3:
       return "bg-red-500 text-white"; // HIGH impact
     case 2:
@@ -139,7 +142,7 @@ const getImportanceColor = (importance: number) => {
     case 1:
       return "bg-green-500 text-white"; // LOW impact
     default:
-      return "bg-gray-500 text-white";
+      return "bg-green-500 text-white"; // Default to LOW (green)
   }
 };
 
@@ -156,7 +159,7 @@ const getImportanceLabel = (importance: number, language: string) => {
       case 1:
         return "منخفض";
       default:
-        return "��نخفض"; // Default to LOW instead of "غير محدد"
+        return "منخفض"; // Default to LOW instead of "غير محدد"
     }
   }
   switch (validImportance) {
@@ -858,7 +861,7 @@ export function MacroCalendarTable({
                         : selectedImportances[0] === "2"
                           ? t("Medium Impact", "متوسط التأثير")
                           : t("Low Impact", "منخفض التأثير")
-                      : `${selectedImportances.length} ${t("Impact Levels", "مستويات التأثير")}`}
+                      : `${selectedImportances.length} ${t("Impact Levels", "مستويات التأثي��")}`}
                 </span>
                 <ChevronDown className="h-4 w-4 opacity-50" />
               </Button>
