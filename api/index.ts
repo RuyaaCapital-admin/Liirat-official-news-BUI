@@ -52,10 +52,27 @@ r.get('/eodhd/news', async (req, res) => {
   }
 
   try {
+    console.log('Fetching news with params:', req.query);
     const raw = await pass('/news', req.query);
+    console.log('Raw EODHD response:', JSON.stringify(raw).slice(0, 200) + '...');
+
+    // Handle different response formats from EODHD
+    let newsData = raw;
+    if (raw.data) {
+      newsData = raw.data;
+    } else if (Array.isArray(raw)) {
+      newsData = raw;
+    } else if (raw.items) {
+      newsData = raw.items;
+    }
+
+    if (!Array.isArray(newsData)) {
+      console.error('Unexpected EODHD response format:', raw);
+      return res.status(502).json({ ok: false, error: 'Invalid response format from EODHD' });
+    }
 
     // Transform response to match frontend expectations
-    const items = (raw.data || raw || []).map((n: any) => ({
+    const items = newsData.map((n: any) => ({
       datetimeIso: n.date || n.datetime || n.published_at || n.time,
       title: String(n.title || ''),
       content: String(n.content || n.description || n.title || ''),
@@ -67,9 +84,13 @@ r.get('/eodhd/news', async (req, res) => {
       category: n.category || 'financial',
     }));
 
+    console.log(`Transformed ${items.length} news items`);
     res.json({ ok: true, items });
   }
-  catch (e:any) { res.status(500).json({ ok: false, error: e.message }); }
+  catch (e:any) {
+    console.error('News endpoint error:', e);
+    res.status(500).json({ ok: false, error: e.message });
+  }
 });
 
 r.get('/eodhd/calendar', async (req, res) => {
