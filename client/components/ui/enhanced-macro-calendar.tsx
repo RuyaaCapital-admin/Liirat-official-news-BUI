@@ -1049,14 +1049,14 @@ export default function EnhancedMacroCalendar({
                             )}
                           >
                             {language === "ar" &&
-                            translatedContent[`${event.event}-${event.country}`]
+                            translatedContent[`${event.title || event.event}-${event.country}`]
                               ? translatedContent[
-                                  `${event.event}-${event.country}`
+                                  `${event.title || event.event}-${event.country}`
                                 ]
-                              : event.event}
+                              : event.title || event.event || "Economic Event"}
                             {language === "ar" &&
                               loadingTranslation[
-                                `${event.event}-${event.country}`
+                                `${event.title || event.event}-${event.country}`
                               ] && (
                                 <span className="ml-2 text-xs text-muted-foreground">
                                   (translating...)
@@ -1133,7 +1133,7 @@ export default function EnhancedMacroCalendar({
                               loadingAnalysis[event.event] && "animate-pulse",
                             )}
                             title={
-                              language === "ar" ? "تحليل ذكي" : "AI Analysis"
+                              language === "ar" ? "تحليل ذك��" : "AI Analysis"
                             }
                           >
                             <Bot
