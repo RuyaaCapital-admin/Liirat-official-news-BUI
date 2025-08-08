@@ -820,7 +820,10 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                   variant="outline"
                   onClick={() =>
                     setItemsToShow((prev) =>
-                      Math.min(prev + 10, Math.min(filteredArticles.length, 50)),
+                      Math.min(
+                        prev + 10,
+                        Math.min(filteredArticles.length, 50),
+                      ),
                     )
                   }
                   className="flex items-center gap-2"
