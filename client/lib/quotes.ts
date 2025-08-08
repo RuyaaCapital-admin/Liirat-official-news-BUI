@@ -9,7 +9,9 @@ export function normalizeQuotes(payload: any) {
       code,
       price: asNum(r.price ?? r.close ?? r.last ?? r.adjusted_close ?? r.c),
       change: asNum(r.change ?? r.d ?? r.changePct),
-      changePercent: asNum(r.change_percent ?? r.dp ?? r.changePct ?? r.changePct),
+      changePercent: asNum(
+        r.change_percent ?? r.dp ?? r.changePct ?? r.changePct,
+      ),
     });
   };
 

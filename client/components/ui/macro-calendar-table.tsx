@@ -132,7 +132,8 @@ export function getDisplayedEvents(
 
 const getImportanceColor = (importance: number) => {
   // Map null/undefined to LOW importance (1) for consistent coloring
-  const validImportance = importance === null || importance === undefined ? 1 : importance;
+  const validImportance =
+    importance === null || importance === undefined ? 1 : importance;
 
   switch (validImportance) {
     case 3:
@@ -148,7 +149,8 @@ const getImportanceColor = (importance: number) => {
 
 const getImportanceLabel = (importance: number, language: string) => {
   // Map null/undefined to LOW importance (1) instead of showing "Unknown"
-  const validImportance = importance === null || importance === undefined ? 1 : importance;
+  const validImportance =
+    importance === null || importance === undefined ? 1 : importance;
 
   if (language === "ar") {
     switch (validImportance) {
@@ -755,7 +757,12 @@ export function MacroCalendarTable({
                 <ChevronDown className="h-4 w-4 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 p-0 z-50" sideOffset={5} side="bottom" align="start">
+            <PopoverContent
+              className="w-80 p-0 z-50"
+              sideOffset={5}
+              side="bottom"
+              align="start"
+            >
               <div className="p-3 border-b">
                 <div className="relative">
                   <Search
