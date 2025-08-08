@@ -53,7 +53,7 @@ export async function analyzeNews(text: string): Promise<string> {
 // Translation function for Arabic titles
 export async function translateTitle(title: string, targetLanguage: string = "Arabic"): Promise<string> {
   try {
-    const response = await fetch("/api/translate", {
+    const response = await fetch(new URL("/api/translate", location.origin), {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
