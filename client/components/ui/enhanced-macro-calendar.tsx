@@ -136,7 +136,7 @@ export default function EnhancedMacroCalendar({
 
   // Pagination state
   const [showAll, setShowAll] = useState(false);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(6);
 
   // AI Analysis state
   const [aiAnalysis, setAiAnalysis] = useState<Record<string, string>>({});
@@ -411,7 +411,7 @@ export default function EnhancedMacroCalendar({
 
   // Paginated events
   const displayedEvents = useMemo(() => {
-    if (showAll) return filteredEvents;
+    if (showAll) return filteredEvents.slice(0, 50);
     return filteredEvents.slice(0, itemsPerPage);
   }, [filteredEvents, showAll, itemsPerPage]);
 
