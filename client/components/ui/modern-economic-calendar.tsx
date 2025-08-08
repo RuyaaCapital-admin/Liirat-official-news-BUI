@@ -199,7 +199,9 @@ export function ModernEconomicCalendar({
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const response = await fetch(new URL("/api/eodhd/calendar", location.origin));
+        const response = await fetch(
+          new URL("/api/eodhd/calendar", location.origin),
+        );
         const data = await response.json();
         // Ensure data is an array of EconomicEvent
         setEvents(Array.isArray(data) ? data : []);

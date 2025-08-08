@@ -180,7 +180,10 @@ export const handleEODHDCalendar: RequestHandler = async (req, res) => {
 
     const items = (raw.data || raw || []).map((e: any) => ({
       date: (e.date || e.datetime || "").split("T")[0], // Extract date part only
-      time: (e.time || (e.date || e.datetime || "").split("T")[1]?.split(".")[0]) || "00:00", // Extract time part
+      time:
+        e.time ||
+        (e.date || e.datetime || "").split("T")[1]?.split(".")[0] ||
+        "00:00", // Extract time part
       country: e.country || "",
       event: e.event || e.title || "", // Primary event field
       title: e.event || e.title || "", // Backup title field

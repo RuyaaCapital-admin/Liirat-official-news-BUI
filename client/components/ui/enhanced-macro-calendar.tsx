@@ -124,7 +124,9 @@ export default function EnhancedMacroCalendar({
   // State management
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
-  const [selectedImportance, setSelectedImportance] = useState<"all"|"high"|"medium"|"low">("all");
+  const [selectedImportance, setSelectedImportance] = useState<
+    "all" | "high" | "medium" | "low"
+  >("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedTimezone, setSelectedTimezone] = useState("UTC");
   const [selectedPeriod, setSelectedPeriod] = useState("this_week");
@@ -166,16 +168,23 @@ export default function EnhancedMacroCalendar({
   };
 
   const normalizeImportance = (importance: number | string): number => {
-    if (typeof importance === 'number') return importance;
+    if (typeof importance === "number") return importance;
     const str = String(importance).toLowerCase();
     switch (str) {
-      case 'high': return 3;
-      case 'medium': return 2;
-      case 'low': return 1;
-      case '3': return 3;
-      case '2': return 2;
-      case '1': return 1;
-      default: return 0;
+      case "high":
+        return 3;
+      case "medium":
+        return 2;
+      case "low":
+        return 1;
+      case "3":
+        return 3;
+      case "2":
+        return 2;
+      case "1":
+        return 1;
+      default:
+        return 0;
     }
   };
 
@@ -209,8 +218,13 @@ export default function EnhancedMacroCalendar({
   const formatDateTime = (dateString: string, timeString?: string) => {
     try {
       // Use the new Gregorian-only formatter from calendar utilities
-      const fullDateTime = timeString ? `${dateString} ${timeString}` : dateString;
-      return formatCalendarDate(fullDateTime, language === "ar" ? "ar-AE" : "en-US");
+      const fullDateTime = timeString
+        ? `${dateString} ${timeString}`
+        : dateString;
+      return formatCalendarDate(
+        fullDateTime,
+        language === "ar" ? "ar-AE" : "en-US",
+      );
     } catch (error) {
       console.error("Date formatting error:", error);
       return dateString; // Fallback to original string
@@ -340,7 +354,9 @@ export default function EnhancedMacroCalendar({
       // Search filter
       if (
         searchTerm &&
-        !(event.title || event.event || "").toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !(event.title || event.event || "")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) &&
         !event.country.toLowerCase().includes(searchTerm.toLowerCase())
       ) {
         return false;
@@ -357,7 +373,14 @@ export default function EnhancedMacroCalendar({
       // Importance filter - handle both string and number formats
       if (selectedImportance !== "all") {
         const normalizedEventImp = normalizeImportance(event.importance);
-        const selectedImpNum = selectedImportance === "high" ? 3 : selectedImportance === "medium" ? 2 : selectedImportance === "low" ? 1 : 0;
+        const selectedImpNum =
+          selectedImportance === "high"
+            ? 3
+            : selectedImportance === "medium"
+              ? 2
+              : selectedImportance === "low"
+                ? 1
+                : 0;
         if (normalizedEventImp !== selectedImpNum) return false;
       }
 
@@ -374,7 +397,9 @@ export default function EnhancedMacroCalendar({
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
       if (dateA !== dateB) return dateA - dateB;
-      return normalizeImportance(b.importance) - normalizeImportance(a.importance); // Higher importance first
+      return (
+        normalizeImportance(b.importance) - normalizeImportance(a.importance)
+      ); // Higher importance first
     });
   }, [
     events,
@@ -552,18 +577,21 @@ export default function EnhancedMacroCalendar({
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      const response = await fetch(new URL("/api/ai-analysis", location.origin), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        new URL("/api/ai-analysis", location.origin),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text: `${event.event} - ${event.country}. Previous: ${event.previous || "N/A"}, Forecast: ${event.forecast || "N/A"}, Actual: ${event.actual || "N/A"}`,
+            language: language,
+            type: "event",
+          }),
+          signal: controller.signal,
         },
-        body: JSON.stringify({
-          text: `${event.event} - ${event.country}. Previous: ${event.previous || "N/A"}, Forecast: ${event.forecast || "N/A"}, Actual: ${event.actual || "N/A"}`,
-          language: language,
-          type: "event",
-        }),
-        signal: controller.signal,
-      });
+      );
 
       clearTimeout(timeoutId);
 
@@ -763,7 +791,7 @@ export default function EnhancedMacroCalendar({
             <CountrySelect
               value={selectedCountries}
               onChange={setSelectedCountries}
-              options={COUNTRIES.map(code => ({code, name: code}))}
+              options={COUNTRIES.map((code) => ({ code, name: code }))}
             />
           </div>
 
@@ -782,13 +810,15 @@ export default function EnhancedMacroCalendar({
                   "text-xs transition-all",
                   selectedImportance === "high"
                     ? "bg-red-500 hover:bg-red-600 text-white border-red-500"
-                    : "hover:bg-red-50 hover:border-red-200 dark:hover:bg-red-950"
+                    : "hover:bg-red-50 hover:border-red-200 dark:hover:bg-red-950",
                 )}
               >
                 {language === "ar" ? "عالي" : "High"}
               </Button>
               <Button
-                variant={selectedImportance === "medium" ? "default" : "outline"}
+                variant={
+                  selectedImportance === "medium" ? "default" : "outline"
+                }
                 size="sm"
                 onClick={() => setSelectedImportance("medium")}
                 aria-pressed={selectedImportance === "medium"}
@@ -796,7 +826,7 @@ export default function EnhancedMacroCalendar({
                   "text-xs transition-all",
                   selectedImportance === "medium"
                     ? "bg-orange-500 hover:bg-orange-600 text-white border-orange-500"
-                    : "hover:bg-orange-50 hover:border-orange-200 dark:hover:bg-orange-950"
+                    : "hover:bg-orange-50 hover:border-orange-200 dark:hover:bg-orange-950",
                 )}
               >
                 {language === "ar" ? "متوسط" : "Medium"}
@@ -810,7 +840,7 @@ export default function EnhancedMacroCalendar({
                   "text-xs transition-all",
                   selectedImportance === "low"
                     ? "bg-green-500 hover:bg-green-600 text-white border-green-500"
-                    : "hover:bg-green-50 hover:border-green-200 dark:hover:bg-green-950"
+                    : "hover:bg-green-50 hover:border-green-200 dark:hover:bg-green-950",
                 )}
               >
                 {language === "ar" ? "منخفض" : "Low"}
@@ -824,7 +854,7 @@ export default function EnhancedMacroCalendar({
                   "text-xs transition-all",
                   selectedImportance === "all"
                     ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-                    : "hover:bg-muted"
+                    : "hover:bg-muted",
                 )}
               >
                 {language === "ar" ? "الكل" : "All"}
@@ -1179,7 +1209,7 @@ export default function EnhancedMacroCalendar({
                               <div className="text-xs font-medium text-primary mb-1">
                                 {language === "ar"
                                   ? "تحليل الذكاء الاصطناعي:"
-                                : "AI Analysis:"}
+                                  : "AI Analysis:"}
                               </div>
                               <div className="text-sm text-muted-foreground">
                                 {aiAnalysis[event.event]}

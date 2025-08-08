@@ -93,7 +93,8 @@ export function CountrySelect({
   // Filter countries based on search
   const filteredCountries = options.filter((o) => {
     const searchTerm = q.toLowerCase();
-    const englishName = COUNTRY_NAMES[o.code]?.en?.toLowerCase() || o.code.toLowerCase();
+    const englishName =
+      COUNTRY_NAMES[o.code]?.en?.toLowerCase() || o.code.toLowerCase();
     const arabicName = COUNTRY_NAMES[o.code]?.ar || "";
     return (
       englishName.includes(searchTerm) ||
@@ -117,32 +118,33 @@ export function CountrySelect({
 
     if (open) {
       document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [open]);
 
   // Position dropdown below button
   const [dropdownStyle, setDropdownStyle] = useState({});
-  
+
   useEffect(() => {
     if (open && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
       const dropdownHeight = 320; // estimated max height
-      
+
       // Check if there's enough space below
       const spaceBelow = viewportHeight - rect.bottom;
       const spaceAbove = rect.top;
-      
+
       let top = rect.bottom + 4;
-      
+
       // If not enough space below but more space above, open upward
       if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
         top = rect.top - dropdownHeight - 4;
       }
-      
+
       setDropdownStyle({
-        position: 'fixed',
+        position: "fixed",
         top: `${Math.max(4, top)}px`,
         left: `${rect.left}px`,
         width: `${rect.width}px`,
@@ -165,10 +167,12 @@ export function CountrySelect({
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder={language === "ar" ? "البحث في الدول..." : "Search countries..."}
+            placeholder={
+              language === "ar" ? "البحث في الدول..." : "Search countries..."
+            }
             className={cn(
               "w-full pl-10 pr-3 py-2 rounded border bg-background text-foreground placeholder:text-muted-foreground text-sm",
-              dir === "rtl" && "text-right"
+              dir === "rtl" && "text-right",
             )}
             autoFocus
           />
@@ -187,7 +191,7 @@ export function CountrySelect({
               key={o.code}
               className={cn(
                 "flex items-center gap-3 p-3 hover:bg-muted cursor-pointer transition-colors text-sm border-b border-border/50 last:border-b-0",
-                dir === "rtl" && "flex-row-reverse"
+                dir === "rtl" && "flex-row-reverse",
               )}
             >
               <input
@@ -197,17 +201,19 @@ export function CountrySelect({
                   onChange(
                     value.includes(o.code)
                       ? value.filter((v) => v !== o.code)
-                      : [...value, o.code]
+                      : [...value, o.code],
                   );
                 }}
                 className="rounded"
               />
-              
+
               {/* Country Flag */}
               <div className="flex-shrink-0">
                 {o.code === "EUR" ? (
                   <div className="w-5 h-4 bg-blue-600 rounded-sm flex items-center justify-center">
-                    <span className="text-yellow-400 text-xs font-bold">EU</span>
+                    <span className="text-yellow-400 text-xs font-bold">
+                      EU
+                    </span>
                   </div>
                 ) : (
                   <ReactCountryFlag
@@ -217,12 +223,12 @@ export function CountrySelect({
                   />
                 )}
               </div>
-              
+
               {/* Country Name */}
               <span className={cn("flex-1", dir === "rtl" && "text-right")}>
                 {getCountryName(o.code)}
               </span>
-              
+
               {/* Country Code */}
               <span className="text-xs text-muted-foreground font-mono">
                 {o.code}
@@ -233,10 +239,12 @@ export function CountrySelect({
       </div>
 
       {/* Actions */}
-      <div className={cn(
-        "flex justify-between items-center p-3 border-t border-border bg-muted/30",
-        dir === "rtl" && "flex-row-reverse"
-      )}>
+      <div
+        className={cn(
+          "flex justify-between items-center p-3 border-t border-border bg-muted/30",
+          dir === "rtl" && "flex-row-reverse",
+        )}
+      >
         <Button
           variant="ghost"
           size="sm"
@@ -245,11 +253,11 @@ export function CountrySelect({
         >
           {language === "ar" ? "مسح الكل" : "Clear All"}
         </Button>
-        
+
         <div className="text-xs text-muted-foreground">
           {value.length} {language === "ar" ? "محدد" : "selected"}
         </div>
-        
+
         <Button
           variant="ghost"
           size="sm"
@@ -271,20 +279,24 @@ export function CountrySelect({
         onClick={() => setOpen((v) => !v)}
         className={cn(
           "justify-between w-full h-9 text-xs",
-          dir === "rtl" && "flex-row-reverse"
+          dir === "rtl" && "flex-row-reverse",
         )}
       >
         <span className="truncate">
           {value.length
             ? `${value.length} ${language === "ar" ? "دولة محددة" : "countries"}`
-            : language === "ar" 
-            ? "جميع الدول" 
-            : "All countries"}
+            : language === "ar"
+              ? "جميع الدول"
+              : "All countries"}
         </span>
-        <ChevronDown className={cn("w-4 h-4 transition-transform", open && "rotate-180")} />
+        <ChevronDown
+          className={cn("w-4 h-4 transition-transform", open && "rotate-180")}
+        />
       </Button>
-      
-      {typeof document !== "undefined" && dropdown && createPortal(dropdown, document.body)}
+
+      {typeof document !== "undefined" &&
+        dropdown &&
+        createPortal(dropdown, document.body)}
     </>
   );
 }

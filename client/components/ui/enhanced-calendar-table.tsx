@@ -1,7 +1,12 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { EconomicEvent } from "@shared/api";
 import { cn } from "@/lib/utils";
-import { fetchCalendar, adaptCalendar, formatCalendarDate, getCurrentWeekRange } from "@/lib/calendar";
+import {
+  fetchCalendar,
+  adaptCalendar,
+  formatCalendarDate,
+  getCurrentWeekRange,
+} from "@/lib/calendar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -204,7 +209,10 @@ export default function EnhancedCalendarTable({
     try {
       // Use the new Gregorian-only formatter from calendar utilities
       const fullDateTime = timeStr ? `${dateStr} ${timeStr}` : dateStr;
-      const formattedDate = formatCalendarDate(fullDateTime, language === "ar" ? "ar-AE" : "en-US");
+      const formattedDate = formatCalendarDate(
+        fullDateTime,
+        language === "ar" ? "ar-AE" : "en-US",
+      );
 
       return (
         <div
@@ -214,9 +222,7 @@ export default function EnhancedCalendarTable({
           )}
         >
           <div className="font-medium">{formattedDate}</div>
-          {timeStr && (
-            <div className="text-muted-foreground">{timeStr}</div>
-          )}
+          {timeStr && <div className="text-muted-foreground">{timeStr}</div>}
         </div>
       );
     } catch (error) {

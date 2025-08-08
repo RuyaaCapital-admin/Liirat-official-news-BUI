@@ -56,7 +56,7 @@ function expressPlugin(): Plugin {
           }
 
           // For development, check if route exists in new API first
-          if (req.url?.startsWith('/eodhd/')) {
+          if (req.url?.startsWith("/eodhd/")) {
             console.log("🔀 Routing to new consolidated API:", req.url);
 
             try {
@@ -69,10 +69,16 @@ function expressPlugin(): Plugin {
 
               // Add CORS
               app.use((req: any, res: any, next: any) => {
-                res.setHeader('Access-Control-Allow-Origin', '*');
-                res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-                res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-                if (req.method === 'OPTIONS') {
+                res.setHeader("Access-Control-Allow-Origin", "*");
+                res.setHeader(
+                  "Access-Control-Allow-Methods",
+                  "GET, POST, PUT, DELETE, OPTIONS",
+                );
+                res.setHeader(
+                  "Access-Control-Allow-Headers",
+                  "Content-Type, Authorization",
+                );
+                if (req.method === "OPTIONS") {
                   res.status(200).end();
                   return;
                 }
@@ -80,15 +86,16 @@ function expressPlugin(): Plugin {
               });
 
               // Copy router logic from api/index.ts
-              const BASE = 'https://eodhd.com/api';
+              const BASE = "https://eodhd.com/api";
 
               function qs(input: Record<string, any> = {}) {
                 const p = new URLSearchParams();
-                for (const [k, v] of Object.entries(input)) if (v !== undefined) p.append(k, String(v));
-                const token = process.env.EODHD_API_KEY || '';
-                if (!token) throw new Error('EODHD_API_KEY not set');
-                p.set('api_token', token);
-                p.set('fmt', 'json');
+                for (const [k, v] of Object.entries(input))
+                  if (v !== undefined) p.append(k, String(v));
+                const token = process.env.EODHD_API_KEY || "";
+                if (!token) throw new Error("EODHD_API_KEY not set");
+                p.set("api_token", token);
+                p.set("fmt", "json");
                 return p.toString();
               }
 
@@ -100,52 +107,70 @@ function expressPlugin(): Plugin {
               }
 
               // Add ping endpoint
-              app.get('/eodhd/ping', async (req: any, res: any) => {
+              app.get("/eodhd/ping", async (req: any, res: any) => {
                 res.json({ ok: true, ts: Date.now() });
               });
 
               // Add price endpoint
-              app.get('/eodhd/price', async (req: any, res: any) => {
-                const s = (req.query.s as string) || (req.query.symbol as string) || (req.query.symbols as string);
-                if (!s) return res.status(400).json({ error: 'Missing query param: s (or symbol)' });
+              app.get("/eodhd/price", async (req: any, res: any) => {
+                const s =
+                  (req.query.s as string) ||
+                  (req.query.symbol as string) ||
+                  (req.query.symbols as string);
+                if (!s)
+                  return res
+                    .status(400)
+                    .json({ error: "Missing query param: s (or symbol)" });
                 try {
                   const url = `${BASE}/real-time/${encodeURIComponent(s)}?${qs(req.query)}`;
                   const r2 = await fetch(url);
                   if (!r2.ok) throw new Error(`real-time ${r2.status}`);
                   res.json(await r2.json());
-                } catch (e: any) { res.status(500).json({ error: e.message }); }
+                } catch (e: any) {
+                  res.status(500).json({ error: e.message });
+                }
               });
 
               // Add search endpoint
-              app.get('/eodhd/search', async (req: any, res: any) => {
-                const q = (req.query.q as string) || (req.query.query as string);
-                if (!q) return res.status(400).json({ error: 'Missing query param: q' });
+              app.get("/eodhd/search", async (req: any, res: any) => {
+                const q =
+                  (req.query.q as string) || (req.query.query as string);
+                if (!q)
+                  return res
+                    .status(400)
+                    .json({ error: "Missing query param: q" });
                 try {
                   const url = `${BASE}/search/${encodeURIComponent(q)}?${qs(req.query)}`;
                   const r2 = await fetch(url);
                   if (!r2.ok) throw new Error(`search ${r2.status}`);
                   res.json(await r2.json());
-                } catch (e: any) { res.status(500).json({ error: e.message }); }
+                } catch (e: any) {
+                  res.status(500).json({ error: e.message });
+                }
               });
 
               // Add calendar endpoint
-              app.get('/eodhd/calendar', async (req: any, res: any) => {
+              app.get("/eodhd/calendar", async (req: any, res: any) => {
                 try {
-                  const raw = await pass('/economic-events', req.query);
+                  const raw = await pass("/economic-events", req.query);
                   res.json(raw);
-                } catch (e: any) { res.status(500).json({ error: e.message }); }
+                } catch (e: any) {
+                  res.status(500).json({ error: e.message });
+                }
               });
 
               // Add news endpoint
-              app.get('/eodhd/news', async (req: any, res: any) => {
+              app.get("/eodhd/news", async (req: any, res: any) => {
                 const { s, t, from, to, limit, offset } = req.query;
 
                 if (!s && !t) {
-                  return res.status(400).json({ ok: false, code: 'MISSING_S_OR_T' });
+                  return res
+                    .status(400)
+                    .json({ ok: false, code: "MISSING_S_OR_T" });
                 }
 
                 try {
-                  const raw = await pass('/news', req.query);
+                  const raw = await pass("/news", req.query);
 
                   let newsData = raw;
                   if (raw.data) {
@@ -157,13 +182,19 @@ function expressPlugin(): Plugin {
                   }
 
                   if (!Array.isArray(newsData)) {
-                    console.error('Unexpected EODHD response format:', raw);
-                    return res.status(502).json({ ok: false, error: 'Invalid response format from EODHD' });
+                    console.error("Unexpected EODHD response format:", raw);
+                    return res
+                      .status(502)
+                      .json({
+                        ok: false,
+                        error: "Invalid response format from EODHD",
+                      });
                   }
 
                   const items = newsData.map((n: any) => {
                     let datetimeIso = null;
-                    const dateField = n.date || n.datetime || n.published_at || n.time;
+                    const dateField =
+                      n.date || n.datetime || n.published_at || n.time;
                     if (dateField) {
                       try {
                         const date = new Date(dateField);
@@ -171,26 +202,28 @@ function expressPlugin(): Plugin {
                           datetimeIso = date.toISOString();
                         }
                       } catch (e) {
-                        console.warn('Failed to parse date:', dateField);
+                        console.warn("Failed to parse date:", dateField);
                       }
                     }
 
                     return {
                       datetimeIso,
-                      title: String(n.title || ''),
-                      content: String(n.content || n.description || n.title || ''),
-                      source: String(n.source || ''),
+                      title: String(n.title || ""),
+                      content: String(
+                        n.content || n.description || n.title || "",
+                      ),
+                      source: String(n.source || ""),
                       symbols: n.symbols || [],
                       tags: n.tags || n.symbols || [],
-                      url: n.link || n.url || '',
-                      country: n.country || '',
-                      category: n.category || 'financial',
+                      url: n.link || n.url || "",
+                      country: n.country || "",
+                      category: n.category || "financial",
                     };
                   });
 
                   res.json({ ok: true, items });
                 } catch (e: any) {
-                  console.error('News endpoint error:', e);
+                  console.error("News endpoint error:", e);
                   res.status(500).json({ ok: false, error: e.message });
                 }
               });

@@ -5,31 +5,51 @@ import "@/styles/ticker.css";
 
 const POLL_MS = 12000;
 
-export default function PriceTicker(){
-  const [items,setItems]=useState<any[]>([]);
-  const timer=useRef<number|null>(null);
-  const inFlight=useRef<AbortController|null>(null);
+export default function PriceTicker() {
+  const [items, setItems] = useState<any[]>([]);
+  const timer = useRef<number | null>(null);
+  const inFlight = useRef<AbortController | null>(null);
 
-  const load=async()=>{
+  const load = async () => {
     inFlight.current?.abort();
-    const ac=new AbortController(); inFlight.current=ac;
-    try{ setItems(await getBatchQuotes(TICKERS,{signal:ac.signal})); }catch{}
+    const ac = new AbortController();
+    inFlight.current = ac;
+    try {
+      setItems(await getBatchQuotes(TICKERS, { signal: ac.signal }));
+    } catch {}
   };
 
-  useEffect(()=>{ 
-    const start=()=>{ if(timer.current) return; timer.current=window.setInterval(load,POLL_MS); };
-    const stop =()=>{ if(timer.current){clearInterval(timer.current); timer.current=null;} inFlight.current?.abort(); };
-    load(); start();
-    const onVis=()=>{ document.hidden?stop():(load(),start()); };
+  useEffect(() => {
+    const start = () => {
+      if (timer.current) return;
+      timer.current = window.setInterval(load, POLL_MS);
+    };
+    const stop = () => {
+      if (timer.current) {
+        clearInterval(timer.current);
+        timer.current = null;
+      }
+      inFlight.current?.abort();
+    };
+    load();
+    start();
+    const onVis = () => {
+      document.hidden ? stop() : (load(), start());
+    };
     document.addEventListener("visibilitychange", onVis);
-    return ()=>{ stop(); document.removeEventListener("visibilitychange", onVis); };
-  },[]);
+    return () => {
+      stop();
+      document.removeEventListener("visibilitychange", onVis);
+    };
+  }, []);
 
-  const renderItem=(q:any)=>(
+  const renderItem = (q: any) => (
     <div key={q.code} className="flex items-center gap-1">
       <span>{q.code}</span>
       <strong>{q.price?.toLocaleString()}</strong>
-      <span className={q.change>=0?"text-green-500":"text-red-500"}>{q.change ?? "-"} ({q.changePercent ?? "-"}%)</span>
+      <span className={q.change >= 0 ? "text-green-500" : "text-red-500"}>
+        {q.change ?? "-"} ({q.changePercent ?? "-"}%)
+      </span>
     </div>
   );
 

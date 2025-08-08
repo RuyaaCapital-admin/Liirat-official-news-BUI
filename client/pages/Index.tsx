@@ -26,7 +26,12 @@ import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 import { useLanguage } from "@/contexts/language-context";
 import { translate } from "@/i18n";
 import { useAlerts } from "@/contexts/alert-context";
-import { fetchCalendar, adaptCal, sortCalendarByTime, shortDT } from "@/lib/calendar";
+import {
+  fetchCalendar,
+  adaptCal,
+  sortCalendarByTime,
+  shortDT,
+} from "@/lib/calendar";
 import {
   Calendar,
   Bell,
@@ -90,15 +95,17 @@ export default function Index() {
   }, [lastScrollY]);
 
   // Filter helpers
-  const filterImportance = (imp:any, activeImportance?: string)=>{
-    if (!activeImportance || activeImportance==="all") return true;
-    const v = String(imp||"").toLowerCase();
-    return (activeImportance==="high" && v.includes("high"))
-        || (activeImportance==="medium" && v.includes("medium"))
-        || (activeImportance==="low" && v.includes("low"));
+  const filterImportance = (imp: any, activeImportance?: string) => {
+    if (!activeImportance || activeImportance === "all") return true;
+    const v = String(imp || "").toLowerCase();
+    return (
+      (activeImportance === "high" && v.includes("high")) ||
+      (activeImportance === "medium" && v.includes("medium")) ||
+      (activeImportance === "low" && v.includes("low"))
+    );
   };
-  const filterCategory = (event:string, activeCategory?: string)=> {
-    if (!activeCategory || activeCategory==="all") return true;
+  const filterCategory = (event: string, activeCategory?: string) => {
+    if (!activeCategory || activeCategory === "all") return true;
     return event?.toLowerCase().includes(activeCategory.toLowerCase());
   };
 
@@ -117,23 +124,27 @@ export default function Index() {
       setEventsError(null);
 
       const today = new Date();
-      const to = new Date(today); to.setDate(to.getDate()+7); // next 7 days
-      const pad = (n:number)=>String(n).padStart(2,"0");
-      const fmt = (d:Date)=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-
+      const to = new Date(today);
+      to.setDate(to.getDate() + 7); // next 7 days
+      const pad = (n: number) => String(n).padStart(2, "0");
+      const fmt = (d: Date) =>
+        `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 
       const raw = await fetchCalendar({
         from: filters?.from || fmt(today),
         to: filters?.to || fmt(to),
         countries: filters?.country || "",
-        limit: 50
+        limit: 50,
       });
 
-      const rows = (Array.isArray(raw) ? raw : []).map(adaptCal)
-        .filter(r => filterImportance(r.importance) && filterCategory(r.title));
+      const rows = (Array.isArray(raw) ? raw : [])
+        .map(adaptCal)
+        .filter(
+          (r) => filterImportance(r.importance) && filterCategory(r.title),
+        );
       const sorted = sortCalendarByTime(rows);
 
-      const initial = sorted.slice(0,6); // show 6 nearest by time immediately
+      const initial = sorted.slice(0, 6); // show 6 nearest by time immediately
       setEconomicEvents(initial);
       setEventsError(null);
     } catch (error) {

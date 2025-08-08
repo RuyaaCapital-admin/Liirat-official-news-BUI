@@ -1,10 +1,14 @@
 import { ar } from "./ar";
 
 export const t = (k: keyof typeof ar, locale: "en" | "ar", fallback: string) =>
-  locale === "ar" ? ar[k] ?? fallback : fallback;
+  locale === "ar" ? (ar[k] ?? fallback) : fallback;
 
 // Type-safe translation function with better key checking
-export function translate(key: keyof typeof ar, locale: "en" | "ar", fallback: string): string {
+export function translate(
+  key: keyof typeof ar,
+  locale: "en" | "ar",
+  fallback: string,
+): string {
   if (locale === "ar") {
     return ar[key] || fallback;
   }

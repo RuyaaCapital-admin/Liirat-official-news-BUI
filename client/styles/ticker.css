@@ -3,7 +3,7 @@
   --ticker-duration: 40s;
 }
 
-.ticker-wrap{
+.ticker-wrap {
   position: sticky;
   top: var(--nav-h);
   z-index: 40;
@@ -14,7 +14,7 @@
   border-bottom: 1px solid hsl(var(--border) / 0.5);
 }
 
-.ticker-track{
+.ticker-track {
   display: inline-flex;
   gap: 1.5rem;
   white-space: nowrap;
@@ -48,6 +48,10 @@
 }
 
 @keyframes ticker-scroll {
-  from{transform:translateX(100%)}
-  to{transform:translateX(-100%)}
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
 }
