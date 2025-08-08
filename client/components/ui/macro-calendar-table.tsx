@@ -955,7 +955,7 @@ export function MacroCalendarTable({
                 `عرض ${displayedEvents.length} من ${filteredEvents.length} حدث`,
               )}
             </span>
-            {filteredEvents.length > 10 && (
+            {filteredEvents.length > 6 && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -990,7 +990,7 @@ export function MacroCalendarTable({
               <p className="font-medium">
                 {t(
                   "No events found matching your criteria",
-                  "لا توجد أحداث تطابق معاييرك",
+                  "لا توجد أحد��ث تطابق معاييرك",
                 )}
               </p>
               <p className="text-sm mt-1">
