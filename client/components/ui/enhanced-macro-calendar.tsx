@@ -472,7 +472,8 @@ export default function EnhancedMacroCalendar({
           selectedCountries.length > 0
             ? selectedCountries.join(",")
             : undefined,
-        importance: selectedImportance.map(String),
+        importance:
+          selectedImportance !== "all" ? [selectedImportance] : undefined,
         category: selectedCategory !== "all" ? selectedCategory : undefined,
       });
     }
@@ -701,16 +702,6 @@ export default function EnhancedMacroCalendar({
               </Select>
             </div>
           </div>
-
-          {/* Right side - Refresh */}
-          <Button
-            variant="outline"
-            onClick={() => onRefresh && onRefresh()}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            {language === "ar" ? "تحديث" : "Refresh"}
-          </Button>
         </div>
 
         {/* Filters Row - Always Visible and Functional */}
@@ -791,17 +782,40 @@ export default function EnhancedMacroCalendar({
           </div>
 
           {/* Countries */}
-          <div className="space-y-1 relative">
+          <div className="space-y-1">
             <label className="text-xs font-medium text-muted-foreground">
               {language === "ar" ? "الدول" : "Countries"}
             </label>
-            <div className="relative z-50">
-              <CountrySelect
-                value={selectedCountries}
-                onChange={setSelectedCountries}
-                options={COUNTRIES.map((code) => ({ code, name: code }))}
-              />
-            </div>
+            <Select
+              value={
+                selectedCountries.length > 0 ? selectedCountries[0] : "all"
+              }
+              onValueChange={(value) => {
+                if (value === "all") {
+                  setSelectedCountries([]);
+                } else {
+                  setSelectedCountries([value]);
+                }
+              }}
+            >
+              <SelectTrigger className="h-9">
+                <SelectValue
+                  placeholder={
+                    language === "ar" ? "اختر الدولة" : "Select Country"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent className="z-[100] max-h-72 overflow-auto">
+                <SelectItem value="all">
+                  {language === "ar" ? "جميع الدول" : "All Countries"}
+                </SelectItem>
+                {COUNTRIES.map((country) => (
+                  <SelectItem key={country} value={country}>
+                    {country}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Importance Filter */}
@@ -952,7 +966,10 @@ export default function EnhancedMacroCalendar({
                         selectedCountries.length > 0
                           ? selectedCountries.join(",")
                           : undefined,
-                      importance: selectedImportance.map(String),
+                      importance:
+                        selectedImportance !== "all"
+                          ? [selectedImportance]
+                          : undefined,
                       category:
                         selectedCategory !== "all"
                           ? selectedCategory
@@ -967,6 +984,7 @@ export default function EnhancedMacroCalendar({
                 {language === "ar"
                   ? "تطبيق التاريخ المخصص"
                   : "Apply Custom Range"}
+                <RefreshCw className="w-4 h-4 ml-2" />
               </Button>
             </div>
           </div>

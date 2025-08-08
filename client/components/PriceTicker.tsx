@@ -147,7 +147,7 @@ export default function PriceTicker() {
 
   if (initialLoading) {
     return (
-      <div className="ticker-wrap bg-background/95 backdrop-blur-sm border-b border-border/50 sticky top-0 z-40">
+      <div className="ticker-wrap">
         <div className="ticker-track">
           <div className="flex items-center gap-4 text-muted-foreground">
             <span>Loading market data...</span>
@@ -160,7 +160,7 @@ export default function PriceTicker() {
   if (!items.length && !error) return null;
 
   return (
-    <div className="ticker-wrap bg-background/95 backdrop-blur-sm border-b border-border/50 sticky top-0 z-40">
+    <div className="ticker-wrap">
       <div className="ticker-track">
         {items.map((q, i) => renderItem({ ...q, key: `first-${i}` }))}
         {items.map((q, i) => renderItem({ ...q, key: `second-${i}` }))}
