@@ -326,7 +326,7 @@ export function ModernEconomicCalendar({
     setLoadingTranslation((prev) => ({ ...prev, [eventKey]: true }));
 
     try {
-      const response = await fetch("/api/translate", {
+      const response = await fetch(new URL("/api/translate", location.origin), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
