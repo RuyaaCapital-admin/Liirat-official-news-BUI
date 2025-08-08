@@ -105,7 +105,7 @@ const AITradingAssistant: React.FC = () => {
 
   const fetchNews = async () => {
     try {
-      const response = await fetch("/api/news-trading");
+      const response = await fetch(new URL("/api/news-trading", location.origin));
       if (!response.ok) {
         throw new Error("Failed to fetch news");
       }
