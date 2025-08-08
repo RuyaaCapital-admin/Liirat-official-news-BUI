@@ -772,6 +772,7 @@ export default function EnhancedMacroCalendar({
                 variant={selectedImportance === "high" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedImportance("high")}
+                aria-pressed={selectedImportance === "high"}
                 className={cn(
                   "text-xs transition-all",
                   selectedImportance === "high"
@@ -785,6 +786,7 @@ export default function EnhancedMacroCalendar({
                 variant={selectedImportance === "medium" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedImportance("medium")}
+                aria-pressed={selectedImportance === "medium"}
                 className={cn(
                   "text-xs transition-all",
                   selectedImportance === "medium"
@@ -798,6 +800,7 @@ export default function EnhancedMacroCalendar({
                 variant={selectedImportance === "low" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedImportance("low")}
+                aria-pressed={selectedImportance === "low"}
                 className={cn(
                   "text-xs transition-all",
                   selectedImportance === "low"
@@ -811,6 +814,7 @@ export default function EnhancedMacroCalendar({
                 variant={selectedImportance === "all" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedImportance("all")}
+                aria-pressed={selectedImportance === "all"}
                 className={cn(
                   "text-xs transition-all",
                   selectedImportance === "all"
