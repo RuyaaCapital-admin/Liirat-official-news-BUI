@@ -359,12 +359,37 @@ export default function DynamicAlertSystem({
     return () => clearInterval(interval);
   }, [checkPriceAlerts]);
 
+  // Fetch live price for selected symbol when dialog is open - poll every 5s
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isDialogOpen && selectedSymbol) {
+      const fetchPrice = async () => {
+        try {
+          setPriceLoading(true);
+          const data = await fetchSpot(selectedSymbol.symbol);
+          setCurrentPrice(data.price || data.close || null);
+        } catch (error) {
+          console.warn("Failed to fetch live price:", error);
+        } finally {
+          setPriceLoading(false);
+        }
+      };
+
+      fetchPrice(); // Initial fetch
+      interval = setInterval(fetchPrice, 5000); // Poll every 5s while dialog open
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isDialogOpen, selectedSymbol]);
+
   // Create new price alert
   const createPriceAlert = () => {
     if (!selectedSymbol || !targetPrice) {
       toast.error(
         language === "ar"
-          ? "يرجى اختيار الرمز والسعر المستهدف"
+          ? "يرجى اختي��ر الرمز والسعر المستهدف"
           : "Please select symbol and target price",
       );
       return;
