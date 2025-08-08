@@ -27,12 +27,7 @@ export default function PriceTicker(){
       console.error("Ticker error:", err);
       setError(err instanceof Error ? err.message : "Failed to load ticker");
       setLoading(false);
-      // Add fallback mock data for demonstration
-      setItems([
-        {code: "BTC-USD", price: 45000, change: 1200, changePercent: 2.7},
-        {code: "ETH-USD", price: 2800, change: -50, changePercent: -1.8},
-        {code: "EURUSD", price: 1.0850, change: 0.0020, changePercent: 0.18}
-      ]);
+      setItems([]);
     }
   };
 
