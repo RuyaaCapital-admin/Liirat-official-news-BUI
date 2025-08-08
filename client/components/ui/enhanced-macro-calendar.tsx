@@ -443,7 +443,7 @@ export default function EnhancedMacroCalendar({
     const offlineTranslations: Record<string, string> = {
       Exports: "الصادرات",
       Imports: "الواردات",
-      GDP: "الناتج ��لمحلي الإجمالي",
+      GDP: "الناتج المحلي الإجمالي",
       Inflation: "التضخم",
       Unemployment: "البطالة",
       "Interest Rate": "سعر الفائدة",
@@ -546,7 +546,7 @@ export default function EnhancedMacroCalendar({
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      const response = await fetch("/api/ai-analysis", {
+      const response = await fetch(new URL("/api/ai-analysis", location.origin), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -590,7 +590,7 @@ export default function EnhancedMacroCalendar({
             ...prev,
             [event.event]:
               language === "ar"
-                ? "❌ خطأ في الخادم. يرجى ��لمحاولة مرة أخرى لاحقاً."
+                ? "❌ خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقاً."
                 : "❌ Server error. Please try again later.",
           }));
           return; // Exit early to avoid throwing error
