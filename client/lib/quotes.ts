@@ -12,8 +12,35 @@ export function normalizeQuotes(payload:any){
   return out.filter(r=>Number.isFinite(r.price));
 }
 export async function getBatchQuotes(symbols:string[], opts:{signal?:AbortSignal}={}){
-  const u=new URL("/api/eodhd/quotes", location.origin); u.searchParams.set("symbols", symbols.join(","));
-  const r=await fetch(u.toString(), { signal: opts.signal });
-  const ct=r.headers.get("content-type")||""; if(!ct.includes("application/json")) throw new Error("Non-JSON response");
-  if(!r.ok) throw new Error("quotes"); return normalizeQuotes(await r.json());
+  const u=new URL("/api/eodhd/quotes", location.origin);
+  u.searchParams.set("symbols", symbols.join(","));
+
+  console.log("Fetching quotes from:", u.toString());
+
+  try {
+    const r=await fetch(u.toString(), { signal: opts.signal });
+    const ct=r.headers.get("content-type")||"";
+
+    console.log("Response status:", r.status);
+    console.log("Response content-type:", ct);
+
+    if (!r.ok) {
+      const errorText = await r.text();
+      console.error("API Error:", errorText);
+      throw new Error(`quotes ${r.status}: ${errorText}`);
+    }
+
+    if(!ct.includes("application/json")) {
+      const responseText = await r.text();
+      console.error("Non-JSON response body:", responseText);
+      throw new Error(`Non-JSON response: ${ct}. Body: ${responseText.slice(0, 200)}`);
+    }
+
+    const data = await r.json();
+    console.log("Raw quotes data:", data);
+    return normalizeQuotes(data);
+  } catch (error) {
+    console.error("getBatchQuotes error:", error);
+    throw error;
+  }
 }
