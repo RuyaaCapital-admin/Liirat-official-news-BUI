@@ -1,12 +1,12 @@
 :root {
-  --nav-h: 80px;
+  --nav-h: 64px;
   --ticker-duration: 40s;
 }
 
 .ticker-wrap{
   position: sticky;
-  top: 0;
-  z-index: 30;
+  top: var(--nav-h);
+  z-index: 40;
   overflow: hidden;
   width: 100%;
   background: hsl(var(--background) / 0.95);
