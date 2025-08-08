@@ -346,7 +346,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
   // Network connectivity check for translations
   const checkNetworkStatus = async (): Promise<boolean> => {
     try {
-      const response = await fetch("/api/status", {
+      const response = await fetch(new URL("/api/status", location.origin), {
         method: "GET",
         cache: "no-cache",
         signal: AbortSignal.timeout(3000),
