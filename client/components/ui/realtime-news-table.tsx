@@ -443,7 +443,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      const response = await fetch("/api/analysis", {
+      const response = await fetch(new URL("/api/analysis", location.origin), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
