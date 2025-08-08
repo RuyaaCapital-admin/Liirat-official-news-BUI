@@ -338,8 +338,11 @@ export default function EnhancedMacroCalendar({
       }
 
       // Importance filter
-      if (!selectedImportance.includes(event.importance)) {
-        return false;
+      if (selectedImportance !== "all") {
+        const impStr = String(event.importance).toLowerCase();
+        if (selectedImportance === "high" && !impStr.includes("high")) return false;
+        if (selectedImportance === "medium" && !impStr.includes("medium")) return false;
+        if (selectedImportance === "low" && !impStr.includes("low")) return false;
       }
 
       // Category filter
