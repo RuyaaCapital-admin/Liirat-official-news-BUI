@@ -41,6 +41,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { useLanguage } from "@/contexts/language-context";
+import { CountrySelect } from "@/components/CountrySelect";
 
 interface EnhancedMacroCalendarProps {
   events: EconomicEvent[];
@@ -173,7 +174,7 @@ export default function EnhancedMacroCalendar({
         case 1:
           return "منخفض";
         default:
-          return "غير محدد";
+          return "غير م��دد";
       }
     } else {
       switch (importance) {
@@ -1183,7 +1184,7 @@ export default function EnhancedMacroCalendar({
                             <div className="flex-1">
                               <div className="text-xs font-medium text-primary mb-1">
                                 {language === "ar"
-                                  ? "تحليل الذكاء الاصطناعي:"
+                                  ? "تحليل الذكاء الا��طناعي:"
                                   : "AI Analysis:"}
                               </div>
                               <div className="text-sm text-muted-foreground">
