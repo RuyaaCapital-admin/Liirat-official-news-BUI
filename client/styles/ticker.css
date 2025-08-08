@@ -1,4 +1,4 @@
-:root { --nav-h: 64px; --ticker-duration: 40s; } /* adjust if needed */
-.ticker-wrap{ position: sticky; top: var(--nav-h); z-index: 20; overflow: hidden; }
-.ticker-track{ display: inline-flex; gap:24px; white-space:nowrap; animation: ticker-scroll var(--ticker-duration) linear infinite; }
+:root { --nav-h: 80px; --ticker-duration: 40s; }
+.ticker-wrap{ position: sticky; top: 0; z-index: 30; overflow: hidden; width: 100%; }
+.ticker-track{ display: inline-flex; gap: 2rem; white-space: nowrap; animation: ticker-scroll var(--ticker-duration) linear infinite; padding: 0.75rem 0; }
 @keyframes ticker-scroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
