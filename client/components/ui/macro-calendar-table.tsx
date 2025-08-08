@@ -324,7 +324,7 @@ const getCountryName = (country: string, language: string) => {
     GB: { en: "United Kingdom", ar: "المملكة المتحدة" },
     JP: { en: "Japan", ar: "اليابان" },
     CA: { en: "Canada", ar: "كندا" },
-    AU: { en: "Australia", ar: "أستراليا" },
+    AU: { en: "Australia", ar: "أست��اليا" },
     CHF: { en: "Switzerland", ar: "سويسرا" },
     DE: { en: "Germany", ar: "ألمانيا" },
     FR: { en: "France", ar: "فرن��ا" },
@@ -749,7 +749,7 @@ export function MacroCalendarTable({
                 <ChevronDown className="h-4 w-4 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 p-0">
+            <PopoverContent className="w-80 p-0 z-50" sideOffset={5} side="bottom" align="start">
               <div className="p-3 border-b">
                 <div className="relative">
                   <Search
