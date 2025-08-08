@@ -206,7 +206,7 @@ const AITradingAssistant: React.FC = () => {
         content: msg.content,
       }));
 
-      const response = await fetch("/api/ai-chat", {
+      const response = await fetch(new URL("/api/ai-chat", location.origin), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -405,7 +405,7 @@ const AITradingAssistant: React.FC = () => {
                     </CardTitle>
                     <CardDescription>
                       {language === "ar"
-                        ? "تحدث مع مساعد التداول"
+                        ? "تحدث مع مساعد التد��ول"
                         : "Chat with your trading companion"}
                     </CardDescription>
                   </div>
