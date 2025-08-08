@@ -29,7 +29,7 @@ export async function getBatchQuotes(
   symbols: string[],
   opts: { signal?: AbortSignal } = {},
 ) {
-  const u = new URL("/api/eodhd/price", location.origin);
+  const u = new URL("/api/eodhd/quotes", location.origin);
   u.searchParams.set("symbols", symbols.join(","));
 
   const r = await fetch(u.toString(), { signal: opts.signal });
