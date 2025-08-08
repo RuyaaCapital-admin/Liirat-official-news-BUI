@@ -23,7 +23,7 @@
     "vercel-build": "npm run build:client"
   },
   "engines": {
-    "node": "22.x"
+    "node": "18.x"
   },
   "dependencies": {
     "@types/styled-components": "^5.1.34",
