@@ -506,7 +506,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
               ? "متصل"
               : "Connected"
             : language === "ar"
-              ? "غير متصل"
+              ? "��ير متصل"
               : "Disconnected"}
         </span>
         {lastPriceUpdate && (
@@ -668,7 +668,7 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  {language === "ar" ? "الشرط" : "Condition"}
+                  {language === "ar" ? "نوع التنبيه" : "Condition"}
                 </Label>
                 <Select
                   value={condition}
@@ -887,4 +887,3 @@ export function AdvancedAlertSystem({ className }: AdvancedAlertSystemProps) {
     </div>
   );
 }
- 
