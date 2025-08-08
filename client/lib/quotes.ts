@@ -12,7 +12,7 @@ export function normalizeQuotes(payload:any){
   return out.filter(r=>Number.isFinite(r.price));
 }
 export async function getBatchQuotes(symbols:string[], opts:{signal?:AbortSignal}={}){
-  const u=new URL("/api/eodhd/quotes", location.origin);
+  const u=new URL("/api/eodhd/price", location.origin);
   u.searchParams.set("symbols", symbols.join(","));
 
   console.log("Fetching quotes from:", u.toString());
@@ -38,7 +38,14 @@ export async function getBatchQuotes(symbols:string[], opts:{signal?:AbortSignal
 
     const data = await r.json();
     console.log("Raw quotes data:", data);
-    return normalizeQuotes(data);
+
+    // Handle the server response format: { ok: true, items: [...] }
+    if (data.ok && data.items) {
+      return normalizeQuotes(data.items);
+    } else {
+      // Fallback to raw data
+      return normalizeQuotes(data);
+    }
   } catch (error) {
     console.error("getBatchQuotes error:", error);
     throw error;
