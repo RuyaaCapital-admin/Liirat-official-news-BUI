@@ -54,12 +54,29 @@ export default function PriceTicker(){
     </div>
   );
 
+  if (loading) {
+    return (
+      <div className="ticker-wrap">
+        <div className="ticker-track">
+          <div className="flex items-center gap-4 text-muted-foreground">
+            <span>Loading market data...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="ticker-wrap">
+    <div className="ticker-wrap bg-background/95 backdrop-blur-sm border-b border-border/50">
       <div className="ticker-track">
         {items.map((q,i)=>renderItem({...q,key:`a-${i}`}))}
         {items.map((q,i)=>renderItem({...q,key:`b-${i}`}))}
       </div>
+      {error && (
+        <div className="absolute top-0 right-4 text-xs text-red-500 py-1">
+          {error}
+        </div>
+      )}
     </div>
   );
 }
