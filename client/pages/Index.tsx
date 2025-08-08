@@ -87,7 +87,20 @@ export default function Index() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Fetch economic events data with language support and filters
+  // Filter helpers
+  const filterImportance = (imp:any, activeImportance?: string)=>{
+    if (!activeImportance || activeImportance==="all") return true;
+    const v = String(imp||"").toLowerCase();
+    return (activeImportance==="high" && v.includes("high"))
+        || (activeImportance==="medium" && v.includes("medium"))
+        || (activeImportance==="low" && v.includes("low"));
+  };
+  const filterCategory = (title:string, activeCategory?: string)=> {
+    if (!activeCategory || activeCategory==="all") return true;
+    return title?.toLowerCase().includes(activeCategory.toLowerCase());
+  };
+
+  // Fetch economic events data with new utilities - show top 10 immediately
   const fetchEconomicEvents = async (
     lang: string = language,
     filters?: {
@@ -101,171 +114,27 @@ export default function Index() {
       setIsLoadingEvents(true);
       setEventsError(null);
 
-      console.log(`Fetching economic events for language: ${lang}`);
-      console.log(`Current location: ${window.location.origin}`);
-      console.log(
-        `API endpoint will be: ${window.location.origin}/api/eodhd/calendar`,
-      );
+      const today = new Date();
+      const to = new Date(today); to.setDate(to.getDate()+7); // next 7 days
+      const pad = (n:number)=>String(n).padStart(2,"0");
+      const fmt = (d:Date)=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 
-      // First test API connectivity with health check
-      let apiHealthy = false;
-      try {
-        const healthResponse = await fetch("/api/eodhd/ping", {
-          method: "GET",
-          headers: { Accept: "application/json" },
-          signal: AbortSignal.timeout(5000), // 5 second timeout
-        });
+      const { fetchCalendar, adaptCalendar } = await import("@/lib/calendar");
 
-        if (healthResponse.ok) {
-          const healthData = await healthResponse.json();
-          console.log("API Health Check:", healthData);
-          apiHealthy = true;
-        } else {
-          console.warn(`API health check failed: ${healthResponse.status}`);
-        }
-      } catch (healthError) {
-        console.warn("API health check failed:", healthError);
-        // Continue anyway, maybe the specific endpoint will work
-      }
+      const raw = await fetchCalendar({
+        from: filters?.from || fmt(today),
+        to: filters?.to || fmt(to),
+        countries: filters?.country || "",
+        limit: 50
+      });
 
-      // Build query parameters with filters
-      const params = new URLSearchParams();
-      params.append("limit", "50"); // Limit to 50 events for better performance
+      const rows = (Array.isArray(raw) ? raw : []).map(adaptCalendar)
+        .filter(r => filterImportance(r.importance) && filterCategory(r.title));
+      rows.sort((a,b)=> new Date(a.dt).getTime() - new Date(b.dt).getTime());
 
-      // Add date range - these are REQUIRED by EODHD API
-      const fromDate = filters?.from || new Date().toISOString().split("T")[0]; // Today
-      const toDate =
-        filters?.to ||
-        new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-          .toISOString()
-          .split("T")[0]; // Next 7 days
-      params.append("from", fromDate);
-      params.append("to", toDate);
-
-      // Add importance filter
-      if (filters?.importance?.length) {
-        params.append("importance", filters.importance.join(","));
-      } else {
-        params.append("importance", "3,2,1"); // Default to all importance levels
-      }
-
-      // Add country filter
-      if (filters?.country) {
-        params.append("country", filters.country);
-      }
-
-      // Fetch from EODHD calendar endpoint with robust error handling
-      console.log(
-        `Attempting to fetch economic events from: /api/eodhd/calendar?${params.toString()}`,
-      );
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
-
-      let response;
-      try {
-        response = await fetch(`/api/eodhd/calendar?${params.toString()}`, {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          signal: controller.signal,
-        });
-      } catch (fetchError) {
-        clearTimeout(timeoutId);
-        console.error("Network error when fetching calendar:", fetchError);
-
-        // Handle specific network errors
-        if (
-          fetchError instanceof TypeError &&
-          fetchError.message.includes("fetch")
-        ) {
-          throw new Error(
-            "Network connection failed. Please check your internet connection and try again.",
-          );
-        } else if (fetchError.name === "AbortError") {
-          throw new Error(
-            "Request timeout. The server took too long to respond.",
-          );
-        } else {
-          throw new Error(`Network error: ${fetchError.message}`);
-        }
-      }
-
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const data = await response.json();
-          if (data.error) {
-            setEventsError(data.error);
-            setEconomicEvents([]);
-          } else {
-            // Use exact EODHD response format - no transformation
-            const events = Array.isArray(data) ? data : (data.data || []);
-            const transformedEvents = events.map((item: any) => {
-              // Use Gregorian formatting only, no Hijri
-              const fmt = new Intl.DateTimeFormat('en-US', {
-                calendar: "gregory",
-                hour12: false,
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-                timeZone: "Asia/Dubai"
-              });
-
-              let date = "";
-              let time = "";
-
-              if (item.date) {
-                try {
-                  const eventDate = new Date(item.date);
-                  if (!isNaN(eventDate.getTime())) {
-                    const parts = fmt.formatToParts(eventDate);
-                    const year = parts.find(p => p.type === 'year')?.value || '';
-                    const month = parts.find(p => p.type === 'month')?.value || '';
-                    const day = parts.find(p => p.type === 'day')?.value || '';
-                    const hour = parts.find(p => p.type === 'hour')?.value || '';
-                    const minute = parts.find(p => p.type === 'minute')?.value || '';
-
-                    date = `${year}-${month}-${day}`;
-                    time = `${hour}:${minute}`;
-                  }
-                } catch (e) {
-                  console.warn('Date parsing error:', e);
-                }
-              }
-
-              return {
-                date,
-                time,
-                country: item.country || "",
-                event: item.event || "",
-                category: item.category || "",
-                // Use exact importance as returned by EODHD
-                importance: item.importance || "",
-                actual: item.actual || "",
-                forecast: item.forecast || item.estimate || "",
-                previous: item.previous || "",
-              };
-            });
-            setEconomicEvents(transformedEvents);
-            setEventsError(null);
-          }
-        } else {
-          console.warn("Events API returned non-JSON content:", contentType);
-          setEventsError("Invalid response format");
-          setEconomicEvents([]);
-        }
-      } else {
-        console.warn("Events API returned non-OK status:", response.status);
-        setEventsError(`API Error: ${response.status}`);
-        setEconomicEvents([]);
-      }
+      const initial = rows.slice(0,10); // show 10 immediately
+      setEconomicEvents(initial);
+      setEventsError(null);
     } catch (error) {
       console.error("Failed to fetch economic events:", error);
 
