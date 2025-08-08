@@ -153,7 +153,7 @@ const getImportanceLabel = (importance: number, language: string) => {
       case 1:
         return "منخفض";
       default:
-        return "��ير محدد";
+        return "غير محدد";
     }
   }
   switch (importance) {
@@ -851,7 +851,7 @@ export function MacroCalendarTable({
                     ? t("All Impact", "جميع التأثيرات")
                     : selectedImportances.length === 1
                       ? selectedImportances[0] === "3"
-                        ? t("High Impact", "عالي التأث��ر")
+                        ? t("High Impact", "عالي التأثير")
                         : selectedImportances[0] === "2"
                           ? t("Medium Impact", "متوسط التأثير")
                           : t("Low Impact", "منخفض التأثير")
@@ -967,7 +967,7 @@ export function MacroCalendarTable({
           </div>
           {lastUpdated && (
             <span className="text-xs">
-              {t("Last updated", "آخر تحديث")}:{" "}
+              {t("Last updated", "آخر تحدي��")}:{" "}
               {lastUpdated.toLocaleTimeString()}
             </span>
           )}
