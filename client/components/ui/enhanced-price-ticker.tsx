@@ -41,13 +41,16 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
   // Fetch price for a single symbol
   const fetchSymbolPrice = async (symbol: string): Promise<void> => {
     try {
-      // Set connecting status
+      // Set connecting status with safe defaults
       setPriceData((prev) => ({
         ...prev,
         [symbol]: {
-          ...prev[symbol],
           symbol,
           displayName: TICKER_CONFIG.find((c) => c.symbol === symbol)?.displayName || symbol,
+          price: prev[symbol]?.price || null,
+          change: prev[symbol]?.change || null,
+          changePercent: prev[symbol]?.changePercent || null,
+          lastUpdate: prev[symbol]?.lastUpdate || new Date(),
           status: "connecting",
         },
       }));
