@@ -740,15 +740,13 @@ export default function EnhancedMacroCalendar({
               <SelectTrigger className="h-9">
                 <SelectValue />
               </SelectTrigger>
-              <SelectPortal>
-                <SelectContent className="z-[100] max-h-72 overflow-auto">
-                  {EVENT_CATEGORIES.map((category) => (
-                    <SelectItem key={category.value} value={category.value}>
-                      {language === "ar" ? category.labelAr : category.labelEn}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </SelectPortal>
+              <SelectContent className="z-[100] max-h-72 overflow-auto">
+                {EVENT_CATEGORIES.map((category) => (
+                  <SelectItem key={category.value} value={category.value}>
+                    {language === "ar" ? category.labelAr : category.labelEn}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
 
