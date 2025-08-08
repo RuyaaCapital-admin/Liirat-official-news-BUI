@@ -1,55 +1,36 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import fetch from "node-fetch";
 
-// Real price data fetcher using EODHD API
-async function getRealPriceData(symbol: string): Promise<any | null> {
-  const apiKey = process.env.EODHD_API_KEY;
-  if (!apiKey) {
-    return null;
-  }
+const EOD_API_URL = "https://eodhd.com/api/real-time";
+const apiKey = process.env.EODHD_API_KEY || "";
+
+async function getRealPrice(symbol: string) {
+  if (!apiKey) return null;
 
   try {
-    const response = await fetch(
-      `https://eodhd.com/api/real-time/forex?s=${encodeURIComponent(symbol)}&api_token=${apiKey}&fmt=json`,
-    );
+    const url = `${EOD_API_URL}/${encodeURI(symbol)}?api_token=${apiKey}&fmt=json`;
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`EODHD API returned ${resp.status}`);
 
-    if (!response.ok) {
-      throw new Error(`EODHD API returned ${response.status}`);
-    }
+    let data = await resp.json();
+    if (Array.isArray(data)) data = data[0];
 
-    const data = await response.json();
-
-    if (Array.isArray(data) && data.length > 0) {
-      const item = data[0];
-      return {
-        symbol: symbol.toUpperCase(),
-        price: parseFloat(item.close || item.price || item.last || 0),
-        change: parseFloat(item.change || 0),
-        changePercent: parseFloat(item.change_p || item.change_percent || 0),
-        timestamp: Date.now(),
-        source: "eodhd_api",
-        realTime: true,
-      };
-    } else if (data && typeof data === "object" && data.code) {
-      return {
-        symbol: symbol.toUpperCase(),
-        price: parseFloat(data.close || data.price || data.last || 0),
-        change: parseFloat(data.change || 0),
-        changePercent: parseFloat(data.change_p || data.change_percent || 0),
-        timestamp: Date.now(),
-        source: "eodhd_api",
-        realTime: true,
-      };
-    }
-
-    return null;
-  } catch (error) {
-    console.error(`Error fetching real price for ${symbol}:`, error);
+    return {
+      symbol: (data.code || symbol).toUpperCase(),
+      price: Number(data.close || data.price || data.last || 0),
+      change: Number(data.change || 0),
+      changePercent: Number(data.change_percent || 0),
+      timestamp: Date.now(),
+      source: "eodhd_api",
+      realTime: true,
+    };
+  } catch (err) {
+    console.error(`Error fetching real price for ${symbol}:`, err);
     return null;
   }
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Set CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -63,41 +44,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { symbol } = req.query;
-
+  const symbol = req.query.symbol;
   if (!symbol || typeof symbol !== "string") {
-    return res.status(400).json({
-      error: "Symbol parameter required",
-      realTime: false,
-    });
+    return res.status(400).json({ error: "Symbol parameter is required" });
   }
 
-  if (!process.env.EODHD_API_KEY) {
-    return res.status(500).json({
-      error: "EODHD API key not configured",
-      symbol: symbol.toUpperCase(),
-      realTime: false,
-    });
+  const priceData = await getRealPrice(symbol);
+  if (!priceData) {
+    return res.status(404).json({ error: `No data found for symbol ${symbol}` });
   }
 
-  try {
-    const priceData = await getRealPriceData(symbol);
-
-    if (priceData) {
-      return res.status(200).json(priceData);
-    } else {
-      return res.status(404).json({
-        error: `No price data found for ${symbol}`,
-        symbol: symbol.toUpperCase(),
-        realTime: false,
-      });
-    }
-  } catch (error) {
-    console.error("Price alert API error:", error);
-    return res.status(500).json({
-      error: `Failed to fetch real price for ${symbol}`,
-      symbol: symbol.toUpperCase(),
-      realTime: false,
-    });
-  }
+  res.status(200).json(priceData);
 }
