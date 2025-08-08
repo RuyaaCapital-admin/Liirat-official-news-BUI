@@ -198,34 +198,61 @@ export default function Index() {
       if (response.ok) {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
-          const data: EconomicEventsResponse = await response.json();
+          const data = await response.json();
           if (data.error) {
             setEventsError(data.error);
             setEconomicEvents([]);
-          } else if (data.error && data.events?.length === 0) {
-            // Handle API access restricted message
-            setEventsError(data.error);
-            setEconomicEvents([]);
           } else {
-            // Transform server response to match client interface
-            const transformedEvents = (data.items || []).map((item: any) => ({
-              date: item.datetimeIso ? item.datetimeIso.split("T")[0] : "",
-              time: item.datetimeIso
-                ? item.datetimeIso.split("T")[1]?.replace("Z", "")
-                : "",
-              country: item.country || "",
-              event: item.event || "",
-              category: item.category || "",
-              importance:
-                item.importance === "high"
-                  ? 3
-                  : item.importance === "medium"
-                    ? 2
-                    : 1,
-              actual: item.actual || "",
-              forecast: item.forecast || "",
-              previous: item.previous || "",
-            }));
+            // Use exact EODHD response format - no transformation
+            const events = Array.isArray(data) ? data : (data.data || []);
+            const transformedEvents = events.map((item: any) => {
+              // Use Gregorian formatting only, no Hijri
+              const fmt = new Intl.DateTimeFormat('en-US', {
+                calendar: "gregory",
+                hour12: false,
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                timeZone: "Asia/Dubai"
+              });
+
+              let date = "";
+              let time = "";
+
+              if (item.date) {
+                try {
+                  const eventDate = new Date(item.date);
+                  if (!isNaN(eventDate.getTime())) {
+                    const parts = fmt.formatToParts(eventDate);
+                    const year = parts.find(p => p.type === 'year')?.value || '';
+                    const month = parts.find(p => p.type === 'month')?.value || '';
+                    const day = parts.find(p => p.type === 'day')?.value || '';
+                    const hour = parts.find(p => p.type === 'hour')?.value || '';
+                    const minute = parts.find(p => p.type === 'minute')?.value || '';
+
+                    date = `${year}-${month}-${day}`;
+                    time = `${hour}:${minute}`;
+                  }
+                } catch (e) {
+                  console.warn('Date parsing error:', e);
+                }
+              }
+
+              return {
+                date,
+                time,
+                country: item.country || "",
+                event: item.event || "",
+                category: item.category || "",
+                // Use exact importance as returned by EODHD
+                importance: item.importance || "",
+                actual: item.actual || "",
+                forecast: item.forecast || item.estimate || "",
+                previous: item.previous || "",
+              };
+            });
             setEconomicEvents(transformedEvents);
             setEventsError(null);
           }
