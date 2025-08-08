@@ -374,7 +374,7 @@ export default function EnhancedMacroCalendar({
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
       if (dateA !== dateB) return dateA - dateB;
-      return b.importance - a.importance; // Higher importance first
+      return normalizeImportance(b.importance) - normalizeImportance(a.importance); // Higher importance first
     });
   }, [
     events,
@@ -895,7 +895,7 @@ export default function EnhancedMacroCalendar({
                     {dateTo
                       ? format(dateTo, "MMM dd, yyyy")
                       : language === "ar"
-                        ? "اخت�� التاريخ"
+                        ? "اختر التاريخ"
                         : "Pick a date"}
                   </Button>
                 </PopoverTrigger>
