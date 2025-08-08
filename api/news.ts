@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getNews } from "../server/routes/eodhd";
+import { handleEODHDNews } from "../server/routes/eodhd-api";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Set CORS headers
@@ -18,7 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    await getNews(req as any, res as any, () => {});
+    await handleEODHDNews(req as any, res as any, () => {});
   } catch (error) {
     console.error("News API error:", error);
     res.status(500).json({
