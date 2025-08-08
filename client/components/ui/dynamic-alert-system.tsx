@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
 import { toast } from "sonner";
+import { fetchSpot } from "@/lib/alerts";
 
 interface PriceAlert {
   id: string;
