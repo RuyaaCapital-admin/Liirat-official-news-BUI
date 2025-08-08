@@ -140,22 +140,42 @@ export default function EnhancedPriceTicker({ className }: TickerProps) {
   const handleMouseEnter = () => setIsScrolling(false);
   const handleMouseLeave = () => setIsScrolling(true);
 
-  const formatPrice = (price: number, symbol: string): string => {
+  const formatPrice = (price: number | undefined | null, symbol: string): string => {
+    // Handle undefined, null, or invalid price values
+    if (price == null || isNaN(price) || price === 0) {
+      return "-.--";
+    }
+
+    const validPrice = Number(price);
+    if (isNaN(validPrice)) {
+      return "-.--";
+    }
+
     if (symbol.includes("JPY")) {
-      return price.toFixed(3);
+      return validPrice.toFixed(3);
     } else if (symbol.includes("BTC") || symbol.includes("ETH")) {
-      return price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return validPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     } else if (symbol.includes("XAU") || symbol.includes("XAG")) {
-      return price.toFixed(2);
+      return validPrice.toFixed(2);
     } else if (symbol.includes(".US")) {
-      return price.toFixed(2);
+      return validPrice.toFixed(2);
     } else {
-      return price.toFixed(5);
+      return validPrice.toFixed(5);
     }
   };
 
-  const formatChange = (changePercent: number): string => {
-    return `${changePercent > 0 ? "+" : ""}${changePercent.toFixed(2)}%`;
+  const formatChange = (changePercent: number | undefined | null): string => {
+    // Handle undefined, null, or invalid changePercent values
+    if (changePercent == null || isNaN(changePercent)) {
+      return "0.00%";
+    }
+
+    const validChange = Number(changePercent);
+    if (isNaN(validChange)) {
+      return "0.00%";
+    }
+
+    return `${validChange > 0 ? "+" : ""}${validChange.toFixed(2)}%`;
   };
 
   const symbols = Object.values(priceData);
