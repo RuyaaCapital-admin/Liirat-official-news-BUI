@@ -6,7 +6,8 @@ const BASE = "https://eodhd.com/api";
 
 // Helper to build query string with API token
 function qs(input: Record<string, any> = {}) {
-  const token = process.env.EODHD_API_KEY || "";
+  const token = process.env.EODHD_API_KEY || process.env.EODHD_API_TOKEN || "";
+ || "";
   if (!token) throw new Error("EODHD_API_KEY not set");
 
   const params = new URLSearchParams();
