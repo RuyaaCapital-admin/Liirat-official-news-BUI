@@ -7,10 +7,12 @@ export async function fetchCalendar(params: { from:string; to:string; countries?
   const r = await fetch(u); if (!r.ok) throw new Error("calendar"); return r.json();
 }
 export const adaptCalendar = (x:any)=>({
-  dt: (x.date || x.event_date || x.released || "") + " " + (x.time || x.event_time || ""),
+  date: x.date || x.event_date || x.released || "",
+  time: x.time || x.event_time || "",
   country: x.country || x.country_code || "",
-  title: x.title || x.event || "",
-  importance: x.importance || x.impact || "",
+  event: x.title || x.event || "",
+  category: x.category || "",
+  importance: parseInt(String(x.importance || x.impact || "1")) || 1,
   actual: x.actual ?? x.value ?? "",
   forecast: x.forecast ?? "",
   previous: x.previous ?? ""
