@@ -1,0 +1,26 @@
+/* ticker.css */
+:root { 
+  --navbar-height: 64px; 
+  --ticker-duration: 40s; /* adjust duration if needed */
+}
+
+.ticker-wrap{
+  position: sticky;         /* sits below navbar, never overlaps */
+  top: var(--navbar-height);
+  z-index: 20;
+  overflow: hidden;
+  backdrop-filter: saturate(1);
+}
+
+.ticker-track{
+  display: inline-flex;
+  gap: 24px;
+  white-space: nowrap;
+  will-change: transform;
+  animation: ticker-scroll var(--ticker-duration) linear infinite; /* slow loop */
+}
+
+@keyframes ticker-scroll{
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); } /* track is duplicated for seamless loop */
+}
