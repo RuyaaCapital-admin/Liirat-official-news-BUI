@@ -390,7 +390,7 @@ export default function Index() {
                   <CardTitle className="flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-primary" />
                     {language === "ar"
-                      ? "التقويم الاقتصا��ي المباشر"
+                      ? "التقويم الاقتصادي المباشر"
                       : "Live Economic Calendar"}
                   </CardTitle>
                   <CardDescription>
