@@ -26,7 +26,7 @@ export default function PriceTicker(){
   },[]);
 
   const renderItem=(q:any)=>(
-    <div key={q.code} className="flex items-center gap-1 min-w-max">
+    <div key={q.key||q.code} className="flex items-center gap-1 min-w-max">
       <span>{q.code}</span>
       <strong>{q.price?.toLocaleString()}</strong>
       <span className={q.change>=0?"text-green-500":"text-red-500"}>
