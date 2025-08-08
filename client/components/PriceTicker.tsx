@@ -68,11 +68,14 @@ export default function PriceTicker(){
     );
   }
 
+  if (!items.length && !error) {
+    return null;
+  }
+
   return (
     <div className="ticker-wrap bg-background/95 backdrop-blur-sm border-b border-border/50">
       <div className="ticker-track">
-        {items.map((q,i)=>renderItem({...q,key:`a-${i}`}))}
-        {items.map((q,i)=>renderItem({...q,key:`b-${i}`}))}
+        {items.map((q,i)=>renderItem({...q,key:`${i}`}))}
       </div>
       {error && (
         <div className="absolute top-0 right-4 text-xs text-red-500 py-1">
