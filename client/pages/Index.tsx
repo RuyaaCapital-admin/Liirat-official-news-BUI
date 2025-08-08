@@ -157,7 +157,7 @@ export default function Index() {
         if (error.message.includes("Network connection failed")) {
           errorMessage =
             language === "ar"
-              ? "خطأ في الاتصال بالشبكة. يرجى التحقق من اتصال الإنترنت والمح��ولة مرة أخرى."
+              ? "خطأ في الاتصال بالشبكة. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى."
               : "Network connection failed. Please check your internet connection and try again.";
         } else if (error.message.includes("Request timeout")) {
           errorMessage =
@@ -350,7 +350,7 @@ export default function Index() {
                     }
                     aria-label="Navigate to news section"
                   >
-                    {language === "ar" ? "الأ��بار المباشرة" : "Live News"}
+                    {language === "ar" ? "الأخبار المباشرة" : "Live News"}
                   </Button>
                   <Button
                     variant="outline"
@@ -446,7 +446,7 @@ export default function Index() {
                               <Bell className="w-4 h-4 mr-2" />
                               <span>
                                 {language === "ar"
-                                  ? "عرض بيانات تجريبية - سيتم التحديث عند استعادة الاتصال"
+                                  ? "عرض بيانات تجريبية - سيتم التحديث ��ند استعادة الاتصال"
                                   : "Data will update when connection is restored"}
                               </span>
                             </div>
@@ -588,7 +588,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيه��ت ذكية لأي رمز مالي مع مراقبة الأسعار في الوقت الفعلي"
+                    ? "قم بإنشاء تنبيهات ذكية لأي رمز مالي مع مراقبة الأسعار في الوقت الفعلي"
                     : "Create intelligent alerts for any financial symbol with real-time price monitoring"}
                 </p>
               </div>
