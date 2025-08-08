@@ -96,9 +96,9 @@ export default function Index() {
         || (activeImportance==="medium" && v.includes("medium"))
         || (activeImportance==="low" && v.includes("low"));
   };
-  const filterCategory = (title:string, activeCategory?: string)=> {
+  const filterCategory = (event:string, activeCategory?: string)=> {
     if (!activeCategory || activeCategory==="all") return true;
-    return title?.toLowerCase().includes(activeCategory.toLowerCase());
+    return event?.toLowerCase().includes(activeCategory.toLowerCase());
   };
 
   // Fetch economic events data with new utilities - show top 10 immediately
@@ -129,8 +129,8 @@ export default function Index() {
       });
 
       const rows = (Array.isArray(raw) ? raw : []).map(adaptCalendar)
-        .filter(r => filterImportance(r.importance) && filterCategory(r.title));
-      rows.sort((a,b)=> new Date(a.dt).getTime() - new Date(b.dt).getTime());
+        .filter(r => filterImportance(r.importance) && filterCategory(r.event));
+      rows.sort((a,b)=> new Date(a.date + " " + (a.time || "")).getTime() - new Date(b.date + " " + (b.time || "")).getTime());
 
       const initial = rows.slice(0,10); // show 10 immediately
       setEconomicEvents(initial);
@@ -454,7 +454,7 @@ export default function Index() {
                             // Create an actual alert for the economic event
                             const message =
                               language === "ar"
-                                ? `تنبيه حدث اقتصادي: ${event.event} - ${event.country} - ��لوقت: ${event.time || "غير محدد"}`
+                                ? `تنبيه حدث اقتصادي: ${event.event} - ${event.country} - الوقت: ${event.time || "غير محدد"}`
                                 : `Economic Event Alert: ${event.event} - ${event.country} - Time: ${event.time || "TBD"}`;
 
                             const eventName =
