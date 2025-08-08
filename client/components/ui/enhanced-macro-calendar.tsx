@@ -417,10 +417,20 @@ export default function EnhancedMacroCalendar({
 
   // Auto-translate events when language changes to Arabic (with debouncing)
   useEffect(() => {
-    // Disable auto-translation to prevent API errors and show real event titles
-    // Translation will only happen on manual request to avoid overwhelming the API
-    // and ensure users see real event data immediately
-    return;
+    if (language === "ar" && displayedEvents.length > 0) {
+      // Translate only the first few events to avoid overwhelming the API
+      const timer = setTimeout(() => {
+        displayedEvents.slice(0, 3).forEach((event, index) => {
+          setTimeout(() => {
+            translateContent(event).catch(() => {
+              // Silent fail - keep original text
+            });
+          }, index * 500); // Stagger requests
+        });
+      }, 1000); // Debounce
+
+      return () => clearTimeout(timer);
+    }
   }, [language, displayedEvents]);
 
   // Handle time period changes
@@ -1243,7 +1253,7 @@ export default function EnhancedMacroCalendar({
             ) : (
               <>
                 <ChevronDown className="w-4 h-4" />
-                {language === "ar" ? "عرض المزيد" : "Show More"}
+                {language === "ar" ? "ع��ض المزيد" : "Show More"}
               </>
             )}
           </Button>
