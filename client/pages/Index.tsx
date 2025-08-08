@@ -133,7 +133,7 @@ export default function Index() {
         .filter(r => filterImportance(r.importance) && filterCategory(r.title));
       const sorted = sortCalendarByTime(rows);
 
-      const initial = sorted.slice(0,10); // show 10 nearest by time immediately
+      const initial = sorted.slice(0,6); // show 6 nearest by time immediately
       setEconomicEvents(initial);
       setEventsError(null);
     } catch (error) {
@@ -577,7 +577,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيهات ذكية لأي رمز مالي مع مراقبة الأسعار في الوقت الفعلي"
+                    ? "قم بإنشاء تنبيه��ت ذكية لأي رمز مالي مع مراقبة الأسعار في الوقت الفعلي"
                     : "Create intelligent alerts for any financial symbol with real-time price monitoring"}
                 </p>
               </div>
