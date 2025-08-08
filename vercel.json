@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "functions": { "api/index.ts": { "runtime": "nodejs18.x" } },
+  "functions": { "api/index.ts": { "runtime": "nodejs22.x" } },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index.ts" },
     { "source": "/((?!api).*)", "destination": "/index.html" }
