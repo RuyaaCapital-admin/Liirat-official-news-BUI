@@ -1,0 +1,548 @@
+[05:42:00.564] Running build in Washington, D.C., USA (East) – iad1
+[05:42:00.564] Build machine configuration: 2 cores, 8 GB
+[05:42:00.579] Cloning github.com/RuyaaCapital-admin/Liirat-official-news-BUI (Branch: main, Commit: 7396c6e)
+[05:42:00.886] Cloning completed: 306.000ms
+[05:42:00.934] Found .vercelignore
+[05:42:00.944] Removed 51 ignored files defined in .vercelignore
+[05:42:00.945]   /.git/config
+[05:42:00.945]   /.git/description
+[05:42:00.945]   /.git/FETCH_HEAD
+[05:42:00.945]   /.git/HEAD
+[05:42:00.945]   /.git/hooks/applypatch-msg.sample
+[05:42:00.945]   /.git/hooks/commit-msg.sample
+[05:42:00.945]   /.git/hooks/fsmonitor-watchman.sample
+[05:42:00.945]   /.git/hooks/post-update.sample
+[05:42:00.945]   /.git/hooks/pre-applypatch.sample
+[05:42:00.945]   /.git/hooks/pre-commit.sample
+[05:42:03.225] Skipping build cache since Node.js version changed from "22.x" to "20.x"
+[05:42:05.319] Running "vercel build"
+[05:42:05.733] Vercel CLI 44.7.3
+[05:42:06.400] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:42:06.405] Running "install" command: `npm install`...
+[05:42:11.323] npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+[05:42:11.575] npm warn deprecated npmlog@5.0.1: This package is no longer supported.
+[05:42:12.031] npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+[05:42:12.333] npm warn deprecated gauge@3.0.2: This package is no longer supported.
+[05:42:12.694] npm warn deprecated are-we-there-yet@2.0.0: This package is no longer supported.
+[05:42:12.906] npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+[05:42:13.572] npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+[05:42:13.733] npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+[05:42:21.764] 
+[05:42:21.764] added 720 packages, and audited 721 packages in 15s
+[05:42:21.764] 
+[05:42:21.765] 106 packages are looking for funding
+[05:42:21.765]   run `npm fund` for details
+[05:42:21.779] 
+[05:42:21.779] 4 vulnerabilities (2 moderate, 2 high)
+[05:42:21.779] 
+[05:42:21.780] To address all issues (including breaking changes), run:
+[05:42:21.780]   npm audit fix --force
+[05:42:21.780] 
+[05:42:21.780] Run `npm audit` for details.
+[05:42:22.058] 
+[05:42:22.059] > build:client
+[05:42:22.059] > vite build
+[05:42:22.059] 
+[05:42:22.316] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:42:22.619] transforming...
+[05:42:28.526] [32m✓[39m 2603 modules transformed.
+[05:42:28.967] rendering chunks...
+[05:42:28.975] computing gzip size...
+[05:42:28.994] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:42:28.994] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:42:28.995] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:42:28.995] [33m
+[05:42:28.995] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:42:28.995] - Using dynamic import() to code-split the application
+[05:42:28.995] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:42:28.996] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:42:28.996] [32m✓ built in 6.66s[39m
+[05:42:29.055] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:42:29.063] Installing dependencies...
+[05:42:30.452] 
+[05:42:30.453] up to date in 1s
+[05:42:30.453] 
+[05:42:30.454] 106 packages are looking for funding
+[05:42:30.454]   run `npm fund` for details
+[05:42:30.470] Running "npm run vercel-build"
+[05:42:30.598] 
+[05:42:30.598] > vercel-build
+[05:42:30.598] > npm run build:client
+[05:42:30.598] 
+[05:42:30.781] 
+[05:42:30.782] > build:client
+[05:42:30.782] > vite build
+[05:42:30.782] 
+[05:42:31.070] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:42:31.449] transforming...
+[05:42:37.549] [32m✓[39m 2603 modules transformed.
+[05:42:37.975] rendering chunks...
+[05:42:37.983] computing gzip size...
+[05:42:38.001] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:42:38.002] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:42:38.002] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:42:38.003] [33m
+[05:42:38.003] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:42:38.003] - Using dynamic import() to code-split the application
+[05:42:38.003] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:42:38.004] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:42:38.004] [32m✓ built in 6.91s[39m
+[05:42:38.250] Using TypeScript 5.6.2 (local user-provided)
+[05:42:42.519] api/eodhd/calendar.ts(1,26): error TS2307: Cannot find module '../../src/server/eodhdClient' or its corresponding type declarations.
+[05:42:42.519] 
+[05:42:42.556] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:42:42.564] Running "npm run vercel-build"
+[05:42:42.681] 
+[05:42:42.681] > vercel-build
+[05:42:42.682] > npm run build:client
+[05:42:42.682] 
+[05:42:42.801] 
+[05:42:42.802] > build:client
+[05:42:42.802] > vite build
+[05:42:42.802] 
+[05:42:43.055] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:42:43.348] transforming...
+[05:42:49.363] [32m✓[39m 2603 modules transformed.
+[05:42:49.798] rendering chunks...
+[05:42:49.807] computing gzip size...
+[05:42:49.826] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:42:49.826] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:42:49.826] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:42:49.826] [33m
+[05:42:49.826] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:42:49.827] - Using dynamic import() to code-split the application
+[05:42:49.832] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:42:49.832] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:42:49.832] [32m✓ built in 6.74s[39m
+[05:42:49.874] Using TypeScript 5.6.2 (local user-provided)
+[05:42:49.904] api/eodhd/news.ts(1,26): error TS2307: Cannot find module '../../src/server/eodhdClient' or its corresponding type declarations.
+[05:42:49.904] 
+[05:42:49.918] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:42:49.926] Running "npm run vercel-build"
+[05:42:50.042] 
+[05:42:50.042] > vercel-build
+[05:42:50.042] > npm run build:client
+[05:42:50.043] 
+[05:42:50.163] 
+[05:42:50.163] > build:client
+[05:42:50.163] > vite build
+[05:42:50.163] 
+[05:42:50.417] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:42:50.714] transforming...
+[05:42:56.565] [32m✓[39m 2603 modules transformed.
+[05:42:56.985] rendering chunks...
+[05:42:56.994] computing gzip size...
+[05:42:57.013] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:42:57.014] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:42:57.014] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:42:57.014] [33m
+[05:42:57.014] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:42:57.015] - Using dynamic import() to code-split the application
+[05:42:57.015] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:42:57.015] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:42:57.015] [32m✓ built in 6.57s[39m
+[05:42:57.054] Using TypeScript 5.6.2 (local user-provided)
+[05:42:57.064] api/eodhd/ping.ts(1,26): error TS2307: Cannot find module '../../src/server/eodhdClient' or its corresponding type declarations.
+[05:42:57.064] 
+[05:42:57.074] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:42:57.083] Running "npm run vercel-build"
+[05:42:57.204] 
+[05:42:57.204] > vercel-build
+[05:42:57.204] > npm run build:client
+[05:42:57.204] 
+[05:42:57.331] 
+[05:42:57.331] > build:client
+[05:42:57.331] > vite build
+[05:42:57.331] 
+[05:42:57.586] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:42:57.890] transforming...
+[05:43:03.570] [32m✓[39m 2603 modules transformed.
+[05:43:04.229] rendering chunks...
+[05:43:04.240] computing gzip size...
+[05:43:04.259] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:43:04.259] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:43:04.259] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:43:04.259] [33m
+[05:43:04.260] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:43:04.260] - Using dynamic import() to code-split the application
+[05:43:04.260] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:43:04.260] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:43:04.260] [32m✓ built in 6.65s[39m
+[05:43:04.305] Using TypeScript 5.6.2 (local user-provided)
+[05:43:04.327] api/eodhd/price.ts(1,26): error TS2307: Cannot find module '../../src/server/eodhdClient' or its corresponding type declarations.
+[05:43:04.328] 
+[05:43:04.347] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:43:04.360] Running "npm run vercel-build"
+[05:43:04.482] 
+[05:43:04.482] > vercel-build
+[05:43:04.482] > npm run build:client
+[05:43:04.482] 
+[05:43:04.605] 
+[05:43:04.606] > build:client
+[05:43:04.606] > vite build
+[05:43:04.606] 
+[05:43:04.863] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:43:05.147] transforming...
+[05:43:11.190] [32m✓[39m 2603 modules transformed.
+[05:43:11.889] rendering chunks...
+[05:43:11.898] computing gzip size...
+[05:43:11.917] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:43:11.917] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:43:11.917] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:43:11.917] [33m
+[05:43:11.917] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:43:11.917] - Using dynamic import() to code-split the application
+[05:43:11.918] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:43:11.918] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:43:11.918] [32m✓ built in 7.03s[39m
+[05:43:11.964] Using TypeScript 5.6.2 (local user-provided)
+[05:43:11.973] api/eodhd/search.ts(1,26): error TS2307: Cannot find module '../../src/server/eodhdClient' or its corresponding type declarations.
+[05:43:11.973] 
+[05:43:11.991] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:43:12.007] Running "npm run vercel-build"
+[05:43:12.130] 
+[05:43:12.133] > vercel-build
+[05:43:12.133] > npm run build:client
+[05:43:12.133] 
+[05:43:12.258] 
+[05:43:12.259] > build:client
+[05:43:12.259] > vite build
+[05:43:12.259] 
+[05:43:12.770] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:43:12.830] transforming...
+[05:43:18.775] [32m✓[39m 2603 modules transformed.
+[05:43:19.446] rendering chunks...
+[05:43:19.455] computing gzip size...
+[05:43:19.474] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:43:19.474] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:43:19.474] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:43:19.475] [33m
+[05:43:19.478] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:43:19.478] - Using dynamic import() to code-split the application
+[05:43:19.478] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:43:19.484] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:43:19.486] [32m✓ built in 6.68s[39m
+[05:43:19.528] Using TypeScript 5.6.2 (local user-provided)
+[05:43:19.578] api/ai-chat.ts(6,3): error TS2353: Object literal may only specify known properties, and 'stream' does not exist in type 'ClientOptions'.
+[05:43:19.578] api/ai-chat.ts(26,28): error TS2339: Property 'json' does not exist on type 'VercelRequest'.
+[05:43:19.578] api/ai-chat.ts(28,27): error TS2339: Property 'streams' does not exist on type 'OpenAI'.
+[05:43:19.578] 
+[05:43:20.586] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:43:20.599] Running "npm run vercel-build"
+[05:43:20.724] 
+[05:43:20.725] > vercel-build
+[05:43:20.725] > npm run build:client
+[05:43:20.725] 
+[05:43:20.848] 
+[05:43:20.849] > build:client
+[05:43:20.849] > vite build
+[05:43:20.849] 
+[05:43:21.103] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:43:21.404] transforming...
+[05:43:27.415] [32m✓[39m 2603 modules transformed.
+[05:43:27.850] rendering chunks...
+[05:43:27.859] computing gzip size...
+[05:43:27.878] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:43:27.878] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:43:27.878] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:43:27.878] [33m
+[05:43:27.879] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:43:27.879] - Using dynamic import() to code-split the application
+[05:43:27.879] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:43:27.879] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:43:27.879] [32m✓ built in 6.75s[39m
+[05:43:27.929] Using TypeScript 5.6.2 (local user-provided)
+[05:43:28.021] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:43:28.034] Running "npm run vercel-build"
+[05:43:28.162] 
+[05:43:28.166] > vercel-build
+[05:43:28.166] > npm run build:client
+[05:43:28.166] 
+[05:43:28.285] 
+[05:43:28.286] > build:client
+[05:43:28.286] > vite build
+[05:43:28.286] 
+[05:43:28.539] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:43:28.834] transforming...
+[05:43:34.717] [32m✓[39m 2603 modules transformed.
+[05:43:35.164] rendering chunks...
+[05:43:35.173] computing gzip size...
+[05:43:35.191] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:43:35.192] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:43:35.192] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:43:35.193] [32m✓ built in 6.63s[39m
+[05:43:35.193] [33m
+[05:43:35.193] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:43:35.193] - Using dynamic import() to code-split the application
+[05:43:35.193] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:43:35.193] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:43:35.234] Using TypeScript 5.6.2 (local user-provided)
+[05:43:35.254] api/chat.ts(6,3): error TS2353: Object literal may only specify known properties, and 'stream' does not exist in type 'ClientOptions'.
+[05:43:35.254] api/chat.ts(26,28): error TS2339: Property 'json' does not exist on type 'VercelRequest'.
+[05:43:35.254] api/chat.ts(28,27): error TS2339: Property 'streams' does not exist on type 'OpenAI'.
+[05:43:35.255] 
+[05:43:36.094] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:43:36.103] Running "npm run vercel-build"
+[05:43:36.236] 
+[05:43:36.236] > vercel-build
+[05:43:36.237] > npm run build:client
+[05:43:36.237] 
+[05:43:36.363] 
+[05:43:36.363] > build:client
+[05:43:36.363] > vite build
+[05:43:36.363] 
+[05:43:36.623] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:43:36.923] transforming...
+[05:43:42.765] [32m✓[39m 2603 modules transformed.
+[05:43:43.183] rendering chunks...
+[05:43:43.192] computing gzip size...
+[05:43:43.212] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:43:43.213] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:43:43.213] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:43:43.213] [33m
+[05:43:43.213] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:43:43.213] - Using dynamic import() to code-split the application
+[05:43:43.213] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:43:43.214] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:43:43.214] [32m✓ built in 6.57s[39m
+[05:43:43.263] Using TypeScript 5.6.2 (local user-provided)
+[05:43:43.280] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:43:43.288] Running "npm run vercel-build"
+[05:43:43.411] 
+[05:43:43.411] > vercel-build
+[05:43:43.411] > npm run build:client
+[05:43:43.412] 
+[05:43:43.534] 
+[05:43:43.534] > build:client
+[05:43:43.534] > vite build
+[05:43:43.535] 
+[05:43:43.794] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:43:43.854] transforming...
+[05:43:49.846] [32m✓[39m 2603 modules transformed.
+[05:43:50.503] rendering chunks...
+[05:43:50.513] computing gzip size...
+[05:43:50.532] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:43:50.532] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:43:50.532] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:43:50.533] [32m✓ built in 6.71s[39m
+[05:43:50.533] [33m
+[05:43:50.533] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:43:50.533] - Using dynamic import() to code-split the application
+[05:43:50.533] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:43:50.533] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:43:50.583] Using TypeScript 5.6.2 (local user-provided)
+[05:43:50.611] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:43:50.626] Running "npm run vercel-build"
+[05:43:50.748] 
+[05:43:50.749] > vercel-build
+[05:43:50.749] > npm run build:client
+[05:43:50.749] 
+[05:43:50.873] 
+[05:43:50.873] > build:client
+[05:43:50.875] > vite build
+[05:43:50.875] 
+[05:43:51.137] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:43:51.446] transforming...
+[05:43:57.363] [32m✓[39m 2603 modules transformed.
+[05:43:57.783] rendering chunks...
+[05:43:57.792] computing gzip size...
+[05:43:57.811] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:43:57.811] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:43:57.812] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:43:57.812] [33m
+[05:43:57.812] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:43:57.814] - Using dynamic import() to code-split the application
+[05:43:57.815] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:43:57.815] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:43:57.815] [32m✓ built in 6.65s[39m
+[05:43:57.855] Using TypeScript 5.6.2 (local user-provided)
+[05:43:58.006] api/index.ts(5,28): error TS2307: Cannot find module '../server/routes/demo' or its corresponding type declarations.
+[05:43:58.007] api/index.ts(12,8): error TS2307: Cannot find module '../server/routes/ai-trading' or its corresponding type declarations.
+[05:43:58.007] api/index.ts(13,28): error TS2307: Cannot find module '../server/routes/chat' or its corresponding type declarations.
+[05:43:58.007] api/index.ts(14,34): error TS2307: Cannot find module '../server/routes/price-alert' or its corresponding type declarations.
+[05:43:58.008] api/index.ts(21,8): error TS2307: Cannot find module '../server/routes/eodhd-api' or its corresponding type declarations.
+[05:43:58.008] api/index.ts(25,8): error TS2307: Cannot find module '../server/routes/ai-analysis' or its corresponding type declarations.
+[05:43:58.008] 
+[05:43:58.519] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:43:58.527] Running "npm run vercel-build"
+[05:43:58.659] 
+[05:43:58.660] > vercel-build
+[05:43:58.660] > npm run build:client
+[05:43:58.660] 
+[05:43:58.783] 
+[05:43:58.784] > build:client
+[05:43:58.784] > vite build
+[05:43:58.784] 
+[05:43:59.042] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:43:59.348] transforming...
+[05:44:05.259] [32m✓[39m 2603 modules transformed.
+[05:44:05.709] rendering chunks...
+[05:44:05.718] computing gzip size...
+[05:44:05.737] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:44:05.737] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:44:05.738] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:44:05.738] [33m
+[05:44:05.738] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:44:05.738] - Using dynamic import() to code-split the application
+[05:44:05.738] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:44:05.739] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:44:05.739] [32m✓ built in 6.67s[39m
+[05:44:05.783] Using TypeScript 5.6.2 (local user-provided)
+[05:44:05.798] api/market-data.ts(24,10): error TS2872: This kind of expression is always truthy.
+[05:44:05.799] api/market-data.ts(24,11): error TS2304: Cannot find name 'E'.
+[05:44:05.799] 
+[05:44:05.853] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:44:05.862] Running "npm run vercel-build"
+[05:44:05.985] 
+[05:44:05.985] > vercel-build
+[05:44:05.985] > npm run build:client
+[05:44:05.985] 
+[05:44:06.109] 
+[05:44:06.109] > build:client
+[05:44:06.110] > vite build
+[05:44:06.110] 
+[05:44:06.368] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:44:06.676] transforming...
+[05:44:12.825] [32m✓[39m 2603 modules transformed.
+[05:44:13.247] rendering chunks...
+[05:44:13.256] computing gzip size...
+[05:44:13.274] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:44:13.275] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:44:13.275] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:44:13.275] [33m
+[05:44:13.276] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:44:13.276] - Using dynamic import() to code-split the application
+[05:44:13.276] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:44:13.276] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:44:13.276] [32m✓ built in 6.88s[39m
+[05:44:13.323] Using TypeScript 5.6.2 (local user-provided)
+[05:44:13.330] api/news.ts(2,25): error TS2307: Cannot find module '../server/routes/eodhd' or its corresponding type declarations.
+[05:44:13.330] 
+[05:44:13.342] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:44:13.350] Running "npm run vercel-build"
+[05:44:13.472] 
+[05:44:13.476] > vercel-build
+[05:44:13.476] > npm run build:client
+[05:44:13.477] 
+[05:44:13.599] 
+[05:44:13.599] > build:client
+[05:44:13.599] > vite build
+[05:44:13.599] 
+[05:44:13.861] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:44:14.165] transforming...
+[05:44:20.109] [32m✓[39m 2603 modules transformed.
+[05:44:20.547] rendering chunks...
+[05:44:20.556] computing gzip size...
+[05:44:20.578] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:44:20.579] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:44:20.579] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:44:20.579] [33m
+[05:44:20.579] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:44:20.579] - Using dynamic import() to code-split the application
+[05:44:20.579] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:44:20.579] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:44:20.580] [32m✓ built in 6.69s[39m
+[05:44:20.626] Using TypeScript 5.6.2 (local user-provided)
+[05:44:20.641] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:44:20.649] Running "npm run vercel-build"
+[05:44:20.776] 
+[05:44:20.777] > vercel-build
+[05:44:20.777] > npm run build:client
+[05:44:20.777] 
+[05:44:20.903] 
+[05:44:20.904] > build:client
+[05:44:20.904] > vite build
+[05:44:20.904] 
+[05:44:21.173] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:44:21.483] transforming...
+[05:44:27.472] [32m✓[39m 2603 modules transformed.
+[05:44:27.900] rendering chunks...
+[05:44:27.909] computing gzip size...
+[05:44:27.928] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:44:27.928] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:44:27.929] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:44:27.932] [33m
+[05:44:27.932] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:44:27.932] - Using dynamic import() to code-split the application
+[05:44:27.932] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:44:27.932] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:44:27.933] [32m✓ built in 6.73s[39m
+[05:44:27.975] Using TypeScript 5.6.2 (local user-provided)
+[05:44:27.993] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:44:28.001] Running "npm run vercel-build"
+[05:44:28.124] 
+[05:44:28.128] > vercel-build
+[05:44:28.128] > npm run build:client
+[05:44:28.128] 
+[05:44:28.250] 
+[05:44:28.250] > build:client
+[05:44:28.251] > vite build
+[05:44:28.251] 
+[05:44:28.519] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:44:28.823] transforming...
+[05:44:34.944] [32m✓[39m 2603 modules transformed.
+[05:44:35.389] rendering chunks...
+[05:44:35.399] computing gzip size...
+[05:44:35.418] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:44:35.419] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:44:35.419] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:44:35.419] [33m
+[05:44:35.419] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:44:35.419] - Using dynamic import() to code-split the application
+[05:44:35.419] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:44:35.419] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:44:35.420] [32m✓ built in 6.88s[39m
+[05:44:35.471] Using TypeScript 5.6.2 (local user-provided)
+[05:44:35.508] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:44:35.525] Running "npm run vercel-build"
+[05:44:35.651] 
+[05:44:35.655] > vercel-build
+[05:44:35.656] > npm run build:client
+[05:44:35.656] 
+[05:44:35.782] 
+[05:44:35.782] > build:client
+[05:44:35.782] > vite build
+[05:44:35.782] 
+[05:44:36.044] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:44:36.355] transforming...
+[05:44:42.350] [32m✓[39m 2603 modules transformed.
+[05:44:43.024] rendering chunks...
+[05:44:43.036] computing gzip size...
+[05:44:43.054] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:44:43.055] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:44:43.055] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:44:43.055] [33m
+[05:44:43.056] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:44:43.056] - Using dynamic import() to code-split the application
+[05:44:43.056] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:44:43.056] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:44:43.056] [32m✓ built in 6.98s[39m
+[05:44:43.104] Using TypeScript 5.6.2 (local user-provided)
+[05:44:43.179] Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("22.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: http://vercel.link/node-version
+[05:44:43.189] Running "npm run vercel-build"
+[05:44:43.316] 
+[05:44:43.316] > vercel-build
+[05:44:43.318] > npm run build:client
+[05:44:43.318] 
+[05:44:43.447] 
+[05:44:43.448] > build:client
+[05:44:43.448] > vite build
+[05:44:43.448] 
+[05:44:43.719] [36mvite v6.3.5 [32mbuilding for production...[36m[39m
+[05:44:44.025] transforming...
+[05:44:50.122] [32m✓[39m 2603 modules transformed.
+[05:44:50.559] rendering chunks...
+[05:44:50.569] computing gzip size...
+[05:44:50.592] [2mdist/spa/[22m[32mindex.html                 [39m[1m[2m  0.67 kB[22m[1m[22m[2m │ gzip:   0.45 kB[22m
+[05:44:50.592] [2mdist/spa/[22m[2massets/[22m[35mindex-5rUfGuL8.css  [39m[1m[2m 82.59 kB[22m[1m[22m[2m │ gzip:  14.05 kB[22m
+[05:44:50.592] [2mdist/spa/[22m[2massets/[22m[36mindex-DePY8YTD.js   [39m[1m[33m635.74 kB[39m[22m[2m │ gzip: 190.56 kB[22m
+[05:44:50.592] [33m
+[05:44:50.593] (!) Some chunks are larger than 500 kB after minification. Consider:
+[05:44:50.593] - Using dynamic import() to code-split the application
+[05:44:50.593] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[05:44:50.593] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[05:44:50.593] [32m✓ built in 6.85s[39m
+[05:44:50.643] Using TypeScript 5.6.2 (local user-provided)
+[05:44:50.716] Build Completed in /vercel/output [3m]
+[05:44:50.971] Deploying outputs...
+[05:44:53.170] Error: No more than 12 Serverless Functions can be added to a Deployment on the Hobby plan. Create a team (Pro plan) to deploy more. Learn More: https://vercel.link/function-count-limit
