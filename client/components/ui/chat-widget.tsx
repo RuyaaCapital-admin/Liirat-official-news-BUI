@@ -66,7 +66,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch(new URL("/api/chat", location.origin), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -97,7 +97,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
         id: (Date.now() + 1).toString(),
         content:
           language === "ar"
-            ? "عذراً، حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى."
+            ? "عذراً، حدث خطأ في ��لاتصال. يرجى المحاولة مرة أخرى."
             : "Sorry, there was a connection error. Please try again.",
         role: "assistant",
         timestamp: new Date(),

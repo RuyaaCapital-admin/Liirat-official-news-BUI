@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
 import { toast } from "sonner";
+import { fetchSpot } from "@/lib/alerts";
 
 interface PriceAlert {
   id: string;
@@ -227,7 +228,7 @@ export default function DynamicAlertSystem({
       setPriceLoading(true);
       try {
         const response = await fetch(
-          `/api/eodhd/price?symbols=${encodeURIComponent(symbolData.symbol)}`,
+          `/api/eodhd/price?s=${encodeURIComponent(symbolData.symbol)}`,
         );
 
         if (response.ok) {
@@ -282,12 +283,12 @@ export default function DynamicAlertSystem({
     for (const alert of activeAlerts) {
       try {
         const response = await fetch(
-          `/api/eodhd/price?symbols=${encodeURIComponent(alert.symbol)}`,
+          `/api/eodhd/price?s=${encodeURIComponent(alert.symbol)}`,
         );
         if (response.ok) {
           const data = await response.json();
-          if (data.ok && data.items && data.items.length > 0) {
-            const currentPrice = data.items[0].price;
+          const currentPrice = data.price || data.close || 0;
+          if (currentPrice > 0) {
             const targetPrice = alert.targetPrice;
 
             let shouldTrigger = false;
@@ -358,12 +359,37 @@ export default function DynamicAlertSystem({
     return () => clearInterval(interval);
   }, [checkPriceAlerts]);
 
+  // Fetch live price for selected symbol when dialog is open - poll every 5s
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isDialogOpen && selectedSymbol) {
+      const fetchPrice = async () => {
+        try {
+          setPriceLoading(true);
+          const data = await fetchSpot(selectedSymbol.symbol);
+          setCurrentPrice(data.price || data.close || null);
+        } catch (error) {
+          console.warn("Failed to fetch live price:", error);
+        } finally {
+          setPriceLoading(false);
+        }
+      };
+
+      fetchPrice(); // Initial fetch
+      interval = setInterval(fetchPrice, 5000); // Poll every 5s while dialog open
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isDialogOpen, selectedSymbol]);
+
   // Create new price alert
   const createPriceAlert = () => {
     if (!selectedSymbol || !targetPrice) {
       toast.error(
         language === "ar"
-          ? "يرجى اختيار الرمز والسعر المستهدف"
+          ? "يرجى اختي��ر الرمز والسعر المستهدف"
           : "Please select symbol and target price",
       );
       return;

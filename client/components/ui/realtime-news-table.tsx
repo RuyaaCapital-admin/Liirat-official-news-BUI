@@ -346,7 +346,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
   // Network connectivity check for translations
   const checkNetworkStatus = async (): Promise<boolean> => {
     try {
-      const response = await fetch("/api/status", {
+      const response = await fetch(new URL("/api/status", location.origin), {
         method: "GET",
         cache: "no-cache",
         signal: AbortSignal.timeout(3000),
@@ -443,16 +443,13 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      const response = await fetch("/api/ai-analysis", {
+      const response = await fetch(new URL("/api/analysis", location.origin), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           text: `${article.title}. ${article.content.substring(0, 300)}`,
-          language: language,
-          type: "news",
-          articleId: article.id, // Include article ID for tracking
         }),
         signal: controller.signal,
       });
@@ -461,9 +458,9 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
 
       if (response.ok) {
         const data = await response.json();
-        if (data.analysis) {
+        if (data.result) {
           console.log(`[AI ANALYSIS] Completed for article: ${article.id}`);
-          setAiAnalysis((prev) => ({ ...prev, [article.id]: data.analysis }));
+          setAiAnalysis((prev) => ({ ...prev, [article.id]: data.result }));
         } else {
           throw new Error("No analysis received");
         }

@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
-import EnhancedPriceTicker from "@/components/ui/enhanced-price-ticker";
+import PriceTicker from "@/components/PriceTicker";
 import { AIEventInsight } from "@/components/ui/ai-event-insight";
 import { ChatWidget } from "@/components/ui/chat-widget";
 import EnhancedMacroCalendar from "@/components/ui/enhanced-macro-calendar";
@@ -24,7 +24,14 @@ import { NotificationDropdown } from "@/components/ui/notification-dropdown";
 import { SimpleLanguageToggle } from "@/components/ui/simple-language-toggle";
 
 import { useLanguage } from "@/contexts/language-context";
+import { translate } from "@/i18n";
 import { useAlerts } from "@/contexts/alert-context";
+import {
+  fetchCalendar,
+  adaptCal,
+  sortCalendarByTime,
+  shortDT,
+} from "@/lib/calendar";
 import {
   Calendar,
   Bell,
@@ -87,7 +94,22 @@ export default function Index() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Fetch economic events data with language support and filters
+  // Filter helpers
+  const filterImportance = (imp: any, activeImportance?: string) => {
+    if (!activeImportance || activeImportance === "all") return true;
+    const v = String(imp || "").toLowerCase();
+    return (
+      (activeImportance === "high" && v.includes("high")) ||
+      (activeImportance === "medium" && v.includes("medium")) ||
+      (activeImportance === "low" && v.includes("low"))
+    );
+  };
+  const filterCategory = (event: string, activeCategory?: string) => {
+    if (!activeCategory || activeCategory === "all") return true;
+    return event?.toLowerCase().includes(activeCategory.toLowerCase());
+  };
+
+  // Fetch economic events data with new utilities - show top 10 immediately
   const fetchEconomicEvents = async (
     lang: string = language,
     filters?: {
@@ -101,144 +123,30 @@ export default function Index() {
       setIsLoadingEvents(true);
       setEventsError(null);
 
-      console.log(`Fetching economic events for language: ${lang}`);
-      console.log(`Current location: ${window.location.origin}`);
-      console.log(
-        `API endpoint will be: ${window.location.origin}/api/eodhd/calendar`,
-      );
+      const today = new Date();
+      const to = new Date(today);
+      to.setDate(to.getDate() + 7); // next 7 days
+      const pad = (n: number) => String(n).padStart(2, "0");
+      const fmt = (d: Date) =>
+        `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 
-      // First test API connectivity with health check
-      let apiHealthy = false;
-      try {
-        const healthResponse = await fetch("/api/eodhd/ping", {
-          method: "GET",
-          headers: { Accept: "application/json" },
-          signal: AbortSignal.timeout(5000), // 5 second timeout
-        });
+      const raw = await fetchCalendar({
+        from: filters?.from || fmt(today),
+        to: filters?.to || fmt(to),
+        countries: filters?.country || "",
+        limit: 50,
+      });
 
-        if (healthResponse.ok) {
-          const healthData = await healthResponse.json();
-          console.log("API Health Check:", healthData);
-          apiHealthy = true;
-        } else {
-          console.warn(`API health check failed: ${healthResponse.status}`);
-        }
-      } catch (healthError) {
-        console.warn("API health check failed:", healthError);
-        // Continue anyway, maybe the specific endpoint will work
-      }
+      const rows = (Array.isArray(raw) ? raw : [])
+        .map(adaptCal)
+        .filter(
+          (r) => filterImportance(r.importance) && filterCategory(r.title),
+        );
+      const sorted = sortCalendarByTime(rows);
 
-      // Build query parameters with filters
-      const params = new URLSearchParams();
-      params.append("limit", "50"); // Limit to 50 events for better performance
-
-      // Add date range - these are REQUIRED by EODHD API
-      const fromDate = filters?.from || new Date().toISOString().split("T")[0]; // Today
-      const toDate =
-        filters?.to ||
-        new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-          .toISOString()
-          .split("T")[0]; // Next 7 days
-      params.append("from", fromDate);
-      params.append("to", toDate);
-
-      // Add importance filter
-      if (filters?.importance?.length) {
-        params.append("importance", filters.importance.join(","));
-      } else {
-        params.append("importance", "3,2,1"); // Default to all importance levels
-      }
-
-      // Add country filter
-      if (filters?.country) {
-        params.append("country", filters.country);
-      }
-
-      // Fetch from EODHD calendar endpoint with robust error handling
-      console.log(
-        `Attempting to fetch economic events from: /api/eodhd/calendar?${params.toString()}`,
-      );
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
-
-      let response;
-      try {
-        response = await fetch(`/api/eodhd/calendar?${params.toString()}`, {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          signal: controller.signal,
-        });
-      } catch (fetchError) {
-        clearTimeout(timeoutId);
-        console.error("Network error when fetching calendar:", fetchError);
-
-        // Handle specific network errors
-        if (
-          fetchError instanceof TypeError &&
-          fetchError.message.includes("fetch")
-        ) {
-          throw new Error(
-            "Network connection failed. Please check your internet connection and try again.",
-          );
-        } else if (fetchError.name === "AbortError") {
-          throw new Error(
-            "Request timeout. The server took too long to respond.",
-          );
-        } else {
-          throw new Error(`Network error: ${fetchError.message}`);
-        }
-      }
-
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const data: EconomicEventsResponse = await response.json();
-          if (data.error) {
-            setEventsError(data.error);
-            setEconomicEvents([]);
-          } else if (data.error && data.events?.length === 0) {
-            // Handle API access restricted message
-            setEventsError(data.error);
-            setEconomicEvents([]);
-          } else {
-            // Transform server response to match client interface
-            const transformedEvents = (data.items || []).map((item: any) => ({
-              date: item.datetimeIso ? item.datetimeIso.split("T")[0] : "",
-              time: item.datetimeIso
-                ? item.datetimeIso.split("T")[1]?.replace("Z", "")
-                : "",
-              country: item.country || "",
-              event: item.event || "",
-              category: item.category || "",
-              importance:
-                item.importance === "high"
-                  ? 3
-                  : item.importance === "medium"
-                    ? 2
-                    : 1,
-              actual: item.actual || "",
-              forecast: item.forecast || "",
-              previous: item.previous || "",
-            }));
-            setEconomicEvents(transformedEvents);
-            setEventsError(null);
-          }
-        } else {
-          console.warn("Events API returned non-JSON content:", contentType);
-          setEventsError("Invalid response format");
-          setEconomicEvents([]);
-        }
-      } else {
-        console.warn("Events API returned non-OK status:", response.status);
-        setEventsError(`API Error: ${response.status}`);
-        setEconomicEvents([]);
-      }
+      const initial = sorted.slice(0, 6); // show 6 nearest by time immediately
+      setEconomicEvents(initial);
+      setEventsError(null);
     } catch (error) {
       console.error("Failed to fetch economic events:", error);
 
@@ -320,23 +228,18 @@ export default function Index() {
       </div>
 
       {/* All content with relative positioning */}
-      <div className="relative z-10 pt-[120px]">
+      <div className="relative z-10">
         <main role="main">
-          {/* Real-Time EODHD Market Ticker - Always Visible */}
-          <div className="fixed top-0 left-0 right-0 z-[70] w-full">
-            <EnhancedPriceTicker className="w-full" />
-          </div>
-
-          {/* Floating Navigation Header */}
+          {/* Fixed Navigation Header - Always on top */}
           <header
-            className={`fixed left-1/2 transform -translate-x-1/2 z-[60] transition-all duration-300 ease-in-out ${isNavbarVisible ? "top-16" : "top-16"} mx-2 max-w-[calc(100vw-1rem)]`}
+            className={`fixed left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ease-in-out ${isNavbarVisible ? "top-2 sm:top-4" : "-top-20"} mx-1 sm:mx-2 max-w-[calc(100vw-0.5rem)] sm:max-w-[calc(100vw-1rem)]`}
           >
-            <div className="neumorphic-card bg-background/95 backdrop-blur-md rounded-full px-2 sm:px-4 lg:px-6 py-2 sm:py-3 flex items-center justify-between shadow-lg border border-border/50 w-full max-w-full">
+            <div className="neumorphic-card bg-background/95 backdrop-blur-md rounded-full px-2 sm:px-4 lg:px-6 py-1.5 sm:py-2 lg:py-3 flex items-center justify-between shadow-lg border border-border/50 w-full max-w-full">
               <div className="flex items-center">
                 <img
                   src="/liirat-logo-new.png"
                   alt="Liirat News"
-                  className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                  className="h-6 sm:h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
                   onClick={() =>
                     window.scrollTo({ top: 0, behavior: "smooth" })
                   }
@@ -363,7 +266,7 @@ export default function Index() {
                   className="flex items-center space-x-1 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
                 >
                   <Newspaper className="w-3 h-3" />
-                  <span>{language === "ar" ? "الأخبار" : "News"}</span>
+                  <span>{translate("navNews", language, "News")}</span>
                 </a>
                 <a
                   href="#alerts"
@@ -389,15 +292,20 @@ export default function Index() {
               </nav>
 
               <div className="flex items-center space-x-0.5 sm:space-x-1">
-                <NotificationDropdown className="h-8 w-8" />
+                <NotificationDropdown className="h-6 w-6 sm:h-8 sm:w-8" />
                 <SimpleLanguageToggle />
                 <NewLiquidToggle />
               </div>
             </div>
           </header>
 
+          {/* Real-Time EODHD Market Ticker - Below fixed navbar */}
+          <div className="pt-16 sm:pt-20">
+            <PriceTicker />
+          </div>
+
           {/* Hero Section */}
-          <section className="pt-20 pb-12 sm:py-20 lg:py-32 relative overflow-hidden px-2 sm:px-0">
+          <section className="pt-[calc(var(--nav-h)+4rem)] pb-12 sm:py-20 lg:py-32 relative overflow-hidden px-2 sm:px-0">
             {/* Official Logo Background Pattern */}
             <div className="absolute inset-0">
               <div className="w-full h-full bg-gradient-to-br from-primary/5 via-background to-primary/10"></div>
@@ -482,7 +390,7 @@ export default function Index() {
                   <CardTitle className="flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-primary" />
                     {language === "ar"
-                      ? "التقويم الاقتصادي المباشر"
+                      ? "التقويم الاقتصا��ي المباشر"
                       : "Live Economic Calendar"}
                   </CardTitle>
                   <CardDescription>
@@ -560,7 +468,7 @@ export default function Index() {
                             // Create an actual alert for the economic event
                             const message =
                               language === "ar"
-                                ? `تنبيه حدث اقتصادي: ${event.event} - ${event.country} - الوقت: ${event.time || "غير محدد"}`
+                                ? `تنبيه حدث ��قتصادي: ${event.event} - ${event.country} - الوقت: ${event.time || "غير محدد"}`
                                 : `Economic Event Alert: ${event.event} - ${event.country} - Time: ${event.time || "TBD"}`;
 
                             const eventName =
@@ -680,7 +588,7 @@ export default function Index() {
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                   {language === "ar"
-                    ? "قم بإنشاء تنبيهات ذكية لأي رمز مالي مع مراقبة الأسعار في الوقت الفعلي"
+                    ? "قم بإنشاء تنبيه��ت ذكية لأي رمز مالي مع مراقبة الأسعار في الوقت الفعلي"
                     : "Create intelligent alerts for any financial symbol with real-time price monitoring"}
                 </p>
               </div>

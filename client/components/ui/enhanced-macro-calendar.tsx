@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { EconomicEvent } from "@shared/api";
 import { cn } from "@/lib/utils";
+import { formatCalendarDate, getCurrentWeekRange } from "@/lib/calendar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +41,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { useLanguage } from "@/contexts/language-context";
+import { CountrySelect } from "@/components/CountrySelect";
 
 interface EnhancedMacroCalendarProps {
   events: EconomicEvent[];
@@ -122,9 +124,9 @@ export default function EnhancedMacroCalendar({
   // State management
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
-  const [selectedImportance, setSelectedImportance] = useState<number[]>([
-    1, 2, 3,
-  ]);
+  const [selectedImportance, setSelectedImportance] = useState<
+    "all" | "high" | "medium" | "low"
+  >("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedTimezone, setSelectedTimezone] = useState("UTC");
   const [selectedPeriod, setSelectedPeriod] = useState("this_week");
@@ -151,12 +153,13 @@ export default function EnhancedMacroCalendar({
   >({});
 
   // Helper functions
-  const getImportanceColor = (importance: number) => {
-    switch (importance) {
+  const getImportanceColor = (importance: number | string) => {
+    const normalizedImp = normalizeImportance(importance);
+    switch (normalizedImp) {
       case 3:
         return "bg-red-500 text-white";
       case 2:
-        return "bg-yellow-500 text-white";
+        return "bg-orange-500 text-white";
       case 1:
         return "bg-green-500 text-white";
       default:
@@ -164,9 +167,31 @@ export default function EnhancedMacroCalendar({
     }
   };
 
-  const getImportanceLabel = (importance: number) => {
+  const normalizeImportance = (importance: number | string): number => {
+    if (typeof importance === "number") return importance;
+    const str = String(importance).toLowerCase();
+    switch (str) {
+      case "high":
+        return 3;
+      case "medium":
+        return 2;
+      case "low":
+        return 1;
+      case "3":
+        return 3;
+      case "2":
+        return 2;
+      case "1":
+        return 1;
+      default:
+        return 0;
+    }
+  };
+
+  const getImportanceLabel = (importance: number | string) => {
+    const normalizedImp = normalizeImportance(importance);
     if (language === "ar") {
-      switch (importance) {
+      switch (normalizedImp) {
         case 3:
           return "عالي";
         case 2:
@@ -177,7 +202,7 @@ export default function EnhancedMacroCalendar({
           return "غير محدد";
       }
     } else {
-      switch (importance) {
+      switch (normalizedImp) {
         case 3:
           return "High";
         case 2:
@@ -192,7 +217,24 @@ export default function EnhancedMacroCalendar({
 
   const formatDateTime = (dateString: string, timeString?: string) => {
     try {
-      // Handle various date formats
+      // Use the new Gregorian-only formatter from calendar utilities
+      const fullDateTime = timeString
+        ? `${dateString} ${timeString}`
+        : dateString;
+      return formatCalendarDate(
+        fullDateTime,
+        language === "ar" ? "ar-AE" : "en-US",
+      );
+    } catch (error) {
+      console.error("Date formatting error:", error);
+      return dateString; // Fallback to original string
+    }
+  };
+
+  // Simple fallback formatting function
+  const formatSimpleDateTime = (dateString: string, timeString?: string) => {
+    try {
+      // Handle various date formats with Gregorian calendar only
       let date: Date;
 
       // Clean up the date string if it has weird formatting
@@ -217,8 +259,9 @@ export default function EnhancedMacroCalendar({
         }
       }
 
-      // Simple, clean formatting for both Arabic and English
+      // Simple, clean formatting for both Arabic and English - Gregorian calendar only
       const options: Intl.DateTimeFormatOptions = {
+        calendar: "gregory", // Explicitly use Gregorian calendar
         month: "short",
         day: "numeric",
         timeZone: "Asia/Dubai", // Always use Dubai time
@@ -237,7 +280,7 @@ export default function EnhancedMacroCalendar({
         }
       }
 
-      // Always use en-US locale for clean, consistent formatting
+      // Always use Gregorian calendar for formatting
       return new Intl.DateTimeFormat("en-US", options).format(date);
     } catch (error) {
       console.error("Date formatting error:", error, "for:", dateString);
@@ -250,7 +293,7 @@ export default function EnhancedMacroCalendar({
   const matchesCategory = (event: EconomicEvent, category: string) => {
     if (category === "all") return true;
 
-    const eventLower = event.event.toLowerCase();
+    const eventLower = (event.title || event.event || "").toLowerCase();
     const categoryLower = event.category?.toLowerCase() || "";
 
     switch (category) {
@@ -311,7 +354,9 @@ export default function EnhancedMacroCalendar({
       // Search filter
       if (
         searchTerm &&
-        !event.event.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !(event.title || event.event || "")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) &&
         !event.country.toLowerCase().includes(searchTerm.toLowerCase())
       ) {
         return false;
@@ -325,9 +370,18 @@ export default function EnhancedMacroCalendar({
         return false;
       }
 
-      // Importance filter
-      if (!selectedImportance.includes(event.importance)) {
-        return false;
+      // Importance filter - handle both string and number formats
+      if (selectedImportance !== "all") {
+        const normalizedEventImp = normalizeImportance(event.importance);
+        const selectedImpNum =
+          selectedImportance === "high"
+            ? 3
+            : selectedImportance === "medium"
+              ? 2
+              : selectedImportance === "low"
+                ? 1
+                : 0;
+        if (normalizedEventImp !== selectedImpNum) return false;
       }
 
       // Category filter
@@ -343,7 +397,9 @@ export default function EnhancedMacroCalendar({
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
       if (dateA !== dateB) return dateA - dateB;
-      return b.importance - a.importance; // Higher importance first
+      return (
+        normalizeImportance(b.importance) - normalizeImportance(a.importance)
+      ); // Higher importance first
     });
   }, [
     events,
@@ -361,20 +417,10 @@ export default function EnhancedMacroCalendar({
 
   // Auto-translate events when language changes to Arabic (with debouncing)
   useEffect(() => {
-    // Enable real-time translation for Arabic mode with proper API configuration
-    if (language === "ar" && displayedEvents.length > 0) {
-      // Debounce translation requests to avoid overwhelming the API
-      const timer = setTimeout(() => {
-        displayedEvents.slice(0, 5).forEach((event, index) => {
-          // Stagger requests to avoid rate limiting and reduce API load
-          setTimeout(() => {
-            translateContent(event);
-          }, index * 2000); // 2 second delay between requests to reduce load
-        });
-      }, 1000);
-
-      return () => clearTimeout(timer);
-    }
+    // Disable auto-translation to prevent API errors and show real event titles
+    // Translation will only happen on manual request to avoid overwhelming the API
+    // and ensure users see real event data immediately
+    return;
   }, [language, displayedEvents]);
 
   // Handle time period changes
@@ -447,16 +493,17 @@ export default function EnhancedMacroCalendar({
 
   // Handle translation request with proper error handling and API calls
   const translateContent = async (event: EconomicEvent) => {
-    const eventKey = `${event.event}-${event.country}`;
+    const eventTitle = event.title || event.event || "Economic Event";
+    const eventKey = `${eventTitle}-${event.country}`;
 
     // Skip if already translated or currently translating
     if (translatedContent[eventKey] || loadingTranslation[eventKey]) {
-      return translatedContent[eventKey] || event.event;
+      return translatedContent[eventKey] || eventTitle;
     }
 
     // Try offline translation first
-    const offlineTranslation = getOfflineTranslation(event.event);
-    if (offlineTranslation !== event.event) {
+    const offlineTranslation = getOfflineTranslation(eventTitle);
+    if (offlineTranslation !== eventTitle) {
       setTranslatedContent((prev) => ({
         ...prev,
         [eventKey]: offlineTranslation,
@@ -469,7 +516,7 @@ export default function EnhancedMacroCalendar({
     try {
       let response;
       try {
-        response = await fetch("/api/translate", {
+        response = await fetch(new URL("/api/translate", location.origin), {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -530,18 +577,21 @@ export default function EnhancedMacroCalendar({
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      const response = await fetch("/api/ai-analysis", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        new URL("/api/ai-analysis", location.origin),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text: `${event.event} - ${event.country}. Previous: ${event.previous || "N/A"}, Forecast: ${event.forecast || "N/A"}, Actual: ${event.actual || "N/A"}`,
+            language: language,
+            type: "event",
+          }),
+          signal: controller.signal,
         },
-        body: JSON.stringify({
-          text: `${event.event} - ${event.country}. Previous: ${event.previous || "N/A"}, Forecast: ${event.forecast || "N/A"}, Actual: ${event.actual || "N/A"}`,
-          language: language,
-          type: "event",
-        }),
-        signal: controller.signal,
-      });
+      );
 
       clearTimeout(timeoutId);
 
@@ -612,7 +662,7 @@ export default function EnhancedMacroCalendar({
                 <SelectTrigger className="w-[150px]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[100] max-h-72 overflow-auto">
                   {TIME_PERIODS.map((period) => (
                     <SelectItem key={period.value} value={period.value}>
                       {language === "ar" ? period.labelAr : period.labelEn}
@@ -634,7 +684,7 @@ export default function EnhancedMacroCalendar({
                   <Globe className="w-4 h-4 mr-2" />
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[100] max-h-72 overflow-auto">
                   {TIMEZONES.map((tz) => (
                     <SelectItem key={tz.value} value={tz.value}>
                       {tz.label}
@@ -723,7 +773,7 @@ export default function EnhancedMacroCalendar({
               <SelectTrigger className="h-9">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[100] max-h-72 overflow-auto">
                 {EVENT_CATEGORIES.map((category) => (
                   <SelectItem key={category.value} value={category.value}>
                     {language === "ar" ? category.labelAr : category.labelEn}
@@ -738,50 +788,11 @@ export default function EnhancedMacroCalendar({
             <label className="text-xs font-medium text-muted-foreground">
               {language === "ar" ? "الدول" : "Countries"}
             </label>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-between h-9 text-sm"
-                >
-                  {selectedCountries.length === 0
-                    ? language === "ar"
-                      ? "جميع الدول"
-                      : "All Countries"
-                    : `${selectedCountries.length} ${language === "ar" ? "دولة" : "selected"}`}
-                  <ChevronDown className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
-                <DropdownMenuItem onClick={() => setSelectedCountries([])}>
-                  {language === "ar" ? "جميع الدول" : "All Countries"}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                {COUNTRIES.map((country) => (
-                  <DropdownMenuItem
-                    key={country}
-                    onClick={() => {
-                      setSelectedCountries((prev) =>
-                        prev.includes(country)
-                          ? prev.filter((c) => c !== country)
-                          : [...prev, country],
-                      );
-                    }}
-                  >
-                    <Checkbox
-                      checked={selectedCountries.includes(country)}
-                      className="mr-2"
-                    />
-                    <ReactCountryFlag
-                      countryCode={country}
-                      svg
-                      className="mr-2"
-                    />
-                    {country}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <CountrySelect
+              value={selectedCountries}
+              onChange={setSelectedCountries}
+              options={COUNTRIES.map((code) => ({ code, name: code }))}
+            />
           </div>
 
           {/* Importance Filter */}
@@ -789,34 +800,65 @@ export default function EnhancedMacroCalendar({
             <label className="text-xs font-medium text-muted-foreground">
               {language === "ar" ? "مستوى الأهمية" : "Importance"}
             </label>
-            <div className="flex gap-1">
-              {[3, 2, 1].map((level) => (
-                <Button
-                  key={level}
-                  variant={
-                    selectedImportance.includes(level) ? "default" : "outline"
-                  }
-                  size="sm"
-                  onClick={() => {
-                    setSelectedImportance((prev) =>
-                      prev.includes(level)
-                        ? prev.filter((l) => l !== level)
-                        : [...prev, level],
-                    );
-                  }}
-                  className={cn(
-                    "h-9 px-2 text-xs transition-all duration-200 hover:scale-105 border",
-                    selectedImportance.includes(level)
-                      ? cn(
-                          getImportanceColor(level),
-                          "shadow-md border-white/20",
-                        )
-                      : "hover:bg-muted border-border bg-background text-foreground",
-                  )}
-                >
-                  {getImportanceLabel(level)}
-                </Button>
-              ))}
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                variant={selectedImportance === "high" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedImportance("high")}
+                aria-pressed={selectedImportance === "high"}
+                className={cn(
+                  "text-xs transition-all",
+                  selectedImportance === "high"
+                    ? "bg-red-500 hover:bg-red-600 text-white border-red-500"
+                    : "hover:bg-red-50 hover:border-red-200 dark:hover:bg-red-950",
+                )}
+              >
+                {language === "ar" ? "عالي" : "High"}
+              </Button>
+              <Button
+                variant={
+                  selectedImportance === "medium" ? "default" : "outline"
+                }
+                size="sm"
+                onClick={() => setSelectedImportance("medium")}
+                aria-pressed={selectedImportance === "medium"}
+                className={cn(
+                  "text-xs transition-all",
+                  selectedImportance === "medium"
+                    ? "bg-orange-500 hover:bg-orange-600 text-white border-orange-500"
+                    : "hover:bg-orange-50 hover:border-orange-200 dark:hover:bg-orange-950",
+                )}
+              >
+                {language === "ar" ? "متوسط" : "Medium"}
+              </Button>
+              <Button
+                variant={selectedImportance === "low" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedImportance("low")}
+                aria-pressed={selectedImportance === "low"}
+                className={cn(
+                  "text-xs transition-all",
+                  selectedImportance === "low"
+                    ? "bg-green-500 hover:bg-green-600 text-white border-green-500"
+                    : "hover:bg-green-50 hover:border-green-200 dark:hover:bg-green-950",
+                )}
+              >
+                {language === "ar" ? "منخفض" : "Low"}
+              </Button>
+              <Button
+                variant={selectedImportance === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedImportance("all")}
+                aria-pressed={selectedImportance === "all"}
+                className={cn(
+                  "text-xs transition-all",
+                  selectedImportance === "all"
+                    ? "bg-primary hover:bg-primary/90 text-primary-foreground"
+                    : "hover:bg-muted",
+                )}
+              >
+                {language === "ar" ? "الكل" : "All"}
+              </Button>
             </div>
           </div>
         </div>
@@ -1046,15 +1088,10 @@ export default function EnhancedMacroCalendar({
                               dir === "rtl" ? "text-right" : "text-left",
                             )}
                           >
-                            {language === "ar" &&
-                            translatedContent[`${event.event}-${event.country}`]
-                              ? translatedContent[
-                                  `${event.event}-${event.country}`
-                                ]
-                              : event.event}
+                            {event.title || event.event || "Economic Event"}
                             {language === "ar" &&
                               loadingTranslation[
-                                `${event.event}-${event.country}`
+                                `${event.title || event.event}-${event.country}`
                               ] && (
                                 <span className="ml-2 text-xs text-muted-foreground">
                                   (translating...)

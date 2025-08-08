@@ -85,7 +85,7 @@ export function ModernEconomicCalendar({
     const countryTranslations = [
       { ar: "الولايات المتحدة", en: "United States", currency: "USD" },
       { ar: "ألمانيا", en: "Germany", currency: "EUR" },
-      { ar: "المملكة المتحدة", en: "United Kingdom", currency: "GBP" },
+      { ar: "المملكة الم��حدة", en: "United Kingdom", currency: "GBP" },
       { ar: "اليابان", en: "Japan", currency: "JPY" },
       { ar: "كندا", en: "Canada", currency: "CAD" },
     ];
@@ -199,7 +199,9 @@ export function ModernEconomicCalendar({
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const response = await fetch("/api/eodhd/calendar");
+        const response = await fetch(
+          new URL("/api/eodhd/calendar", location.origin),
+        );
         const data = await response.json();
         // Ensure data is an array of EconomicEvent
         setEvents(Array.isArray(data) ? data : []);
@@ -326,7 +328,7 @@ export function ModernEconomicCalendar({
     setLoadingTranslation((prev) => ({ ...prev, [eventKey]: true }));
 
     try {
-      const response = await fetch("/api/translate", {
+      const response = await fetch(new URL("/api/translate", location.origin), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -361,7 +363,7 @@ export function ModernEconomicCalendar({
       const event = events.find((e) => e.id === eventId);
       if (!event) return;
 
-      const response = await fetch("/api/chat", {
+      const response = await fetch(new URL("/api/chat", location.origin), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
