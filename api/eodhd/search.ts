@@ -1,4 +1,4 @@
-import { eodFetch } from "../../src/server/eodhdClient";
+import { eodFetch } from "../../src/server/eodhdClient.ts";
 
 export default async function handler(req: Request): Promise<Response> {
   const { searchParams } = new URL(req.url);
