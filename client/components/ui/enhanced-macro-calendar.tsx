@@ -1058,12 +1058,7 @@ export default function EnhancedMacroCalendar({
                               dir === "rtl" ? "text-right" : "text-left",
                             )}
                           >
-                            {language === "ar" &&
-                            translatedContent[`${event.title || event.event}-${event.country}`]
-                              ? translatedContent[
-                                  `${event.title || event.event}-${event.country}`
-                                ]
-                              : event.title || event.event || "Economic Event"}
+                            {event.title || event.event || "Economic Event"}
                             {language === "ar" &&
                               loadingTranslation[
                                 `${event.title || event.event}-${event.country}`
