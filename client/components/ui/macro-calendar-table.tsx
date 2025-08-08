@@ -149,7 +149,7 @@ const getImportanceLabel = (importance: number, language: string) => {
       case 3:
         return "عالي";
       case 2:
-        return "متوسط";
+        return "��توسط";
       case 1:
         return "منخفض";
       default:
@@ -447,7 +447,7 @@ export function MacroCalendarTable({
 
       if (response.ok) {
         const data = await response.json();
-        const translated = data.translatedText || event.event;
+        const translated = data.result || event.event;
         setTranslatedContent((prev) => ({ ...prev, [eventKey]: translated }));
         return translated;
       } else {
@@ -612,7 +612,7 @@ export function MacroCalendarTable({
           <Filter className="h-4 w-4 text-primary" />
           <div className="flex items-center justify-between w-full">
             <h3 className="font-semibold text-sm">
-              {t("Economic Calendar Filters", "فلاتر التقويم الاقتصادي")}
+              {t("Economic Calendar Filters", "فلاتر ��لتقويم الاقتصادي")}
             </h3>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Clock className="h-3 w-3" />
