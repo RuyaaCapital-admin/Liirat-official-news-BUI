@@ -127,7 +127,7 @@ export function getDisplayedEvents(
   events: EconomicEvent[],
   isExpanded: boolean,
 ) {
-  return isExpanded ? events : events.slice(0, 10);
+  return isExpanded ? events.slice(0, 50) : events.slice(0, 6);
 }
 
 const getImportanceColor = (importance: number) => {
@@ -851,7 +851,7 @@ export function MacroCalendarTable({
                     ? t("All Impact", "جميع التأثيرات")
                     : selectedImportances.length === 1
                       ? selectedImportances[0] === "3"
-                        ? t("High Impact", "عالي التأثير")
+                        ? t("High Impact", "عالي التأث��ر")
                         : selectedImportances[0] === "2"
                           ? t("Medium Impact", "متوسط التأثير")
                           : t("Low Impact", "منخفض التأثير")
