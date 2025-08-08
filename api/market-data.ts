@@ -9,7 +9,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
- if (req.method === "OPIONS") {
+  if (req.method === "OPTIONS") {
     res.status(200).end();
     return;
   }
@@ -21,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const symbol = req.query.symbol;
-    if (![E[EOD_API_KEY]]) {
+    if (!EOD_API_KEY) {
       res.status(500).json({ error: "EODHD API key not set in env" });
       return;
     }
