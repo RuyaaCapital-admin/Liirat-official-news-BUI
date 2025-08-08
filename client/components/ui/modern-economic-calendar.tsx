@@ -361,7 +361,7 @@ export function ModernEconomicCalendar({
       const event = events.find((e) => e.id === eventId);
       if (!event) return;
 
-      const response = await fetch("/api/chat", {
+      const response = await fetch(new URL("/api/chat", location.origin), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
