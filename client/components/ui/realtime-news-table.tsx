@@ -56,7 +56,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
   const [filteredArticles, setFilteredArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [itemsToShow, setItemsToShow] = useState(15);
+  const [itemsToShow, setItemsToShow] = useState(8);
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
@@ -137,8 +137,9 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       } else if (selectedCategory !== "all") {
         params.append("t", selectedCategory);
       } else {
-        // Default to general financial news
+        // Default to general financial news - get latest/nearest news
         params.append("t", "financial");
+        params.set("limit", "50"); // Fetch more to ensure we have recent news
       }
 
       console.log(`Fetching news with params: ${params.toString()}`);
@@ -271,7 +272,14 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
             };
           },
         );
-        setArticles(transformedArticles);
+        // Sort by date to get the nearest/latest news first
+        const sortedArticles = transformedArticles.sort((a, b) => {
+          const dateA = new Date(a.datetimeIso || 0).getTime();
+          const dateB = new Date(b.datetimeIso || 0).getTime();
+          return dateB - dateA; // Most recent first
+        });
+
+        setArticles(sortedArticles);
         setAvailableCategories(["financial"]);
         setAvailableSymbols([]);
       }
@@ -296,7 +304,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     if (language === "ar" && filteredArticles.length > 0) {
       // Debounce translation requests to avoid overwhelming the API
       const timer = setTimeout(() => {
-        // Translate ALL visible articles, not just first 5
+        // Translate visible articles
         filteredArticles.slice(0, itemsToShow).forEach((article, index) => {
           // Only translate if not already translated
           if (
@@ -306,10 +314,10 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
             // Stagger requests to avoid rate limiting
             setTimeout(() => {
               translateTitle(article);
-            }, index * 400); // Reduced delay for faster translation
+            }, index * 300); // Faster translation
           }
         });
-      }, 500); // Reduced debounce time
+      }, 300); // Faster debounce
 
       return () => clearTimeout(timer);
     }
@@ -340,7 +348,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     }
 
     setFilteredArticles(filtered);
-    setItemsToShow(15); // Reset pagination when filters change
+    setItemsToShow(8); // Reset pagination when filters change
   }, [articles, searchTerm]);
 
   // Network connectivity check for translations
@@ -389,7 +397,7 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
     return translatedTitle;
   };
 
-  // Handle translation request with better error handling
+  // Handle translation request with OpenAI API
   const translateTitle = async (article: NewsArticle) => {
     if (translatedTitles[article.id] || loadingTranslation[article.id]) {
       return translatedTitles[article.id];
@@ -413,18 +421,48 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       return article.title; // Return original if not Arabic mode
     }
 
-    // Use offline translation for instant results without API calls
-    const offlineTranslation = getOfflineTranslation(article.title);
-    console.log(
-      `[NEWS] Translating offline: "${article.title}" -> "${offlineTranslation}"`,
-    );
+    setLoadingTranslation((prev) => ({ ...prev, [article.id]: true }));
 
-    // Always cache the translation result (even if unchanged)
-    setTranslatedTitles((prev) => ({
-      ...prev,
-      [article.id]: offlineTranslation,
-    }));
-    return offlineTranslation;
+    try {
+      // Try OpenAI translation first
+      const response = await fetch("/api/translate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: article.title,
+          targetLanguage: "ar",
+        }),
+        signal: AbortSignal.timeout(8000),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const translated = data.translatedText || article.title;
+        setTranslatedTitles((prev) => ({ ...prev, [article.id]: translated }));
+        return translated;
+      } else {
+        // Fallback to offline translation
+        const offlineTranslation = getOfflineTranslation(article.title);
+        setTranslatedTitles((prev) => ({
+          ...prev,
+          [article.id]: offlineTranslation,
+        }));
+        return offlineTranslation;
+      }
+    } catch (error) {
+      console.warn("Translation API failed, using offline translation:", error);
+      // Fallback to offline translation
+      const offlineTranslation = getOfflineTranslation(article.title);
+      setTranslatedTitles((prev) => ({
+        ...prev,
+        [article.id]: offlineTranslation,
+      }));
+      return offlineTranslation;
+    } finally {
+      setLoadingTranslation((prev) => ({ ...prev, [article.id]: false }));
+    }
   };
 
   // Request AI analysis for an article with better error handling
@@ -443,13 +481,15 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      const response = await fetch(new URL("/api/analysis", location.origin), {
+      const response = await fetch("/api/ai-analysis", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           text: `${article.title}. ${article.content.substring(0, 300)}`,
+          language: language,
+          type: "news",
         }),
         signal: controller.signal,
       });
@@ -458,18 +498,29 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
 
       if (response.ok) {
         const data = await response.json();
-        if (data.result) {
+        if (data.analysis) {
           console.log(`[AI ANALYSIS] Completed for article: ${article.id}`);
-          setAiAnalysis((prev) => ({ ...prev, [article.id]: data.result }));
+          setAiAnalysis((prev) => ({ ...prev, [article.id]: data.analysis }));
         } else {
           throw new Error("No analysis received");
         }
       } else {
-        // Don't read response body twice - just use status for error
+        const errorData = await response.json().catch(() => ({}));
         console.error(
           `AI Analysis API error: ${response.status} - ${response.statusText}`,
         );
-        throw new Error(`API error: ${response.status}`);
+
+        if (response.status === 500 && errorData.error?.includes("OpenAI")) {
+          setAiAnalysis((prev) => ({
+            ...prev,
+            [article.id]:
+              language === "ar"
+                ? "⚠️ مفتاح OpenAI API غير مُعدّ في متغيرات البيئة. يرجى إعداد OPENAI_API_KEY في Vercel."
+                : "⚠️ OpenAI API key not configured in environment variables. Please set OPENAI_API_KEY in Vercel.",
+          }));
+        } else {
+          throw new Error(`API error: ${response.status}`);
+        }
       }
     } catch (error) {
       console.error(`[AI ANALYSIS] Error for article ${article.id}:`, error);
@@ -814,8 +865,8 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                 : `Showing ${Math.min(itemsToShow, filteredArticles.length)} of ${filteredArticles.length} articles`}
             </div>
 
-            {filteredArticles.length > itemsToShow && (
-              <div className="flex justify-center gap-2">
+            <div className="flex justify-center gap-2">
+              {filteredArticles.length > itemsToShow && itemsToShow < 50 && (
                 <Button
                   variant="outline"
                   onClick={() =>
@@ -830,23 +881,26 @@ export default function RealtimeNewsTable({ className }: NewsTableProps) {
                 >
                   {language === "ar" ? "عرض المزيد" : "Show More"}
                   <span className="text-xs">
-                    ({Math.min(10, filteredArticles.length - itemsToShow)})
+                    (+
+                    {Math.min(
+                      10,
+                      Math.min(filteredArticles.length, 50) - itemsToShow,
+                    )}
+                    )
                   </span>
                 </Button>
-              </div>
-            )}
+              )}
 
-            {itemsToShow > 15 && (
-              <div className="flex justify-center gap-2 mt-2">
+              {itemsToShow > 8 && (
                 <Button
                   variant="outline"
-                  onClick={() => setItemsToShow(15)}
+                  onClick={() => setItemsToShow(8)}
                   className="flex items-center gap-2"
                 >
                   {language === "ar" ? "عرض أقل" : "Show Less"}
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
       </CardContent>

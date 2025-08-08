@@ -45,7 +45,6 @@ export function createServer() {
   app.post("/chart-indicator", handleChartIndicator);
   app.post("/technical-analysis", handleTechnicalAnalysis);
 
-
   // Price alert route
   app.get("/price-alert", handlePriceAlert);
 
@@ -69,6 +68,6 @@ export function createServer() {
 const app = createServer();
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`);
-  });
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

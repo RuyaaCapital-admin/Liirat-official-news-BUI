@@ -83,49 +83,40 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
     return `Event: ${eventData.event}. Actual: ${eventData.actual}. Forecast: ${eventData.forecast}. Previous: ${eventData.previous}. Date: ${eventData.date}. Write a single, short, actionable sentence for traders. No intro, no extra text. Maximum 25 words. Language: ${languageText}.`;
   };
 
-  // Call OpenAI API
+  // Call OpenAI API through our backend
   const fetchAIInsight = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      if (!AI_API_CONFIG.apiAvailable) {
-        setError(
-          language === "ar"
-            ? "مفتاح OpenAI API غير متوفر"
-            : "OpenAI API key not configured",
-        );
-        setIsLoading(false);
-        return;
-      }
+      const eventText = `${event.event} - ${event.country}. Previous: ${event.previous || "N/A"}, Forecast: ${event.forecast || "N/A"}, Actual: ${event.actual || "N/A"}`;
 
-      const prompt = generatePrompt(event, language);
-
-      const response = await fetch(AI_API_CONFIG.apiUrl, {
+      const response = await fetch("/api/ai-analysis", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
         },
         body: JSON.stringify({
-          model: AI_API_CONFIG.model,
-          messages: [
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
-          max_tokens: AI_API_CONFIG.maxTokens,
-          temperature: 0.7,
+          text: eventText,
+          language: language,
+          type: "event",
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`OpenAI API error: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        if (response.status === 500 && errorData.error?.includes("OpenAI")) {
+          throw new Error(
+            language === "ar"
+              ? "مفتاح OpenAI API غير مُعدّ في متغيرات البيئة. يرجى إعداد OPENAI_API_KEY في Vercel."
+              : "OpenAI API key not configured in environment variables. Please set OPENAI_API_KEY in Vercel.",
+          );
+        }
+        throw new Error(`API error: ${response.status}`);
       }
 
       const data = await response.json();
-      const aiResponse = data.choices[0]?.message?.content;
+      const aiResponse = data.analysis;
 
       if (!aiResponse) {
         throw new Error("No response from AI");
@@ -141,9 +132,11 @@ export function AIEventInsight({ event, className }: AIEventInsightProps) {
     } catch (error) {
       console.error("AI Insight error:", error);
       setError(
-        language === "ar"
-          ? "فشل في الحصول على تحليل الذكاء الاصطناعي"
-          : "Failed to get AI analysis",
+        error instanceof Error
+          ? error.message
+          : language === "ar"
+            ? "فشل في الحصول على تحليل الذكاء الاصطناعي"
+            : "Failed to get AI analysis",
       );
     } finally {
       setIsLoading(false);

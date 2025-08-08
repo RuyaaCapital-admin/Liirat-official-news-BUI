@@ -149,7 +149,7 @@ export function CountrySelect({
         left: `${rect.left}px`,
         width: `${rect.width}px`,
         maxHeight: `${Math.min(dropdownHeight, Math.max(spaceBelow, spaceAbove) - 8)}px`,
-        zIndex: 100,
+        zIndex: 9999, // Higher z-index to appear above other elements
       });
     }
   }, [open]);

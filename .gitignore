@@ -26,3 +26,7 @@ dist-ssr
 .config/
 !.env
 .env
+
+# Tempo files
+**/tempobook/dynamic/
+**/tempobook/storyboards/

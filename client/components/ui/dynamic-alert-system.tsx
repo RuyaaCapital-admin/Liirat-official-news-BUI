@@ -227,28 +227,55 @@ export default function DynamicAlertSystem({
 
       setPriceLoading(true);
       try {
+        console.log(`🔄 Fetching real-time price for: ${symbolData.symbol}`);
+
         const response = await fetch(
-          `/api/eodhd/price?s=${encodeURIComponent(symbolData.symbol)}`,
+          `/api/eodhd/price?symbols=${encodeURIComponent(symbolData.symbol)}`,
         );
 
         if (response.ok) {
           const data = await response.json();
+          console.log(`📊 Price data received:`, data);
+
+          // Handle different response formats
+          let priceData = null;
           if (data.ok && data.items && data.items.length > 0) {
-            const price = data.items[0];
-            setCurrentPrice(price.price);
+            priceData = data.items[0];
+          } else if (data.price !== undefined) {
+            priceData = data;
+          } else if (Array.isArray(data) && data.length > 0) {
+            priceData = data[0];
+          }
+
+          if (priceData && (priceData.price > 0 || priceData.close > 0)) {
+            const price = priceData.price || priceData.close || 0;
+            console.log(`✅ Price found: ${price} for ${symbolData.symbol}`);
+
+            setCurrentPrice(price);
 
             // Update symbol data with current price info
             setSelectedSymbol((prev) =>
               prev
                 ? {
                     ...prev,
-                    price: price.price,
-                    change: price.change,
-                    changePercent: price.changePct,
+                    price: price,
+                    change: priceData.change || 0,
+                    changePercent:
+                      priceData.changePct || priceData.change_p || 0,
                   }
                 : null,
             );
+          } else {
+            console.warn(
+              `⚠️ No valid price data for ${symbolData.symbol}:`,
+              priceData,
+            );
           }
+        } else {
+          const errorText = await response.text().catch(() => "Unknown error");
+          console.error(
+            `❌ Price fetch failed: ${response.status} - ${errorText}`,
+          );
         }
       } catch (error) {
         console.error("Error fetching symbol price:", error);
@@ -274,81 +301,134 @@ export default function DynamicAlertSystem({
     [fetchSymbolPrice],
   );
 
-  // Real-time price checking for active alerts (NO NOTIFICATIONS)
+  // Real-time price checking for active alerts with enhanced EODHD integration
   const checkPriceAlerts = useCallback(async () => {
     const activeAlerts = priceAlerts.filter(
       (alert) => alert.isActive && !alert.triggeredAt,
     );
 
+    if (activeAlerts.length === 0) return;
+
+    console.log(`🔔 Checking ${activeAlerts.length} active price alerts`);
+
     for (const alert of activeAlerts) {
       try {
         const response = await fetch(
-          `/api/eodhd/price?s=${encodeURIComponent(alert.symbol)}`,
+          `/api/eodhd/price?symbols=${encodeURIComponent(alert.symbol)}`,
         );
+
         if (response.ok) {
           const data = await response.json();
-          const currentPrice = data.price || data.close || 0;
-          if (currentPrice > 0) {
-            const targetPrice = alert.targetPrice;
 
-            let shouldTrigger = false;
-            if (alert.condition === "above" && currentPrice >= targetPrice) {
-              shouldTrigger = true;
-            } else if (
-              alert.condition === "below" &&
-              currentPrice <= targetPrice
-            ) {
-              shouldTrigger = true;
-            }
+          // Handle different response formats
+          let priceData = null;
+          if (data.ok && data.items && data.items.length > 0) {
+            priceData = data.items[0];
+          } else if (data.price !== undefined) {
+            priceData = data;
+          } else if (Array.isArray(data) && data.length > 0) {
+            priceData = data[0];
+          }
 
-            if (shouldTrigger) {
-              // Update alert as triggered
-              setPriceAlerts((prev) =>
-                prev.map((a) =>
-                  a.id === alert.id
-                    ? { ...a, triggeredAt: new Date().toISOString() }
-                    : a,
-                ),
+          if (priceData) {
+            const currentPrice = priceData.price || priceData.close || 0;
+
+            if (currentPrice > 0) {
+              const targetPrice = alert.targetPrice;
+              console.log(
+                `📊 Alert check - ${alert.symbolName}: Current=${currentPrice}, Target=${targetPrice}, Condition=${alert.condition}`,
               );
 
-              // Create internal notification log ONLY (no UI notifications)
-              const hijriDate = getHijriDate();
-              const dubaiTime = new Date().toLocaleString("ar-AE", {
-                timeZone: "Asia/Dubai",
-                hour: "2-digit",
-                minute: "2-digit",
-              });
+              let shouldTrigger = false;
+              if (alert.condition === "above" && currentPrice >= targetPrice) {
+                shouldTrigger = true;
+              } else if (
+                alert.condition === "below" &&
+                currentPrice <= targetPrice
+              ) {
+                shouldTrigger = true;
+              }
 
-              console.log(`Price Alert Triggered: ${alert.symbolName}`, {
-                currentPrice,
-                targetPrice,
-                condition: alert.condition,
-                hijriDate,
-                dubaiTime,
-              });
+              if (shouldTrigger) {
+                console.log(
+                  `🚨 ALERT TRIGGERED: ${alert.symbolName} - ${currentPrice} ${alert.condition} ${targetPrice}`,
+                );
 
-              // Show ONLY toast notification (no browser notification or nav bar notification)
-              if (alert.notificationEnabled) {
-                const title =
-                  language === "ar"
-                    ? `تنبيه سعر ${alert.symbolName}`
-                    : `Price Alert: ${alert.symbolName}`;
+                // Update alert as triggered
+                setPriceAlerts((prev) =>
+                  prev.map((a) =>
+                    a.id === alert.id
+                      ? { ...a, triggeredAt: new Date().toISOString() }
+                      : a,
+                  ),
+                );
 
-                const body =
-                  language === "ar"
-                    ? `السعر الحالي: $${currentPrice.toLocaleString()}\nالهدف: ${alert.condition === "above" ? "أعلى من" : "أقل من"} $${targetPrice.toLocaleString()}`
-                    : `Current price: $${currentPrice.toLocaleString()}\nTarget: ${alert.condition} $${targetPrice.toLocaleString()}`;
-
-                toast.success(title, {
-                  description: body,
-                  duration: 8000,
+                // Enhanced notification with real-time data
+                const hijriDate = getHijriDate();
+                const dubaiTime = new Date().toLocaleString("ar-AE", {
+                  timeZone: "Asia/Dubai",
+                  hour: "2-digit",
+                  minute: "2-digit",
                 });
+
+                const alertLog = {
+                  alert: alert.symbolName,
+                  currentPrice,
+                  targetPrice,
+                  condition: alert.condition,
+                  change: priceData.change || 0,
+                  changePercent: priceData.changePct || priceData.change_p || 0,
+                  timestamp: new Date().toISOString(),
+                  hijriDate,
+                  dubaiTime,
+                };
+
+                console.log(`🎯 Price Alert Triggered:`, alertLog);
+
+                // Show enhanced toast notification with real-time data
+                if (alert.notificationEnabled) {
+                  const title =
+                    language === "ar"
+                      ? `🚨 تنبيه سعر ${alert.symbolName}`
+                      : `🚨 Price Alert: ${alert.symbolName}`;
+
+                  const changeText = priceData.change
+                    ? ` (${priceData.change >= 0 ? "+" : ""}${priceData.change.toFixed(2)})`
+                    : "";
+
+                  const body =
+                    language === "ar"
+                      ? `السعر الحالي: ${currentPrice.toLocaleString()}${changeText}\nالهدف: ${alert.condition === "above" ? "أعلى من" : "أقل من"} ${targetPrice.toLocaleString()}\nالوقت: ${dubaiTime}`
+                      : `Current: ${currentPrice.toLocaleString()}${changeText}\nTarget: ${alert.condition} ${targetPrice.toLocaleString()}\nTime: ${dubaiTime}`;
+
+                  toast.success(title, {
+                    description: body,
+                    duration: 10000, // Longer duration for important alerts
+                  });
+                }
               }
             }
+          } else {
+            console.warn(`⚠️ No price data for alert symbol: ${alert.symbol}`);
           }
+        } else {
+          console.error(
+            `❌ Price API error for ${alert.symbol}: ${response.status}`,
+          );
         }
       } catch (error) {
-        console.error(`Error checking price for ${alert.symbol}:`, error);
+        console.error(`❌ Error checking price for ${alert.symbol}:`, error);
+
+        // Log more details for debugging
+        if (error instanceof Error) {
+          if (error.message.includes("EODHD_API_KEY")) {
+            console.error("🔑 API key configuration issue detected");
+          } else if (error.message.includes("401")) {
+            console.error("🚫 API authentication failed");
+          } else if (error.message.includes("429")) {
+            console.error("⏰ Rate limit exceeded");
+          }
+        }
       }
     }
   }, [priceAlerts, language]);
@@ -359,24 +439,80 @@ export default function DynamicAlertSystem({
     return () => clearInterval(interval);
   }, [checkPriceAlerts]);
 
-  // Fetch live price for selected symbol when dialog is open - poll every 5s
+  // Fetch live price for selected symbol when dialog is open - poll every 3s for real-time updates
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isDialogOpen && selectedSymbol) {
       const fetchPrice = async () => {
         try {
           setPriceLoading(true);
-          const data = await fetchSpot(selectedSymbol.symbol);
-          setCurrentPrice(data.price || data.close || null);
+          console.log(
+            `💰 Fetching real-time price for: ${selectedSymbol.symbol}`,
+          );
+
+          // Use the EODHD API directly for real-time prices
+          const response = await fetch(
+            `/api/eodhd/price?symbols=${encodeURIComponent(selectedSymbol.symbol)}`,
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+
+            // Handle different response formats
+            let priceData = null;
+            if (data.ok && data.items && data.items.length > 0) {
+              priceData = data.items[0];
+            } else if (data.price !== undefined) {
+              priceData = data;
+            } else if (Array.isArray(data) && data.length > 0) {
+              priceData = data[0];
+            }
+
+            if (priceData && priceData.price > 0) {
+              const price = priceData.price || priceData.close || 0;
+
+              console.log(
+                `✅ Real-time price for ${selectedSymbol.symbol}: ${price}`,
+              );
+              setCurrentPrice(price);
+
+              // Update symbol data with latest price info
+              setSelectedSymbol((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      price: price,
+                      change: priceData.change || 0,
+                      changePercent:
+                        priceData.changePct || priceData.change_p || 0,
+                    }
+                  : null,
+              );
+            } else {
+              console.warn(
+                `⚠️ No price data received for ${selectedSymbol.symbol}`,
+              );
+            }
+          } else {
+            const errorText = await response
+              .text()
+              .catch(() => "Unknown error");
+            console.error(
+              `❌ Price API error: ${response.status} - ${errorText}`,
+            );
+          }
         } catch (error) {
-          console.warn("Failed to fetch live price:", error);
+          console.error(
+            `❌ Failed to fetch live price for ${selectedSymbol.symbol}:`,
+            error,
+          );
         } finally {
           setPriceLoading(false);
         }
       };
 
       fetchPrice(); // Initial fetch
-      interval = setInterval(fetchPrice, 5000); // Poll every 5s while dialog open
+      interval = setInterval(fetchPrice, 3000); // Poll every 3s for real-time updates
     }
 
     return () => {
